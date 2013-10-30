@@ -1,19 +1,27 @@
-#-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
-#
-# Author:      Sebastian
-#
-# Created:     15.10.2013
-# Copyright:   (c) Sebastian 2013
-# Licence:     <your licence>
-#-------------------------------------------------------------------------------
+def playsound(frequency, duration):
+    import math
+    import pyaudio
+    
+    PyAudio = pyaudio.PyAudio
+    RATE = 16000
+    WAVE = frequency
+    data = ''.join([chr(int(math.sin(x / ((RATE / WAVE) / math.pi)) * 127 + 128)) for x in xrange(RATE)])
+    p = PyAudio()
+    
+    stream = p.open(format=
+                    p.get_format_from_width(1),
+                    channels=1,
+                    rate=RATE,
+                    output=True)
+    for DISCARD in xrange(duration):
+        stream.write(data)
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
 
-import winsound
 
 def main():
-
-    winsound.Beep(19000,30000)
+    playsound(300, 30)
     pass
 
 if __name__ == '__main__':
