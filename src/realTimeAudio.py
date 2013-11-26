@@ -34,7 +34,7 @@ def init():
     uiplot.qwtPlot.setAxisScale(uiplot.qwtPlot.yLeft, 0, 500)
 
     uiplot.timer = QtCore.QTimer()
-    uiplot.timer.start(1.0)
+    uiplot.timer.start(10.0)
 
     win_plot.connect(uiplot.timer, QtCore.SIGNAL('timeout()'), plotSomething)
 

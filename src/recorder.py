@@ -6,6 +6,7 @@ import struct
 import pyaudio
 import threading
 import pylab
+import time
 
 
 class SwhRecorder:
@@ -91,7 +92,8 @@ class SwhRecorder:
         if divBy:
             ys=ys/float(divBy)
         #self.plotAudio()
-        return xs[1500:],ys[1500:]
+        # frequency to index-> frequency * 2048 / 24050 
+        return xs[1745:1830],ys[1745:1830]
 
     ### VISUALIZATION ###
 
