@@ -1,27 +1,29 @@
+import pyaudio
+## To use wavebender checkout this repo: https://github.com/zacharydenton/wavebender.git and install it with python setup.py
+from wavebender import *
+
 def playsound(frequency, duration):
-    import math
-    import pyaudio
-    
     PyAudio = pyaudio.PyAudio
-    RATE = 16000
-    WAVE = frequency
-    data = ''.join([chr(int(math.sin(x / ((RATE / WAVE) / math.pi)) * 127 + 128)) for x in xrange(RATE)])
+
+    RATE = 44100
     p = PyAudio()
-    
+      
     stream = p.open(format=
-                    p.get_format_from_width(1),
+                    p.get_format_from_width(2),
                     channels=1,
                     rate=RATE,
                     output=True)
-    for DISCARD in xrange(duration):
-        stream.write(data)
+    channels = ((sine_wave(frequency),),)
+    samples = compute_samples(channels, RATE * duration * 1)
+    write_wavefile(stream, samples)
     stream.stop_stream()
     stream.close()
     p.terminate()
 
 
+
 def main():
-    playsound(300, 30)
+    playsound(19000.0, 30)
     pass
 
 if __name__ == '__main__':
