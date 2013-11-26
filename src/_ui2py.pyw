@@ -36,4 +36,4 @@ out+="""
 f=open("ui.py",'w')
 f.write(out)
 f.close()
-print "DONE"
+print("DONE")

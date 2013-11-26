@@ -5,17 +5,20 @@ from PyQt4 import QtCore, QtGui
 import PyQt4.Qwt5 as Qwt
 from recorder import *
 
-  
+SR = None
+c = None
+uiplot=None  
  
-def plotSomething():
-    if SR.newAudio==False:
-        return
-    xs,ys=SR.fft()
-    c.setData(xs,ys)
-    uiplot.qwtPlot.replot() 
-    SR.newAudio=False
 
-if __name__ == "__main__":
+def init():
+    def plotSomething():
+        if SR.newAudio==False:
+            return
+        xs,ys=SR.fft()
+        c.setData(xs,ys)
+        uiplot.qwtPlot.replot() 
+        SR.newAudio=False
+    
     app = QtGui.QApplication(sys.argv)
 
     win_plot = ui_plot.QtGui.QMainWindow()

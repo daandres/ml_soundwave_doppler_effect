@@ -12,9 +12,6 @@ def playsound(frequency=440.0, amplitude=0.5, framerate=44100, duration=30):
     stream.close()
     p.terminate()
 
-def main():
-    playsound(21000.0, framerate=48100, duration=30)
-    pass
-
 if __name__ == '__main__':
-    main()
+    playsound(21000.0, framerate=48100, duration=30)
+
