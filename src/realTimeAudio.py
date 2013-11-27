@@ -1,9 +1,8 @@
 import ui_plot
 import sys
-import numpy
 from PyQt4 import QtCore, QtGui
 import PyQt4.Qwt5 as Qwt
-from recorder import *
+from recorder import SwhRecorder
 
 SR = None
 c = None
