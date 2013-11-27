@@ -1,13 +1,8 @@
 import matplotlib
 matplotlib.use('TkAgg')  # <-- THIS MAKES IT FAST!
 import numpy
-import scipy
-import struct
 import pyaudio
 import threading
-import pylab
-import time
-
 
 class SwhRecorder:
     """Simple, cross-platform class to record from the microphone."""
@@ -91,13 +86,6 @@ class SwhRecorder:
             xs = xs[:i] * self.RATE / self.BUFFERSIZE
         if divBy:
             ys = ys / float(divBy)
-        # self.plotAudio()
-        # frequency to index-> frequency * 2048 / 24050 
+        """ frequency to index-> frequency * 2048 / 24050 """
         return xs[1745:1830], ys[1745:1830]
 
-    ### VISUALIZATION ###
-
-    def plotAudio(self):
-        """open a matplotlib popup window showing audio data."""
-        pylab.plot(self.audio.flatten())
-        pylab.show()
