@@ -1,0 +1,19 @@
+Gesten
+
+Klasse - Name
+
+0 Left-to-Right-One-Hand
+1 Right-to-Left-One-Hand
+2 Top-to-Bottom-One-Hand
+3 Bottom-to-Top-One-Hand
+4 Push-Two-Hands
+5 Pull-Two-Hands
+
+#Building Gui from console
+pyuic4 -o ui_plot.py ui_plot.ui
+# open ui_plot.ui:
+# add 'Qwt5' to imports from 'PyQt4'
+# and change the following line:
+from:    self.qwtPlot = QwtPlot(self.centralwidget)
+to-->    self.qwtPlot = Qwt5.QwtPlot(self.centralwidget)
+

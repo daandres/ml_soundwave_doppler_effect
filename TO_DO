@@ -1,2 +1,5 @@
 * Python-Objekte bauen
 * Main Klasse
+
+* 'record' method --> methode um die Daten einer Geste aufzunehmen. sodass wir eine Trainigs- und Testdaten erzeugen können
+* Daten erzeugen
