@@ -5,107 +5,110 @@ import PyQt4.Qwt5 as Qwt
 from recorder import SwhRecorder
 from numpy import array, shape
  
-SR = None
-c = None
-uiplot = None 
-# This will be decreased by one until 0 for recording 50 frames 
-recordNum = 0
-recordClass = -1
-ys_hist = []
 
 
-def init():
-    def record_0():
-        global recordClass
-        recordClass = 0
-        record()
-    def record_1():
-        global recordClass
-        recordClass = 1
-        record()
-    def record_2():
-        global recordClass
-        recordClass = 2
-        record()
-    def record_3():
-        global recordClass
-        recordClass = 3
-        record()
-    def record_4():
-        global recordClass
-        recordClass = 4
-        record()
-    def record_5():
-        global recordClass
-        recordClass = 5
-        record()
+class View:
+     
 
-    def record():
-        global recordNum
-        recordNum = 50
-        status_btn_gesture(False)
+    def __init__(self):
+        # application
+        self.app = None
         
-    def status_btn_gesture(state):
-        uiplot.btn_gesture_0.setEnabled(state)
-        uiplot.btn_gesture_1.setEnabled(state)
-        uiplot.btn_gesture_2.setEnabled(state)
-        uiplot.btn_gesture_3.setEnabled(state)
-        uiplot.btn_gesture_4.setEnabled(state)
-        uiplot.btn_gesture_5.setEnabled(state)
+        self.recoder = None
+        self.curve = None
+        self.uiplot = None 
+        # This will be decreased by one until 0 for recording 50 frames 
+        self.recordNum = 0
+        self.recordClass = -1
+        self.ys_hist = []
+        
+        
+    def record_0(self):
+        self.recordClass = 0
+        self.record()
+    def record_1(self):
+        self.recordClass = 1
+        self.record()
+    def record_2(self):
+        self.recordClass = 2
+        self.record()
+    def record_3(self):
+        self.recordClass = 3
+        self.record()
+    def record_4(self):
+        self.recordClass = 4
+        self.record()
+    def record_5(self):
+        self.recordClass = 5
+        self.record()
+
+    def record(self):
+        self.recordNum = 50
+        self.status_btn_gesture(False)
+            
+    def status_btn_gesture(self, state):
+        self.uiplot.btn_gesture_0.setEnabled(state)
+        self.uiplot.btn_gesture_1.setEnabled(state)
+        self.uiplot.btn_gesture_2.setEnabled(state)
+        self.uiplot.btn_gesture_3.setEnabled(state)
+        self.uiplot.btn_gesture_4.setEnabled(state)
+        self.uiplot.btn_gesture_5.setEnabled(state)
 
     
-    def plotSomething():
-        if SR.newAudio == False:
+    def plotSignal(self):
+        if self.recoder.getNewAudio() == False:
             return
-        xs, ys = SR.fft()
-        SR.newAudio = False
-        if(recordNum > 0):
-            recordData(ys)
-        c.setData(xs, ys) 
-        uiplot.qwtPlot.replot() 
+        xs, ys = self.recoder.fft()
+        self.recoder.setNewAudio = False
+        if(self.recordNum > 0):
+            self.recordData(ys)
+        self.curve.setData(xs, ys) 
+        self.uiplot.qwtPlot.replot() 
     
-    def recordData(ys):
-        global ys_hist
-        global recordNum
-        ys_hist.append(ys)
-        recordNum -= 1
-        if(recordNum <= 0):
-            status_btn_gesture(True)
-            print "Class " + str(recordClass)
-            print shape(array(ys_hist))
-            ys_hist = []
+    def recordData(self, ys):
+        self.ys_hist.append(ys)
+        self.recordNum -= 1
+        if(self.recordNum <= 0):
+            self.status_btn_gesture(True)
+            print "Class " + str(self.recordClass)
+            print shape(array(self.ys_hist))
+            self.ys_hist = []
+
+    def bindButtons(self):
+        self.uiplot.btnPlot.clicked.connect(self.plotSignal)
+        self.uiplot.btn_gesture_0.clicked.connect(self.record_0)
+        self.uiplot.btn_gesture_1.clicked.connect(self.record_1)
+        self.uiplot.btn_gesture_2.clicked.connect(self.record_2)
+        self.uiplot.btn_gesture_3.clicked.connect(self.record_3)
+        self.uiplot.btn_gesture_4.clicked.connect(self.record_4)
+        self.uiplot.btn_gesture_5.clicked.connect(self.record_5)
+            
+    def start(self):    
+        # application
+        self.app = QtGui.QApplication(sys.argv)
+    
+        self.win_plot = ui_plot.QtGui.QMainWindow()
+        self.uiplot = ui_plot.Ui_win_plot()
+        self.uiplot.setupUi(self.win_plot)
+    
+        self.curve = Qwt.QwtPlotCurve()
+        self.curve.attach(self.uiplot.qwtPlot)
+    
+        self.uiplot.qwtPlot.setAxisScale(self.uiplot.qwtPlot.yLeft, 0, 500)
+    
+        self.uiplot.timer = QtCore.QTimer()
+        self.uiplot.timer.start(10.0)
+    
+    
+        self.recoder = SwhRecorder()
+        self.recoder.setup()
+        self.recoder.continuousStart()
+    
+        self.win_plot.connect(self.uiplot.timer, QtCore.SIGNAL('timeout()'), self.plotSignal)
+        self.bindButtons()
         
-    
-    app = QtGui.QApplication(sys.argv)
-
-    win_plot = ui_plot.QtGui.QMainWindow()
-    uiplot = ui_plot.Ui_win_plot()
-    uiplot.setupUi(win_plot)
-
-    c = Qwt.QwtPlotCurve()
-    c.attach(uiplot.qwtPlot)
-
-    uiplot.qwtPlot.setAxisScale(uiplot.qwtPlot.yLeft, 0, 500)
-
-    uiplot.timer = QtCore.QTimer()
-    uiplot.timer.start(10.0)
-
-
-    SR = SwhRecorder()
-    SR.setup()
-    SR.continuousStart()
-
-    win_plot.connect(uiplot.timer, QtCore.SIGNAL('timeout()'), plotSomething)
-    uiplot.btnPlot.clicked.connect(plotSomething)
-    uiplot.btn_gesture_0.clicked.connect(record_0)
-    uiplot.btn_gesture_1.clicked.connect(record_1)
-    uiplot.btn_gesture_2.clicked.connect(record_2)
-    uiplot.btn_gesture_3.clicked.connect(record_3)
-    uiplot.btn_gesture_4.clicked.connect(record_4)
-    uiplot.btn_gesture_5.clicked.connect(record_5)
-    
-    # ## DISPLAY WINDOWS
-    win_plot.show()
-    code = app.exec_()
-    SR.close()
-    sys.exit(code)
+        # ## DISPLAY WINDOWS
+        self.win_plot.show()
+        code = self.app.exec_()
+        self.recoder.close()
+        sys.exit(code)

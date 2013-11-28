@@ -15,6 +15,12 @@ class SwhRecorder:
         self.threadsDieNow = False
         self.newAudio = False
 
+    def getNewAudio(self):
+        return self.newAudio    
+
+    def setNewAudio(self, newAudio):
+        self.newAudio = newAudio 
+
     def setup(self):
         """initialize sound card."""
         # TODO - windows detection vs. alsa or something for linux
@@ -35,7 +41,10 @@ class SwhRecorder:
 
     def close(self):
         """cleanly back out and release sound card."""
-        self.audioDev.close(self.inStream)
+        self.audioStream.stop_stream()
+        while(self.audioStream.is_active()):
+            self.audioStream.close()
+            self.audioDev.close(self.audioStream)  
 
     ### RECORDING AUDIO ###
 

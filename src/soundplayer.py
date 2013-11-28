@@ -14,11 +14,15 @@ class Sound:
         samples = wb.compute_samples(channels, framerate * duration * 1)
         wb.write_wavefile(self.audioStream, samples)
     
+    def pause(self):
+        self.audioDev.close(self.audioStream)
     
     def stopSound(self):
         self.audioStream.stop_stream()
-        self.audioStream.close()
-        self.audioDev.terminate()
+        while(self.audioStream.is_active()):
+            self.audioStream.close()
+            self.audioDev.close(self.audioStream)    
+
     
 if __name__ == '__main__':
     Sound().playSound(21000.0, framerate=48100, duration=30)

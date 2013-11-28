@@ -1,5 +1,7 @@
 * Python-Objekte bauen
 * Main Klasse
 
+* gesten-aufnahme und anzeige in 2 klassen trennen
+
 * 'record' method --> methode um die Daten einer Geste aufzunehmen. sodass wir eine Trainigs- und Testdaten erzeugen können
 * Daten erzeugen
