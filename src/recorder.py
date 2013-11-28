@@ -11,7 +11,7 @@ class SwhRecorder:
         """minimal garb is executed when class is loaded."""
         self.RATE = 48100
         self.BUFFERSIZE = 2 ** 12  # 1024 is a good buffer size
-        self.secToRecord = .1
+        self.secToRecord = .01
         self.threadsDieNow = False
         self.newAudio = False
 
@@ -33,7 +33,7 @@ class SwhRecorder:
         self.secPerPoint = 1.0 / self.RATE
 
         self.audioDev = pyaudio.PyAudio()
-        self.inStream = self.audioDev.open(format=pyaudio.paInt16, channels=1, rate=self.RATE, input=True, frames_per_buffer=self.BUFFERSIZE)
+        self.audioInStream = self.audioDev.open(format=pyaudio.paInt16, channels=1, rate=self.RATE, input=True, frames_per_buffer=self.BUFFERSIZE)
 
         self.xsBuffer = numpy.arange(self.BUFFERSIZE) * self.secPerPoint
         self.xs = numpy.arange(self.chunksToRecord * self.BUFFERSIZE) * self.secPerPoint
@@ -41,16 +41,17 @@ class SwhRecorder:
 
     def close(self):
         """cleanly back out and release sound card."""
-        self.audioStream.stop_stream()
-        while(self.audioStream.is_active()):
-            self.audioStream.close()
-            self.audioDev.close(self.audioStream)  
+        self.continuousEnd()
+        self.audioInStream.stop_stream()
+        self.audioInStream.close()
+        self.audioDev.terminate()
+
 
     ### RECORDING AUDIO ###
 
     def getAudio(self):
         """get a single buffer size worth of audio."""
-        audioString = self.inStream.read(self.BUFFERSIZE)
+        audioString = self.audioInStream.read(self.BUFFERSIZE)
         return numpy.fromstring(audioString, dtype=numpy.int16)
 
     def record(self, forever=True):

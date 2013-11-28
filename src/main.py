@@ -1,6 +1,7 @@
 from threading import Thread
 from realTimeAudio import View
 from soundplayer import Sound
+import sys
 t1 = None
 t2 = None
 
@@ -29,4 +30,4 @@ if __name__ == '__main__':
     print("Started Gesture Recognition")
     main()
     print("Exit")
-#     sys.exit()
+    sys.exit()
