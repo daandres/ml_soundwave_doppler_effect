@@ -18,9 +18,8 @@ class Sound:
     
     def stopSound(self):
         self.audioStream.stop_stream()
-        while(self.audioStream.is_active()):
-            self.audioStream.close()
-            self.audioDev.close(self.audioStream)    
+        self.audioStream.close()
+        self.audioDev.terminate()   
 
     
 if __name__ == '__main__':
