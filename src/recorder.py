@@ -12,7 +12,7 @@ class SwhRecorder:
         self.frequency = frequency
         self.FRAMERATE = 48100
         self.BUFFERSIZE = 2 ** 12  # 1024 is a good buffer size
-        self.secToRecord = .1
+        self.secToRecord = .01
         self.threadsDieNow = False
         self.newAudio = False
         # frequency range (+ / -)
