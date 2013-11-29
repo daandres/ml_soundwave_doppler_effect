@@ -7,33 +7,33 @@ import threading
 class SwhRecorder:
     """Simple, cross-platform class to record from the microphone."""
 
-    def __init__(self):
+    def __init__(self, frequency=21000, fRange=500):
         """minimal garb is executed when class is loaded."""
-        self.RATE = 48100
+        self.frequency = frequency
+        self.FRAMERATE = 48100
         self.BUFFERSIZE = 2 ** 12  # 1024 is a good buffer size
         self.secToRecord = .1
         self.threadsDieNow = False
         self.newAudio = False
+        # frequency range (+ / -)
+        frequenyToIndex = self.BUFFERSIZE / (self.FRAMERATE + 0.0)
+        self.leftBorder = frequenyToIndex * (frequency - fRange)
+        self.rightBorder = frequenyToIndex * (frequency + fRange)
 
-    def getNewAudio(self):
-        return self.newAudio    
-
-    def setNewAudio(self, newAudio):
-        self.newAudio = newAudio 
 
     def setup(self):
         """initialize sound card."""
         # TODO - windows detection vs. alsa or something for linux
         # TODO - try/except for sound card selection/initiation
 
-        self.buffersToRecord = int(self.RATE * self.secToRecord / self.BUFFERSIZE)
+        self.buffersToRecord = int(self.FRAMERATE * self.secToRecord / self.BUFFERSIZE)
         if self.buffersToRecord == 0: self.buffersToRecord = 1
         self.samplesToRecord = int(self.BUFFERSIZE * self.buffersToRecord)
         self.chunksToRecord = int(self.samplesToRecord / self.BUFFERSIZE)
-        self.secPerPoint = 1.0 / self.RATE
+        self.secPerPoint = 1.0 / self.FRAMERATE
 
         self.audioDev = pyaudio.PyAudio()
-        self.inStream = self.audioDev.open(format=pyaudio.paInt16, channels=1, rate=self.RATE, input=True, frames_per_buffer=self.BUFFERSIZE)
+        self.inStream = self.audioDev.open(format=pyaudio.paInt16, channels=1, rate=self.FRAMERATE, input=True, frames_per_buffer=self.BUFFERSIZE)
 
         self.xsBuffer = numpy.arange(self.BUFFERSIZE) * self.secPerPoint
         self.xs = numpy.arange(self.chunksToRecord * self.BUFFERSIZE) * self.secPerPoint
@@ -41,6 +41,7 @@ class SwhRecorder:
 
     def close(self):
         """cleanly back out and release sound card."""
+        self.threadsDieNow = True
         self.audioStream.stop_stream()
         while(self.audioStream.is_active()):
             self.audioStream.close()
@@ -92,9 +93,14 @@ class SwhRecorder:
         if trimBy:
             i = int((self.BUFFERSIZE / 2) / trimBy)
             ys = ys[:i]
-            xs = xs[:i] * self.RATE / self.BUFFERSIZE
+            xs = xs[:i] * self.FRAMERATE / self.BUFFERSIZE
         if divBy:
             ys = ys / float(divBy)
-        """ frequency to index-> frequency * 2048 / 24050 """
-        return xs[1745:1830], ys[1745:1830]
+        """ frequency to index-> frequency * BUFFERSIZE / FRAMERATE """
+        return xs[self.leftBorder:self.rightBorder], ys[self.leftBorder:self.rightBorder]
 
+    def getNewAudio(self):
+        return self.newAudio    
+
+    def setNewAudio(self, newAudio):
+        self.newAudio = newAudio 

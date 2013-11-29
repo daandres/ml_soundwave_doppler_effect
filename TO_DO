@@ -1,7 +1,16 @@
 * Python-Objekte bauen
 * Main Klasse
 
+* soundplayer sollte im loop laufen und nicht mit einer festen zeit 
+
 * gesten-aufnahme und anzeige in 2 klassen trennen
 
 * 'record' method --> methode um die Daten einer Geste aufzunehmen. sodass wir eine Trainigs- und Testdaten erzeugen können
 * Daten erzeugen
+
+* saubere package struktur
+
+* normal / ruhezustand herausfinden und abspeichern
+
+CAN_DO
+* ui_plot refactoren

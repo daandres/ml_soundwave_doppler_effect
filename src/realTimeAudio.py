@@ -1,16 +1,18 @@
 import ui_plot
 import sys
+import os.path
 from PyQt4 import QtCore, QtGui
 import PyQt4.Qwt5 as Qwt
 from recorder import SwhRecorder
-from numpy import array, shape
- 
+from numpy import array, shape, savetxt, ravel
+import properties.config as config 
 
 
 class View:
      
-
-    def __init__(self):
+    def __init__(self, frequency=21000, fRange=500):
+        self.frequency = frequency
+        self.fRange = fRange
         # application
         self.app = None
         
@@ -18,7 +20,7 @@ class View:
         self.curve = None
         self.uiplot = None 
         # This will be decreased by one until 0 for recording 50 frames 
-        self.recordNum = 0
+        self.recordNum = -1
         self.recordClass = -1
         self.ys_hist = []
         
@@ -42,8 +44,21 @@ class View:
         self.recordClass = 5
         self.record()
 
+    def stopRecording(self):
+        print("Stop recording")
+        if self.recordClass >= 0:
+            self.writeGesture()
+        else:
+            self.cleanUp()    
+
+    def cleanUp(self):
+        self.status_btn_gesture(True)
+        self.recordNum = -1
+        self.recordClass = -1
+        self.ys_hist = [] 
+
     def record(self):
-        self.recordNum = 50
+        self.recordNum = config.recording_frames
         self.status_btn_gesture(False)
             
     def status_btn_gesture(self, state):
@@ -59,23 +74,34 @@ class View:
         if self.recoder.getNewAudio() == False:
             return
         xs, ys = self.recoder.fft()
-        self.recoder.setNewAudio = False
-        if(self.recordNum > 0):
-            self.recordData(ys)
+        self.recoder.setNewAudio(False)
+        
+        # somethin to record? 
+        if(self.recordClass >= 0):
+            if(self.recordNum > 0):
+                self.recordData(ys)
+            elif(self.recordNum == 0):
+                self.writeGesture()    
+            
         self.curve.setData(xs, ys) 
         self.uiplot.qwtPlot.replot() 
     
     def recordData(self, ys):
-        self.ys_hist.append(ys)
         self.recordNum -= 1
-        if(self.recordNum <= 0):
-            self.status_btn_gesture(True)
-            print "Class " + str(self.recordClass)
-            print shape(array(self.ys_hist))
-            self.ys_hist = []
+        self.ys_hist.append(ys)
+
+    def writeGesture(self):
+        outfile = config.gesture_path + "/gesture_" + str(self.recordClass) + ".txt"
+        oid = open(outfile, "a")
+        oid.write("##### Class " + str(self.recordClass)) + "#####\n"
+        data = array(ravel(self.ys_hist))
+        print "Wrote file for class " + str(self.recordClass)
+        savetxt(oid, data, delimiter=",", fmt='%1.4f')
+        oid.close()
+        self.cleanUp()
 
     def bindButtons(self):
-        self.uiplot.btnPlot.clicked.connect(self.plotSignal)
+        self.uiplot.btnPlot.clicked.connect(self.stopRecording)
         self.uiplot.btn_gesture_0.clicked.connect(self.record_0)
         self.uiplot.btn_gesture_1.clicked.connect(self.record_1)
         self.uiplot.btn_gesture_2.clicked.connect(self.record_2)
@@ -100,7 +126,7 @@ class View:
         self.uiplot.timer.start(10.0)
     
     
-        self.recoder = SwhRecorder()
+        self.recoder = SwhRecorder(self.frequency, self.fRange)
         self.recoder.setup()
         self.recoder.continuousStart()
     
