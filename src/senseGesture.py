@@ -13,6 +13,9 @@ class SenseGesture():
         
         self.t1 = None
         self.t2 = None
+        
+        if not os.path.exists(config.gesture_path):
+            os.makedirs(config.gesture_path)
 
     def _setConfig(self):
         self.frequency = config.frequency
@@ -51,7 +54,7 @@ class SenseGesture():
 if __name__ == '__main__':
     print("Started Gesture Recognition")
     app = SenseGesture()
-    app.deleteGestures()
+    #app.deleteGestures()
     app.start()
     print("Exit")
 #     sys.exit()

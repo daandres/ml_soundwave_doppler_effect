@@ -1,6 +1,5 @@
 import ui_plot
 import sys
-import os.path
 from PyQt4 import QtCore, QtGui
 import PyQt4.Qwt5 as Qwt
 from recorder import SwhRecorder
@@ -93,9 +92,10 @@ class View:
     def writeGesture(self):
         outfile = config.gesture_path + "/gesture_" + str(self.recordClass) + ".txt"
         oid = open(outfile, "a")
-        oid.write("##### Class " + str(self.recordClass)) + "#####\n"
-        data = array(ravel(self.ys_hist))
-        print "Wrote file for class " + str(self.recordClass)
+        # oid.write("##### Class " + str(self.recordClass) + " #####\n")
+        # flatten all inputs to 1 vector
+        data = array([array(ravel(self.ys_hist))])
+        print "Wrote record for class " + str(self.recordClass)
         savetxt(oid, data, delimiter=",", fmt='%1.4f')
         oid.close()
         self.cleanUp()
