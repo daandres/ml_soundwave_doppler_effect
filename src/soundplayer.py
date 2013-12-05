@@ -8,7 +8,7 @@ class Sound:
         self.audioDev = pyaudio.PyAudio()
         self.audioStream = None
     
-    def playSound(self, frequency=440.0, amplitude=0.5, framerate=48100, duration=30):
+    def startPlaying(self, frequency=440.0, amplitude=0.5, framerate=48100, duration=30):
         # create stream
         self.audioStream = self.audioDev.open(format=self.audioDev.get_format_from_width(2), 
                                               channels=1, rate=framerate, output=True)
@@ -17,13 +17,13 @@ class Sound:
         wb.write_wavefile(self.audioStream, samples)
         
     
-    def stopSound(self):
+    def stopPlaying(self):
         self.audioStream.stop_stream()
         self.audioStream.close()
         self.audioDev.terminate()   
 
 if __name__ == '__main__':
     s = Sound()
-    s.playSound(21000.0, framerate=48100, duration=30)
-    s.stopSound()
+    s.startPlaying(21000.0, framerate=48100, duration=30)
+    s.stopPlaying()
 

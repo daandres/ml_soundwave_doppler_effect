@@ -2,20 +2,21 @@ import ui_plot
 import sys
 from PyQt4 import QtCore, QtGui
 import PyQt4.Qwt5 as Qwt
-from recorder import SwhRecorder
 from numpy import array, shape, savetxt, ravel
 import properties.config as config 
+from numpy.f2py.auxfuncs import throw_error
 
 
 class View:
      
-    def __init__(self, frequency=21000, fRange=500):
-        self.frequency = frequency
-        self.fRange = fRange
+    def __init__(self, recorder=None):
         # application
         self.app = None
         
-        self.recoder = None
+        if recorder == None:
+            raise Exception("No Recorder, so go home")
+        self.recoder = recorder
+        
         self.curve = None
         self.uiplot = None 
         # This will be decreased by one until 0 for recording 50 frames 
@@ -57,7 +58,7 @@ class View:
         self.ys_hist = [] 
 
     def record(self):
-        self.recordNum = config.recording_frames
+        self.recordNum = config.recordingFrames
         self.status_btn_gesture(False)
             
     def status_btn_gesture(self, state):
@@ -70,11 +71,7 @@ class View:
 
     
     def plotSignal(self):
-        if self.recoder.getNewAudio() == False:
-            return
-        xs, ys = self.recoder.fft()
-        self.recoder.setNewAudio(False)
-        
+        xs, ys = self.recoder.getTransformedData()
         # somethin to record? 
         if(self.recordClass >= 0):
             if(self.recordNum > 0):
@@ -90,7 +87,7 @@ class View:
         self.ys_hist.append(ys)
 
     def writeGesture(self):
-        outfile = config.gesture_path + "/gesture_" + str(self.recordClass) + ".txt"
+        outfile = config.gesturePath + "/gesture_" + str(self.recordClass) + ".txt"
         oid = open(outfile, "a")
         # oid.write("##### Class " + str(self.recordClass) + " #####\n")
         # flatten all inputs to 1 vector
@@ -123,12 +120,8 @@ class View:
         self.uiplot.qwtPlot.setAxisScale(self.uiplot.qwtPlot.yLeft, 0, 500)
     
         self.uiplot.timer = QtCore.QTimer()
-        self.uiplot.timer.start(10.0)
+        self.uiplot.timer.start(100.0)
     
-    
-        self.recoder = SwhRecorder(self.frequency, self.fRange)
-        self.recoder.setup()
-        self.recoder.continuousStart()
     
         self.win_plot.connect(self.uiplot.timer, QtCore.SIGNAL('timeout()'), self.plotSignal)
         self.bindButtons()
