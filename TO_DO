@@ -1,7 +1,8 @@
 * Python-Objekte bauen
 * Main Klasse
 
-* soundplayer sollte im loop laufen und nicht mit einer festen zeit 
+* soundplayer sollte im loop laufen und nicht mit einer festen zeit
+* die verkappte MyStream Klasse sollte sauber funtionieren 
 
 * gesten-aufnahme und anzeige in 2 klassen trennen
 
