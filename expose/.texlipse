@@ -1,0 +1,14 @@
+#TeXlipse project settings
+#Thu Sep 27 09:07:43 CEST 2012
+markTmpDer=true
+builderNum=2
+outputDir=out/
+makeIndSty=
+bibrefDir=
+outputFormat=pdf
+tempDir=tmp
+mainTexFile=main.tex
+outputFile=ML_Expose.pdf
+langSpell=en
+markDer=true
+srcDir=src/

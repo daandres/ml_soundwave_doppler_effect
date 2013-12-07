@@ -1,0 +1,194 @@
+\documentclass[
+12pt,
+a4paper,
+% pointednumbers,        % überschriftnummerierung mit Punkt 
+pointlessnumbers ,      % überschriftnummerierung ohne Punkt 
+]{scrartcl}
+\usepackage[utf8]{inputenc} %Zeichenkodierung
+\input{setup}
+
+\usepackage{lipsum}
+\usepackage{fancyhdr} %für Kopf- und Fußzeilen
+%\usepackage{scrpage2}
+\usepackage{caption}
+\usepackage{calc}
+\usepackage{xcolor}
+\usepackage{setspace}
+\usepackage{pdfpages}
+\usepackage{enumerate}
+\usepackage{scrhack}
+\usepackage[pdftex,pdfborder={0 0 0}, bookmarksopenlevel=1,
+bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln (ohne optische Hervorhebung)
+
+\usepackage[footnote]{acronym}
+\usepackage{graphicx}
+
+\usepackage{hhline} %% extended line features for tables with \hhline{}
+\usepackage{multirow} %% merges several cells over rows: \multirow{Zeilen}{Breite}{Inhalt}; over columns: \multicolumn{Spalten}{Ausrichtung}{Inhalt}
+\usepackage{colortbl} %% use defined colors in tables
+\usepackage{booktabs} %% better horizontal lines in tables with \toprule[<breite>], \midrule[<breite>], \cmidrule[<breite>](trim){a-b}, \bottomrule 
+\usepackage{supertabular}
+\usepackage{longtable}
+
+\usepackage{listings} 
+\listingssetup
+
+\hypersetup{
+	pdftitle={\reporttitle\ - \student },
+	pdfauthor={\student },
+	pdfsubject={\reporttitle },
+	pdfkeywords={\universitys }
+}
+
+\newcommand{\settocdepth}[1]{
+	\addtocontents{toc}{
+		\protect
+		\setcounter{tocdepth}{#1}
+	}
+}
+
+\newcommand{\head}[1] {
+ 	\lhead{\ifthispageodd{}{#1}}
+ 	\rhead{\ifthispageodd{#1}{}}
+ }
+
+\newcommand{\headAndToc}[1] {
+	\head{#1}
+	\addcontentsline{toc}{section}{#1}
+}
+
+\newcommand{\headAndTocENDE}[2] {
+	\headAndToc{#2}
+}
+
+%% math
+\usepackage{amsmath,amssymb,amsfonts}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\order}{\mathrm{order\:}}
+\newcommand{\IV}{\mathrm{IV}}
+\newcommand{\tmod}{\!\!\mod}
+
+
+
+ \renewcommand\sectionmark[1]{%
+  \def\sectionname{#1}%
+  \markright{\thesection #1}%oder was aus immer 
+  } 
+  
+  \renewcommand\subsectionmark[1]{%
+  \def\subsectionname{#1}% 
+  \markright{\thesubsection #1}%oder was aus immer 
+  } 
+	
+\graphicspath{{./ref/images/}}
+
+\newlength{\iconwidth}
+\setlength{\iconwidth}{1cm}
+\definecolor{boxheadcol}{gray}{.6}
+\definecolor{boxcol}{gray}{.9}
+\input{environments}
+
+\title{\pebericht}
+\author{\student}
+\date{\handoverdate}
+\begin{document}
+\pagestyle{fancy}  
+% \pagestyle{scrheadings}
+% \automark[section]{chapter}
+\fancyhfoffset{\marginparsep}
+\renewcommand{\footrulewidth}{1.0pt}
+\renewcommand{\headrulewidth}{1.0pt}
+\renewcommand{\headheight}{30pt}
+
+\setlength{\parindent}{0in}
+\setlength{\parskip}{0.5em}
+\clubpenalty 10000
+\widowpenalty 10000
+
+\chead{}
+\cfoot{}
+ 
+\lfoot{\ifthispageodd{}{\thepage}}	
+\rfoot{\ifthispageodd{\thepage}{}}
+% 	\lfoot{}	
+% 	\rfoot{\thepage}
+
+\pagenumbering{Roman}
+
+\pdfbookmark[1]{Titelseite}{titlepage}
+\begin{titlepage} 
+	\input{titlepage}
+\end{titlepage} 
+ 
+\clearpage
+\shipout\null
+\addtocounter{page}{1}
+
+\phantomsection
+\headAndToc{Abstract}
+\section*{Abstract}
+	\paragraph{English} 
+	\input{sections/abstractEN}
+	\paragraph{German} 
+	\input{sections/abstractDE}
+\clearpage
+
+\phantomsection
+\headAndTocENDE{Contents}{Inhaltsverzeichnis}
+\begin{spacing}{1}
+\tableofcontents
+\end{spacing}
+\clearpage
+
+\phantomsection
+\headAndTocENDE{List of abbreviations}{Abk{\"u}rzungsverzeichnis}
+\section*{Abk{\"u}rzungsverzeichnis}
+\begin{acronym}[Internship]
+\input{acronym}
+\end{acronym} 
+\clearpage
+
+\phantomsection
+\headAndTocENDE{List of Figures}{Abbildungsverzeichnis}
+\listoffigures
+\clearpage
+
+\phantomsection
+\headAndTocENDE{List of Tables}{Tabellenverzeichnis}
+\listoftables 
+\clearpage
+
+\phantomsection
+\headAndTocENDE{Listings}{Quellcodeverzeichnis}
+\lstlistoflistings
+\clearpage
+
+\onehalfspacing 
+%\shipout\null
+
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\pagenumbering{arabic}
+% \head{\nouppercase{\leftmark}}
+  	\lhead{\ifthispageodd{}{\nouppercase{\leftmark}}}
+  	\rhead{\ifthispageodd{\rightmark}{}}
+%\fancyhead[LE]{\sffamily \nouppercase{\leftmark}  }
+% \fancyhead[RO]{\sffamily \nouppercase{\rightmark}  } 
+\include{sections/content}
+\pagenumbering{roman}
+
+\clearpage
+\newpage 
+
+\singlespacing
+
+\phantomsection
+\headAndTocENDE{References}{Literatur}
+\bibliography{ref/bib}{} 
+\bibliographystyle{phcpcDE}
+\appendix
+\head{\nouppercase{\leftmark}}
+\pdfbookmark[0]{Anhang}{appendix}
+\include{sections/appendix}
+
+\end{document}
