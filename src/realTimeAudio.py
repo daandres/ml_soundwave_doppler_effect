@@ -26,22 +26,22 @@ class View:
         
         
     def record_0(self):
-        self.recordClass = 0
+        self.recordClass = config.recordClass_0
         self.record()
     def record_1(self):
-        self.recordClass = 1
+        self.recordClass = config.recordClass_1
         self.record()
     def record_2(self):
-        self.recordClass = 2
+        self.recordClass = config.recordClass_2
         self.record()
     def record_3(self):
-        self.recordClass = 3
+        self.recordClass = config.recordClass_3
         self.record()
     def record_4(self):
-        self.recordClass = 4
+        self.recordClass = config.recordClass_4
         self.record()
     def record_5(self):
-        self.recordClass = 5
+        self.recordClass = config.recordClass_5
         self.record()
 
     def stopRecording(self):
@@ -113,14 +113,14 @@ class View:
         self.win_plot = ui_plot.QtGui.QMainWindow()
         self.uiplot = ui_plot.Ui_win_plot()
         self.uiplot.setupUi(self.win_plot)
-    
+     
         self.curve = Qwt.QwtPlotCurve()
         self.curve.attach(self.uiplot.qwtPlot)
     
-        self.uiplot.qwtPlot.setAxisScale(self.uiplot.qwtPlot.yLeft, 0, 500)
+        self.uiplot.qwtPlot.setAxisScale(self.uiplot.qwtPlot.yLeft, 0, config.amplitude * 1000)
     
         self.uiplot.timer = QtCore.QTimer()
-        self.uiplot.timer.start(100.0)
+        self.uiplot.timer.start(config.guitimer)
     
     
         self.win_plot.connect(self.uiplot.timer, QtCore.SIGNAL('timeout()'), self.plotSignal)

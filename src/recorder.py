@@ -13,9 +13,9 @@ class SwhRecorder:
     def __init__(self, frequency=21000, fRange=500):
         """minimal garb is executed when class is loaded."""
         self.frequency = frequency
-        self.FRAMERATE = 48100
-        self.BUFFERSIZE = 2 ** 12  # 1024 is a good buffer size
-        self.secToRecord = .01
+        self.FRAMERATE = config.framerate
+        self.BUFFERSIZE = config.buffersize  
+        self.secToRecord = config.recordIntervall
         self.timerStop = False
         # frequency range (+ / -)
         frequenyToIndex = self.BUFFERSIZE / (self.FRAMERATE + 0.0)

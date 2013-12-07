@@ -1,9 +1,9 @@
-frequency=21000.0
+frequency=20500.0
 fRange=500
-amplitude=0.5
+amplitude=0.5*2
 framerate=48100
 duration=60
-buffersize=2 ** 12
+buffersize=2 ** 12 # 1024 is a good buffer size
 gesturePath="../gestures"
 recordingFrames=50
 recordClass_0 = 0
@@ -13,3 +13,4 @@ recordClass_3 = 3
 recordClass_4 = 4
 recordClass_5 = 5
 recordIntervall = 0.1 # in seconds
+guitimer = 10.0 # in milliseconds

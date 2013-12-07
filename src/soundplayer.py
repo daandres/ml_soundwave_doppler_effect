@@ -2,6 +2,9 @@ import pyaudio
 # # To use wavebender checkout this repo: https://github.com/zacharydenton/wavebender.git and install it with python setup.py
 import wavebender as wb
 from myStream import MyStream
+import properties.config as config 
+
+
 class Sound:
     
     def __init__(self):
@@ -30,6 +33,6 @@ class Sound:
 
 if __name__ == '__main__':
     s = Sound()
-    s.startPlaying(21000.0, framerate=48100, duration=30)
+    s.startPlaying(config.frequency, config.amplitude, config.framerate, config.duration)
     s.stopPlaying()
 
