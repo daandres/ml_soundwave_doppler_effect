@@ -7,7 +7,6 @@ framerate=48100
 duration=60
 buffersize=2 ** 12 # 1024 is a good buffer size
 gesturePath="../gestures"
-recordingFrames=50
 recordClass_0 = 0
 recordClass_1 = 1
 recordClass_2 = 2
@@ -15,7 +14,7 @@ recordClass_3 = 3
 recordClass_4 = 4
 recordClass_5 = 5
 
-recordCount=64
+recordingFrames=32
 secToRecord = 0.001 # how long is 1 record in seconds
-recordIntervall = 0.1 # time between 2 records in seconds
+recordIntervall = 0.01 # time between 2 records in seconds
 guiIntervall = 1.0 # in milliseconds

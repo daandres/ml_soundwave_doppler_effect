@@ -5,6 +5,7 @@ import PyQt4.Qwt5 as Qwt
 from numpy import array, shape, savetxt, ravel
 import properties.config as config 
 from numpy.f2py.auxfuncs import throw_error
+from numpy.lib.utils import deprecate
 
 
 class View:
@@ -15,7 +16,7 @@ class View:
         
         if recorder == None:
             raise Exception("No Recorder, so go home")
-        self.recoder = recorder
+        self.recorder = recorder
         
         self.curve = None
         self.uiplot = None 
@@ -26,23 +27,17 @@ class View:
         
         
     def record_0(self):
-        self.recordClass = config.recordClass_0
-        self.record()
+        self.recorder.setRecordClass(config.recordClass_0)
     def record_1(self):
-        self.recordClass = config.recordClass_1
-        self.record()
+        self.recorder.setRecordClass(config.recordClass_1)
     def record_2(self):
-        self.recordClass = config.recordClass_2
-        self.record()
+        self.recorder.setRecordClass(config.recordClass_2)
     def record_3(self):
-        self.recordClass = config.recordClass_3
-        self.record()
+        self.recorder.setRecordClass(config.recordClass_3)
     def record_4(self):
-        self.recordClass = config.recordClass_4
-        self.record()
+        self.recorder.setRecordClass(config.recordClass_4)
     def record_5(self):
-        self.recordClass = config.recordClass_5
-        self.record()
+        self.recorder.setRecordClass(config.recordClass_5)
 
     def stopRecording(self):
         print("Stop recording")
@@ -72,7 +67,7 @@ class View:
     
     def plotSignal(self):
         
-        data = self.recoder.getTransformedData()
+        data = self.recorder.getTransformedData()
         if data == None:
             return
         xs, ys = data
@@ -90,6 +85,7 @@ class View:
         self.recordNum -= 1
         self.ys_hist.append(ys)
 
+    @deprecate
     def writeGesture(self):
         outfile = config.gesturePath + "/gesture_" + str(self.recordClass) + ".txt"
         oid = open(outfile, "a")
@@ -133,5 +129,5 @@ class View:
         # ## DISPLAY WINDOWS
         self.win_plot.show()
         code = self.app.exec_()
-        self.recoder.close()
+        self.recorder.close()
         sys.exit(code)

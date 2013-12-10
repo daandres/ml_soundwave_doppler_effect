@@ -1,7 +1,7 @@
 import matplotlib
 from numpy.lib.utils import deprecate
 matplotlib.use('TkAgg')  # <-- THIS MAKES IT FAST!
-import numpy
+import numpy as np
 import pyaudio
 from threading import Timer, Thread
 import properties.config as config
@@ -10,7 +10,7 @@ import time
 class SwhRecorder:
     """Simple, cross-platform class to record from the microphone."""
 
-    def __init__(self, frequency=21000, fRange=500):
+    def __init__(self, frequency=21000):
         """minimal garb is executed when class is loaded."""
         self.frequency = frequency
         self.FRAMERATE = config.framerate
@@ -22,6 +22,7 @@ class SwhRecorder:
         self.leftBorder = (frequencyToIndex * frequency) - config.leftBorder
         self.rightBorder = (frequencyToIndex * frequency) + config.rightBorder
         self.transformedData = None
+        self.initRecording()
         
         self.setup()
 
@@ -38,9 +39,9 @@ class SwhRecorder:
         self.audioDev = pyaudio.PyAudio()
         self.audioInStream = self.audioDev.open(format=pyaudio.paInt16, channels=1, rate=self.FRAMERATE, input=True, frames_per_buffer=self.BUFFERSIZE)
 
-        self.xsBuffer = numpy.arange(self.BUFFERSIZE) * self.secPerPoint
-        self.xs = numpy.arange(self.chunksToRecord * self.BUFFERSIZE) * self.secPerPoint
-        self.audio = numpy.empty((self.chunksToRecord * self.BUFFERSIZE), dtype=numpy.int16)
+        self.xsBuffer = np.arange(self.BUFFERSIZE) * self.secPerPoint
+        self.xs = np.arange(self.chunksToRecord * self.BUFFERSIZE) * self.secPerPoint
+        self.audio = np.empty((self.chunksToRecord * self.BUFFERSIZE), dtype=np.int16)
 
     def close(self):
         """cleanly back out and release sound card."""
@@ -53,7 +54,7 @@ class SwhRecorder:
     def getAudio(self):
         """get a single buffer size worth of audio."""
         audioString = self.audioInStream.read(self.BUFFERSIZE)
-        return numpy.fromstring(audioString, dtype=numpy.int16)
+        return np.fromstring(audioString, dtype=np.int16)
 
     def record(self, intervall=config.recordIntervall):
         """record secToRecord seconds of audio."""
@@ -62,10 +63,35 @@ class SwhRecorder:
         for i in range(self.chunksToRecord):
             self.audio[i * self.BUFFERSIZE:(i + 1) * self.BUFFERSIZE] = self.getAudio()
         self.fft()
+        if(self.recordClass is not None):
+            self.recordCount -= 1
+            self.recordData.append(self.transformedData[1])
+            if(self.recordCount < 0):
+                self.writeGesture()
+                self.initRecording()
+        
         self.t = Timer(intervall, self.record).start()
+
+    def writeGesture(self):
+        outfile = config.gesturePath + "/gesture_" + str(self.recordClass) + ".txt"
+        oid = open(outfile, "a")
+        # oid.write("##### Class " + str(self.recordClass) + " #####\n")
+        # flatten all inputs to 1 vector
+        data = np.array([np.array(np.ravel(self.recordData))])
+        print "Wrote record for class " + str(self.recordClass)
+        np.savetxt(oid, data, delimiter=",", fmt='%1.4f')
+        oid.close()
+
+    def initRecording(self):
+        self.recordClass = None
+        self.recordCount = config.recordingFrames
+        self.recordData = []
 
     def stopRecording(self):
         self.timerStop = True
+
+    def setRecordClass(self, recordClass):
+        self.recordClass = recordClass    
 
     @deprecate
     def continuousStart(self):
@@ -84,19 +110,19 @@ class SwhRecorder:
         """Given 1D data, return the binned average."""
         overhang = len(data) % mult
         if overhang: data = data[:-overhang]
-        data = numpy.reshape(data, (len(data) / mult, mult))
-        data = numpy.average(data, 1)
+        data = np.reshape(data, (len(data) / mult, mult))
+        data = np.average(data, 1)
         return data
 
     def fft(self, data=None, trimBy=1, logScale=False, divBy=4000):
-        print "fft " + str(time.time())
+        #print "fft " + str(time.time())
         data = self.audio.flatten()
-        left, right = numpy.split(numpy.abs(numpy.fft.fft(data)), 2)
-        ys = numpy.add(left, right[::-1])
+        left, right = np.split(np.abs(np.fft.fft(data)), 2)
+        ys = np.add(left, right[::-1])
         ys = ys[self.leftBorder:self.rightBorder]
         if logScale:
-            ys = numpy.multiply(20, numpy.log10(ys))
-        xs = numpy.arange(self.BUFFERSIZE / 2, dtype=float)
+            ys = np.multiply(20, np.log10(ys))
+        xs = np.arange(self.BUFFERSIZE / 2, dtype=float)
         xs = xs[self.leftBorder:self.rightBorder]
         if trimBy:
             i = int((self.BUFFERSIZE / 2) / trimBy)

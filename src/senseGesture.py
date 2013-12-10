@@ -11,7 +11,7 @@ class SenseGesture():
         self._setConfig()
         self.soundPlayer = Sound()
 
-        self.recorder = SwhRecorder(self.frequency, self.fRange)
+        self.recorder = SwhRecorder(self.frequency)
         
         self.view = View(self.recorder)
         
