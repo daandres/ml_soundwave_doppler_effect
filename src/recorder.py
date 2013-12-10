@@ -15,12 +15,12 @@ class SwhRecorder:
         self.frequency = frequency
         self.FRAMERATE = config.framerate
         self.BUFFERSIZE = config.buffersize  
-        self.secToRecord = config.recordIntervall
+        self.secToRecord = config.secToRecord
         self.timerStop = False
         # frequency range (+ / -)
-        frequenyToIndex = self.BUFFERSIZE / (self.FRAMERATE + 0.0)
-        self.leftBorder = frequenyToIndex * (frequency - fRange)
-        self.rightBorder = frequenyToIndex * (frequency + fRange)
+        frequencyToIndex = self.BUFFERSIZE / (self.FRAMERATE + 0.0)
+        self.leftBorder = (frequencyToIndex * frequency) - config.leftBorder
+        self.rightBorder = (frequencyToIndex * frequency) + config.rightBorder
         self.transformedData = None
         
         self.setup()
@@ -55,7 +55,7 @@ class SwhRecorder:
         audioString = self.audioInStream.read(self.BUFFERSIZE)
         return numpy.fromstring(audioString, dtype=numpy.int16)
 
-    def record(self, forever=True, intervall=config.recordIntervall):
+    def record(self, intervall=config.recordIntervall):
         """record secToRecord seconds of audio."""
         if self.timerStop: 
             return
@@ -89,7 +89,7 @@ class SwhRecorder:
         return data
 
     def fft(self, data=None, trimBy=1, logScale=False, divBy=4000):
-        #print "fft " + str(time.time())
+        print "fft " + str(time.time())
         data = self.audio.flatten()
         left, right = numpy.split(numpy.abs(numpy.fft.fft(data)), 2)
         ys = numpy.add(left, right[::-1])

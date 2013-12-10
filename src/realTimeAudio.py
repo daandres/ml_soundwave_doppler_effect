@@ -71,7 +71,11 @@ class View:
 
     
     def plotSignal(self):
-        xs, ys = self.recoder.getTransformedData()
+        
+        data = self.recoder.getTransformedData()
+        if data == None:
+            return
+        xs, ys = data
         # somethin to record? 
         if(self.recordClass >= 0):
             if(self.recordNum > 0):
@@ -120,7 +124,7 @@ class View:
         self.uiplot.qwtPlot.setAxisScale(self.uiplot.qwtPlot.yLeft, 0, config.amplitude * 1000)
     
         self.uiplot.timer = QtCore.QTimer()
-        self.uiplot.timer.start(config.guitimer)
+        self.uiplot.timer.start(config.guiIntervall)
     
     
         self.win_plot.connect(self.uiplot.timer, QtCore.SIGNAL('timeout()'), self.plotSignal)

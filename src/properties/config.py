@@ -1,5 +1,7 @@
-frequency=20500.0
+frequency=20000.0
 fRange=500
+leftBorder=32.0
+rightBorder=32.0
 amplitude=0.5*2
 framerate=48100
 duration=60
@@ -12,5 +14,8 @@ recordClass_2 = 2
 recordClass_3 = 3
 recordClass_4 = 4
 recordClass_5 = 5
-recordIntervall = 0.1 # in seconds
-guitimer = 10.0 # in milliseconds
+
+recordCount=64
+secToRecord = 0.001 # how long is 1 record in seconds
+recordIntervall = 0.1 # time between 2 records in seconds
+guiIntervall = 1.0 # in milliseconds
