@@ -1,2 +1,33 @@
-\section{Long Short Term Memory}
-\lipsum[15-16] 
+\section{\acl{LSTM}}
+
+\subsection{Prinzipien von \acps{LSTM}}
+\ac{LSTM} ist ein \ac{RNN}, welches die Eigenschaft hat Zustände über einen
+bestimmten Zeitraum zu behalten und danach wieder zu vergessen. \acp{LSTM} sind
+somit eine spezielle Form von \acp{MLP}. Ein \ac{LSTM} definiert rekurrente
+Verbindungen (Verbindungen von Neuronen zu vorhergehenden bzw. denselben
+Neuronen) in der Art und Weise, dass die Eingabe Daten bzw.
+die Ausgabe Daten gespeichert über mehrere Aufrufe des Netzwerkes hinaus
+gespeichert werden. Diese gespeicherten Daten werden bei bestimmten
+Eingangsdaten Ausgegeben, bei anderen \textit{vergessen} bzw. überschrieben oder
+nicht verwendet. 
+ 
+\acp{RNN} und vielmehr noch \acp{LSTM} sind Modelle für das menschliche Gehirn.
+Im Gehirn sind viele Neuronen untereinander, also mit sich selbst, nachfolgenden
+und vorhergehenden Nueronen vernetzt, sogenannten Feedback Verbindungen. Jedes
+Neueron ist dabei ein speziell aufgebaut um Informationen zu speichern.
+\acp{RNN} haben keine bzw. einfache Erinnerungsneuronen und sind aus diesem
+Grund nicht für länger Erinnerungen geeignet. Bei \acp{LSTM} hingegen sind
+komplexe Erinnerungsneuronen (\ac{LSTM}-Neuronen) miteinander verknüpft. Jedes
+einzelne Neuron kann Informationen über einen längeren Zeitraum, d.h. auch bei
+häufiger Nutzung des Netzes, Daten speichern. Dadurch dass \acp{LSTM} Daten auch
+nach dem Training speichern können, also verschiedene Zustände haben,
+unterscheiden sie sich von vielen anderen Machine Learning Verfahren, wie z.B.
+\ac{HMM} oder \acp{SVM}. Sie sind besonders für komplexe Aufgaben mit unscharfen
+Beobachtungen geeignet und werden bevorzugt in Handschrift- und Spracherkennung,
+Proteinanalyse und weiteren dynamischen Feldern verwendet. Durch die Analogie
+zum Gehirn können \acp{LSTM} biologisch motiviert werden.
+ 
+\subsection{Funktionsweise von der pybrain \acs{LSTM} Implementierung}
+
+\subsection{Verwendetes Datenmodell}
+
