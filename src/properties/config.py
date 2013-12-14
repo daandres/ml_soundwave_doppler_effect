@@ -1,3 +1,6 @@
+import personal
+name=personal.name 
+
 frequency=20000.0
 fRange=500
 leftBorder=32.0

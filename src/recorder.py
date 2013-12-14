@@ -73,7 +73,8 @@ class SwhRecorder:
         self.t = Timer(intervall, self.record).start()
 
     def writeGesture(self):
-        outfile = config.gesturePath + "/gesture_" + str(self.recordClass) + ".txt"
+        outfile = config.gesturePath + "/" + config.name + "/gesture_" + str(self.recordClass) + ".txt"
+        print outfile
         oid = open(outfile, "a")
         # oid.write("##### Class " + str(self.recordClass) + " #####\n")
         # flatten all inputs to 1 vector
