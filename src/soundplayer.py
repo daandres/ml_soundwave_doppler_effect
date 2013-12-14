@@ -3,7 +3,7 @@ import pyaudio
 import wavebender as wb
 from myStream import MyStream
 import properties.config as config 
-
+import winsound
 
 class Sound:
     
@@ -12,6 +12,17 @@ class Sound:
         self.audioStream = None
         self.play = True
     
+    #===========================================================================
+    # def startPlaying(self, frequency, amplitude, framerate, duration):
+    #     while True:
+    #         try:
+    #             winsound.Beep(int(frequency),duration*1000)
+    #         except AttributeError:
+    #             pass
+    #         if self.play == False:
+    #             break
+    #===========================================================================
+        
     def startPlaying(self, frequency=440.0, amplitude=0.5, framerate=48100, duration=30):
         # create stream
         channels = ((wb.sine_wave(frequency, amplitude=amplitude, framerate=framerate),),)

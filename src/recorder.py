@@ -66,7 +66,7 @@ class SwhRecorder:
         if(self.recordClass is not None):
             self.recordCount -= 1
             self.recordData.append(self.transformedData[1])
-            if(self.recordCount < 0):
+            if(self.recordCount == 0):
                 self.writeGesture()
                 self.initRecording()
         
