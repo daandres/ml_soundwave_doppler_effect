@@ -48,19 +48,48 @@ spielen neuronale Netzwerke eine zentrale Rolle, diese werden in verschiedenen
 Lernmethoden angewendet wie z.B. im Reinforcement, unüberwachten oder
 evolutionären Lernen.
 
-\begin{lstlisting}
-net = buildNetwork(INPUTS, HIDDEN, OUTPUTS, hiddenclass=LSTMLayer, outclass=SigmoidLayer, recurrent=True, bias=True) 
-ds = DATASET 
-trainer = BackpropTrainer(net, ds)
+\begin{lstlisting}[caption={Aufbau eines LSTM Netzes},label={lst:lstm_example}]{lst:lstm_example} 
+net = buildNetwork(INPUTS, HIDDEN, OUTPUTS, hiddenclass=LSTMLayer,
+outclass=SigmoidLayer, recurrent=True, bias=True) 
+ds = DATASET trainer = BackpropTrainer(net, ds)
 for _ in range(1000):
     trainer.train()
 \end{lstlisting}
  
-Im Quellcode~\ref{lst:} ist ein Beispiel aufgezeigt wie \ac{PyBrain} verwendet
-werden kann. Es gibt dabei verschiedene Möglichkeiten im Aufbau des Netzes
+In \autoref{lst:lstm_example} ist ein Beispiel aufgezeigt wie
+\ac{PyBrain} verwendet werden kann. Es gibt dabei verschiedene Möglichkeiten im Aufbau des Netzes
 (v.a. Anzahl der Neuronen und \ac{LSTM}-Blocks), in der Datenhaltung
-(\ref{sec:lstm_data:}) sowie in der Trainingsmethode (z.B. Backpropagation). 
+(\ref{sec:lstm_data}) sowie in der Trainingsmethode (z.B. Backpropagation). 
+Die \ac{PyBrain} Implmenetierung bringt bereits die Umsetzung der
+\ac{LSTM}-Blocks mit, sodass die konkrete Umsetzung der Blöcke nicht
+durchgeführt werden muss. 
+
 \subsection{Verwendetes Datenmodell}
 \label{sec:lstm_data}
- 
+
+Im \autoref{sec:gestures_dataformat} wird beschrieben wie Gesten aufgenommen und
+abgespeichert werden. Dabei wird ein Trainingsdatenset erzeugt, dass für
+jeden Datensatz eine bestimmte Anzahl an Frames mit je 64 Datenpunkte im
+gewünschteen Frequenzbereich enthält. 
+
+Für das \ac{LSTM} Netz wird jeder Datensatz als linear aus den einzelnen Frames
+aufgebaut. Dadurch entsteht ein einzelner Eingabevektor inkl. der
+Klassifizierung. Zur Vereinheitlichung werden die Daten noch normalisiert. Dies
+ist notwendig, da Datensätze unter verschiedenen Bedingungen erzeugt werden
+können, z.B. im lauten Umfeld, andere Anordnung von Mikrofon und Lautsprecher,
+unterschiedlicher Größe der Hände, unterschiedliche Lautstärke, etc. Um
+vergleichbare Daten zu erhalten wird daher die Amplitude der Referenzfrequenz
+als Normailisrungsfaktor verwendet, diese ist i.d.R. am größten. Durch diese
+Normalisierung Referenzfrequenz auf 1 werden alle weiteren Datenpunkte im
+Intervall zwischen 0 und 1 liegen. 
+
+Zur Unterscheidung von Gesten zum Hintegrundrauschen kann noch ein Datenset mit
+Hintergreundrauschen genutzt werden. Hier muss sich noch zeigen wie gut das
+\ac{LSTM} Netz ohne diese Daten klassifiziert, je nach Ergebnis wird es noch
+hinzugezogen. 
+
+
+
+
+
 \nocite{GERS2001,WIKI2013,Schmidhuber2013,LSTM1,Nerbonne1}
