@@ -124,43 +124,20 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \shipout\null
 \addtocounter{page}{1}
 
-\phantomsection
-\headAndToc{Abstract}
-\section*{Abstract}
-	\paragraph{English} 
-	\input{sections/abstractEN}
-	\paragraph{German} 
-	\input{sections/abstractDE}
-\clearpage
+% \phantomsection
+% \headAndToc{Abstract}
+% \section*{Abstract}
+% 	\paragraph{English} 
+% 	\input{sections/abstractEN}
+% 	\paragraph{German} 
+% 	\input{sections/abstractDE}
+% \clearpage
 
 \phantomsection
 \headAndTocENDE{Contents}{Inhaltsverzeichnis}
 \begin{spacing}{1}
 \tableofcontents
 \end{spacing}
-\clearpage
-
-\phantomsection
-\headAndTocENDE{List of abbreviations}{Abk{\"u}rzungsverzeichnis}
-\section*{Abk{\"u}rzungsverzeichnis}
-\begin{acronym}[Internship]
-\input{acronym}
-\end{acronym} 
-\clearpage
-
-\phantomsection
-\headAndTocENDE{List of Figures}{Abbildungsverzeichnis}
-\listoffigures
-\clearpage
-
-\phantomsection
-\headAndTocENDE{List of Tables}{Tabellenverzeichnis}
-\listoftables 
-\clearpage
-
-\phantomsection
-\headAndTocENDE{Listings}{Quellcodeverzeichnis}
-\lstlistoflistings
 \clearpage
 
 \onehalfspacing 
@@ -186,9 +163,33 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \headAndTocENDE{References}{Literatur}
 \bibliography{ref/bib}{} 
 \bibliographystyle{phcpcDE}
-\appendix
-\head{\nouppercase{\leftmark}}
-\pdfbookmark[0]{Anhang}{appendix}
-\include{sections/appendix}
+\clearpage
+\phantomsection
+\headAndTocENDE{List of abbreviations}{Abk{\"u}rzungsverzeichnis}
+\section*{Abk{\"u}rzungsverzeichnis}
+\begin{acronym}[Internship]
+\input{acronym}
+\end{acronym} 
+% \clearpage
+
+\phantomsection
+\headAndTocENDE{List of Figures}{Abbildungsverzeichnis}
+\listoffigures
+% \clearpage
+
+% \phantomsection
+% \headAndTocENDE{List of Tables}{Tabellenverzeichnis}
+% \listoftables 
+% \clearpage
+
+\phantomsection
+\headAndTocENDE{Listings}{Quellcodeverzeichnis}
+\lstlistoflistings
+\clearpage
+ 
+% \appendix
+% \head{\nouppercase{\leftmark}}
+% \pdfbookmark[0]{Anhang}{appendix}
+% \include{sections/appendix}
 
 \end{document}
