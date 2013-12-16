@@ -22,6 +22,7 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 
 \usepackage[]{acronym}
 \usepackage{graphicx}
+\usepackage{wrapfig}
 
 \usepackage{hhline} %% extended line features for tables with \hhline{}
 \usepackage{multirow} %% merges several cells over rows: \multirow{Zeilen}{Breite}{Inhalt}; over columns: \multicolumn{Spalten}{Ausrichtung}{Inhalt}
@@ -34,8 +35,8 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \listingssetup
 
 \hypersetup{
-	pdftitle=\reporttitle\ - \students ,
-	pdfauthor=\students , 
+	pdftitle=\reporttitle\ - \studenta\ \studentb ,
+	pdfauthor=\studenta\ \studentb , 
 	pdfsubject=\reporttitle ,
 	pdfkeywords=\universitys 
 }
@@ -121,8 +122,8 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \end{titlepage} 
  
 \clearpage
-% \shipout\null
-% \addtocounter{page}{1}
+\shipout\null
+\addtocounter{page}{1}
 
 % \phantomsection
 % \headAndToc{Abstract}

@@ -1,32 +1,57 @@
 \section{Support Vector Machine}
 \textit{Manuel Dudda, Benjamin Weißer}
 
-Die Support Vector Machine (SVM) ist eine Methode des überwachten Lernens zum Erstellen eines linearen Klassifikators. Ein Klassifikator bestimmt für einen gegegbenes Datum eine zugehörige Zuteilung (Klasse). Mit einem Satz von Daten (Merkmalsvektoren) inklusive dessen Klassenzugehörigkeiten wird eine Trennlinie generiert, die die Daten räumlich in zwei Klassen trennt. Anders als bei Multi Layer Perceptrons (MLP) wird die Anpassung der Trennlinie nicht empirisch durch Trainingsmethoden, sondern durch die theoretische Datengrundlage optimal ermittelt. Dabei wird der Abstand zu den nächstliegenden Daten, den sogennanten Stützvektoren der Klassenräume maximiert.
+Die Support Vector Machine (SVM) ist eine Methode des überwachten Lernens zum Erstellen eines linearen Klassifikators. Ein Klassifikator bestimmt für einen gegegbenes Datum eine zugehörige Zuteilung (Klasse). Mit einem Satz von Daten (Merkmalsvektoren) inklusive dessen Klassenzugehörigkeiten wird eine mathematische Trenngerade generiert, die die Daten räumlich in zwei Klassen trennt. Anders als bei MLPs wird die Anpassung der Trennung nicht empirisch durch Trainingsmethoden, sondern durch die Datengrundlage mathematisch optimal ermittelt. Dabei wird der Abstand zu den nächstliegenden Daten, den sogennanten Stützvektoren der Klassenräume maximiert.
 
-\begin{figure}[h!]
-  \centering
-    \includegraphics[width=0.95\textwidth]{svm_1.png}
-  \caption{Trennlinie zwischen zwei Klassen}
-\end{figure}
+\begin{wrapfigure}{r}{0.4\textwidth}
+	\vspace{-30pt}
+	\begin{center}
+		 \includegraphics[width=0.4\textwidth]{svm_1.png}
+	\end{center}
+	\vspace{-15pt}
+	\caption{linear separierte Merkmalsvektoren}
+	\vspace{-15pt}
+\end{wrapfigure}
 
-Die Trennline oder Entscheidungsgrenze wird bestimmt durch den maximalen Abstand der Stützvektoren. Durch dieses Optimierungskriterium ist die Trennlinie eindeutig. Ist diese Entscheidungsgrenze gefunden, lassen sich neue Daten performant klassifizieren durch die Zuordnung eines Merkmalsvektors in dem jeweiligen Klassenraum, d.h. ist der Punkt oberhalb oder unterhalb der Trennlinie.
+Durch dieses Optimierungskriterium ist die Trennlinie eindeutig. Ist die Entscheidungsgrenze gefunden, lassen sich neue Daten schnell klassifizieren durch die Zuordnung eines Merkmalsvektors in dem jeweiligen Klassenraum, d.h. ist der Punkt oberhalb oder unterhalb der Trennlinie.
 
 Die Support Vector Machine ist ein binärer Klassifikator, d.h. er kann die Daten lediglich in 2 Klassen unterteilen. Für eine Klassifikation von mehreren Klassen wurden Strategien entwickelt, die das Prinzip der SVM erweitern. Eine dieser Strategien ist die Kombination von mehreren SVMs von “Einer gegen den Rest-Klassifikatoren”. Als Klassifikation wird die SVM mit dem höchsten Ergebnis gewählt (“winner takes it all”).
 
-Ein Problem entsteht, wenn die gegeben Merkmalsdaten nicht durch eine Trennline (Hyperbene) trennbar sind, sondern die Trennung der Daten nur durch eine Kurve o. ä. beschrieben werden kann. Für die Lösung nichtlinearer separierbarer Probleme bedient sich die SVM des Kernel-Tricks aus der RKHS-Theorie (Reproducing Kernel Hilbert Spaces). Eine Kernel-Funktion transformiert die Merkmalsvektoren in einen höherdimensionalen (Hilbert-)Raum, in dem die evaluierten Daten sodann linear separierbar sind.
+Ein Problem entsteht, wenn die gegeben Merkmalsdaten nicht durch eine Trennline (Hyperbene) trennbar sind, sondern die Trennung der Daten nur durch eine Kurve o. ä. beschrieben werden kann. Für die Lösung nichtlinearer separierbarer Probleme bedient sich die SVM des Kernel-Tricks aus der RKHS-Theorie (Reproducing Kernel Hilbert Spaces). 
+\begin{wrapfigure}{l}{0.45\textwidth}
+	\vspace{-30pt}
+	\begin{center}
+	    \includegraphics[width=0.45\textwidth]{svm_2.png}
+	\end{center}
+	\vspace{-15pt}
+	\caption{transformierte Merkmalsvektoren}
+		\vspace{-65pt}
+\end{wrapfigure}
+Eine Kernel-Funktion transformiert die Merkmalsvektoren in einen höherdimensionalen (Hilbert-)Raum, in dem die evaluierten Daten sodann linear separierbar sind.
 
-\begin{figure}[h!]
-  \centering
-    \includegraphics[width=0.95\textwidth]{svm_2.png}
-  \caption{Trennung zweier nicht-linear separierbaren Klassen mittels Kernel Trick}
-\end{figure}
+
+\newpage
 
 \subsection{Implementierung}
 
 Das “scikit-learn”-Paket von den “scikit-learn developers” steht frei unter BSD License für Python zur Verfügung. Es beinhaltet viele komfortable Bibliotheken zum Thema Machine Learning. Für unsere Zwecke benutzen wir die vorgefertigten SVM-Algorithmen. Diese berücksichtigen freundlicher Weise bereits die Features für die Klassifizierung mehrerer Klassen sowie den Kernel-Trick. Eine SVM wird folgender Weise trainiert:
 
 \begin{lstlisting}
-blablalba =)
+import numpy as np
+from sklearn import svm
+
+X = np.array([[-1,1],[1,1],[1,-1],[-1,-1]])
+y = [1,-1,1,-1]
+
+#Train SVM
+clf = svm.SVC(kernel='linear')
+clf.fit(X, y)
+
+#Predict
+print clf.predict([0.2,0.2])
+print clf.predict([-0.2,0.2])
+print clf.predict([-0.2,-0.2])
+print clf.predict([0.2,-0.2])
 \end{lstlisting}
 
 
@@ -48,6 +73,6 @@ Im folgenden sind geplottete Aufnahmen zwei verschiedener Gesten zu erkennen. Di
 
 \begin{figure}[h!]
   \centering
-    \includegraphics[width=0.95\textwidth]{svm_data_1.png}
+    \includegraphics[width=0.8\textwidth]{svm_data_1.png}
   \caption{Ausgabe der (transformierten) Merkmalsvektoren}
 \end{figure}
