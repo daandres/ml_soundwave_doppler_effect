@@ -30,6 +30,9 @@ pyAudio erreicht. In Listing \ref{lst:gen_sound} ist ein Bespiel für die
 Erzeugung eines Audiosignals gezeigt. Für die Gestenerkennung wird ein Signal
 mit 19 kHz erzeugt.
 
+\enlargethispage{\baselineskip}
+\enlargethispage{\baselineskip}
+\enlargethispage{\baselineskip}
 \begin{lstlisting}[caption={Erzeugung eines Soundsignals},label={lst:gen_sound}]{lst:gen_sound} 
 audioDev = pyaudio.PyAudio()
 channels = ((wb.sine_wave(frequency, amplitude=amplitude, framerate=framerate),),)
