@@ -1,2 +1,36 @@
-\section{Trees}
-\lipsum[13-14] 
+\section{Trees/Ensemble Learning}
+
+Da die Lautstärke der ausgesendeten Frequenz unterschiedlich sein kann, ist es sinnvoll die Daten 
+zunächst zu normalisieren, sodass die Amplitude des Referenztons einen konstanten Wert hat. Ebenso 
+werden die Amplituden der übrigen Frequenzanzteilen relativ zur normalisierten Amplitude angepasst.
+
+Je nach Geste ändert sich die Bandbreite des Referenztones.
+Die einzelnen Gesten unterscheiden sich in der unterschiedlichen Bandbreite des Frequenzspektrums 
+um den Referenzton. Um eine Geste zu erkennen, werden die Frequenzanteile in beide Richtungen 
+untersucht, wobei nur Frequenzen mit einer Amplitude größer als 10% der Amplitude des Referenztones 
+relevant sind. Nur wenn Breite des Frequenzspektrums des Referenzspektrums einen Grenzwert 
+überschreitet, handelt es sich um eine Geste. In Ausnahmefällen ist der Ausschlag der Amplitude 
+durch ein Minimum der Amplitude vom Referenzton separiert, sodass man zunächst davon ausgehen würde, 
+dass keine Geste stattgefunden hat. Deshalb wird weiter nach einem zweiten Ausschlag gesucht. Dessen 
+Amplitude muss mindestens 30% der Amplitude des Referenztones haben.
+
+Es bietet sich an, die Komplexität der generierten Eingabedaten zu verringern, da eine Klassifizierung 
+der Daten zu Overfitting führen kann. 
+Das Problem ist, dass nicht nur ein Datensatz pro Geste existiert, sondern ein sich über die Zeit änderndes 
+Frequenzbild auszuwerten ist. 
+Die Idee ist nun, dass dieser zeitliche Verlauf in Form eines Vektors abgebildet werden kann. Das Ziel ist es,
+mit diesem Vektor die Frequenzverschiebung abzubilden und darüber die Gesten zu klassifizieren. 
+
+Starkt vereinfacht unterscheiden sich die Gesten darin, ob und auf welcher Seite des Referenztones eine 
+Verschiebung des Referenztones stattfindet. 
+Zudem wird unterschieden in welche Richtung sich die Verschiebung ausbreitet. Sie kann beispielsweise von 
+der rechten zur linken, bzw. linken zur rechten Seite wandern, sowie von der Mitte beginnend in eine 
+Richtung ausschlagen.
+Diese Unterscheidungsmerkmale können sehr gut durch einen Entscheidungsbaum abgebildet werden. Dazu kann 
+die Verschiebungsrichtung als Maß dienen, um die Eingabemenge zu unterteilen. 
+
+Die Besonderheit von Ensemble Learning ist, dass mit Hilfe von vielen schwachen Klassifikatoren 
+gute Klassifikationsergebnisse erziehlt werden können. Die Entscheidungen, die die verschiedenen 
+Klassifikatoren treffen, sind dabei verschieden, was jedoch auch die Stärke dieser Methode ist, 
+denn sie ergänzen sich gegenseitig. 
+
