@@ -9,12 +9,12 @@ Verbindungen (Verbindungen von Neuronen zu vorhergehenden bzw. denselben
 Neuronen) in der Art und Weise, dass die Eingabe Daten bzw.
 die Ausgabe Daten gespeichert über mehrere Aufrufe des Netzwerkes hinaus
 gespeichert werden. Diese gespeicherten Daten werden bei bestimmten
-Eingangsdaten Ausgegeben, bei anderen \textit{vergessen} bzw. überschrieben oder
+Eingangsdaten ausgegeben, bei anderen \textit{vergessen} bzw. überschrieben oder
 nicht verwendet. 
  
 \acp{RNN} und vielmehr noch \acp{LSTM} sind Modelle für das menschliche Gehirn.
 Im Gehirn sind viele Neuronen untereinander, also mit sich selbst, nachfolgenden
-und vorhergehenden Nueronen vernetzt, sogenannten Feedback Verbindungen. Jedes
+und vorhergehenden Neuronen vernetzt, sogenannten Feedback Verbindungen. Jedes
 Neueron ist dabei ein speziell aufgebaut um Informationen zu speichern.
 \acp{RNN} haben keine bzw. einfache Erinnerungsneuronen und sind aus diesem
 Grund nicht für länger Erinnerungen geeignet. Bei \acp{LSTM} hingegen sind
@@ -54,7 +54,7 @@ $\Pi$ Knoten reicht entweder den gespeicherten Wert des $\Sigma$ Knotens weiter
 oder einen Initialwert bei Aktivierung des Forgot Gates; Der $\Pi$ Knoten in der
 obersten Zeile dient der Weitergabe des gespeicherten Wertes, falls das Output
 Gate aktiviert ist, andernfalls erfolgt keine Aktivierung dieses Knotens. Im
-$\Sigma$ Knoten wirdder Wert gespeichert und durch eine Rückverbindung über
+$\Sigma$ Knoten wird der Wert gespeichert und durch eine Rückverbindung über
 mehrere Schritte erhalten. Wird das Input Gate aktiv, wird $\Sigma$ durch den
 verarbeiteten Input ersetzt, mit einem aktiven Forgot Gate \textit{gelöscht}. 
 
@@ -113,7 +113,7 @@ Durch die Erinnerungsmöglichkeit des \ac{LSTM} Netzes ist es möglich die die
 Frames in einer einzeln (d.h. lediglich die 64 Datenpunkte an einem Zeitpunkt)
 in das Netzwerk gegeben werden. Die \ac{LSTM}-Blöcke merken sich dann jeweils
 die verschiedenen vorherigen Eingabedaten und werden daran dann die
-entsprechende Klasse bei neuen Eingaben erkennen. Dazu ist es dann auch nciht
+entsprechende Klasse bei neuen Eingaben erkennen. Dazu ist es dann auch nicht
 mehr notwendig, dass die Gestenaufnahme diskret abläuft (je 0,5 Sekunden dem
 Klassifikator zur Verfügung stellen), sie kann auch kontinuierlich ablaufen,
 d.h. jedes neu aufgenommene Frame kann sofort weitergegeben werden und wird vom

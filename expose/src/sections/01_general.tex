@@ -15,7 +15,7 @@ Das Prgramm sollte folgende Gesten erkennen:
 Zur Aufnahme der Gesten wurde pyAudio verwendet. Die Aufnahme beschränkt sich auf den Frequenzbereich von ?? bis ?? Khz. Jede dieser Aufnahmen besteht aus 64 Datenpunkten. 
 
 \subsection{Signalerzeugung}
-Die Erzeugung des Soundsignals wurde mithilfe der Python Library wavebender und pyAudio erreicht. In \autoref{lst:gen_sound} ist ein BEspiel für die Erzeugung eines Audiosignals gezeigt.
+Die Erzeugung des Soundsignals wurde mithilfe der Python Library wavebender und pyAudio erreicht. In Listing \ref{lst:gen_sound} ist ein Bespiel für die Erzeugung eines Audiosignals gezeigt. Für die Gestenerkennung wird ein Signal mit 18kHz erzeugt.
 
 \begin{lstlisting}[caption={Erzeugung eines Soundsignals},label={lst:gen_sound}]{lst:gen_sound} 
 audioDev = pyaudio.PyAudio()
