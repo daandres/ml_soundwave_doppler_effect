@@ -1,6 +1,30 @@
 \section{Einleitung}
+Ziel des Projektes ist es ein Programm zu entwickeln, was Gesten erkennt. Dazu wurde von Microsoft ein Verfahren entwickelt, welches anhand der Doppler Verschiebung, eines Soundsignals, Gesten erkennt. Dieses Verfahren wird in \cite{Gupta2012} beschrieben. Um die Gesten zu erkennen sollen verschiedene Machine Learning Verfahren verwendet werden.
+
+Das Prgramm sollte folgende Gesten erkennen:
+\begin{itemize}
+	\item Left-to-Right-One-Hand
+	\item Right-to-Left-One-Hand
+	\item Top-to-Bottom-One-Hand
+	\item Bottom-to-Top-One-Hand
+	\item Push-Two-Hands
+	\item Pull-Two-Hands
+\end{itemize}
 
 \subsection{Aufnahmeprogramm}
+Zur Aufnahme der Gesten wurde pyAudio verwendet. Die Aufnahme beschränkt sich auf den Frequenzbereich von ?? bis ?? Khz. Jede dieser Aufnahmen besteht aus 64 Datenpunkten. 
+
+\subsection{Signalerzeugung}
+Die Erzeugung des Soundsignals wurde mithilfe der Python Library wavebender und pyAudio erreicht. In \autoref{lst:gen_sound} ist ein BEspiel für die Erzeugung eines Audiosignals gezeigt.
+
+\begin{lstlisting}[caption={Erzeugung eines Soundsignals},label={lst:gen_sound}]{lst:gen_sound} 
+audioDev = pyaudio.PyAudio()
+channels = ((wb.sine_wave(frequency, amplitude=amplitude, framerate=framerate),),)
+samples = wb.compute_samples(channels, framerate * duration * 1)
+audioStream = MyStream(self.audioDev.open(format=audioDev.get_format_from_width(2),
+					 channels=1, rate=framerate, output=True))
+wb.write_wavefile(audioStream, samples)
+\end{lstlisting}
 
 \subsection{Gesten aufnehmen und Datenformat}
 \label{sec:gestures_dataformat}
