@@ -1,4 +1,53 @@
 \section{Support Vector Machine}
-\textit{Benjamin Weißer, }
+\textit{Manuel Dudda, Benjamin Weißer}
 
-\lipsum[9-10] 
+Die Support Vector Machine (SVM) ist eine Methode des überwachten Lernens zum Erstellen eines linearen Klassifikators. Ein Klassifikator bestimmt für einen gegegbenes Datum eine zugehörige Zuteilung (Klasse). Mit einem Satz von Daten (Merkmalsvektoren) inklusive dessen Klassenzugehörigkeiten wird eine Trennlinie generiert, die die Daten räumlich in zwei Klassen trennt. Anders als bei Multi Layer Perceptrons (MLP) wird die Anpassung der Trennlinie nicht empirisch durch Trainingsmethoden, sondern durch die theoretische Datengrundlage optimal ermittelt. Dabei wird der Abstand zu den nächstliegenden Daten, den sogennanten Stützvektoren der Klassenräume maximiert.
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.95\textwidth]{svm_1.png}
+  \caption{Ausgabe der (transformierten) Merkmalsvektoren}
+\end{figure}
+
+Die Trennline oder Entscheidungsgrenze wird bestimmt durch den maximalen Abstand der Stützvektoren. Durch dieses Optimierungskriterium ist die Trennlinie eindeutig. Ist diese Entscheidungsgrenze gefunden, lassen sich neue Daten performant klassifizieren durch die Zuordnung eines Merkmalsvektors in dem jeweiligen Klassenraum, d.h. ist der Punkt oberhalb oder unterhalb der Trennlinie.
+
+Die Support Vector Machine ist ein binärer Klassifikator, d.h. er kann die Daten lediglich in 2 Klassen unterteilen. Für eine Klassifikation von mehreren Klassen wurden Strategien entwickelt, die das Prinzip der SVM erweitern. Eine dieser Strategien ist die Kombination von mehreren SVMs von “Einer gegen den Rest-Klassifikatoren”. Als Klassifikation wird die SVM mit dem höchsten Ergebnis gewählt (“winner takes it all”).
+
+Ein Problem entsteht, wenn die gegeben Merkmalsdaten nicht durch eine Trennline (Hyperbene) trennbar sind, sondern die Trennung der Daten nur durch eine Kurve o. ä. beschrieben werden kann. Für die Lösung nichtlinearer separierbarer Probleme bedient sich die SVM des Kernel-Tricks aus der RKHS-Theorie (Reproducing Kernel Hilbert Spaces). Eine Kernel-Funktion transformiert die Merkmalsvektoren in einen höherdimensionalen (Hilbert-)Raum, in dem die evaluierten Daten sodann linear separierbar sind.
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.95\textwidth]{svm_2.png}
+  \caption{Ausgabe der (transformierten) Merkmalsvektoren}
+\end{figure}
+
+\subsection{Implementierung}
+
+Das “scikit-learn”-Paket von den “scikit-learn developers” steht frei unter BSD License für Python zur Verfügung. Es beinhaltet viele komfortable Bibliotheken zum Thema Machine Learning. Für unsere Zwecke benutzen wir die vorgefertigten SVM-Algorithmen. Diese berücksichtigen freundlicher Weise bereits die Features für die Klassifizierung mehrerer Klassen sowie den Kernel-Trick. Eine SVM wird folgender Weise trainiert:
+
+\begin{lstlisting}
+blablalba =)
+\end{lstlisting}
+
+
+\subsection{Vorverarbeitung der Eingabedaten}
+
+Kernpunkt der Gestenerkennung ist die anliegende Grundfrequenz von 18kHz. Die aktuelle Implementierung der Gestenerkennung setzt ein Audiosignals mit einer Länge von 320ms voraus. Innerhalb dieser 320ms werden 32 Merkmalsvektoren mit einer zeitlichen Dauer von 1ms gespeichert in einem Intervall von je 10ms. Diese zeitlich versetzten 32 Merkmalsvektoren mit je 64 Datenpunkten einer Geste werden vor der Eingabe in eine trainierte SVM zuerst normalisiert. Dazu gibt es zwei grundlegende Ansätze:
+
+- alle 32 Merkmalsvektoren werden mit einem “globalen” Maximalwert über alle 32 Datensätze in den Bereich zwischen 0 und 1 normalisiert\newline
+- alle 32 Merkmalsvektoren werden mit ihrem jeweiligen Maximalwert in den Bereich zwischen 0 und 1 normalisiert
+
+Letztere Methode sorgt dafür, dass die Grundfrequenz der Gestenerkennung von 18kHz in allen Merkmalsvektoren in einem Maximalwert von 1 resultiert. In einem nächsten Schritt bietet es sich an, diese Grundfrequenz, die ebenfalls nach der gleichen Methode normalisiert wurde, von den Merkmalsvektoren abzuziehen. Dadurch wird die reine Frequenzverschiebung der Geste gut sichtbar und man erhält eine sehr gute Eliminierung von Stördaten. Anschließend bietet es sich allerdings an, die Merkmalsvektoren erneut in den Bereich zwischen [0, 1] zu skalieren, da durch die Subtraktion der Grundfrequenz negative Werte entstehen können.
+
+
+\subsection{Eingabe in die SVM}
+
+Die zeitlich versetzten 32 Merkmalsvektoren mit je 64 Datenpunkten einer Geste können für die Eingabe in eine trainierte SVM linear aneinandergehängt werden, so dass ein einziger Eingabevektor mit 32*64 = 2048 Elementen entsteht. Dieses Vorgehen ist nicht kritisch, da wir die Zeitkomponente bei einer SVM nicht näher betrachten müssen. Sie wird indirekt durch die Position in unserem Eingabevektor berücksichtigt.
+
+Im folgenden sind geplottete Aufnahmen zwei verschiedener Gesten zu erkennen. Die oberen vier Zeilen zu je acht Graphen sind die zeitlich aufeinanderfolgenden 32 Merkmalsvektoren. Der blaue Graph hierbei ist der normalisierte Merkmalsvektor, während die roten Graphen jeweils das Ergebnis von Merkmalsvektor - Grundfrequenz beinhalten. Die Grundfrequenz wurde aus insgesamt 12 verschiedenen Aufnahmen zu je 32 Merkmalsvektoren (insgesamt 384 Merkmalsvektoren) gemittelt. Sie ist als grüner Graph in den Bildern zu sehen.
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.95\textwidth]{svm_data_1.png}
+  \caption{Ausgabe der (transformierten) Merkmalsvektoren}
+\end{figure}
