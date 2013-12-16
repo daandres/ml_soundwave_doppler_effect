@@ -6,7 +6,7 @@ Die Support Vector Machine (SVM) ist eine Methode des überwachten Lernens zum E
 \begin{figure}[h!]
   \centering
     \includegraphics[width=0.95\textwidth]{svm_1.png}
-  \caption{Ausgabe der (transformierten) Merkmalsvektoren}
+  \caption{Trennlinie zwischen zwei Klassen}
 \end{figure}
 
 Die Trennline oder Entscheidungsgrenze wird bestimmt durch den maximalen Abstand der Stützvektoren. Durch dieses Optimierungskriterium ist die Trennlinie eindeutig. Ist diese Entscheidungsgrenze gefunden, lassen sich neue Daten performant klassifizieren durch die Zuordnung eines Merkmalsvektors in dem jeweiligen Klassenraum, d.h. ist der Punkt oberhalb oder unterhalb der Trennlinie.
@@ -18,7 +18,7 @@ Ein Problem entsteht, wenn die gegeben Merkmalsdaten nicht durch eine Trennline 
 \begin{figure}[h!]
   \centering
     \includegraphics[width=0.95\textwidth]{svm_2.png}
-  \caption{Ausgabe der (transformierten) Merkmalsvektoren}
+  \caption{Trennung zweier nicht-linear separierbaren Klassen mittels Kernel Trick}
 \end{figure}
 
 \subsection{Implementierung}
