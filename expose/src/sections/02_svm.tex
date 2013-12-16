@@ -3,6 +3,11 @@
 
 Die Support Vector Machine (SVM) ist eine Methode des überwachten Lernens zum Erstellen eines linearen Klassifikators. Ein Klassifikator bestimmt für einen gegegbenes Datum eine zugehörige Zuteilung (Klasse). Mit einem Satz von Daten (Merkmalsvektoren) inklusive dessen Klassenzugehörigkeiten wird eine Trennlinie generiert, die die Daten räumlich in zwei Klassen trennt. Anders als bei Multi Layer Perceptrons (MLP) wird die Anpassung der Trennlinie nicht empirisch durch Trainingsmethoden, sondern durch die theoretische Datengrundlage optimal ermittelt. Dabei wird der Abstand zu den nächstliegenden Daten, den sogennanten Stützvektoren der Klassenräume maximiert.
 
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.95\textwidth]{svm_1.png}
+  \caption{Ausgabe der (transformierten) Merkmalsvektoren}
+\end{figure}
 
 Die Trennline oder Entscheidungsgrenze wird bestimmt durch den maximalen Abstand der Stützvektoren. Durch dieses Optimierungskriterium ist die Trennlinie eindeutig. Ist diese Entscheidungsgrenze gefunden, lassen sich neue Daten performant klassifizieren durch die Zuordnung eines Merkmalsvektors in dem jeweiligen Klassenraum, d.h. ist der Punkt oberhalb oder unterhalb der Trennlinie.
 
@@ -10,6 +15,11 @@ Die Support Vector Machine ist ein binärer Klassifikator, d.h. er kann die Date
 
 Ein Problem entsteht, wenn die gegeben Merkmalsdaten nicht durch eine Trennline (Hyperbene) trennbar sind, sondern die Trennung der Daten nur durch eine Kurve o. ä. beschrieben werden kann. Für die Lösung nichtlinearer separierbarer Probleme bedient sich die SVM des Kernel-Tricks aus der RKHS-Theorie (Reproducing Kernel Hilbert Spaces). Eine Kernel-Funktion transformiert die Merkmalsvektoren in einen höherdimensionalen (Hilbert-)Raum, in dem die evaluierten Daten sodann linear separierbar sind.
 
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.95\textwidth]{svm_2.png}
+  \caption{Ausgabe der (transformierten) Merkmalsvektoren}
+\end{figure}
 
 \subsection{Implementierung}
 
@@ -38,6 +48,6 @@ Im folgenden sind geplottete Aufnahmen zwei verschiedener Gesten zu erkennen. Di
 
 \begin{figure}[h!]
   \centering
-    \includegraphics[width=0.95\textwidth]{ref/images/svm_1.png}
+    \includegraphics[width=0.95\textwidth]{svm_data_1.png}
   \caption{Ausgabe der (transformierten) Merkmalsvektoren}
 \end{figure}
