@@ -28,23 +28,27 @@ class GestureFileIO():
         oid.close()
         
     
-    def getGesture2D(self, recordClass, names=[]):
+    def getGesture2D(self, recordClass, names=[], relativePathAdd=""):
         ''' get gesture as numpy 2D array '''
         # example: svm, tree
 
         lis = []
         for name in names:
-            infile = config.gesturePath + "/" + name + GESTURE_PREFIX + str(recordClass) + FILE_END
+            infile = relativePathAdd + config.gesturePath + "/" + name + GESTURE_PREFIX + str(recordClass) + FILE_END
             arr = np.loadtxt(infile, delimiter=",")
             lis.extend(arr.tolist())
         return np.array(lis)
 
-    def getGesture3D(self, recordClass, names=[]):
+    def getGesture3D(self, recordClass, names=[], relativePathAdd=""):
         ''' get gesture as numpy 3D array '''
-        # example: markovmodel
-        return
+        # example: markovmodel, lstm
+        data2d = self.getGesture2D(recordClass, names, relativePathAdd)
+        data3d = data2d.reshape((np.shape(data2d)[0], 32, 64))
+        return data3d
 
 if __name__ == "__main__":
+#     np.set_printoptions(threshold=np.nan)
     g = GestureFileIO();
-    print g.getGesture2D(2, ["ppasler"])
-        
+    data = g.getGesture3D(2, ["Daniel"])
+    print data
+    print np.shape(data)  

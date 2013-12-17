@@ -13,6 +13,7 @@ import sys
 class SenseGesture():
     
     def __init__(self):
+        print("Started Gesture Recognition")
         self._setConfig()
         self.soundPlayer = Sound()
 
@@ -81,10 +82,18 @@ class SenseGesture():
             except Exception, e:
                 print e
 
+def printHelp():
+    print "Gesture Recognition based on the Soundwave doppler effect"
+    print "Supported classifiers: svm, trees, hmm, k-means and lstm"
+    print "Usage: <command> [<option>]"
+    print "<digit> \t\t\t0-5 record a gesture and associate with class number"
+    print "classify | c <classifier> \tstart real time classifying with the specified classifier"
+    print "train | t <classifier> \t\tstart training for the specified classifier with the saved data"
+    print ""
 
 if __name__ == '__main__':
     try:
-        print("Started Gesture Recognition")
+        printHelp()
         app = SenseGesture()
         # app.deleteGestures()
         app.start()

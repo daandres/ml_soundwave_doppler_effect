@@ -1,5 +1,6 @@
 import sys
 from threading import Thread
+from src.classifier.lstm.lstm import LSTM
 
 class Console:
     def __init__(self, recorder=None, applicationClose=None):
@@ -23,6 +24,10 @@ class Console:
         self.key_bindings['3'] = self.recordStart
         self.key_bindings['4'] = self.recordStart
         self.key_bindings['5'] = self.recordStart
+        self.key_bindings['c lstm'] = self.classifyStart
+        self.key_bindings['classify lstm'] = self.classifyStart
+        self.key_bindings['t lstm'] = self.trainingStart
+        self.key_bindings['train lstm'] = self.trainingStart
              
     def callback(self, recClass):
         print "Recording finished for class " + str(recClass)
@@ -41,12 +46,12 @@ class Console:
     def start(self):    
         self.alive = True
         while self.alive:
-            key = raw_input('> ')
-            if key != 'c':
-                if key not in self.key_bindings:
-                    print "No command for " + key
+            input = raw_input('> ')
+            if input != 'exit':
+                if input not in self.key_bindings:
+                    print "No command for " + input
                     continue
-                self.key_bindings[key](key)
+                self.key_bindings[input](input)
             else:
                 self.alive = False
                 self.applicationClose()
@@ -55,3 +60,17 @@ class Console:
     def close(self):
         self.recorder.close()
         sys.exit()
+        
+    def classifyStart(self, key):
+        method = key.split()[1]
+        # TODO do it better... switch case, exception handling, ...
+        if(method == 'lstm'):
+            classificator = LSTM(self.recorder)
+        classificator.startNewThread()
+        
+    def trainingStart(self, key):
+        method = key.split()[1]
+        # TODO do it better... switch case, exception handling, ...
+        if(method == 'lstm'):
+            classificator = LSTM(self.recorder)
+        classificator.startTraining()

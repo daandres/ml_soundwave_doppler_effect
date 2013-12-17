@@ -33,7 +33,7 @@ trainer = BackpropTrainer(net, ds)
 for _ in range(1000):
     print (trainer.train())
     
-# net.reset()
-# for i in sequence:
-#     nextact = net.activate(i) > 0.5
-#     print (nextact)
+net.reset()
+for i in ds:
+    nextact = net.activate(i) > 0.5
+    print (nextact)
