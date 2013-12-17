@@ -45,13 +45,14 @@ class SwhRecorder:
         self.audio = np.empty((self.chunksToRecord * self.BUFFERSIZE), dtype=np.int16)
 
     def close(self):
+        self.stopRecording()
         """cleanly back out and release sound card."""
-        self.audioInStream.stop_stream()
-        self.audioInStream.close()
-        self.audioDev.terminate()
+        if(not self.waitToFinishCurrentRecord):
+            self.audioInStream.stop_stream()
+            self.audioInStream.close()
+            self.audioDev.terminate()
 
     ### RECORDING AUDIO ###
-
     def getAudio(self):
         """get a single buffer size worth of audio."""
         audioString = self.audioInStream.read(self.BUFFERSIZE)
@@ -61,6 +62,7 @@ class SwhRecorder:
         """record secToRecord seconds of audio."""
         if self.timerStop: 
             return
+        self.waitToFinishCurrentRecord = True
         for i in range(self.chunksToRecord):
             self.audio[i * self.BUFFERSIZE:(i + 1) * self.BUFFERSIZE] = self.getAudio()
         self.fft()
@@ -70,36 +72,43 @@ class SwhRecorder:
             if(self.recordCount == 0):
                 self.writeGesture()
                 self.initRecording()
+        self.waitToFinishCurrentRecord = False
+        if(not self.timerStop):
+            self.t = Timer(intervall, self.startNewThread).start()
+        else:
+            self.close()
         
-        self.t = Timer(intervall, self.record).start()
+    def startNewThread(self):
+        self.thread = Thread(name="Recorder", target=self.record, args=())
+        self.thread.start()
+        return self.thread
+    
+    def is_alive(self):
+        if self.thread is not None:
+            return self.thread.is_alive()
+        return False
 
     def writeGesture(self):
         self.gestureFileIO.writeGesture(self.recordClass, self.recordData)
-#         outfile = config.gesturePath + "/" + config.name + "/gesture_" + str(self.recordClass) + ".txt"
-#         print outfile
-#         oid = open(outfile, "a")
-#         # oid.write("##### Class " + str(self.recordClass) + " #####\n")
-#         # flatten all inputs to 1 vector
-#         data = np.array([np.array(np.ravel(self.recordData))])
-#         print "Wrote record for class " + str(self.recordClass)
-#         np.savetxt(oid, data, delimiter=",", fmt='%1.4f')
-#         oid.close()
+        self.callback(self.recordClass)
 
     def initRecording(self):
         self.recordClass = None
         self.recordCount = config.recordingFrames
         self.recordData = []
+        self.callback = None
 
     def stopRecording(self):
         self.timerStop = True
 
-    def setRecordClass(self, recordClass):
-        self.recordClass = recordClass    
+    def setRecordClass(self, recordClass, callback):
+        self.recordClass = recordClass   
+        self.callback = callback
 
     @deprecate
     def continuousStart(self):
         """CALL THIS to start running forever."""
-        self.t = Thread(target=self.record)
+        self.t = Thread(name="Recorder", target=self.record)
         self.t.start()
 
     @deprecate
@@ -118,7 +127,7 @@ class SwhRecorder:
         return data
 
     def fft(self, data=None, trimBy=1, logScale=False, divBy=4000):
-        #print "fft " + str(time.time())
+        # print "fft " + str(time.time())
         data = self.audio.flatten()
         left, right = np.split(np.abs(np.fft.fft(data)), 2)
         ys = np.add(left, right[::-1])
@@ -137,6 +146,6 @@ class SwhRecorder:
         self.transformedData = xs, ys
 
     def getTransformedData(self):
-        #print "get " + str(time.time())
+        # print "get " + str(time.time())
         return self.transformedData
 

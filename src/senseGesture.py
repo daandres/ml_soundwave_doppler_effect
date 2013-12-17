@@ -1,13 +1,14 @@
 from threading import Thread
-from realTimeAudio import View
+from view.console import Console
+from view.visualizer import View
 from soundplayer import Sound
 from recorder import SwhRecorder
 import properties.config as config
 from gestureFileIO import GestureFileIO
-
+import thread
 
 import os
-import sys
+import sys 
      
 class SenseGesture():
     
@@ -18,7 +19,7 @@ class SenseGesture():
         self.gestureFileIO = GestureFileIO()
         self.recorder = SwhRecorder(self.gestureFileIO, self.frequency)
         
-        self.view = View(self.recorder)
+        self.view = Console(self.recorder, self.applicationClose)
         
         self.t1 = None
         self.t2 = None
@@ -35,14 +36,14 @@ class SenseGesture():
         self.path = config.gesturePath
 
     def checkNameSet(self):
-        if(config.name==""):
+        if(config.name == ""):
             name = raw_input('Bitte schreibe deinen Namen:\n')
             outfile = "properties/personal.py"
             oid = open(outfile, "w")
             data = "name=\"" + name + "\""
             oid.write(data)
             oid.close()
-            self.name=name
+            self.name = name
             # TODO reload config file properly instead of exiting programm
             sys.exit(0)
         else:
@@ -52,26 +53,25 @@ class SenseGesture():
 
     def start(self):
         try:
-            self.t1 = Thread(target=self.soundPlayer.startPlaying, args=(self.frequency, self.amplitude, self.framerate, self.duration))
-            self.t2 = Thread(target=self.recorder.record, args=())
-            self.t3 = Thread(target=self.view.start, args=())
+            self.t1 = Thread(name="Soundplayer", target=self.soundPlayer.startPlaying, args=(self.frequency, self.amplitude, self.framerate, self.duration))
+            self.t2 = self.recorder.startNewThread()
+            self.t3 = self.view.startNewThread()
             self.t1.start()
-            self.t2.start()
-            self.t3.start()
+            print enumerate()
         except:
             print("Error: unable to start thread")
-        
-        while self.t3.is_alive():
-            pass
-        else:
-            self.recorder.stopRecording()
-            #TODO Close Player clean 
-            self.soundPlayer.stopPlaying()
-            
+    
+    def applicationClose(self, code=0):
+        self.recorder.close()
+        # TODO Close Player clean 
+        self.soundPlayer.stopPlaying()
         print "Player alive: " + str(self.t1.is_alive())
-        print "Recorder alive: " + str(self.t2.is_alive())
-        print "View alive: " + str(self.t3.is_alive())
-            
+        print "Recorder alive: " + str(self.recorder.is_alive())
+        print "View alive: " + str(self.view.is_alive())
+        print enumerate()
+        thread.interrupt_main()
+        
+        
     def deleteGestures(self):
         folder = config.gesturePath
         for the_file in os.listdir(folder):
@@ -84,9 +84,10 @@ class SenseGesture():
 
 
 if __name__ == '__main__':
-    print("Started Gesture Recognition")
-    app = SenseGesture()
-    #app.deleteGestures()
-    app.start()
-    print("Exit")
-#     sys.exit()
+    try:
+        print("Started Gesture Recognition")
+        app = SenseGesture()
+        # app.deleteGestures()
+        app.start()
+    except KeyboardInterrupt:
+        print "Exit"

@@ -1,11 +1,5 @@
-from threading import Thread
-from realTimeAudio import View
-from soundplayer import Sound
-from recorder import SwhRecorder
 import properties.config as config
 import os 
-import sys
-
 import numpy as np
 
 FILE_END = ".txt"

@@ -3,7 +3,7 @@ import pyaudio
 import wavebender as wb
 from myStream import MyStream
 import properties.config as config 
-import winsound
+# import winsound
 
 class Sound:
     
