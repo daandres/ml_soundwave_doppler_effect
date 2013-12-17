@@ -1,4 +1,4 @@
-from threading import Thread
+from threading import Thread, enumerate
 from view.console import Console
 from view.visualizer import View
 from soundplayer import Sound
@@ -57,9 +57,8 @@ class SenseGesture():
             self.t2 = self.recorder.startNewThread()
             self.t3 = self.view.startNewThread()
             self.t1.start()
-            print enumerate()
         except:
-            print("Error: unable to start thread")
+            print "Error: unable to start thread ", sys.exc_info()
     
     def applicationClose(self, code=0):
         self.recorder.close()
