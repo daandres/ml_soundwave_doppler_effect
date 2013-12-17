@@ -3,11 +3,16 @@ Gesten
 Klasse - Name
 
 0 Left-to-Right-One-Hand
-1 Right-to-Left-One-Hand
-2 Top-to-Bottom-One-Hand
-3 Bottom-to-Top-One-Hand
-4 Push-Two-Hands
-5 Pull-Two-Hands
+1 Bottom-to-Top-One-Hand
+2 Entgegengesetzt mit 2 Händen
+3 Single-push with one hand
+4 Double-push with one hand
+5 Hand drehen
+
+
+Hintergrundrauschen
+Umgebungsgeräusche
+
 
 #Building Gui from console
 pyuic4 -o ui_plot.py ui_plot.ui
