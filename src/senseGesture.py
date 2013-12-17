@@ -3,7 +3,10 @@ from realTimeAudio import View
 from soundplayer import Sound
 from recorder import SwhRecorder
 import properties.config as config
-import os 
+from gestureFileIO import GestureFileIO
+
+
+import os
 import sys
      
 class SenseGesture():
@@ -12,7 +15,8 @@ class SenseGesture():
         self._setConfig()
         self.soundPlayer = Sound()
 
-        self.recorder = SwhRecorder(self.frequency)
+        self.gestureFileIO = GestureFileIO()
+        self.recorder = SwhRecorder(self.gestureFileIO, self.frequency)
         
         self.view = View(self.recorder)
         
@@ -44,9 +48,7 @@ class SenseGesture():
         else:
             self.name = config.name
         
-        namedPath = config.gesturePath + "/" + self.name
-        if not os.path.exists(namedPath):
-            os.makedirs(namedPath)
+        
 
     def start(self):
         try:

@@ -10,9 +10,10 @@ import time
 class SwhRecorder:
     """Simple, cross-platform class to record from the microphone."""
 
-    def __init__(self, frequency=21000):
+    def __init__(self, gestureFileIO, frequency=config.frequency):
         """minimal garb is executed when class is loaded."""
         self.frequency = frequency
+        self.gestureFileIO = gestureFileIO
         self.FRAMERATE = config.framerate
         self.BUFFERSIZE = config.buffersize  
         self.secToRecord = config.secToRecord
@@ -73,15 +74,16 @@ class SwhRecorder:
         self.t = Timer(intervall, self.record).start()
 
     def writeGesture(self):
-        outfile = config.gesturePath + "/" + config.name + "/gesture_" + str(self.recordClass) + ".txt"
-        print outfile
-        oid = open(outfile, "a")
-        # oid.write("##### Class " + str(self.recordClass) + " #####\n")
-        # flatten all inputs to 1 vector
-        data = np.array([np.array(np.ravel(self.recordData))])
-        print "Wrote record for class " + str(self.recordClass)
-        np.savetxt(oid, data, delimiter=",", fmt='%1.4f')
-        oid.close()
+        self.gestureFileIO.writeGesture(self.recordClass, self.recordData)
+#         outfile = config.gesturePath + "/" + config.name + "/gesture_" + str(self.recordClass) + ".txt"
+#         print outfile
+#         oid = open(outfile, "a")
+#         # oid.write("##### Class " + str(self.recordClass) + " #####\n")
+#         # flatten all inputs to 1 vector
+#         data = np.array([np.array(np.ravel(self.recordData))])
+#         print "Wrote record for class " + str(self.recordClass)
+#         np.savetxt(oid, data, delimiter=",", fmt='%1.4f')
+#         oid.close()
 
     def initRecording(self):
         self.recordClass = None
