@@ -2,7 +2,6 @@
 \textit{Matthias Volland, Annalena Gutheil}
 
 
-
 Um die aufgezeichneten Datensätze verschiedener Gesten zu klassifizieren, ist es zunächst sinnvoll, die Amplituden aller Frequenzanteile in den Samples eines Datensatzes zunächst in der Form zu normalisieren, so dass die Amplitude des Referenztons immer einen konstanten Wert hat. Dadurch lassen sich Datensätze, die beispielsweise mit unterschiedlicher Lautstärke oder auf verschiedenen Systemen erzeugt wurden, besser miteinander vergleichen.
 
 Die zu klassifizierenden Gesten unterscheiden sich dahingehend, dass sie die Bandbreite des Frequenzspektrums um den Referenzton in unterschiedlicher Weise erweitern bzw. vergrößern. Um eine Geste zu erkennen, werden daher die Amplituden der aufgezeichneten Frequenzen um die Amplitude der Frequenz des Referenztons im Spektrum in beiden Richtungen analysiert. Relevant für die Erkennung der Gesten sind dabei im Allgemeinen nur diejenigen Frequenzanteile um den Referenzton, deren Amplitude den Grenzwert von 10% der Amplitude des Referenztones nicht unterschreitet. In Ausnahmefällen können die Frequenzanteile einer Geste im Spektrum durch ein lokales Minimum vom Referenzton separiert sein. Daher wird zusätzlich nach einem weiteren Ausschlag im Spektrum gesucht, dessen Maximum mindestens 30% der Amplitude des Referenztons entsprechen muss.
