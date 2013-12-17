@@ -25,7 +25,6 @@ class SenseGesture():
         self.checkNameSet()
 
         self.frequency = config.frequency
-        self.fRange = config.fRange
         self.amplitude = config.amplitude
         self.framerate = config.framerate
         self.duration = config.duration
