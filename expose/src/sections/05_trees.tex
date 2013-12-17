@@ -1,37 +1,13 @@
-\section{Trees/Ensemble Learning}
-\textit{Annalena Gutheil, Matthias Volland}
+\section{Entscheidungsbäume, Boosting und Bagging}
+\textit{Matthias Volland, Annalena Gutheil}
 
-Da die Lautstärke der ausgesendeten Frequenz unterschiedlich sein kann, ist es sinnvoll die Daten 
-zunächst zu normalisieren, sodass die Amplitude des Referenztons einen konstanten Wert hat. Ebenso 
-werden die Amplituden der übrigen Frequenzanzteilen relativ zur normalisierten Amplitude angepasst.
 
-Je nach Geste ändert sich die Bandbreite des Referenztones.
-Die einzelnen Gesten unterscheiden sich in der unterschiedlichen Bandbreite des Frequenzspektrums 
-um den Referenzton. Um eine Geste zu erkennen, werden die Frequenzanteile in beide Richtungen 
-untersucht, wobei nur Frequenzen mit einer Amplitude größer als 10% der Amplitude des Referenztones 
-relevant sind. Nur wenn Breite des Frequenzspektrums des Referenzspektrums einen Grenzwert 
-überschreitet, handelt es sich um eine Geste. In Ausnahmefällen ist der Ausschlag der Amplitude 
-durch ein Minimum der Amplitude vom Referenzton separiert, sodass man zunächst davon ausgehen würde, 
-dass keine Geste stattgefunden hat. Deshalb wird weiter nach einem zweiten Ausschlag gesucht. Dessen 
-Amplitude muss mindestens 30% der Amplitude des Referenztones haben.
+Um die aufgezeichneten Datensätze verschiedener Gesten zu klassifizieren, ist es zunächst sinnvoll, die Amplituden aller Frequenzanteile in den Samples eines Datensatzes zunächst in der Form zu normalisieren, so dass die Amplitude des Referenztons immer einen konstanten Wert hat. Dadurch lassen sich Datensätze, die beispielsweise mit unterschiedlicher Lautstärke oder auf verschiedenen Systemen erzeugt wurden, besser miteinander vergleichen.
 
-Es bietet sich an, die Komplexität der generierten Eingabedaten zu verringern, da eine Klassifizierung 
-der Daten zu Overfitting führen kann. 
-Das Problem ist, dass nicht nur ein Datensatz pro Geste existiert, sondern ein sich über die Zeit änderndes 
-Frequenzbild auszuwerten ist. 
-Die Idee ist nun, dass dieser zeitliche Verlauf in Form eines Vektors abgebildet werden kann. Das Ziel ist es,
-mit diesem Vektor die Frequenzverschiebung abzubilden und darüber die Gesten zu klassifizieren. 
+Die zu klassifizierenden Gesten unterscheiden sich dahingehend, dass sie die Bandbreite des Frequenzspektrums um den Referenzton in unterschiedlicher Weise erweitern bzw. vergrößern. Um eine Geste zu erkennen, werden daher die Amplituden der aufgezeichneten Frequenzen um die Amplitude der Frequenz des Referenztons im Spektrum in beiden Richtungen analysiert. Relevant für die Erkennung der Gesten sind dabei im Allgemeinen nur diejenigen Frequenzanteile um den Referenzton, deren Amplitude den Grenzwert von 10% der Amplitude des Referenztones nicht unterschreitet. In Ausnahmefällen können die Frequenzanteile einer Geste im Spektrum durch ein lokales Minimum vom Referenzton separiert sein. Daher wird zusätzlich nach einem weiteren Ausschlag im Spektrum gesucht, dessen Maximum mindestens 30% der Amplitude des Referenztons entsprechen muss.
 
-Starkt vereinfacht unterscheiden sich die Gesten darin, ob und auf welcher Seite des Referenztones eine 
-Verschiebung des Referenztones stattfindet. 
-Zudem wird unterschieden in welche Richtung sich die Verschiebung ausbreitet. Sie kann beispielsweise von 
-der rechten zur linken, bzw. linken zur rechten Seite wandern, sowie von der Mitte beginnend in eine 
-Richtung ausschlagen.
-Diese Unterscheidungsmerkmale können sehr gut durch einen Entscheidungsbaum abgebildet werden. Dazu kann 
-die Verschiebungsrichtung als Maß dienen, um die Eingabemenge zu unterteilen. 
+Für die effiziente und robuste Klassifizierung der Gesten bietet es sich an, die Komplexität der generierten Eingabedaten zu verringern, um Overfitting zu vermeiden. Da der Datensatz einer Geste aus mehreren Samples mit Frequenzbildern besteht, könnte ein möglicher Ansatz darin bestehen, den zeitlichen Verlauf der Frequenzverschiebung durch einen Vektor abzubilden und anhand dessen Richtung und Länge die Gesten zu klassifizieren.
 
-Die Besonderheit von Ensemble Learning ist, dass mit Hilfe von vielen schwachen Klassifikatoren 
-gute Klassifikationsergebnisse erziehlt werden können. Die Entscheidungen, die die verschiedenen 
-Klassifikatoren treffen, sind dabei verschieden, was jedoch auch die Stärke dieser Methode ist, 
-denn sie ergänzen sich gegenseitig. 
+Stark vereinfacht unterscheiden sich die Gesten dahingehend, ob und auf welcher Seite eine Veränderung der Anzahl aller zum Referenzton gehörenden Frequenzanteile stattfindet. Weiterhin muss unterschieden werden, in welche Richtung sich diese Verschiebung ausbreitet. Sie kann beispielsweise von der rechten zur linken oder von der linken zur rechten Seite um den Referenzton wandern, sowie vom Referenzton beginnend in eine Richtung ausschlagen. Diese Unterscheidungsmerkmale können sehr gut durch einen Entscheidungsbaum abgebildet werden. Dazu kann die Verschiebungsrichtung als Maß dienen, um die Eingabemenge zu unterteilen und somit eine Klassifizierung zu erreichen.
 
+Die Besonderheit von Ensemble Learning ist, dass mit Hilfe von vielen schwachen Klassifikatoren gute Klassifikationsergebnisse erziehlt werden können. Die Entscheidungen, die die verschiedenen Klassifikatoren treffen, sind dabei verschieden, was jedoch auch die Stärke dieser Methode ist, denn sie ergänzen sich gegenseitig.
