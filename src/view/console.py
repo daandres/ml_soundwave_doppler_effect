@@ -1,6 +1,6 @@
 import sys
 from threading import Thread
-from src.classifier.lstm.lstm import LSTM
+from src.classifier.lstm.lstm import LSTM, testLstm
 
 class Console:
     def __init__(self, recorder=None, applicationClose=None):
@@ -76,3 +76,4 @@ class Console:
         if(method == 'lstm'):
             classificator = LSTM(self.recorder)
         classificator.startTraining()
+        

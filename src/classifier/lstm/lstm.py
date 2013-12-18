@@ -50,6 +50,7 @@ class LSTM:
         data = [0] * 8
         for i in CLASSES:
             data[i] = g.getGesture3D(i, ["Daniel"], "../../")
+        print "data loaded, now creating dataset"
         ds = SequenceClassificationDataSet(64, OUTPUTS, nb_classes=8)
         for target in CLASSES:
             tupt = self.getTarget(target, OUTPUTS)
@@ -58,7 +59,9 @@ class LSTM:
                 for y in x:
                     tup = tuple(y)
                     ds.appendLinked(tup, tupt)
-        print ds
+#             self.ds.setField('input', array[:,:-1])
+#             self.ds.setField('target', array[:,-1:])
+#         print ds
         return ds
     
     def getTarget(self, y, dim):
@@ -88,7 +91,7 @@ class LSTM:
 #                 print ""
         print confmat
     
-if __name__ == '__main__':
+def testLstm():
     start = time.time()
     print str(start), "\tstart "
     np.set_printoptions(precision=2, threshold=np.nan)
@@ -96,6 +99,7 @@ if __name__ == '__main__':
 #     lstm.startTraining()
     print time.time(), "\tcreate dataset "
     lstm.ds = lstm.getTrainingSet()
+#     print lstm.ds.calculateStatistics()
     print time.time(), "\tload network "
     lstm.net = NetworkReader.readFrom('lstm.xml') 
     print time.time(), "\tstart classify "
@@ -105,3 +109,5 @@ if __name__ == '__main__':
     print str(end - start), "\tdifftime"
     NetworkWriter.writeToFile(lstm.net, 'lstm.xml')
     
+if __name__ == '__main__':
+    testLstm()

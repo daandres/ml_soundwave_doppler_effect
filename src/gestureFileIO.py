@@ -1,12 +1,12 @@
 import properties.config as config
 import os 
 import numpy as np
+import pandas as pd
 
 FILE_END = ".txt"
 GESTURE_PREFIX = "/gesture_"
      
 class GestureFileIO():
-    
 
     def __init__(self):
         self.name = config.name
@@ -31,13 +31,16 @@ class GestureFileIO():
     def getGesture2D(self, recordClass, names=[], relativePathAdd=""):
         ''' get gesture as numpy 2D array '''
         # example: svm, tree
-
-        lis = []
+#         lis = []
+#         for name in names:
+#             infile = relativePathAdd + config.gesturePath + "/" + name + GESTURE_PREFIX + str(recordClass) + FILE_END
+#             arr = np.loadtxt(infile, delimiter=",")
+#             lis.extend(arr.tolist())
+#         return np.array(lis)
         for name in names:
             infile = relativePathAdd + config.gesturePath + "/" + name + GESTURE_PREFIX + str(recordClass) + FILE_END
-            arr = np.loadtxt(infile, delimiter=",")
-            lis.extend(arr.tolist())
-        return np.array(lis)
+            arr = pd.read_csv(infile, sep=',', header=None)
+        return np.asarray(arr)
 
     def getGesture3D(self, recordClass, names=[], relativePathAdd=""):
         ''' get gesture as numpy 3D array '''
