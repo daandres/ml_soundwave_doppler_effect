@@ -86,9 +86,11 @@ def printHelp():
     print "Gesture Recognition based on the Soundwave doppler effect"
     print "Supported classifiers: svm, trees, hmm, k-means and lstm"
     print "Usage: <command> [<option>]"
-    print "<digit> \t\t\t0-5 record a gesture and associate with class number"
+    print "<digit> \t\t\t0-7 record a gesture and associate with class number"
     print "classify | c <classifier> \tstart real time classifying with the specified classifier"
     print "train | t <classifier> \t\tstart training for the specified classifier with the saved data"
+    print ""
+    print "0 Right-To-Left-One-Hand\n1 Top-to-Bottom-One-Hand\n2 Entgegengesetzt with two hands\n3 Single-push with one hand\n4 Double-push with one hand\n5 Rotate one hand\n6 Background noise (no gesture, but in silent room)\n7 No gesture with background sound (in a Pub, at office, in the kitchen, etc.)"
     print ""
 
 if __name__ == '__main__':

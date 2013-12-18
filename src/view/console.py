@@ -24,6 +24,8 @@ class Console:
         self.key_bindings['3'] = self.recordStart
         self.key_bindings['4'] = self.recordStart
         self.key_bindings['5'] = self.recordStart
+        self.key_bindings['6'] = self.recordStart
+        self.key_bindings['7'] = self.recordStart
         self.key_bindings['c lstm'] = self.classifyStart
         self.key_bindings['classify lstm'] = self.classifyStart
         self.key_bindings['t lstm'] = self.trainingStart

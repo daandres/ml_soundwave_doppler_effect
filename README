@@ -2,16 +2,14 @@ Gesten
 
 Klasse - Name
 
-0 Left-to-Right-One-Hand
-1 Bottom-to-Top-One-Hand
-2 Entgegengesetzt mit 2 Händen
+0 Right-To-Left-One-Hand
+1 Top-to-Bottom-One-Hand
+2 Entgegengesetzt with two hands
 3 Single-push with one hand
 4 Double-push with one hand
-5 Hand drehen
-
-
-Hintergrundrauschen
-Umgebungsgeräusche
+5 Rotate one hand
+6 Background noise (no gesture, but in silent room)
+7 No gesture with background sound (in a Pub, at office, in the kitchen, etc.)
 
 
 #Building Gui from console

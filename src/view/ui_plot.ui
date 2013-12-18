@@ -37,19 +37,12 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="btnPlot">
-        <property name="text">
-         <string>Plot fft</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="btn_gesture_0">
         <property name="enabled">
          <bool>true</bool>
         </property>
         <property name="toolTip">
-         <string>Left-to-Right-One-Hand</string>
+         <string>Right-To-Left-One-Hand</string>
         </property>
         <property name="text">
          <string>Record 0</string>
@@ -65,7 +58,7 @@
       <item>
        <widget class="QPushButton" name="btn_gesture_1">
         <property name="toolTip">
-         <string>Right-to-Left-One-Hand</string>
+         <string>Top-to-Bottom-One-Hand</string>
         </property>
         <property name="text">
          <string>Record 1</string>
@@ -75,7 +68,7 @@
       <item>
        <widget class="QPushButton" name="btn_gesture_2">
         <property name="toolTip">
-         <string>Top-to-Bottom-One-Hand</string>
+         <string>Entgegengesetzt with two hands</string>
         </property>
         <property name="text">
          <string>Record 2</string>
@@ -83,9 +76,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_gesture_5">
+       <widget class="QPushButton" name="btn_gesture_3">
         <property name="toolTip">
-         <string>Bottom-to-Top-One-Hand</string>
+         <string>Single-push with one hand</string>
         </property>
         <property name="text">
          <string>Record 3</string>
@@ -95,7 +88,7 @@
       <item>
        <widget class="QPushButton" name="btn_gesture_4">
         <property name="toolTip">
-         <string>Push-Two-Hands</string>
+         <string>Double-push with one hand</string>
         </property>
         <property name="text">
          <string>Record 4</string>
@@ -103,12 +96,32 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_gesture_3">
+       <widget class="QPushButton" name="btn_gesture_5">
         <property name="toolTip">
-         <string>Pull-Two-Hands</string>
+         <string>Rotate one hand</string>
         </property>
         <property name="text">
          <string>Record 5</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_gesture_6">
+        <property name="toolTip">
+         <string>Background noise (no gesture, but in silent room)</string>
+        </property>
+        <property name="text">
+         <string>Record 6</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_gesture_7">
+        <property name="toolTip">
+         <string>No gesture with background sound (in a Pub, at office, in the kitchen, etc.)</string>
+        </property>
+        <property name="text">
+         <string>Record 7</string>
         </property>
        </widget>
       </item>
