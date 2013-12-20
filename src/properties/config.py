@@ -1,7 +1,7 @@
 import personal
 name = personal.name
 
-frequency = 20000.0
+frequency = 18500.0
 # fRange=500 replaced by left and right border
 leftBorder = 32.0
 rightBorder = 32.0
