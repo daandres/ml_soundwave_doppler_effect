@@ -2,16 +2,17 @@ import pyaudio
 # # To use wavebender checkout this repo: https://github.com/zacharydenton/wavebender.git and install it with python setup.py
 import wavebender as wb
 from myStream import MyStream
-import properties.config as config 
+import properties.config as config
 # import winsound
+import time
 
 class Sound:
-    
+
     def __init__(self):
         self.audioDev = pyaudio.PyAudio()
         self.audioStream = None
         self.play = True
-    
+
     #===========================================================================
     # def startPlaying(self, frequency, amplitude, framerate, duration):
     #     while True:
@@ -22,22 +23,22 @@ class Sound:
     #         if self.play == False:
     #             break
     #===========================================================================
-        
+
     def startPlaying(self, frequency=440.0, amplitude=0.5, framerate=48100, duration=30):
         # create stream
         channels = ((wb.sine_wave(frequency, amplitude=amplitude, framerate=framerate),),)
-               
-        while True:
+        nframes = framerate * duration
+        while self.play:
             try:
-                samples = wb.compute_samples(channels, framerate * duration * 1)
+                samples = wb.compute_samples(channels, nframes)
                 self.audioStream = MyStream(self.audioDev.open(format=self.audioDev.get_format_from_width(2), channels=1, rate=framerate, output=True))
-                wb.write_wavefile(self.audioStream, samples)
+                wb.write_wavefile(self.audioStream, samples, nframes=nframes, sampwidth=2, framerate=framerate, bufsize=config.buffersize)
             except AttributeError:
                 pass
-            if self.play == False:
-                self.audioStream.stopIt()
-                self.audioDev.terminate()
-                break
+        else:
+            self.audioStream.stopIt()
+            self.audioDev.terminate()
+        return
 
     def stopPlaying(self):
         self.play = False

@@ -15,7 +15,7 @@ class SwhRecorder:
         self.frequency = frequency
         self.gestureFileIO = gestureFileIO
         self.FRAMERATE = config.framerate
-        self.BUFFERSIZE = config.buffersize  
+        self.BUFFERSIZE = config.buffersize
         self.secToRecord = config.secToRecord
         self.timerStop = False
         # frequency range (+ / -)
@@ -24,7 +24,8 @@ class SwhRecorder:
         self.rightBorder = (frequencyToIndex * frequency) + config.rightBorder
         self.transformedData = None
         self.initRecording()
-        
+
+        self.threadNum = 0
         self.setup()
 
     def setup(self):
@@ -60,7 +61,7 @@ class SwhRecorder:
 
     def record(self, intervall=config.recordIntervall):
         """record secToRecord seconds of audio."""
-        if self.timerStop: 
+        if self.timerStop:
             return
         self.waitToFinishCurrentRecord = True
         for i in range(self.chunksToRecord):
@@ -77,12 +78,13 @@ class SwhRecorder:
             self.t = Timer(intervall, self.startNewThread).start()
         else:
             self.close()
-        
+
     def startNewThread(self):
-        self.thread = Thread(name="Recorder", target=self.record, args=())
+        self.thread = Thread(name="Recorder-" + str(self.threadNum), target=self.record, args=())
         self.thread.start()
+        self.threadNum += 1
         return self.thread
-    
+
     def is_alive(self):
         if self.thread is not None:
             return self.thread.is_alive()
@@ -102,7 +104,7 @@ class SwhRecorder:
         self.timerStop = True
 
     def setRecordClass(self, recordClass, callback):
-        self.recordClass = recordClass   
+        self.recordClass = recordClass
         self.callback = callback
 
     @deprecate

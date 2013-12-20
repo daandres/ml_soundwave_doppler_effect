@@ -1,11 +1,9 @@
 from threading import Thread, enumerate
-from view.console import Console
-from view.visualizer import View
+from view.console import Console, printHelp
 from soundplayer import Sound
 from recorder import SwhRecorder
 import properties.config as config
 from gestureFileIO import GestureFileIO
-import thread
 
 import os
 import sys
@@ -60,17 +58,20 @@ class SenseGesture():
             self.t1.start()
         except:
             print "Error: unable to start thread ", sys.exc_info()
+        self.t3.join()
+#         self.applicationClose()
+        print "Player alive: \t" + str(self.t1.is_alive())
+        print "Recorder alive:\t" + str(self.recorder.is_alive())
+        print "View alive: \t" + str(self.view.is_alive())
+        exitApp()
 
     def applicationClose(self, code=0):
         self.recorder.close()
         # TODO Close Player clean
         self.soundPlayer.stopPlaying()
-        print "Player alive: " + str(self.t1.is_alive())
-        print "Recorder alive: " + str(self.recorder.is_alive())
-        print "View alive: " + str(self.view.is_alive())
-        print enumerate()
-        thread.interrupt_main()
 
+        self.recorder.thread.join()
+        self.t1.join()
 
     def deleteGestures(self):
         folder = config.gesturePath
@@ -82,16 +83,12 @@ class SenseGesture():
             except Exception, e:
                 print e
 
-def printHelp():
-    print "Gesture Recognition based on the Soundwave doppler effect"
-    print "Supported classifiers: svm, trees, hmm, k-means and lstm"
-    print "Usage: <command> [<option>]"
-    print "<digit> \t\t\t0-7 record a gesture and associate with class number"
-    print "classify | c <classifier> \tstart real time classifying with the specified classifier"
-    print "train | t <classifier> \t\tstart training for the specified classifier with the saved data"
-    print ""
-    print "0 Right-To-Left-One-Hand\n1 Top-to-Bottom-One-Hand\n2 Entgegengesetzt with two hands\n3 Single-push with one hand\n4 Double-push with one hand\n5 Rotate one hand\n6 Background noise (no gesture, but in silent room)\n7 No gesture with background sound (in a Pub, at office, in the kitchen, etc.)"
-    print ""
+
+
+def exitApp():
+    print enumerate()
+    print "Exit"
+    sys.exit(0)
 
 if __name__ == '__main__':
     try:
@@ -100,4 +97,5 @@ if __name__ == '__main__':
         # app.deleteGestures()
         app.start()
     except KeyboardInterrupt:
-        print "Exit"
+        print "KeyboardInterrupt"
+        exitApp()

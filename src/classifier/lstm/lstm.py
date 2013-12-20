@@ -1,6 +1,6 @@
 from pybrain.datasets import SequenceClassificationDataSet
 from pybrain.structure import LSTMLayer, LinearLayer, SoftmaxLayer
-from pybrain.supervised.trainers import RPropMinusTrainer
+from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.tools.validation import testOnSequenceData
 from pybrain.tools.customxml.networkwriter import NetworkWriter
@@ -20,32 +20,43 @@ TRAINING_EPOCHS = 1
 CLASSES = [0, 1]
 
 class LSTM:
-    
+
     def __init__(self, recorder=None):
 #         if recorder == None:
 #             raise Exception("No Recorder, so go home")
         self.recorder = recorder
-    
+
     def startNewThread(self):
         self.t = Thread(name="LSTM", target=self.start, args=())
         self.t.start()
         return self.t
-    
+
     def start(self):
         print "LSTM started"
-        
-    def startTraining(self):
+
+    def startTraining(self, filename, createNew=False, save=False):
         print "LSTM Training started"
-        self.net = buildNetwork(INPUTS, HIDDEN, OUTPUTS, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False) 
+        self.net = buildNetwork(INPUTS, HIDDEN, OUTPUTS, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False)
         self.net.randomize()
-        self.ds = self.getTrainingSet()
-        trainer = RPropMinusTrainer(self.net, dataset=self.ds, verbose=False)
+        self.ds = self.getTrainingSet(filename, createNew, save)
+        print "Data loaded, now create trainer"
+#         trainer = RPropMinusTrainer(self.net, dataset=self.ds, verbose=False)
+        trainer = BackpropTrainer(self.net, dataset=self.ds, verbose=True)
+        print "start training"
         for _ in range(TRAINING_EPOCHS):
             trainer.trainEpochs(TRAINING_EPOCHS)
             trnresult = 100. * (1.0 - testOnSequenceData(self.net, self.ds))
             print "train error: %5.2f%%" % trnresult, "\n"
- 
-    def getTrainingSet(self):
+
+    def getTrainingSet(self, filename, createNew=False, save=False):
+        ds = None
+        if createNew:
+            self.createPyBrainDatasetFromSamples(save, filename)
+        else:
+            ds = SequenceClassificationDataSet.loadFromFile(filename)
+        return ds
+
+    def createPyBrainDatasetFromSamples(self, save=False, filename=None):
         g = GestureFileIO()
         data = [0] * 8
         for i in CLASSES:
@@ -62,8 +73,10 @@ class LSTM:
 #             self.ds.setField('input', array[:,:-1])
 #             self.ds.setField('target', array[:,-1:])
 #         print ds
+        if save:
+            ds.saveToFile(filename)
         return ds
-    
+
     def getTarget(self, y, dim):
         if y >= dim:
             raise Exception("wrong dimension chosen for target")
@@ -73,7 +86,7 @@ class LSTM:
         target = np.zeros((dim,))
         target[y] = 1
         return target
-    
+
     def classify(self):
 #         print self.ds.evaluateModuleMSE(self.net)
         confmat = np.zeros((OUTPUTS, OUTPUTS))
@@ -90,24 +103,22 @@ class LSTM:
 #                 print "out:\t", np.argmax(out)
 #                 print ""
         print confmat
-    
+
 def testLstm():
     start = time.time()
     print str(start), "\tstart "
-    np.set_printoptions(precision=2, threshold=np.nan)
+#     np.set_printoptions(precision=2, threshold=np.nan)
     lstm = LSTM()
-#     lstm.startTraining()
-    print time.time(), "\tcreate dataset "
-    lstm.ds = lstm.getTrainingSet()
-#     print lstm.ds.calculateStatistics()
+#     lstm.createPyBrainDatasetFromSamples(True, "dataset")
+    lstm.startTraining("dataset")
     print time.time(), "\tload network "
-    lstm.net = NetworkReader.readFrom('lstm.xml') 
+    lstm.net = NetworkReader.readFrom('lstm.xml')
     print time.time(), "\tstart classify "
     lstm.classify()
     end = time.time()
-    print str(end), "\tend " 
+    print str(end), "\tend "
     print str(end - start), "\tdifftime"
-    NetworkWriter.writeToFile(lstm.net, 'lstm.xml')
-    
+#     NetworkWriter.writeToFile(lstm.net, 'lstm_backprop.xml')
+
 if __name__ == '__main__':
     testLstm()

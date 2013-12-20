@@ -1,23 +1,49 @@
 import sys
-from threading import Thread
+from threading import Thread, Event
 from src.classifier.lstm.lstm import LSTM, testLstm
+from visualizer import View
 
 class Console:
     def __init__(self, recorder=None, applicationClose=None):
         if recorder == None:
             raise Exception("No Recorder, so go home")
         self.recorder = recorder
-        if applicationClose==None:
+        if applicationClose == None:
             raise Exception("No close callback")
         self.applicationClose = applicationClose
         self.key_bindings = {}
         self.bindKeys()
-        
+        self.inputEvent = Event()
+        self.recordEvent = Event()
+        self.threadNum = 0
+        self.repeatedRecords = 0
+
     def recordStart(self, key):
-        self.alive = False
-        self.recorder.setRecordClass(key, self.callback)
+        args = key.split()
+        # TODO do it better... switch case, exception handling, ...
+        print "\nRecording now class " + str(key[0])
+        if len(args) > 1:
+            num = int(args[1])
+            self.repeatedRecords = num
+        else:
+            self.repeatedRecords = 1
+        while self.repeatedRecords > 0:
+            self.repeatedRecords -= 1
+            print "\tStart recording next instance.\n\t", self.repeatedRecords, " instances left"
+            self.recordEvent.clear()
+            self.recorder.setRecordClass(key[0], self.callback)
+            self.recordEvent.wait()
+        self.inputEvent.set()
+
+    def callback(self, recClass):
+        self.recordEvent.set()
 
     def bindKeys(self):
+        self.key_bindings['e'] = self.exit
+        self.key_bindings['h'] = self.printHelp
+        self.key_bindings['v'] = self.view
+        self.key_bindings['c'] = self.classifyStart
+        self.key_bindings['t'] = self.trainingStart
         self.key_bindings['0'] = self.recordStart
         self.key_bindings['1'] = self.recordStart
         self.key_bindings['2'] = self.recordStart
@@ -26,54 +52,73 @@ class Console:
         self.key_bindings['5'] = self.recordStart
         self.key_bindings['6'] = self.recordStart
         self.key_bindings['7'] = self.recordStart
-        self.key_bindings['c lstm'] = self.classifyStart
-        self.key_bindings['classify lstm'] = self.classifyStart
-        self.key_bindings['t lstm'] = self.trainingStart
-        self.key_bindings['train lstm'] = self.trainingStart
-             
-    def callback(self, recClass):
-        print "Recording finished for class " + str(recClass)
-        self.startNewThread()
-    
+
+
     def startNewThread(self):
-        self.t = Thread(name="ControlConsole", target=self.start, args=())
+        self.t = Thread(name="ControlConsole-" + str(self.threadNum), target=self.start, args=())
         self.t.start()
+        self.threadNum += 1
         return self.t
-    
+
     def is_alive(self):
         if self.t is not None:
             return self.t.is_alive()
         return False
-    
-    def start(self):    
+
+    def start(self):
         self.alive = True
         while self.alive:
-            input = raw_input('> ')
-            if input != 'exit':
-                if input not in self.key_bindings:
-                    print "No command for " + input
-                    continue
-                self.key_bindings[input](input)
-            else:
-                self.alive = False
-                self.applicationClose()
-                
-            
-    def close(self):
-        self.recorder.close()
-        sys.exit()
-        
+            txtin = raw_input('> ')
+            if txtin[0] not in self.key_bindings:
+                print "No command for " + txtin
+                continue
+            self.inputEvent.clear()
+            self.key_bindings[txtin[0]](txtin)
+            self.inputEvent.wait()
+        return
+
+    def exit(self, txtin):
+        self.alive = False
+        self.inputEvent.set()
+        self.applicationClose()
+
+    def view(self, command):
+        self.view = View(self.recorder, self.viewCallback)
+        self.view.startNewThread()
+
+    def viewCallback(self, code):
+        print "View closed with code ", str(code)
+        self.inputEvent.set()
+
     def classifyStart(self, key):
         method = key.split()[1]
         # TODO do it better... switch case, exception handling, ...
         if(method == 'lstm'):
             classificator = LSTM(self.recorder)
         classificator.startNewThread()
-        
+
     def trainingStart(self, key):
         method = key.split()[1]
         # TODO do it better... switch case, exception handling, ...
         if(method == 'lstm'):
             classificator = LSTM(self.recorder)
         classificator.startTraining()
-        
+
+    def printHelp(self, args=None):
+        printHelp(event=self.inputEvent)
+
+def printHelp(args=None, event=None):
+    print "Gesture Recognition based on the Soundwave doppler effect"
+    print "Supported classifiers: svm, trees, hmm, k-means and lstm"
+    print "Usage: <command> [<option>]"
+    print "<digit> [<digit>]\t0-7 record a gesture and associate with class number [repeat <digit> times]"
+    print "c <classifier> \tstart real time classifying with the specified classifier"
+    print "t <classifier> \tstart training for the specified classifier with the saved data"
+    print "e \t\texit application"
+    print "v \t\tstart view"
+    print "h \t\tprint this help"
+    print ""
+    print "0 Right-To-Left-One-Hand\n1 Top-to-Bottom-One-Hand\n2 Entgegengesetzt with two hands\n3 Single-push with one hand\n4 Double-push with one hand\n5 Rotate one hand\n6 Background noise (no gesture, but in silent room)\n7 No gesture with background sound (in a Pub, at office, in the kitchen, etc.)"
+    print ""
+    if event is not None:
+        event.set()

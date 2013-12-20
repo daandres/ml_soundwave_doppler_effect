@@ -1,7 +1,7 @@
-from pyaudio import Stream 
+from pyaudio import Stream
 
 class MyStream(Stream):
-    
+
     def __init__(self, stream):
         Stream.__init__(self,
                  stream._parent,
@@ -18,16 +18,16 @@ class MyStream(Stream):
                  output_host_api_specific_stream_info=None,
                  stream_callback=None)
         stream.close()
-        
+
     def tell(self):
-        return 1   
-    
+        return 1
+
     def seek(self, offset, whence):
-        return 0 
-    
+        return 0
+
     def flush(self):
         return 0
-    
+
     def stopIt(self):
         self.stop_stream()
         self.close()
