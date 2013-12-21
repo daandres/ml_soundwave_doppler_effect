@@ -7,7 +7,6 @@ from pybrain.tools.customxml.networkwriter import NetworkWriter
 from pybrain.tools.customxml.networkreader import NetworkReader
 
 from threading import Thread
-import itertools
 import time
 import numpy as np
 from src.gestureFileIO import GestureFileIO
@@ -15,9 +14,9 @@ from src.gestureFileIO import GestureFileIO
 
 INPUTS = 64
 HIDDEN = 100
-OUTPUTS = 2
+OUTPUTS = 8
 TRAINING_EPOCHS = 1
-CLASSES = [0, 1]
+CLASSES = [0, 6, 7]
 
 class LSTM:
 
@@ -60,7 +59,7 @@ class LSTM:
         g = GestureFileIO()
         data = [0] * 8
         for i in CLASSES:
-            data[i] = g.getGesture3D(i, ["Daniel"], "../../")
+            data[i] = g.getGesture3D(i, [], "../../")
         print "data loaded, now creating dataset"
         ds = SequenceClassificationDataSet(64, OUTPUTS, nb_classes=8)
         for target in CLASSES:
@@ -110,7 +109,7 @@ def testLstm():
 #     np.set_printoptions(precision=2, threshold=np.nan)
     lstm = LSTM()
 #     lstm.createPyBrainDatasetFromSamples(True, "dataset")
-    lstm.startTraining("dataset")
+    lstm.startTraining("datasettest", True)
     print time.time(), "\tload network "
     lstm.net = NetworkReader.readFrom('lstm.xml')
     print time.time(), "\tstart classify "
