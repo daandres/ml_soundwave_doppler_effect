@@ -5,3 +5,4 @@ __pycache__/
 *.py[cod]
 *.bak
 src/properties/personal.py
+config/personal.cfg

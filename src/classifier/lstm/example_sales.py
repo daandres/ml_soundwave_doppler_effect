@@ -8,21 +8,21 @@ from pybrain.structure import LSTMLayer
 import itertools
 import numpy as np
 
-data = np.loadtxt("sales").T
+data = np.loadtxt("example_sales").T
 print(data)
 
-datain = data[:-1,:] 
-dataout = data[1:,:] 
+datain = data[:-1, :]
+dataout = data[1:, :]
 
 INPUTS = 5
 OUTPUTS = 5
 HIDDEN = 40
 
-net = buildNetwork(INPUTS, HIDDEN, OUTPUTS, hiddenclass=LSTMLayer, outclass=SigmoidLayer, recurrent=True, bias=True) 
+net = buildNetwork(INPUTS, HIDDEN, OUTPUTS, hiddenclass=LSTMLayer, outclass=SigmoidLayer, recurrent=True, bias=True)
 
 ds = SequentialDataSet(INPUTS, OUTPUTS)
 
-for x,y in itertools.izip(datain,dataout):
+for x, y in itertools.izip(datain, dataout):
     ds.newSequence()
     ds.appendLinked(tuple(x), tuple(y))
 
@@ -32,7 +32,7 @@ trainer = BackpropTrainer(net, ds)
 
 for _ in range(1000):
     print (trainer.train())
-    
+
 net.reset()
 for i in ds:
     nextact = net.activate(i) > 0.5

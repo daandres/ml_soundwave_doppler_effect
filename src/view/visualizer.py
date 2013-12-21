@@ -2,8 +2,9 @@ import ui_plot
 import sys
 from PyQt4 import QtCore, QtGui
 import PyQt4.Qwt5 as Qwt
-import properties.config as config
 from threading import Thread
+from properties.config import ConfigProvider
+
 
 class View:
 
@@ -18,6 +19,10 @@ class View:
         self.applicationClose = applicationClose
         self.curve = None
         self.uiplot = None
+        config = ConfigProvider()
+        self.amplitude = float(config.getAudioConfig()['amplitude'])
+        self.guiIntervall = float(config.getRecordConfig()['guiintervall'])
+
 
     def callback(self, recClass):
         print "Recording finished for class " + str(recClass)
@@ -93,10 +98,10 @@ class View:
         self.curve = Qwt.QwtPlotCurve()
         self.curve.attach(self.uiplot.qwtPlot)
 
-        self.uiplot.qwtPlot.setAxisScale(self.uiplot.qwtPlot.yLeft, 0, config.amplitude * 1000)
+        self.uiplot.qwtPlot.setAxisScale(self.uiplot.qwtPlot.yLeft, 0, self.amplitude * 1000)
 
         self.uiplot.timer = QtCore.QTimer()
-        self.uiplot.timer.start(config.guiIntervall)
+        self.uiplot.timer.start(self.guiIntervall)
 
 
         self.win_plot.connect(self.uiplot.timer, QtCore.SIGNAL('timeout()'), self.plotSignal)

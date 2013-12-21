@@ -2,10 +2,8 @@ from threading import Thread, enumerate
 from view.console import Console, printHelp
 from soundplayer import Sound
 from recorder import SwhRecorder
-import properties.config as config
+from properties.config import ConfigProvider
 from gestureFileIO import GestureFileIO
-
-import os
 import sys
 
 class SenseGesture():
@@ -15,10 +13,10 @@ class SenseGesture():
         self._setConfig()
         self.soundPlayer = Sound()
 
-        self.gestureFileIO = GestureFileIO()
-        self.recorder = SwhRecorder(self.gestureFileIO, self.frequency)
+        self.gestureFileIO = GestureFileIO(self.name, self.path)
+        self.recorder = SwhRecorder(self.gestureFileIO, self.audioConfig, self.recordConfig)
 
-        self.view = Console(self.recorder, self.applicationClose)
+        self.view = Console(self.recorder, self.applicationClose, self.gestureFileIO.setFileName, self.gestureFileIO.getFileName)
 
         self.t1 = None
         self.t2 = None
@@ -26,33 +24,34 @@ class SenseGesture():
 
 
     def _setConfig(self):
+        self.config = ConfigProvider()
         self.checkNameSet()
 
-        self.frequency = config.frequency
-        self.amplitude = config.amplitude
-        self.framerate = config.framerate
-        self.duration = config.duration
-        self.path = config.gesturePath
+        self.audioConfig = self.config.getAudioConfig()
+        self.pathsConfig = self.config.getPathsConfig()
+        self.recordConfig = self.config.getRecordConfig()
+
+        self.frequency = float(self.audioConfig['frequency'])
+        self.amplitude = float(self.audioConfig['amplitude'])
+        self.framerate = int(self.audioConfig['framerate'])
+        self.duration = int(self.audioConfig['duration'])
+        self.bufsize = int(self.audioConfig['buffersize'])
+        self.path = self.pathsConfig['gesturepath']
 
     def checkNameSet(self):
-        if(config.name == ""):
+        userconfig = self.config.getUserConfig()
+        if(userconfig['name'] == ""):
             name = raw_input('Bitte schreibe deinen Namen:\n')
-            outfile = "properties/personal.py"
-            oid = open(outfile, "w")
-            data = "name=\"" + name + "\""
-            oid.write(data)
-            oid.close()
+            self.config.setConfig("user", "name", name)
             self.name = name
-            # TODO reload config file properly instead of exiting programm
-            sys.exit(0)
         else:
-            self.name = config.name
+            self.name = userconfig['name']
 
 
 
     def start(self):
         try:
-            self.t1 = Thread(name="Soundplayer", target=self.soundPlayer.startPlaying, args=(self.frequency, self.amplitude, self.framerate, self.duration))
+            self.t1 = Thread(name="Soundplayer", target=self.soundPlayer.startPlaying, args=(self.frequency, self.amplitude, self.framerate, self.duration, self.bufsize))
             self.t2 = self.recorder.startNewThread()
             self.t3 = self.view.startNewThread()
             self.t1.start()
@@ -67,23 +66,10 @@ class SenseGesture():
 
     def applicationClose(self, code=0):
         self.recorder.close()
-        # TODO Close Player clean
         self.soundPlayer.stopPlaying()
 
         self.recorder.thread.join()
         self.t1.join()
-
-    def deleteGestures(self):
-        folder = config.gesturePath
-        for the_file in os.listdir(folder):
-            file_path = os.path.join(folder, the_file)
-            try:
-                if os.path.isfile(file_path):
-                    os.unlink(file_path)
-            except Exception, e:
-                print e
-
-
 
 def exitApp():
     print enumerate()
@@ -94,7 +80,6 @@ if __name__ == '__main__':
     try:
         printHelp()
         app = SenseGesture()
-        # app.deleteGestures()
         app.start()
     except KeyboardInterrupt:
         print "KeyboardInterrupt"
