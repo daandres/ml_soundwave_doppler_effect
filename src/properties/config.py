@@ -3,7 +3,6 @@ import ConfigParser
 DEFCONFIG = '../config/default.cfg'
 USERCONFIG = '../config/personal.cfg'
 
-
 def getInstance(relative=""):
     global instance
     if instance is None:
