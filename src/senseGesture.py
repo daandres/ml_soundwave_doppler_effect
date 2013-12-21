@@ -2,7 +2,7 @@ from threading import Thread, enumerate
 from view.console import Console, printHelp
 from soundplayer import Sound
 from recorder import SwhRecorder
-from properties.config import ConfigProvider
+import properties.config as c
 from gestureFileIO import GestureFileIO
 import sys
 
@@ -24,7 +24,7 @@ class SenseGesture():
 
 
     def _setConfig(self):
-        self.config = ConfigProvider()
+        self.config = c.getInstance()
         self.checkNameSet()
 
         self.audioConfig = self.config.getAudioConfig()

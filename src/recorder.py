@@ -29,6 +29,9 @@ class SwhRecorder:
         self.threadNum = 0
         self.setup()
 
+        self.classifyFlag = False
+        self.classifier = None
+
     def setup(self):
         """initialize sound card."""
         # TODO - windows detection vs. alsa or something for linux
@@ -68,7 +71,9 @@ class SwhRecorder:
         for i in range(self.chunksToRecord):
             self.audio[i * self.buffersize:(i + 1) * self.buffersize] = self.getAudio()
         self.fft()
-        if(self.recordClass is not None):
+        if(self.classifyFlag):
+            self.classify()
+        elif(self.recordClass is not None):
             self.recordCount -= 1
             self.recordData.append(self.transformedData[1])
             if(self.recordCount == 0):
@@ -79,6 +84,16 @@ class SwhRecorder:
             self.t = Timer(self.recordIntervall, self.startNewThread).start()
         else:
             self.close()
+
+    def classifyStart(self, classifier):
+        self.classifier = classifier
+        self.classifyFlag = True
+    def classifyStop(self):
+        self.classifier = None
+        self.classifyFlag = False
+
+    def classify(self):
+        self.classifier.classify(self.transformedData[1])
 
     def startNewThread(self):
         self.thread = Thread(name="Recorder-" + str(self.threadNum), target=self.record, args=())

@@ -8,18 +8,19 @@ GESTURE_PREFIX = "/gesture_"
 
 class GestureFileIO():
 
-    def __init__(self, name="", gesturePath="../gesture"):
-        self.name = name
-        self.basePath = gesturePath
-        self.namedPath = gesturePath + "/" + self.name
-
-        if not os.path.exists(self.namedPath):
-            os.makedirs(self.namedPath)
-        for i in range(8):
-            outdir = self.namedPath + GESTURE_PREFIX + str(i) + "/"
-            if not os.path.isdir(outdir):
-                os.mkdir(outdir)
+    def __init__(self, name="", gesturePath="../gestures", relative=""):
         self.filenamebase = str(time.time())[:-3]
+        self.basePath = relative + gesturePath
+        self.name = name
+        self.namedPath = self.basePath + "/" + self.name
+
+        if name is not "":
+            if not os.path.exists(self.namedPath):
+                os.makedirs(self.namedPath)
+            for i in range(8):
+                outdir = self.namedPath + GESTURE_PREFIX + str(i) + "/"
+                if not os.path.isdir(outdir):
+                    os.mkdir(outdir)
 
     def writeGesture(self, recordClass, recordData):
         ''' adds the give gesture to the personal gesture file '''
@@ -32,17 +33,17 @@ class GestureFileIO():
         oid.close()
 
 
-    def getGesture2D(self, recordClass, names=[], relativePathAdd=""):
+    def getGesture2D(self, recordClass, names=[]):
         ''' get gesture as numpy 2D array '''
         # example: svm, tree
         if len(names) == 0:
-            for folder in os.walk(relativePathAdd + self.basePath):
-                names = folder[1]
-                print names
+            for (path, dirs, files) in os.walk(self.basePath):
+                for directory in dirs:
+                    names.append(directory)
                 break
         completearray = None
         for name in names:
-            indir = relativePathAdd + self.basePath + "/" + name + GESTURE_PREFIX + str(recordClass) + "/"
+            indir = self.basePath + "/" + name + GESTURE_PREFIX + str(recordClass) + "/"
             for infile in os.listdir(indir):
                 if infile.endswith(FILE_END):
                     arr = pd.read_csv(indir + infile, sep=',', header=None)
@@ -52,6 +53,7 @@ class GestureFileIO():
                     else:
                         completearray = np.append(completearray, arr, axis=0)
         if completearray is None:
+            print "empty data set returned"
             completearray = np.zeros((1, 2048))
         return completearray
 #         lis = []
@@ -61,10 +63,10 @@ class GestureFileIO():
 #             lis.extend(arr.tolist())
 #         return np.array(lis)
 
-    def getGesture3D(self, recordClass, names=[], relativePathAdd=""):
+    def getGesture3D(self, recordClass, names=[]):
         ''' get gesture as numpy 3D array '''
         # example: markovmodel, lstm
-        data2d = self.getGesture2D(recordClass, names, relativePathAdd)
+        data2d = self.getGesture2D(recordClass, names)
         data3d = data2d.reshape((np.shape(data2d)[0], 32, 64))
         return data3d
 

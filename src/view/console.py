@@ -2,6 +2,7 @@ import time
 from threading import Thread, Event
 from src.classifier.lstm.lstm import LSTM
 from visualizer import View
+import properties.config as c
 
 class Console:
     def __init__(self, recorder=None, applicationClose=None, setFileName=None, getFileName=None):
@@ -19,6 +20,18 @@ class Console:
         self.repeatedRecords = 0
         self.setFileName = setFileName
         self.getFileName = getFileName
+        self.lstmConfig = c.getInstance().getConfig("lstm")
+        self.classificator = {}
+
+    def getClassificator(self, name):
+        if(name == ""):
+            raise Exception("No classificator specified")
+        elif(name == "lstm"):
+            if(name not in self.classificator):
+                cl = LSTM(self.recorder, self.lstmConfig)
+                self.classificator[name] = cl
+            cl = self.classificator[name]
+            return cl
 
     def recordStart(self, key):
         args = key.split()
@@ -45,9 +58,10 @@ class Console:
     def bindKeys(self):
         self.key_bindings['e'] = self.exit
         self.key_bindings['h'] = self.printHelp
-        self.key_bindings['v'] = self.view
+        self.key_bindings['g'] = self.view
         self.key_bindings['c'] = self.classifyStart
         self.key_bindings['t'] = self.trainingStart
+        self.key_bindings['v'] = self.validateStart
         self.key_bindings['f'] = self.changeFilename
         self.key_bindings['0'] = self.recordStart
         self.key_bindings['1'] = self.recordStart
@@ -97,17 +111,34 @@ class Console:
 
     def classifyStart(self, key):
         method = key.split()[1]
+        classificator = None
         # TODO do it better... switch case, exception handling, ...
         if(method == 'lstm'):
-            classificator = LSTM(self.recorder)
-        classificator.startNewThread()
+            classificator = self.getClassificator(method)
+        else:
+            print "No classifier specified"
+            return
+        try:
+            self.recorder.classifyStart(classificator)
+        except KeyboardInterrupt:
+            self.recorder.classifyStop()
+            self.inputEvent.set()
 
     def trainingStart(self, key):
         method = key.split()[1]
         # TODO do it better... switch case, exception handling, ...
         if(method == 'lstm'):
-            classificator = LSTM(self.recorder)
+            classificator = self.getClassificator(method)
         classificator.startTraining()
+        self.inputEvent.set()
+
+    def validateStart(self, key):
+        method = key.split()[1]
+        # TODO do it better... switch case, exception handling, ...
+        if(method == 'lstm'):
+            classificator = self.getClassificator(method)
+        classificator.startValidation()
+        self.inputEvent.set()
 
     def printHelp(self, args=None):
         printHelp(event=self.inputEvent)

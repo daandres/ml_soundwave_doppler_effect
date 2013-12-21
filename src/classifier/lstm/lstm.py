@@ -13,19 +13,23 @@ from src.gestureFileIO import GestureFileIO
 
 
 INPUTS = 64
-HIDDEN = 100
 OUTPUTS = 8
-TRAINING_EPOCHS = 1
-CLASSES = [0, 6, 7]
+NCLASSES = 8
+CLASSES = [0, 1, 2, 3, 4, 5, 6, 7]
 
 class LSTM:
 
-    def __init__(self, recorder=None):
+    def __init__(self, recorder=None, config=None, relative=""):
 #         if recorder == None:
 #             raise Exception("No Recorder, so go home")
         self.recorder = recorder
+        self.config = config
+        self.hidden = int(self.config['hiddenneurons'])
+        self.epochs = int(self.config['trainingepochs'])
+        self.datanum = 0
+        self.relative = relative
 
-    def startNewThread(self):
+    def startClassify(self):
         self.t = Thread(name="LSTM", target=self.start, args=())
         self.t.start()
         return self.t
@@ -33,35 +37,36 @@ class LSTM:
     def start(self):
         print "LSTM started"
 
-    def startTraining(self, filename, createNew=False, save=False):
+    def startTraining(self, filename="default", createNew=True, save=False):
         print "LSTM Training started"
-        self.net = buildNetwork(INPUTS, HIDDEN, OUTPUTS, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False)
+        self.net = buildNetwork(INPUTS, self.hidden, OUTPUTS, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False)
         self.net.randomize()
         self.ds = self.getTrainingSet(filename, createNew, save)
         print "Data loaded, now create trainer"
-#         trainer = RPropMinusTrainer(self.net, dataset=self.ds, verbose=False)
-        trainer = BackpropTrainer(self.net, dataset=self.ds, verbose=True)
+        trainer = RPropMinusTrainer(self.net, dataset=self.ds, verbose=True)
+#         trainer = BackpropTrainer(self.net, dataset=self.ds, verbose=True)
         print "start training"
-        for _ in range(TRAINING_EPOCHS):
-            trainer.trainEpochs(TRAINING_EPOCHS)
-            trnresult = 100. * (1.0 - testOnSequenceData(self.net, self.ds))
-            print "train error: %5.2f%%" % trnresult, "\n"
+        trainer.trainEpochs(self.epochs)
+        trnresult = 100. * (1.0 - testOnSequenceData(self.net, self.ds))
+        print "train error: %5.2f%%" % trnresult, "\n"
 
     def getTrainingSet(self, filename, createNew=False, save=False):
         ds = None
         if createNew:
-            self.createPyBrainDatasetFromSamples(save, filename)
+            ds = self.createPyBrainDatasetFromSamples(save, filename)
         else:
             ds = SequenceClassificationDataSet.loadFromFile(filename)
         return ds
 
     def createPyBrainDatasetFromSamples(self, save=False, filename=None):
-        g = GestureFileIO()
+        np.set_printoptions(precision=2, threshold=np.nan)
+        g = GestureFileIO(relative=self.relative)
         data = [0] * 8
         for i in CLASSES:
-            data[i] = g.getGesture3D(i, [], "../../")
+            data[i] = g.getGesture3D(i, [])
+            print "data ", i, " loaded shape: ", np.shape(data[i])
         print "data loaded, now creating dataset"
-        ds = SequenceClassificationDataSet(64, OUTPUTS, nb_classes=8)
+        ds = SequenceClassificationDataSet(INPUTS, OUTPUTS, nb_classes=NCLASSES)
         for target in CLASSES:
             tupt = self.getTarget(target, OUTPUTS)
             for x in data[target]:
@@ -69,9 +74,7 @@ class LSTM:
                 for y in x:
                     tup = tuple(y)
                     ds.appendLinked(tup, tupt)
-#             self.ds.setField('input', array[:,:-1])
-#             self.ds.setField('target', array[:,-1:])
-#         print ds
+        print "DS entries" , ds.getNumSequences()
         if save:
             ds.saveToFile(filename)
         return ds
@@ -86,7 +89,18 @@ class LSTM:
         target[y] = 1
         return target
 
-    def classify(self):
+    def classify(self, data):
+        out = self.net.activate(data)
+        self.datanum += 1
+        if(self.datanum >= 32):
+            self.datanum = 0
+            self.net.reset()
+            print np.argmax(out)
+
+    def startValidation(self):
+        self.validate()
+
+    def validate(self):
 #         print self.ds.evaluateModuleMSE(self.net)
         confmat = np.zeros((OUTPUTS, OUTPUTS))
         for i in range(self.ds.getNumSequences()):
@@ -107,13 +121,15 @@ def testLstm():
     start = time.time()
     print str(start), "\tstart "
 #     np.set_printoptions(precision=2, threshold=np.nan)
-    lstm = LSTM()
+    import properties.config as c
+    conf = c.getInstance("../../").getConfig("lstm")
+    lstm = LSTM(config=conf, relative="../../")
 #     lstm.createPyBrainDatasetFromSamples(True, "dataset")
     lstm.startTraining("datasettest", True)
     print time.time(), "\tload network "
-    lstm.net = NetworkReader.readFrom('lstm.xml')
-    print time.time(), "\tstart classify "
-    lstm.classify()
+    lstm.net = NetworkReader.readFrom('lstm_dummy.xml')
+    print time.time(), "\tstart validate "
+    lstm.validate()
     end = time.time()
     print str(end), "\tend "
     print str(end - start), "\tdifftime"

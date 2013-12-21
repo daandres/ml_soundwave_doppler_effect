@@ -3,13 +3,23 @@ import ConfigParser
 DEFCONFIG = '../config/default.cfg'
 USERCONFIG = '../config/personal.cfg'
 
+
+def getInstance(relative=""):
+    global instance
+    if instance is None:
+        instance = ConfigProvider(relative)
+    return instance
+instance = None
+
+
 class ConfigProvider:
 
-    def __init__(self):
+    def __init__(self, relative=""):
+        self.relative = relative
         self.defaultConfig = ConfigParser.SafeConfigParser()
-        self.defaultConfig.read(DEFCONFIG)
+        self.defaultConfig.read(self.relative + DEFCONFIG)
         self.userConfig = ConfigParser.SafeConfigParser()
-        self.userConfig.read(USERCONFIG)
+        self.userConfig.read(self.relative + USERCONFIG)
 
     def getAudioConfig(self):
         return self.getConfig("audio")
@@ -31,11 +41,11 @@ class ConfigProvider:
             self.userConfig.add_section(section)
             for item in items:
                 self.userConfig.set(section, item[0], item[1])
-            with open(USERCONFIG, 'wb') as configfile:
+            with open(self.relative + USERCONFIG, 'wb') as configfile:
                 self.userConfig.write(configfile)
             return dict(self.userConfig.items(section))
 
     def setConfig(self, section, option, value):
         self.userConfig.set(section, option, value)
-        with open(USERCONFIG, 'wb') as configfile:
+        with open(self.relative + USERCONFIG, 'wb') as configfile:
             self.userConfig.write(configfile)
