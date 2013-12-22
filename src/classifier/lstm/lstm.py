@@ -1,3 +1,4 @@
+from src.classifier.classifier import IClassifier
 from pybrain.structure import LSTMLayer, LinearLayer, SoftmaxLayer
 from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
 from pybrain.tools.shortcuts import buildNetwork
@@ -13,7 +14,7 @@ NCLASSES = 8
 CLASSES = [0, 1, 2, 3, 4, 5, 6, 7]
 NAME = "LSTM"
 
-class LSTM:
+class LSTM(IClassifier):
 
     def __init__(self, recorder=None, config=None, relative=""):
 #         if recorder == None:

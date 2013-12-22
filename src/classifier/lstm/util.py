@@ -26,7 +26,7 @@ def load_network(filename=""):
 def load_dataset(filename=""):
     if filename == "":
         raise Exception("No dataset loaded because no network name provided")
-    ds = getTrainingSet(filename + '.data')
+    ds = SequenceClassificationDataSet.loadFromFile(filename + '.data')
     print "dataset loaded from ", filename + '.data'
     return ds
 
@@ -39,7 +39,7 @@ def getTrainingSet(classes, inputs, outputs, filename, createNew=False, save=Fal
     if createNew:
         ds = createPyBrainDatasetFromSamples(classes, inputs, outputs, save, filename, relative)
     else:
-        ds = SequenceClassificationDataSet.loadFromFile(relative + filename)
+        ds = load_dataset(relative + filename)
     return ds
 
 def createPyBrainDatasetFromSamples(classes, inputs, outputs, save=False, filename=None, relative=""):
