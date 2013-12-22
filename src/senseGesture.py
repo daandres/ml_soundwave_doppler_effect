@@ -78,7 +78,7 @@ def exitApp():
 
 if __name__ == '__main__':
     try:
-        printHelp()
+#         printHelp()
         app = SenseGesture()
         app.start()
     except KeyboardInterrupt:

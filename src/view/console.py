@@ -21,16 +21,24 @@ class Console:
         self.setFileName = setFileName
         self.getFileName = getFileName
         self.lstmConfig = c.getInstance().getConfig("lstm")
-        self.classificator = {}
+        self.classificators = {}
+        self.classificator = None
+        self.loadUserConfig()
+
+    def loadUserConfig(self):
+        self.userConfig = c.getInstance().getConfig("user")
+        print "Hello ", self.userConfig['name']
+        print "Use command 'h' for usage help!"
+        self.selectClassifier("u " + self.userConfig['classifier'])
 
     def getClassificator(self, name):
         if(name == ""):
             raise Exception("No classificator specified")
         elif(name == "lstm"):
-            if(name not in self.classificator):
+            if(name not in self.classificators):
                 cl = LSTM(self.recorder, self.lstmConfig)
-                self.classificator[name] = cl
-            cl = self.classificator[name]
+                self.classificators[name] = cl
+            cl = self.classificators[name]
             return cl
 
     def recordStart(self, key):
@@ -59,9 +67,12 @@ class Console:
         self.key_bindings['e'] = self.exit
         self.key_bindings['h'] = self.printHelp
         self.key_bindings['g'] = self.view
+        self.key_bindings['u'] = self.selectClassifier
         self.key_bindings['c'] = self.classifyStart
         self.key_bindings['t'] = self.trainingStart
         self.key_bindings['v'] = self.validateStart
+        self.key_bindings['l'] = self.loadClassifier
+        self.key_bindings['s'] = self.saveClassifier
         self.key_bindings['f'] = self.changeFilename
         self.key_bindings['0'] = self.recordStart
         self.key_bindings['1'] = self.recordStart
@@ -110,34 +121,59 @@ class Console:
         self.inputEvent.set()
 
     def classifyStart(self, key):
-        method = key.split()[1]
-        classificator = None
-        # TODO do it better... switch case, exception handling, ...
-        if(method == 'lstm'):
-            classificator = self.getClassificator(method)
-        else:
+        if self.classificator is None:
             print "No classifier specified"
             return
         try:
-            self.recorder.classifyStart(classificator)
+            self.recorder.classifyStart(self.classificator)
         except KeyboardInterrupt:
             self.recorder.classifyStop()
             self.inputEvent.set()
 
-    def trainingStart(self, key):
-        method = key.split()[1]
+    def selectClassifier(self, key):
+        method = key.split(" ")[1]
         # TODO do it better... switch case, exception handling, ...
         if(method == 'lstm'):
-            classificator = self.getClassificator(method)
-        classificator.startTraining()
+            self.classificator = self.getClassificator(method)
+            print "Using now classificator ", self.classificator.getName()
+        else:
+            print "No classifier specified"
+        self.inputEvent.set()
+
+    def trainingStart(self, key):
+        if self.classificator is None:
+            print "No classifier specified"
+            return
+        self.classificator.startTraining()
         self.inputEvent.set()
 
     def validateStart(self, key):
-        method = key.split()[1]
-        # TODO do it better... switch case, exception handling, ...
-        if(method == 'lstm'):
-            classificator = self.getClassificator(method)
-        classificator.startValidation()
+        if self.classificator is None:
+            print "No classifier specified"
+            return
+        self.classificator.startValidation()
+        self.inputEvent.set()
+
+    def loadClassifier(self, key):
+        if self.classificator is None:
+            print "No classifier specified"
+            return
+        args = key.split(" ")
+        filename = ""
+        if len(args) > 1:
+            filename = args[1]
+        self.classificator.load(filename)
+        self.inputEvent.set()
+
+    def saveClassifier(self, key):
+        if self.classificator is None:
+            print "No classifier specified"
+            return
+        args = key.split(" ")
+        filename = ""
+        if len(args) > 1:
+            filename = args[1]
+        self.classificator.save(filename)
         self.inputEvent.set()
 
     def printHelp(self, args=None):
@@ -155,13 +191,17 @@ class Console:
 
 def printHelp(args=None, event=None):
     print "Gesture Recognition based on the Soundwave doppler effect"
-    print "Supported classifiers: svm, trees, hmm, k-means and lstm"
     print "Usage: <command> [<option>]"
-    print "<digit> [<digit>]\t0-7 record a gesture and associate with class number [repeat <digit> times]"
-    print "c <classifier> \tstart real time classifying with the specified classifier"
-    print "t <classifier> \tstart training for the specified classifier with the saved data"
+    print "<num> [<num>]\t0-7 record a gesture and associate with class number [repeat <digit> times]"
+    print "u <classifier> \tconfigure classifier to use. Supported classifiers: [svm, trees, hmm, k-means, lstm]"
+    print "c \t\tstart real time classifying with the configured classifier"
+    print "t \t\tstart training for the configured classifier with the saved data"
+    print "l <filename> \tload configured classifier and dataset from file"
+    print "s [<filename>] \tsave configured classifier and dataset to file with filename or timestamp"
+    print "t \t\tstart training for the configured classifier with the saved data"
+    print "v \t\tstart validation for the configured classifier with the saved data"
     print "e \t\texit application"
-    print "v \t\tstart view"
+    print "g \t\tstart view [BUG: works only one time per runime]"
     print "f [<string>] \tchange filename for recording. if empty use current time "
     print "h \t\tprint this help"
     print ""
