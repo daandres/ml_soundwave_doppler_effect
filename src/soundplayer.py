@@ -40,7 +40,7 @@ class Sound:
 
     def stopPlaying(self):
         self.play = False
-        print "Wait for finish current stream"
+        print("Wait for finish current stream")
 
 if __name__ == '__main__':
     from properties.config import ConfigProvider

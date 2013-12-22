@@ -56,12 +56,12 @@ class SenseGesture():
             self.t3 = self.view.startNewThread()
             self.t1.start()
         except:
-            print "Error: unable to start thread ", sys.exc_info()
+            print("Error: unable to start thread ", sys.exc_info())
         self.t3.join()
 #         self.applicationClose()
-        print "Player alive: \t" + str(self.t1.is_alive())
-        print "Recorder alive:\t" + str(self.recorder.is_alive())
-        print "View alive: \t" + str(self.view.is_alive())
+        print("Player alive: \t" + str(self.t1.is_alive()))
+        print("Recorder alive:\t" + str(self.recorder.is_alive()))
+        print("View alive: \t" + str(self.view.is_alive()))
         exitApp()
 
     def applicationClose(self, code=0):
@@ -72,8 +72,8 @@ class SenseGesture():
         self.t1.join()
 
 def exitApp():
-    print enumerate()
-    print "Exit"
+    print(enumerate())
+    print("Exit")
     sys.exit(0)
 
 if __name__ == '__main__':
@@ -82,5 +82,5 @@ if __name__ == '__main__':
         app = SenseGesture()
         app.start()
     except KeyboardInterrupt:
-        print "KeyboardInterrupt"
+        print("KeyboardInterrupt")
         exitApp()

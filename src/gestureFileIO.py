@@ -28,7 +28,7 @@ class GestureFileIO():
         oid = open(outfile, "a")
         # flatten all inputs to 1 vector
         data = np.array([np.array(np.ravel(recordData))])
-#         print "Wrote record for class " + str(recordClass)
+#         print("Wrote record for class " + str(recordClass)
         np.savetxt(oid, data, delimiter=",", fmt='%1.4f')
         oid.close()
 
@@ -53,7 +53,7 @@ class GestureFileIO():
                     else:
                         completearray = np.append(completearray, arr, axis=0)
         if completearray is None:
-            print "empty data set returned"
+            print("empty data set returned")
             completearray = np.zeros((1, 2048))
         return completearray
 #         lis = []
@@ -82,5 +82,5 @@ if __name__ == "__main__":
 #     np.set_printoptions(threshold=np.nan)
     g = GestureFileIO("Daniel", "../gestures");
     data = g.getGesture3D(1, [])
-    print data
-    print np.shape(data)
+    print(data)
+    print(np.shape(data))

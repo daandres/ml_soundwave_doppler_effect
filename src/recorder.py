@@ -37,7 +37,8 @@ class SwhRecorder:
         # TODO - windows detection vs. alsa or something for linux
         # TODO - try/except for sound card selection/initiation
         self.buffersToRecord = int(self.framerate * self.secToRecord / self.buffersize)
-        if self.buffersToRecord == 0: self.buffersToRecord = 1
+        if self.buffersToRecord == 0:
+            self.buffersToRecord = 1
         self.samplesToRecord = int(self.buffersize * self.buffersToRecord)
         self.chunksToRecord = int(self.samplesToRecord / self.buffersize)
         self.secPerPoint = 1.0 / self.framerate
@@ -139,13 +140,14 @@ class SwhRecorder:
     def downsample(self, data, mult):
         """Given 1D data, return the binned average."""
         overhang = len(data) % mult
-        if overhang: data = data[:-overhang]
+        if overhang:
+            data = data[:-overhang]
         data = np.reshape(data, (len(data) / mult, mult))
         data = np.average(data, 1)
         return data
 
     def fft(self, data=None, trimBy=1, logScale=False, divBy=4000):
-        # print "fft " + str(time.time())
+        # print("fft " + str(time.time()))
         data = self.audio.flatten()
         left, right = np.split(np.abs(np.fft.fft(data)), 2)
         ys = np.add(left, right[::-1])
@@ -164,6 +166,6 @@ class SwhRecorder:
         self.transformedData = xs, ys
 
     def getTransformedData(self):
-        # print "get " + str(time.time())
+        # print("get " + str(time.time()))
         return self.transformedData
 

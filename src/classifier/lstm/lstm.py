@@ -35,20 +35,20 @@ class LSTM(IClassifier):
         return self.t
 
     def start(self):
-        print "LSTM started"
+        print("LSTM started")
 
     def startTraining(self, filename="default", createNew=True, save=False):
-        print "LSTM Training started"
+        print("LSTM Training started")
         self.net = buildNetwork(INPUTS, self.hidden, OUTPUTS, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False)
         self.net.randomize()
         self.ds = util.getTrainingSet(CLASSES, INPUTS, OUTPUTS, filename, createNew, save)
-        print "Data loaded, now create trainer"
+        print("Data loaded, now create trainer")
         trainer = RPropMinusTrainer(self.net, dataset=self.ds, verbose=True)
 #         trainer = BackpropTrainer(self.net, dataset=self.ds, verbose=True)
-        print "start training"
+        print("start training")
         trainer.trainEpochs(self.epochs)
         trnresult = 100. * (1.0 - testOnSequenceData(self.net, self.ds))
-        print "train error: %5.2f%%" % trnresult, "\n"
+        print("train error: %5.2f%%" % trnresult, "\n")
 
     def classify(self, data):
         out = self.net.activate(data)
@@ -56,13 +56,13 @@ class LSTM(IClassifier):
         if(self.datanum >= 32):
             self.datanum = 0
             self.net.reset()
-            print np.argmax(out)
+            print(np.argmax(out))
 
     def startValidation(self):
         self.validate()
 
     def validate(self):
-#         print self.ds.evaluateModuleMSE(self.net)
+#         print(self.ds.evaluateModuleMSE(self.net)
         confmat = np.zeros((OUTPUTS, OUTPUTS))
         for i in range(self.ds.getNumSequences()):
             for dataIter in self.ds.getSequenceIterator(i):
@@ -73,10 +73,10 @@ class LSTM(IClassifier):
                     target = data
                     out = self.net.activate(data[0])
                 confmat[np.argmax(target)][np.argmax(out)] += 1
-#                 print "target:\t", np.argmax(target)
-#                 print "out:\t", np.argmax(out)
-#                 print ""
-        print confmat
+#                 print("target:\t", np.argmax(target)
+#                 print("out:\t", np.argmax(out)
+#                 print(""
+        print(confmat)
 
     def load(self, filename=""):
         if filename == "":

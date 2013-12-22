@@ -25,7 +25,7 @@ class View:
 
 
     def callback(self, recClass):
-        print "Recording finished for class " + str(recClass)
+        print("Recording finished for class " + str(recClass))
         self.status_btn_gesture(True)
 
     def record_0(self):
