@@ -56,7 +56,7 @@ class SenseGesture():
             self.t3 = self.view.startNewThread()
             self.t1.start()
         except:
-            print("Error: unable to start thread ", sys.exc_info())
+            print("Error: unable to start thread " + str(sys.exc_info()))
         self.t3.join()
 #         self.applicationClose()
         print("Player alive: \t" + str(self.t1.is_alive()))

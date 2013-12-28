@@ -7,6 +7,7 @@ import src.classifier.lstm.util as util
 import numpy as np
 from threading import Thread
 import time
+import arac
 
 INPUTS = 64
 OUTPUTS = 8
@@ -25,30 +26,57 @@ class LSTM(IClassifier):
         self.epochs = int(self.config['trainingepochs'])
         self.datanum = 0
         self.relative = relative
+        if(self.config['autoload_data'] == "true"):
+            self.loadData()
+        else:
+            self.ds = util.createPyBrainDatasetFromSamples(CLASSES, INPUTS, OUTPUTS, "")
+        if(self.config['autoload_network'] == "true"):
+            self.load()
+        else:
+            self.createNetwork()
 
     def getName(self):
         return NAME
+
+    def createNetwork(self):
+        self.net = buildNetwork(INPUTS, self.hidden, OUTPUTS, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False)
+        self.net.randomize()
+        self.net = self.net.convertToFastNetwork()
+        print("LSTM network created with " + str(self.hidden) + " LSTM neurons")
+        return
 
     def startClassify(self):
         self.t = Thread(name=NAME, target=self.start, args=())
         self.t.start()
         return self.t
 
-    def start(self):
-        print("LSTM started")
-
-    def startTraining(self, filename="default", createNew=True, save=False):
-        print("LSTM Training started")
-        self.net = buildNetwork(INPUTS, self.hidden, OUTPUTS, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False)
-        self.net.randomize()
-        self.ds = util.getTrainingSet(CLASSES, INPUTS, OUTPUTS, filename, createNew, save)
-        print("Data loaded, now create trainer")
+    def startTraining(self):
+        assert self.net != None
+        assert self.ds != None
+        print("LSTM RPropMinusTrainer Training started")
         trainer = RPropMinusTrainer(self.net, dataset=self.ds, verbose=True)
 #         trainer = BackpropTrainer(self.net, dataset=self.ds, verbose=True)
-        print("start training")
-        trainer.trainEpochs(self.epochs)
+        start = time.time()
+        print("start training with " + str(self.epochs) + " epochs: " + str(start))
+        tenthOfEpochs = self.epochs / 10
+        for _ in range(10):
+            trainer.trainEpochs(tenthOfEpochs)
+            end = time.time()
+            diff = end - start
+            print("Training time: " + str(end) + "\nDiff: " + str(diff))
+        if(self.epochs - (tenthOfEpochs * 10) > 0):
+            trainer.trainEpochs(self.epochs - (tenthOfEpochs * 10))
+        end = time.time()
+        diff = end - start
+        print("Training end: " + str(end) + "\nDiff: " + str(diff))
+        if(self.config['autosave_network'] == "true"):
+            self.save(overwrite=False)
+        self.validateOnData()
+        return
+
+    def validateOnData(self):
         trnresult = 100. * (1.0 - testOnSequenceData(self.net, self.ds))
-        print("train error: %5.2f%%" % trnresult, "\n")
+        print("Validation error: %5.2f%%" % trnresult, "\n")
 
     def classify(self, data):
         out = self.net.activate(data)
@@ -62,28 +90,42 @@ class LSTM(IClassifier):
         self.validate()
 
     def validate(self):
-#         print(self.ds.evaluateModuleMSE(self.net)
-        confmat = np.zeros((OUTPUTS, OUTPUTS))
-        for i in range(self.ds.getNumSequences()):
-            for dataIter in self.ds.getSequenceIterator(i):
-                self.net.reset()
-                out = None
-                target = None
-                for data in dataIter:
-                    target = data
-                    out = self.net.activate(data[0])
-                confmat[np.argmax(target)][np.argmax(out)] += 1
-#                 print("target:\t", np.argmax(target)
-#                 print("out:\t", np.argmax(out)
-#                 print(""
-        print(confmat)
+        self.validateOnData()
+        print(self.ds.evaluateMSE(self.net))
+#         confmat = np.zeros((OUTPUTS, OUTPUTS))
+#         for i in range(self.ds.getNumSequences()):
+#             for dataIter in self.ds.getSequenceIterator(i):
+#                 self.net.reset()
+#                 out = None
+#                 target = None
+#                 for data in dataIter:
+#                     target = data
+#                     out = self.net.activate(data[0])
+#                 confmat[np.argmax(target)][np.argmax(out)] += 1
+# #                 print("target:\t", np.argmax(target)
+# #                 print("out:\t", np.argmax(out)
+# #                 print(""
+#         print(confmat)
 
     def load(self, filename=""):
         if filename == "":
             filename = self.config['network']
-        self.net, self.ds = util.load(filename)
+        self.net = util.load_network(filename)
 
-    def save(self, filename=""):
+    def save(self, filename="", overwrite=True):
         if filename == "":
-            filename = self.config['network']
-        util.save(self.net, self.ds, filename)
+            if overwrite:
+                filename = self.config['network']
+            else:
+                filename = self.config['network'] + str(time.time())
+        util.save_network(self.net, filename)
+
+    def loadData(self, filename=""):
+        if filename == "":
+            filename = self.config['dataset']
+        self.ds = util.load_dataset(filename)
+
+    def saveData(self, filename=""):
+        if filename == "":
+            filename = self.config['dataset']
+        util.save_dataset(self.ds, filename)
