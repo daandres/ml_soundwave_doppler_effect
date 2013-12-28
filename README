@@ -20,3 +20,10 @@ pyuic4 -o ui_plot.py ui_plot.ui
 from:    self.qwtPlot = QwtPlot(self.centralwidget)
 to-->    self.qwtPlot = Qwt5.QwtPlot(self.centralwidget)
 
+## For LSTM
+Dependencies:
+- pyBrain 0.3.1
+- arac: https://github.com/bayerj/arac
+-- no need for google testing framework: comment lines44,45,61,62 in SConstruct
+-- link libarac.so to /usr/lib/ and not /usr/local/lib/
+-- do fix in issue 15: https://github.com/bayerj/arac/issues/15

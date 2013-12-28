@@ -3,13 +3,26 @@ import pyaudio
 import wavebender as wb
 from myStream import MyStream
 # import winsound
+from threading import Thread
 
 class Sound:
 
-    def __init__(self):
-        self.audioDev = pyaudio.PyAudio()
+    def __init__(self, audioConfig):
+        self.play = False
         self.audioStream = None
-        self.play = True
+        self.audioConfig = audioConfig
+        self.frequency = float(self.audioConfig['frequency'])
+        self.amplitude = float(self.audioConfig['amplitude'])
+        self.framerate = int(self.audioConfig['framerate'])
+        self.duration = int(self.audioConfig['duration'])
+        self.bufsize = int(self.audioConfig['buffersize'])
+        self.threadNum = 0
+
+    def startNewThread(self):
+        self.t = Thread(name="Soundplayer-" + str(self.threadNum), target=self.startPlaying, args=(self.frequency, self.amplitude, self.framerate, self.duration, self.bufsize))
+        self.t.start()
+        self.threadNum += 1
+        return self.t
 
     #===========================================================================
     # def startPlaying(self, frequency, amplitude, framerate, duration):
@@ -21,6 +34,9 @@ class Sound:
     #         if self.play == False:
     #             break
     #===========================================================================
+    def setup(self):
+        self.audioDev = pyaudio.PyAudio()
+        self.play = True
 
     def startPlaying(self, frequency=440.0, amplitude=0.5, framerate=48100, duration=30, bufsize=1024):
         # create stream
