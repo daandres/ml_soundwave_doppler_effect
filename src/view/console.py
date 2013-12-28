@@ -5,10 +5,13 @@ from visualizer import View
 import properties.config as c
 
 class Console:
-    def __init__(self, recorder=None, applicationClose=None, setFileName=None, getFileName=None):
+    def __init__(self, recorder=None, soundplayer=None, applicationClose=None, setFileName=None, getFileName=None):
         if recorder == None:
             raise Exception("No Recorder, so go home")
         self.recorder = recorder
+        if soundplayer == None:
+            raise Exception("No Soundplayer, so go home")
+        self.soundplayer = soundplayer
         if applicationClose == None:
             raise Exception("No close callback")
         self.applicationClose = applicationClose
@@ -30,6 +33,9 @@ class Console:
         print("Hello " + self.userConfig['name'])
         print("Use command 'h' for usage help!")
         self.selectClassifier("u " + self.userConfig['classifier'])
+        self.sound = not bool(self.userConfig['autostart_sound'])
+        self.soundFirstTime = True
+        self.toggleSound("")
 
     def getClassificator(self, name):
         if(name == ""):
@@ -74,6 +80,7 @@ class Console:
         self.key_bindings['l'] = self.load
         self.key_bindings['s'] = self.save
         self.key_bindings['f'] = self.changeFilename
+        self.key_bindings['r'] = self.toggleSound
         self.key_bindings['0'] = self.recordStart
         self.key_bindings['1'] = self.recordStart
         self.key_bindings['2'] = self.recordStart
@@ -94,6 +101,24 @@ class Console:
         if self.t is not None:
             return self.t.is_alive()
         return False
+
+    def toggleSound(self, args):
+        self.sound = not self.sound
+        if(self.sound):
+            self.soundplayer.setup()
+            self.recorder.setup()
+            self.soundplayer.startNewThread()
+            self.recorder.startNewThread()
+            print("Soundplaying and recording started")
+            self.soundFirstTime = False
+        else:
+            if(not self.soundFirstTime):
+                self.recorder.close()
+                self.soundplayer.stopPlaying()
+                self.recorder.thread.join()
+                self.soundplayer.t.join()
+                print("Soundplaying and recording stopped")
+        self.inputEvent.set()
 
     def start(self):
         self.alive = True
@@ -213,6 +238,7 @@ def printHelp(args=None, event=None):
     print("e \t\texit application")
     print("g \t\tstart view [BUG: works only one time per runime]")
     print("f [<string>] \tchange filename for recording. if empty use current time ")
+    print("r \t\tstart/stop sound playing and recording")
     print("h \t\tprint(this help")
     print("")
     print("0 Right-To-Left-One-Hand\n1 Top-to-Bottom-One-Hand\n2 Entgegengesetzt with two hands\n3 Single-push with one hand\n4 Double-push with one hand\n5 Rotate one hand\n6 Background noise (no gesture, but in silent room)\n7 No gesture with background sound (in a Pub, at office, in the kitchen, etc.)")

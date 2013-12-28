@@ -11,12 +11,12 @@ class SenseGesture():
     def __init__(self):
         print("Started Gesture Recognition")
         self._setConfig()
-        self.soundPlayer = Sound()
+        self.soundPlayer = Sound(self.audioConfig)
 
         self.gestureFileIO = GestureFileIO(self.name, self.path)
         self.recorder = SwhRecorder(self.gestureFileIO, self.audioConfig, self.recordConfig)
 
-        self.view = Console(self.recorder, self.applicationClose, self.gestureFileIO.setFileName, self.gestureFileIO.getFileName)
+        self.view = Console(self.recorder, self.soundPlayer, self.applicationClose, self.gestureFileIO.setFileName, self.gestureFileIO.getFileName)
 
         self.t1 = None
         self.t2 = None
@@ -51,17 +51,17 @@ class SenseGesture():
 
     def start(self):
         try:
-            self.t1 = Thread(name="Soundplayer", target=self.soundPlayer.startPlaying, args=(self.frequency, self.amplitude, self.framerate, self.duration, self.bufsize))
-            self.t2 = self.recorder.startNewThread()
+#             self.t1 = Thread(name="Soundplayer", target=self.soundPlayer.startPlaying, args=(self.frequency, self.amplitude, self.framerate, self.duration, self.bufsize))
+#             self.t2 = self.recorder.startNewThread()
             self.t3 = self.view.startNewThread()
-            self.t1.start()
+#             self.t1.start()
         except:
             print("Error: unable to start thread " + str(sys.exc_info()))
         self.t3.join()
 #         self.applicationClose()
-        print("Player alive: \t" + str(self.t1.is_alive()))
-        print("Recorder alive:\t" + str(self.recorder.is_alive()))
-        print("View alive: \t" + str(self.view.is_alive()))
+#         print("Player alive: \t" + str(self.t1.is_alive()))
+#         print("Recorder alive:\t" + str(self.recorder.is_alive()))
+#         print("View alive: \t" + str(self.view.is_alive()))
         exitApp()
 
     def applicationClose(self, code=0):
@@ -69,7 +69,7 @@ class SenseGesture():
         self.soundPlayer.stopPlaying()
 
         self.recorder.thread.join()
-        self.t1.join()
+        self.soundPlayer.t.join()
 
 def exitApp():
     print(enumerate())

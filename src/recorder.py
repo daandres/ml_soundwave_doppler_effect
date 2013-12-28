@@ -18,7 +18,7 @@ class SwhRecorder:
         self.secToRecord = float(recordConfig['sectorecord'])
         self.recordingFrames = int(recordConfig['recordingframes'])
         self.recordIntervall = float(recordConfig['recordintervall'])
-        self.timerStop = False
+#         self.timerStop = False
         # frequency range (+ / -)
         frequencyToIndex = self.buffersize / (self.framerate + 0.0)
         self.leftBorder = (frequencyToIndex * self.frequency) - float(recordConfig['leftborder'])
@@ -27,7 +27,7 @@ class SwhRecorder:
         self.initRecording()
 
         self.threadNum = 0
-        self.setup()
+#         self.setup()
 
         self.classifyFlag = False
         self.classifier = None
@@ -49,6 +49,7 @@ class SwhRecorder:
         self.xsBuffer = np.arange(self.buffersize) * self.secPerPoint
         self.xs = np.arange(self.chunksToRecord * self.buffersize) * self.secPerPoint
         self.audio = np.empty((self.chunksToRecord * self.buffersize), dtype=np.int16)
+        self.timerStop = False
 
     def close(self):
         self.stopRecording()
