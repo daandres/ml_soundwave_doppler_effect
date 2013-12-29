@@ -48,11 +48,10 @@ class Console:
             return cl
 
     def recordStart(self, key):
-        args = key.split()
         fileName = self.getFileName(key[0])
         print("\nRecording now class " + str(key[0]) + " to file " + fileName)
-        if len(args) > 1:
-            num = int(args[1])
+        if len(key) > 1:
+            num = int(key[1])
             self.repeatedRecords = num
         else:
             self.repeatedRecords = 1
