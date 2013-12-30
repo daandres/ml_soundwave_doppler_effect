@@ -1,5 +1,5 @@
-from threading import Thread, enumerate
-from view.console import Console, printHelp
+from threading import enumerate
+from view.console import Console
 from soundplayer import Sound
 from recorder import SwhRecorder
 import properties.config as c
