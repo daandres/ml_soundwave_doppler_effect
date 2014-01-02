@@ -30,10 +30,11 @@ net.randomize()
 
 trainer = BackpropTrainer(net, ds)
 
-for _ in range(1000):
+for _ in range(10):
     print (trainer.train())
 
 net.reset()
-for i in ds:
-    nextact = net.activate(i) > 0.5
+for i in range(ds.getNumSequences()):
+    for data in ds.getSequence(i):
+        nextact = np.argmax(net.activate(data))
     print (nextact)

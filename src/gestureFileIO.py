@@ -44,14 +44,15 @@ class GestureFileIO():
         completearray = None
         for name in names:
             indir = self.basePath + "/" + name + GESTURE_PREFIX + str(recordClass) + "/"
-            for infile in os.listdir(indir):
-                if infile.endswith(FILE_END):
-                    arr = pd.read_csv(indir + infile, sep=',', header=None)
-                    arr = np.asarray(arr)
-                    if completearray is None:
-                        completearray = arr
-                    else:
-                        completearray = np.append(completearray, arr, axis=0)
+            if(os.path.exists(indir)):
+                for infile in os.listdir(indir):
+                    if infile.endswith(FILE_END):
+                        arr = pd.read_csv(indir + infile, sep=',', header=None)
+                        arr = np.asarray(arr)
+                        if completearray is None:
+                            completearray = arr
+                        else:
+                            completearray = np.append(completearray, arr, axis=0)
         if completearray is None:
             print("empty data set returned")
             completearray = np.zeros((1, 2048))
