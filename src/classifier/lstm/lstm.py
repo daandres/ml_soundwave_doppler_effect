@@ -1,9 +1,9 @@
-from src.classifier.classifier import IClassifier
+from classifier.classifier import IClassifier
 from pybrain.structure import LSTMLayer, LinearLayer, SoftmaxLayer
 from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.tools.validation import testOnSequenceData
-import src.classifier.lstm.util as util
+import classifier.lstm.util as util
 import numpy as np
 from threading import Thread
 import time

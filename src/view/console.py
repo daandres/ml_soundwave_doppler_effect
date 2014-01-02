@@ -1,6 +1,6 @@
 import time
 from threading import Thread, Event
-from src.classifier.lstm.lstm import LSTM
+from classifier.lstm.lstm import LSTM
 from visualizer import View
 import properties.config as c
 
