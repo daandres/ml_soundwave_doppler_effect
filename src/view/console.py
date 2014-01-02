@@ -1,6 +1,6 @@
 import time
 from threading import Thread, Event
-from src.classifier.lstm.lstm import LSTM
+from classifier.lstm.lstm import LSTM
 from visualizer import View
 import properties.config as c
 
@@ -47,11 +47,11 @@ class Console:
             cl = self.classificators[name]
             return cl
 
-    def recordStart(self, key):
-        fileName = self.getFileName(key[0])
-        print("\nRecording now class " + str(key[0]) + " to file " + fileName)
-        if len(key) > 1:
-            num = int(key[1])
+    def recordStart(self, args):
+        fileName = self.getFileName(args[0])
+        print("\nRecording now class " + str(args[0]) + " to file " + fileName)
+        if len(args) > 1:
+            num = int(args[1])
             self.repeatedRecords = num
         else:
             self.repeatedRecords = 1
@@ -60,7 +60,7 @@ class Console:
             self.repeatedRecords -= 1
             print("\tStart recording next instance.\n\t" + str(self.repeatedRecords) + " instances left")
             self.recordEvent.clear()
-            self.recorder.setRecordClass(key[0], self.callback)
+            self.recorder.setRecordClass(args[0], self.callback)
             self.recordEvent.wait()
         print("finished recording")
         self.inputEvent.set()
@@ -148,6 +148,7 @@ class Console:
     def classifyStart(self, key):
         if self.classificator is None:
             print("No classifier specified")
+            self.inputEvent.set()
             return
         try:
             self.recorder.classifyStart(self.classificator)
@@ -155,11 +156,10 @@ class Console:
             self.recorder.classifyStop()
             self.inputEvent.set()
 
-    def selectClassifier(self, key):
-        method = key.split(" ")[1]
+    def selectClassifier(self, args):
         # TODO do it better... switch case, exception handling, ...
-        if(method == 'lstm'):
-            self.classificator = self.getClassificator(method)
+        if(args[1] == 'lstm'):
+            self.classificator = self.getClassificator(args[1])
             print("Using now classificator " + self.classificator.getName())
         else:
             print("No classifier specified")
@@ -168,6 +168,7 @@ class Console:
     def trainingStart(self, key):
         if self.classificator is None:
             print("No classifier specified")
+            self.inputEvent.set()
             return
         self.classificator.startTraining()
         self.inputEvent.set()
@@ -175,6 +176,7 @@ class Console:
     def validateStart(self, key):
         if self.classificator is None:
             print("No classifier specified")
+            self.inputEvent.set()
             return
         self.classificator.startValidation()
         self.inputEvent.set()
@@ -182,6 +184,7 @@ class Console:
     def load(self, args):
         if self.classificator is None:
             print("No classifier specified")
+            self.inputEvent.set()
             return
         filename = ""
         if len(args) > 2:
@@ -198,6 +201,7 @@ class Console:
     def save(self, args):
         if self.classificator is None:
             print("No classifier specified")
+            self.inputEvent.set()
             return
         filename = ""
         if len(args) > 2:
@@ -212,19 +216,19 @@ class Console:
         self.inputEvent.set()
 
     def printHelp(self, args=None):
-        printHelp(event=self.inputEvent)
+        printHelp()
+        self.inputEvent.set()
 
-    def changeFilename(self, args=None):
-        argsarr = args.split(" ", 2)
+    def changeFilename(self, args):
         newName = ""
-        if len(argsarr) > 1:
-            newName = argsarr[1]
+        if len(args) > 1:
+            newName = args[1]
         else:
             newName = str(time.time())[:-3]
         self.setFileName(newName)
         self.inputEvent.set()
 
-def printHelp(args=None, event=None):
+def printHelp(args=None):
     print("Gesture Recognition based on the Soundwave doppler effect")
     print("Usage: <command> [<option>]")
     print("<num> [<num>]\t0-7 record a gesture and associate with class number [repeat <digit> times]")
@@ -242,5 +246,3 @@ def printHelp(args=None, event=None):
     print("")
     print("0 Right-To-Left-One-Hand\n1 Top-to-Bottom-One-Hand\n2 Entgegengesetzt with two hands\n3 Single-push with one hand\n4 Double-push with one hand\n5 Rotate one hand\n6 Background noise (no gesture, but in silent room)\n7 No gesture with background sound (in a Pub, at office, in the kitchen, etc.)")
     print("")
-    if event is not None:
-        event.set()

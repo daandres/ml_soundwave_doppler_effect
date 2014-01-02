@@ -2,7 +2,7 @@ from pybrain.tools.customxml.networkwriter import NetworkWriter
 from pybrain.tools.customxml.networkreader import NetworkReader
 from pybrain.datasets import SequenceClassificationDataSet
 import numpy as np
-from src.gestureFileIO import GestureFileIO
+from gestureFileIO import GestureFileIO
 import time
 
 def save(net, ds, filename=""):

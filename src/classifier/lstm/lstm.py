@@ -1,13 +1,13 @@
-from src.classifier.classifier import IClassifier
+from classifier.classifier import IClassifier
 from pybrain.structure import LSTMLayer, LinearLayer, SoftmaxLayer
 from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.tools.validation import testOnSequenceData
-import src.classifier.lstm.util as util
+import classifier.lstm.util as util
 import numpy as np
 from threading import Thread
 import time
-import arac
+# import arac
 
 INPUTS = 64
 OUTPUTS = 8
@@ -41,7 +41,7 @@ class LSTM(IClassifier):
     def createNetwork(self):
         self.net = buildNetwork(INPUTS, self.hidden, OUTPUTS, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False)
         self.net.randomize()
-        self.net = self.net.convertToFastNetwork()
+#         self.net = self.net.convertToFastNetwork()
         print("LSTM network created with " + str(self.hidden) + " LSTM neurons")
         return
 
@@ -60,9 +60,10 @@ class LSTM(IClassifier):
         print("start training with " + str(self.epochs) + " epochs: " + str(start))
         tenthOfEpochs = self.epochs / 10
         for _ in range(10):
+            inBetweenStart = time.time()
             trainer.trainEpochs(tenthOfEpochs)
             end = time.time()
-            diff = end - start
+            diff = end - inBetweenStart
             print("Training time: " + str(end) + "\nDiff: " + str(diff))
         if(self.epochs - (tenthOfEpochs * 10) > 0):
             trainer.trainEpochs(self.epochs - (tenthOfEpochs * 10))
@@ -71,12 +72,12 @@ class LSTM(IClassifier):
         print("Training end: " + str(end) + "\nDiff: " + str(diff))
         if(self.config['autosave_network'] == "true"):
             self.save(overwrite=False)
-        self.validateOnData()
+        self.validate()
         return
 
     def validateOnData(self):
         trnresult = 100. * (1.0 - testOnSequenceData(self.net, self.ds))
-        print("Validation error: %5.2f%%" % trnresult, "\n")
+        print("Validation error: %5.2f%%" % trnresult)
 
     def classify(self, data):
         out = self.net.activate(data)
@@ -91,21 +92,31 @@ class LSTM(IClassifier):
 
     def validate(self):
         self.validateOnData()
-        print(self.ds.evaluateMSE(self.net))
-#         confmat = np.zeros((OUTPUTS, OUTPUTS))
-#         for i in range(self.ds.getNumSequences()):
-#             for dataIter in self.ds.getSequenceIterator(i):
-#                 self.net.reset()
-#                 out = None
-#                 target = None
-#                 for data in dataIter:
-#                     target = data
-#                     out = self.net.activate(data[0])
-#                 confmat[np.argmax(target)][np.argmax(out)] += 1
-# #                 print("target:\t", np.argmax(target)
-# #                 print("out:\t", np.argmax(out)
-# #                 print(""
-#         print(confmat)
+#         print(self.ds.evaluateMSE(self.net))
+        confmat = np.zeros((OUTPUTS, OUTPUTS))
+        for i in range(self.ds.getNumSequences()):
+            self.net.reset()
+            out = None
+            target = None
+            for dataIter in self.ds.getSequenceIterator(i):
+                data = dataIter[0]
+                target = dataIter[1]
+                out = self.net.activate(data)
+            confmat[np.argmax(target)][np.argmax(out)] += 1
+#                 print("target:\t", np.argmax(target)
+#                 print("out:\t", np.argmax(out)
+#                 print(""
+        sumWrong = 0
+        sumAll = 0
+        for i in range(OUTPUTS):
+            for j in range(OUTPUTS):
+                if i != j:
+                    sumWrong += confmat[i][j]
+                sumAll += confmat[i][j]
+        error = sumWrong / sumAll
+        print(confmat)
+        print("error: " + str(100. * error) + "%")
+
 
     def load(self, filename=""):
         if filename == "":
