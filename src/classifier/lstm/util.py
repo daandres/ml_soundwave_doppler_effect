@@ -43,6 +43,14 @@ def load(filename):
 
 def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative=""):
 #         np.set_printoptions(precision=2, threshold=np.nan)
+    labels = ['Right-To-Left-One-Hand',
+              'Top-to-Bottom-One-Hand',
+              'Entgegengesetzt with two hands',
+              'Single-push with one hand',
+              'Double-push with one hand',
+              'Rotate one hand',
+              'Background silent',
+              'Background loud']
     nClasses = len(classes)
     g = GestureFileIO(relative=relative)
     data = [0] * 8
@@ -50,18 +58,23 @@ def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative=""):
         data[i] = g.getGesture3D(i, [])
         print("data " + str(i) + " loaded shape: " + str(np.shape(data[i])))
     print("data loaded, now creating dataset")
-    ds = SequenceClassificationDataSet(inputs, outputs, nb_classes=nClasses)
+    ds = SequenceClassificationDataSet(inputs, outputs, nb_classes=nClasses, class_labels=labels)
     for target in classes:
         tupt = getTarget(target, outputs)
+        print("Target " + str(tupt))
         for x in data[target]:
             ds.newSequence()
             for y in x:
                 tup = tuple(y)
                 ds.appendLinked(tup, tupt)
-    print("DS entries" + str(ds.getNumSequences()))
+    print("DS entries " + str(ds.getNumSequences()))
     return ds
 
 def getTarget(y, dim):
+    if(dim == 1):
+        target = np.zeros((dim,))
+        target[0] = y
+        return target
     if y >= dim:
         raise Exception("wrong dimension chosen for target")
     elif y < 0:

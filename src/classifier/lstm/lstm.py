@@ -1,5 +1,6 @@
 from classifier.classifier import IClassifier
 from pybrain.structure import LSTMLayer, LinearLayer, SoftmaxLayer
+from pybrain.unsupervised.trainers.deepbelief import DeepBeliefTrainer
 from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
 from pybrain.supervised.trainers.evolino import EvolinoTrainer
 from pybrain.tools.shortcuts import buildNetwork
@@ -16,16 +17,16 @@ from nose import exc
 from pybrain.rl.environments.shipsteer.northwardtask import GoNorthwardTask
 from pybrain.optimization import *  # @UnusedWildImport
 # algo = HillClimber
-# algo = GA
+algo = GA
 # algo = MemeticSearch
-algo = NelderMead
+# algo = NelderMead
 # algo = CMAES
-algo = OriginalNES
-algo = ES
-algo = MultiObjectiveGA
+# algo = OriginalNES
+# algo = ES
+# algo = MultiObjectiveGA
 
 INPUTS = 64
-OUTPUTS = 8
+OUTPUTS = 1
 NCLASSES = 8
 CLASSES = [0, 1, 2, 3, 4, 5, 6, 7]
 NAME = "LSTM"
@@ -54,7 +55,7 @@ class LSTM(IClassifier):
         return NAME
 
     def createNetwork(self):
-        if(self.config['network_type'] == "gradient" or self.config['network_type'] == "northward"):
+        if(self.config['network_type'] == "gradient" or self.config['network_type'] == "optimization"):
             self.net = buildNetwork(INPUTS, self.hidden, OUTPUTS, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False)
             self.net.randomize()
 #         self.net = self.net.convertToFastNetwork()
@@ -102,26 +103,27 @@ class LSTM(IClassifier):
 
         def getOptimizationTrainer():
             task = GoNorthwardTask()
-            l = algo(task, self.net, minimize=True)
+            l = algo(self.ds.evaluateModuleMSE, self.net, verbose=True)
             return l
 
         def train(training):
             start = time.time()
             print("start training with " + str(self.epochs) + " epochs: " + str(start))
             tenthOfEpochs = self.epochs / 10
-            for _ in range(10):
+            for i in range(10):
                 inBetweenStart = time.time()
                 training(tenthOfEpochs)
                 end = time.time()
                 diff = end - inBetweenStart
-                print("Training time: " + str(end) + "\nDiff: " + str(diff))
+                print("Training time of epoch " + str(i) + " : " + str(end) + "\nDiff: " + str(diff))
             if(self.epochs - (tenthOfEpochs * 10) > 0):
                 training(self.epochs - (tenthOfEpochs * 10))
             end = time.time()
             diff = end - start
             print("Training end: " + str(end) + "\nDiff: " + str(diff))
             if(self.config['autosave_network'] == "true"):
-                self.save(overwrite=False)
+                filename = str(time.time()) + "_n" + str(self.hidden) + "_e" + str(self.epochs) + "_o" + OUTPUTS
+                self.save(filename, overwrite=False)
             self.validate()
             return
 
@@ -133,7 +135,7 @@ class LSTM(IClassifier):
         elif(self.config['network_type'] == "evolino"):
             trainer = getEvolino();
             train(trainer.trainEpochs)
-        elif(self.config['network_type'] == "northward"):
+        elif(self.config['network_type'] == "optimization"):
             trainer = getOptimizationTrainer();
             train(trainer.learn)
             return
@@ -151,15 +153,15 @@ class LSTM(IClassifier):
         if(self.datanum >= 32):
             self.datanum = 0
             self.net.reset()
-            print(np.argmax(out))
+            print(str(np.argmax(out)) + " " + str(out))
 
     def startValidation(self):
         self.validate()
 
     def validate(self):
-#         self.validateOnData()
+        self.validateOnData()
 #         print(self.ds.evaluateMSE(self.net))
-        confmat = np.zeros((OUTPUTS, OUTPUTS))
+        confmat = np.zeros((NCLASSES, NCLASSES))
         for i in range(self.ds.getNumSequences()):
             self.net.reset()
             out = None
@@ -172,7 +174,8 @@ class LSTM(IClassifier):
                 out = self.net.activate(data)
 #                 print(str(i) + "\t" + str(j) + "\tafter activate")
                 j += 1
-            confmat[np.argmax(target)][np.argmax(out)] += 1
+            # confmat[np.round(target)[0]][np.round(out)[0]] += 1
+            print "out:\t", str(out), "\ttarget:\t", str(target)
 #                 print("target:\t", np.argmax(target)
 #                 print("out:\t", np.argmax(out)
 #                 print(""
