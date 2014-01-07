@@ -1,9 +1,10 @@
 *.pyc
-/.settings
-/.settings/org.eclipse.core.resources.prefs
+.settings
+.settings/org.eclipse.core.resources.prefs
 __pycache__/
 *.py[cod]
 *.bak
 src/properties/personal.py
 config/personal.cfg
-/.pydevproject
+.pydevproject
+*~
