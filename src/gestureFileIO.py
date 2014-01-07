@@ -79,9 +79,60 @@ class GestureFileIO():
         outfile = outdir + self.filenamebase + FILE_END
         return outfile
 
+    def getGesture3DNormalized(self, recordClass, names=[]):
+        rawData = self.getGesture3D(recordClass, names)
+        normalizedData = self._normalise(rawData)
+        return normalizedData
+
+    def getGesture3DDiffAvg(self, recordClass, names=[]):
+        rawData = self.getGesture3D(recordClass, names)
+        normalizedData = self._normalise(rawData)
+        avg = self.getAvgFrequency(names)
+        diffAvgData = normalizedData - avg
+        return diffAvgData
+
+    def getAvgFrequency(self, names=[]):
+        normalizedData = self.getGesture3DNormalized(6, names)
+        avg = np.mean(normalizedData, axis=1)
+        avg = np.mean(avg, axis=0)
+        return avg
+
+    def _normalise(self, arr):
+        ''' normalise each frame '''
+        for d in range(len(arr)):
+            for dd in range(len(arr[d])):
+                arr[d][dd] = arr[d][dd] / np.amax(arr[d][dd])
+        return arr
+
+
 if __name__ == "__main__":
 #     np.set_printoptions(threshold=np.nan)
-    g = GestureFileIO("Daniel", "../gestures");
-    data = g.getGesture3D(1, [])
-    print(data)
-    print(np.shape(data))
+#     g = GestureFileIO("Daniel", "../gestures");
+#     data = g.getGesture3D(1, [])
+#     print(data)
+#     print(np.shape(data))
+    import pylab
+    x = np.arange(64)
+    gesture = 10
+    gclass = 6
+    def make_plot(arr, length, c):
+        ''' plot all recordingFrames '''
+        for i in range(length):
+            ax = pylab.subplot(5, 8, i)
+            pylab.plot(x, arr[i], c)
+            ax.set_ylim([-0.2, 1])
+
+    gestures = GestureFileIO()
+    normalizedData = gestures.getGesture3DNormalized(gclass)
+    diffAvgData = gestures.getGesture3DDiffAvg(gclass)
+    avg = gestures.getAvgFrequency()
+    ''' plot normalised and averaged frequency data '''
+    pylab.subplot(5, 8, 39)
+    pylab.plot(x, avg, "g")
+
+    ''' plot normalised gessture data '''
+    length = len(normalizedData[gesture])
+    make_plot(normalizedData[gesture], length, "b")
+    make_plot(diffAvgData[gesture], length, "r")
+
+    pylab.show()
