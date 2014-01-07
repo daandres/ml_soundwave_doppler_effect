@@ -74,8 +74,8 @@ class View:
         self.uiplot.btn_gesture_3.clicked.connect(self.record_3)
         self.uiplot.btn_gesture_4.clicked.connect(self.record_4)
         self.uiplot.btn_gesture_5.clicked.connect(self.record_5)
-        self.uiplot.btn_gesture_5.clicked.connect(self.record_6)
-        self.uiplot.btn_gesture_5.clicked.connect(self.record_7)
+        self.uiplot.btn_gesture_6.clicked.connect(self.record_6)
+        self.uiplot.btn_gesture_7.clicked.connect(self.record_7)
 
     def startNewThread(self):
         self.t = Thread(name="ControlGui", target=self.start, args=())
