@@ -1,6 +1,5 @@
 import time
 from threading import Thread, Event
-from classifier.lstm.lstm import LSTM
 from visualizer import View
 import properties.config as c
 
@@ -42,6 +41,7 @@ class Console:
             raise Exception("No classificator specified")
         elif(name == "lstm"):
             if(name not in self.classificators):
+                from classifier.lstm.lstm import LSTM
                 cl = LSTM(self.recorder, self.lstmConfig)
                 self.classificators[name] = cl
             cl = self.classificators[name]
