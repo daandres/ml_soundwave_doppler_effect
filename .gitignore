@@ -8,3 +8,4 @@ src/properties/personal.py
 config/personal.cfg
 .pydevproject
 *~
+.project
