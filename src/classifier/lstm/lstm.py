@@ -10,7 +10,6 @@ import classifier.lstm.util as util
 import numpy as np
 from threading import Thread
 import time
-from nose import exc
 # import arac
 
 # Optimization learners imports
