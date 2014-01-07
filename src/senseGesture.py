@@ -5,13 +5,14 @@ from recorder import SwhRecorder
 import properties.config as c
 from gestureFileIO import GestureFileIO
 import sys
+import os
 
 class SenseGesture():
 
     def __init__(self):
         print("Started Gesture Recognition")
         self._setConfig()
-        self.soundPlayer = Sound(self.audioConfig)
+        self.soundPlayer = Sound(self.audioConfig, self.osConfig)
 
         self.gestureFileIO = GestureFileIO(self.name, self.path)
         self.recorder = SwhRecorder(self.gestureFileIO, self.audioConfig, self.recordConfig)
@@ -26,7 +27,8 @@ class SenseGesture():
     def _setConfig(self):
         self.config = c.getInstance()
         self.checkNameSet()
-
+        self.checkOSet()
+        
         self.audioConfig = self.config.getAudioConfig()
         self.pathsConfig = self.config.getPathsConfig()
         self.recordConfig = self.config.getRecordConfig()
@@ -47,7 +49,11 @@ class SenseGesture():
         else:
             self.name = userconfig['name']
 
-
+    def checkOSet(self):
+        self.osConfig = self.config.getOSConfig()
+        if(self.osConfig['type'] == ""):
+            self.config.setConfig("os","type",os.name)
+            self.osConfig = self.config.getOSConfig()
 
     def start(self):
         try:

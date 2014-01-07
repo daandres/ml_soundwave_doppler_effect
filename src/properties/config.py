@@ -32,6 +32,9 @@ class ConfigProvider:
     def getUserConfig(self):
         return self.getConfig("user")
 
+    def getOSConfig(self):
+        return self.getConfig("os")
+
     def getConfig(self, section):
         try:
             return dict(self.userConfig.items(section))
