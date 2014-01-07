@@ -25,7 +25,6 @@ algo = GA
 # algo = MultiObjectiveGA
 
 INPUTS = 64
-OUTPUTS = 1
 NCLASSES = 8
 CLASSES = [0, 1, 2, 3, 4, 5, 6, 7]
 NAME = "LSTM"
@@ -38,13 +37,14 @@ class LSTM(IClassifier):
         self.recorder = recorder
         self.config = config
         self.hidden = int(self.config['hiddenneurons'])
+        self.outneurons = int(self.config['outneurons'])
         self.epochs = int(self.config['trainingepochs'])
         self.datanum = 0
         self.relative = relative
         if(self.config['autoload_data'] == "true"):
             self.loadData()
         else:
-            self.ds = util.createPyBrainDatasetFromSamples(CLASSES, INPUTS, OUTPUTS, "")
+            self.ds = util.createPyBrainDatasetFromSamples(CLASSES, INPUTS, self.outneurons, "")
         if(self.config['autoload_network'] == "true"):
             self.load()
         else:
@@ -55,11 +55,11 @@ class LSTM(IClassifier):
 
     def createNetwork(self):
         if(self.config['network_type'] == "gradient" or self.config['network_type'] == "optimization"):
-            self.net = buildNetwork(INPUTS, self.hidden, OUTPUTS, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False)
+            self.net = buildNetwork(INPUTS, self.hidden, self.outneurons, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False)
             self.net.randomize()
 #         self.net = self.net.convertToFastNetwork()
         elif(self.config['network_type'] == "evolino"):
-            self.net = EvolinoNetwork(OUTPUTS, self.hidden)
+            self.net = EvolinoNetwork(self.outneurons, self.hidden)
         else:
             raise Exception("cannot create network, no network type specified")
         print("LSTM network created with " + str(self.hidden) + " LSTM neurons")
@@ -121,7 +121,7 @@ class LSTM(IClassifier):
             diff = end - start
             print("Training end: " + str(end) + "\nDiff: " + str(diff))
             if(self.config['autosave_network'] == "true"):
-                filename = str(time.time()) + "_n" + str(self.hidden) + "_e" + str(self.epochs) + "_o" + OUTPUTS
+                filename = str(time.time()) + "_n" + str(self.hidden) + "_e" + str(self.epochs) + "_o" + self.outneurons
                 self.save(filename, overwrite=False)
             self.validate()
             return
@@ -180,8 +180,8 @@ class LSTM(IClassifier):
 #                 print(""
         sumWrong = 0
         sumAll = 0
-        for i in range(OUTPUTS):
-            for j in range(OUTPUTS):
+        for i in range(self.outneurons):
+            for j in range(self.outneurons):
                 if i != j:
                     sumWrong += confmat[i][j]
                 sumAll += confmat[i][j]
