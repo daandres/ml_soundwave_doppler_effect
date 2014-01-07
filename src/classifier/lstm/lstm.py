@@ -121,7 +121,7 @@ class LSTM(IClassifier):
             diff = end - start
             print("Training end: " + str(end) + "\nDiff: " + str(diff))
             if(self.config['autosave_network'] == "true"):
-                filename = str(time.time()) + "_n" + str(self.hidden) + "_e" + str(self.epochs) + "_o" + self.outneurons
+                filename = str(time.time()) + "_n" + str(self.hidden) + "_e" + str(self.epochs) + "_o" + str(self.outneurons)
                 self.save(filename, overwrite=False)
             self.validate()
             return
@@ -172,8 +172,9 @@ class LSTM(IClassifier):
 #                 print(str(i) + "\t" + str(j) + "\tbefore activate")
                 out = self.net.activate(data)
 #                 print(str(i) + "\t" + str(j) + "\tafter activate")
+#                 print out
                 j += 1
-            # confmat[np.round(target)[0]][np.round(out)[0]] += 1
+            confmat[np.argmax(target)][np.argmax(out)] += 1
             print "out:\t", str(out), "\ttarget:\t", str(target)
 #                 print("target:\t", np.argmax(target)
 #                 print("out:\t", np.argmax(out)
