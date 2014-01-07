@@ -2,7 +2,6 @@ import pyaudio
 # # To use wavebender checkout this repo: https://github.com/zacharydenton/wavebender.git and install it with python setup.py
 import wavebender as wb
 from myStream import MyStream
-import winsound
 from threading import Thread
 
 class Sound:
@@ -47,7 +46,8 @@ class Sound:
         if self.isWindows:
             while True:
                 try:
-                    winsound.Beep(int(frequency),duration*1000)
+                    import winsound
+                    winsound.Beep(int(frequency), duration * 1000)
                 except AttributeError:
                     pass
                 if self.play == False:
