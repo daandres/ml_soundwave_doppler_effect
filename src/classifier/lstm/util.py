@@ -1,5 +1,10 @@
-from pybrain.tools.customxml.networkwriter import NetworkWriter
-from pybrain.tools.customxml.networkreader import NetworkReader
+import os
+if os.name == 'nt':
+    from pybrain.tools.xml.networkwriter import NetworkWriter
+    from pybrain.tools.xml.networkreader import NetworkReader
+else:
+    from pybrain.tools.customxml.networkwriter import NetworkWriter
+    from pybrain.tools.customxml.networkreader import NetworkReader
 from pybrain.datasets import SequenceClassificationDataSet
 import numpy as np
 from gestureFileIO import GestureFileIO
