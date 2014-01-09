@@ -8,6 +8,7 @@ class IClassifier:
         pass
 
     @abc.abstractmethod
+    @DeprecationWarning
     def startClassify(self):
         pass
 

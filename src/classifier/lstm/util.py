@@ -90,4 +90,12 @@ def getTarget(y, dim):
     target[y] = 1
     return target
 
-
+# Average frequency
+# TODO aktuelle Ruhe Frequenz messen und davon average nehmen.
+avg = None
+def getAverage():
+    global avg
+    if avg == None:
+        g = GestureFileIO()
+        avg = g.getAvgFrequency()
+    return avg

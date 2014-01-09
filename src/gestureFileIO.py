@@ -85,8 +85,7 @@ class GestureFileIO():
         return normalizedData
 
     def getGesture3DDiffAvg(self, recordClass, names=[]):
-        rawData = self.getGesture3D(recordClass, names)
-        normalizedData = self._normalise(rawData)
+        normalizedData = self.getGesture3DNormalized(recordClass, names)
         avg = self.getAvgFrequency(names)
         diffAvgData = normalizedData - avg
         return diffAvgData
@@ -103,7 +102,6 @@ class GestureFileIO():
             for dd in range(len(arr[d])):
                 arr[d][dd] = arr[d][dd] / np.amax(arr[d][dd])
         return arr
-
 
 if __name__ == "__main__":
 #     np.set_printoptions(threshold=np.nan)

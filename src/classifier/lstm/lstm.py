@@ -45,6 +45,7 @@ class LSTM(IClassifier):
             self.loadData()
         else:
             self.ds = util.createPyBrainDatasetFromSamples(CLASSES, INPUTS, self.outneurons, "", self.config['data_average'])
+        self.avg = util.getAverage()
         if(self.config['autoload_network'] == "true"):
             self.load()
         else:
@@ -65,8 +66,9 @@ class LSTM(IClassifier):
         print("LSTM network created with " + str(self.hidden) + " LSTM neurons")
         return
 
+    @DeprecationWarning
     def startClassify(self):
-        self.t = Thread(name=NAME, target=self.start, args=())
+        self.t = Thread(name=NAME, target=self.classify, args=())
         self.t.start()
         return self.t
 
@@ -147,9 +149,11 @@ class LSTM(IClassifier):
         print("Validation error: %5.2f%%" % trnresult)
 
     def classify(self, data):
-        out = self.net.activate(data)
+        normalizedData = data / np.amax(data)
+        diffAvgData = normalizedData - self.avg
+        out = self.net.activate(diffAvgData)
         self.datanum += 1
-        if(self.datanum >= 32):
+        if(self.datanum % 32 == 0):
             self.datanum = 0
             self.net.reset()
             print(str(np.argmax(out)) + " " + str(out))
