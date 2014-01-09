@@ -44,7 +44,7 @@ class LSTM(IClassifier):
         if(self.config['autoload_data'] == "true"):
             self.loadData()
         else:
-            self.ds = util.createPyBrainDatasetFromSamples(CLASSES, INPUTS, self.outneurons, "")
+            self.ds = util.createPyBrainDatasetFromSamples(CLASSES, INPUTS, self.outneurons, "", self.config['data_average'])
         if(self.config['autoload_network'] == "true"):
             self.load()
         else:
@@ -159,8 +159,9 @@ class LSTM(IClassifier):
 
     def validate(self):
         self.validateOnData()
-#         print(self.ds.evaluateMSE(self.net))
+        print(self.ds.evaluateModuleMSE(self.net))
         confmat = np.zeros((NCLASSES, NCLASSES))
+#         print("target-out")
         for i in range(self.ds.getNumSequences()):
             self.net.reset()
             out = None
@@ -172,13 +173,10 @@ class LSTM(IClassifier):
 #                 print(str(i) + "\t" + str(j) + "\tbefore activate")
                 out = self.net.activate(data)
 #                 print(str(i) + "\t" + str(j) + "\tafter activate")
-#                 print out
                 j += 1
             confmat[np.argmax(target)][np.argmax(out)] += 1
-            print "out:\t", str(out), "\ttarget:\t", str(target)
-#                 print("target:\t", np.argmax(target)
-#                 print("out:\t", np.argmax(out)
-#                 print(""
+#             print("out:\t" + str(out) + "\ttarget:\t" + str(target))
+#             print(str(np.argmax(target)) + "-" + str(np.argmax(out)))
         sumWrong = 0
         sumAll = 0
         for i in range(self.outneurons):
@@ -195,6 +193,8 @@ class LSTM(IClassifier):
         if filename == "":
             filename = self.config['network']
         self.net = util.load_network(filename)
+        self.net.sorted = False
+        self.net.sortModules()
 
     def save(self, filename="", overwrite=True):
         if filename == "":
