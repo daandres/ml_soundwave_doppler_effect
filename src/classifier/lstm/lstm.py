@@ -1,5 +1,5 @@
 from classifier.classifier import IClassifier
-from pybrain.structure import LSTMLayer, LinearLayer, SoftmaxLayer
+from pybrain.structure import LSTMLayer, LinearLayer, SoftmaxLayer, SigmoidLayer
 from pybrain.unsupervised.trainers.deepbelief import DeepBeliefTrainer
 from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
 from pybrain.supervised.trainers.evolino import EvolinoTrainer
@@ -25,8 +25,6 @@ algo = GA
 # algo = MultiObjectiveGA
 
 INPUTS = 64
-NCLASSES = 8
-CLASSES = [0, 1, 2, 3, 4, 5, 6, 7]
 NAME = "LSTM"
 
 class LSTM(IClassifier):
@@ -39,31 +37,35 @@ class LSTM(IClassifier):
         self.hidden = int(self.config['hiddenneurons'])
         self.outneurons = int(self.config['outneurons'])
         self.epochs = int(self.config['trainingepochs'])
+        self.classes = eval(self.config['classes'])
+        self.nClasses = len(self.classes)
+        self.trainingType = self.config['training']
         self.datanum = 0
         self.relative = relative
+        self.name = "n" + str(self.hidden) + "_o" + str(self.outneurons) + "_l" + self.config['outlayer'] + "_nC" + str(self.nClasses) + "_t" + self.trainingType + "_e" + str(self.epochs) + self.config['fast']
         if(self.config['autoload_data'] == "true"):
             self.loadData()
         else:
-            self.ds = util.createPyBrainDatasetFromSamples(CLASSES, INPUTS, self.outneurons, "", self.config['data_average'])
+            self.ds = util.createPyBrainDatasetFromSamples(self.classes, INPUTS, self.outneurons, "", self.config['data_average'])
         self.avg = util.getAverage()
         if(self.config['autoload_network'] == "true"):
             self.load()
         else:
             self.createNetwork()
 
+
     def getName(self):
         return NAME
 
     def createNetwork(self):
-        if(self.config['network_type'] == "gradient" or self.config['network_type'] == "optimization"):
-            self.net = buildNetwork(INPUTS, self.hidden, self.outneurons, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False)
-            self.net.randomize()
-#         self.net = self.net.convertToFastNetwork()
-        elif(self.config['network_type'] == "evolino"):
-            self.net = EvolinoNetwork(self.outneurons, self.hidden)
-        else:
-            raise Exception("cannot create network, no network type specified")
-        print("LSTM network created with " + str(self.hidden) + " LSTM neurons")
+        if(self.config['outlayer'] == "linear"): layer = LinearLayer
+        elif(self.config['outlayer'] == "sigmoid"): layer = SigmoidLayer
+        elif(self.config['outlayer'] == "softmax"): layer = SoftmaxLayer
+        else: raise Exception("Cannot create network: no output layer specified")
+        self.net = buildNetwork(INPUTS, self.hidden, self.outneurons, hiddenclass=LSTMLayer, outclass=layer, recurrent=True, outputbias=False)
+        self.net.randomize()
+#         if(self.config['fast'] != ""): self.net = self.net.convertToFastNetwork()
+        print("LSTM network created: " + self.name)
         return
 
     @DeprecationWarning
@@ -80,65 +82,45 @@ class LSTM(IClassifier):
             print("LSTM RPropMinusTrainer Training started")
             trainer = RPropMinusTrainer(self.net, dataset=self.ds, verbose=True)
     #         trainer = BackpropTrainer(self.net, dataset=self.ds, verbose=True)
-            return trainer
-
-        def getEvolino():
-            print("LSTM Evolino Training started")
-            wtRatio = 1. / 3.
-            trainer = EvolinoTrainer(
-                self.net,
-                dataset=self.ds,
-                subPopulationSize=20,
-                nParents=8,
-                nCombinations=1,
-                initialWeightRange=(-0.01 , 0.01),
-            #    initialWeightRange = ( -0.1 , 0.1 ),
-            #    initialWeightRange = ( -0.5 , -0.2 ),
-                backprojectionFactor=0.001,
-                mutationAlpha=0.001,
-            #    mutationAlpha = 0.0000001,
-                nBurstMutationEpochs=np.Infinity,
-                wtRatio=wtRatio,
-                verbosity=2)
-            return trainer
+            return trainer, False
 
         def getOptimizationTrainer():
-            task = GoNorthwardTask()
+            print("LSTM Optimization Training started")
             l = algo(self.ds.evaluateModuleMSE, self.net, verbose=True)
-            return l
+            return l, True
 
-        def train(training):
+        def train(training, returnsNet):
             start = time.time()
-            print("start training with " + str(self.epochs) + " epochs: " + str(start))
+            print("start training: " + str(start / 3600)) + self.name
             tenthOfEpochs = self.epochs / 10
             for i in range(10):
                 inBetweenStart = time.time()
-                training(tenthOfEpochs)
+                if returnsNet: self.net = training(tenthOfEpochs)
+                else: training(tenthOfEpochs)
                 end = time.time()
                 diff = end - inBetweenStart
-                print("Training time of epoch " + str(i) + " : " + str(end) + "\nDiff: " + str(diff))
-            if(self.epochs - (tenthOfEpochs * 10) > 0):
-                training(self.epochs - (tenthOfEpochs * 10))
+                print("Training time of epoch " + str(i) + " : " + str(end / 3600) + "\nDiff: " + str(diff / 3600))
+            lastEpochs = self.epochs - (tenthOfEpochs * 10)
+            if(lastEpochs > 0):
+                if returnsNet: self.net = training(lastEpochs)
+                else: training(lastEpochs)
             end = time.time()
             diff = end - start
-            print("Training end: " + str(end) + "\nDiff: " + str(diff))
+            print("Training end: " + str(end / 3600) + "\nDiff: " + str(diff / 3600))
             if(self.config['autosave_network'] == "true"):
-                filename = str(time.time()) + "_n" + str(self.hidden) + "_e" + str(self.epochs) + "_o" + str(self.outneurons)
+                filename = self.name + "_" + str(time.time())
                 self.save(filename, overwrite=False)
             self.validate()
             return
 
         #==========
         # =Training=
-        if(self.config['network_type'] == "gradient"):
-            trainer = getRPropTrainer();
-            train(trainer.trainEpochs)
-        elif(self.config['network_type'] == "evolino"):
-            trainer = getEvolino();
-            train(trainer.trainEpochs)
-        elif(self.config['network_type'] == "optimization"):
-            trainer = getOptimizationTrainer();
-            train(trainer.learn)
+        if(self.trainingType == "gradient"):
+            trainer, returnsNet = getRPropTrainer();
+            train(trainer.trainEpochs, returnsNet)
+        elif(self.trainingType == "optimization"):
+            trainer, returnsNet = getOptimizationTrainer();
+            train(trainer.learn, returnsNet)
             return
         else:
             raise Exception("Cannot create trainer, no network type specified")
@@ -164,7 +146,7 @@ class LSTM(IClassifier):
     def validate(self):
         self.validateOnData()
         print(self.ds.evaluateModuleMSE(self.net))
-        confmat = np.zeros((NCLASSES, NCLASSES))
+        confmat = np.zeros((self.nClasses, self.nClasses))
 #         print("target-out")
         for i in range(self.ds.getNumSequences()):
             self.net.reset()
