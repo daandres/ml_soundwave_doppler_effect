@@ -1,5 +1,5 @@
 \section{\acl{LSTM}}
-\textit{Frank Reichwein, Daniel Andrés López }
+\textit{Daniel Andrés López, Frank Reichwein}
 
 \ac{LSTM} ist ein \ac{RNN}, welches die Eigenschaft hat Zustände über einen
 bestimmten Zeitraum zu behalten und danach wieder zu vergessen. \acp{LSTM} sind
@@ -31,16 +31,16 @@ zum Gehirn können \acp{LSTM} biologisch motiviert werden.
 Ein \ac{RNN} mit \ac{LSTM} Einheiten hat ein Hiddenlayer in dem die
 verschiedenen \ac{LSTM} Knoten enthalten sind. Das Outputlayer ist dann ein
 einfaches lineares oder sigmoidales Layer. 
-\clearpage
  
-\begin{wrapfigure}{r}{0.4\textwidth}
+\begin{figure}[htfp]
 	\begin{center}
-	\includegraphics[width=0.4\textwidth]{lstm_block}
+	\includegraphics[width=0.3\textwidth]{lstm_block}
 	\caption{Schema eines \acs{LSTM} Blocks}
 	Quelle: \cite{WIKI2013}
 	\label{fig:lstm_block}
 	\end{center}
-\end{wrapfigure}
+\end{figure}
+
 In \autoref{fig:lstm_block} ist das Schema eines \ac{LSTM} dargestellt. sind die
 verschiedenen Knoten in der unteren Zeile folgendes: Input, Input Gate, Forgot
 Gate, Output Gate. Die drei Gates bestimmen ihrem Namen entsprechend, ob der
@@ -60,16 +60,13 @@ mehrere Schritte erhalten. Wird das Input Gate aktiv, wird $\Sigma$ durch den
 verarbeiteten Input ersetzt, mit einem aktiven Forgot Gate \textit{gelöscht}. 
 
 
-
 \subsection{Funktionsweise von der \acs{PyBrain} \acs{LSTM} Implementierung}
 \ac{PyBrain}\cite{schaul2010} ist eine Bibliothek für Python und stellt
 verschiedene Module aus dem Bereich des maschinellen Lernes bereit. Dabei
 spielen neuronale Netzwerke eine zentrale Rolle, diese werden in verschiedenen
 Lernmethoden angewendet wie z.B. im Reinforcement, unüberwachten oder
 evolutionären Lernen.
-\enlargethispage{\baselineskip}
-\enlargethispage{\baselineskip}
-\enlargethispage{\baselineskip}
+
 \begin{lstlisting}[caption={Aufbau eines LSTM Netzes},label={lst:lstm_example}]{lst:lstm_example} 
 net = buildNetwork(INPUTS, HIDDEN, OUTPUTS, hiddenclass=LSTMLayer,
 outclass=SigmoidLayer, recurrent=True, bias=True) 
@@ -79,8 +76,6 @@ for _ in range(1000):
     trainer.train()
 \end{lstlisting}
 
-\clearpage
- 
 In \autoref{lst:lstm_example} ist ein Beispiel aufgezeigt wie \ac{PyBrain}
 verwendet werden kann. Es gibt dabei verschiedene Möglichkeiten im Aufbau des
 Netzes (v.a. Anzahl der Neuronen und \ac{LSTM}-Blocks), in der Datenhaltung
