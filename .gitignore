@@ -6,4 +6,5 @@ __pycache__/
 *.bak
 src/properties/personal.py
 config/personal.cfg
+.DS_Store
 *~
