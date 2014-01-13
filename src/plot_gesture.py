@@ -8,7 +8,7 @@ import pylab
 import properties.config as config 
 
 x = numpy.arange(64)
-gesture = 3
+gesture = 1
 
 def normalise(arr):
     ''' normalise each frame '''
@@ -20,11 +20,11 @@ def normalise(arr):
     
 def preprocess():
     ''' load and reshape textfile with 20khz frequency data '''
-    n = numpy.loadtxt("../gestures/Benjamin/20khz_frequency.txt",delimiter=",")
+    n = numpy.loadtxt("../gestures/Benjamin/185000hz.txt",delimiter=",")
     n = n.reshape(n.shape[0],32,n.shape[1]/32) #recordingframes
     
     ''' load and reshape textfile with gesture data '''
-    g = numpy.loadtxt("../gestures/Benjamin/test_gesture.txt",delimiter=",")
+    g = numpy.loadtxt("../gestures/Benjamin/gesture_0/1389637026.txt",delimiter=",")
     g = g.reshape(g.shape[0],32,g.shape[1]/32) #recordingframes
     
     ''' normalise data '''
@@ -57,7 +57,7 @@ def main():
     pylab.subplot(5,8,39)
     pylab.plot(x,nn_avg,"g")
     
-    ''' plot normalised gessture data '''
+    ''' plot normalised gesture data '''
     length = len(gn[gesture])
     make_plot(gn[gesture],None,length,"b")
     make_plot(gn[gesture],nn_avg,length,"r")
