@@ -46,6 +46,13 @@ class Console:
                 self.classificators[name] = cl
             cl = self.classificators[name]
             return cl
+        elif(name == "svm"):
+            if(name not in self.classificators):
+                from classifier.svm.svm import SVM
+                cl = SVM(self.recorder)
+                self.classificators[name] = cl
+            cl = self.classificators[name]
+            return cl
 
     def recordStart(self, args):
         fileName = self.getFileName(args[0])
@@ -159,6 +166,9 @@ class Console:
     def selectClassifier(self, args):
         # TODO do it better... switch case, exception handling, ...
         if(args[1] == 'lstm'):
+            self.classificator = self.getClassificator(args[1])
+            print("Using now classificator " + self.classificator.getName())
+        elif(args[1] == 'svm'):
             self.classificator = self.getClassificator(args[1])
             print("Using now classificator " + self.classificator.getName())
         else:
