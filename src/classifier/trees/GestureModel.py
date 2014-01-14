@@ -18,14 +18,14 @@ class GestureModel(object):
             #left
             pos = peakPosition-1
             numBins = 0
-            while sample[pos] >= threshold and pos >= 0:
+            while pos >= 0 and sample[pos] >= threshold:
                 numBins+=1
                 pos-=1
             self.bins_left.append(numBins)
             #right
             pos = peakPosition+1
             numBins = 0
-            while sample[pos] >= threshold and pos < len(sample):
+            while pos < len(sample) and sample[pos] >= threshold:
                 numBins+=1
                 pos+=1
             self.bins_right.append(numBins)

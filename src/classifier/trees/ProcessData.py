@@ -12,15 +12,15 @@ def readData(filename):
     fid.close()
     return data
 
-data = readData("../../../gestures/Annalena/gesture_1/1389608527_10x.txt")
+data = readData("../../../gestures/Annalena/gesture_3/1389686429_10x.txt")
+#data = readData("../../../gestures/Annalena/gesture_1/1389608527_10x.txt")
+#data = readData("../../../gestures/Annalena/gesture_3/1388337880_hintergrundgespraech_50x.txt")
 
 gestures = []
 for line in data:
     if (len(line) == 2048):
-        try:
-            gestures.append(GestureModel(np.reshape(line, (32,64))))
-        except IndexError as detail:
-            print 'Error:', detail
+        tmp = np.reshape(line, (32,64))
+        gestures.append(GestureModel(tmp))
 
 import matplotlib.pyplot as plt
 for gesture in gestures:
