@@ -22,7 +22,6 @@ class Console:
         self.repeatedRecords = 0
         self.setFileName = setFileName
         self.getFileName = getFileName
-        self.lstmConfig = c.getInstance().getConfig("lstm")
         self.classificators = {}
         self.classificator = None
         self.loadUserConfig()
@@ -42,7 +41,8 @@ class Console:
         elif(name == "lstm"):
             if(name not in self.classificators):
                 from classifier.lstm.lstm import LSTM
-                cl = LSTM(self.recorder, self.lstmConfig)
+                lstmConfig = c.getInstance().getConfig("lstm")
+                cl = LSTM(self.recorder, lstmConfig)
                 self.classificators[name] = cl
             cl = self.classificators[name]
             return cl
