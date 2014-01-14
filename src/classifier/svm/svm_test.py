@@ -33,14 +33,21 @@ def preprocess():
 
 
 def test(nn_avg):
-    path = "../../../gestures/Benjamin/"
+    path = "../../../gestures/"
+    name = "Annalena"
+    gesturenumber = 0
     
-    n = numpy.loadtxt(path+"gesture_0/1389637026.txt",delimiter=",")
+    dirf = os.listdir(path+name+"/gesture_"+str(gesturenumber))
+    firsttextfile = dirf[0]
+    
+    p = path+name+"/gesture_"+str(gesturenumber)+"/"+firsttextfile
+    
+    n = numpy.loadtxt(p,delimiter=",")
     n = n.reshape(n.shape[0],32,n.shape[1]/32) #recordingframes
     nn = normalise(n,nn_avg)
     nn = nn.reshape(nn.shape[0],nn.shape[1]*nn.shape[2])
     
-    Y_data = nn[10:]
+    Y_data = nn#[10:]
     Y_targets = numpy.zeros(Y_data.shape[0], dtype=int)
     
     print "Y_data", "\t\t", Y_data.shape
