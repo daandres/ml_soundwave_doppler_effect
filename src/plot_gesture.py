@@ -8,7 +8,7 @@ import pylab
 import properties.config as config 
 
 x = numpy.arange(64)
-gesture = 1
+gesture = 9
 
 def normalise(arr):
     ''' normalise each frame '''
@@ -19,12 +19,13 @@ def normalise(arr):
 
     
 def preprocess():
+    name = "Benjamin"
     ''' load and reshape textfile with 20khz frequency data '''
     n = numpy.loadtxt("../gestures/Benjamin/185000hz.txt",delimiter=",")
     n = n.reshape(n.shape[0],32,n.shape[1]/32) #recordingframes
     
     ''' load and reshape textfile with gesture data '''
-    g = numpy.loadtxt("../gestures/Benjamin/gesture_0/1389637026.txt",delimiter=",")
+    g = numpy.loadtxt("../gestures/"+name+"/gesture_0/1389637026.txt",delimiter=",")
     g = g.reshape(g.shape[0],32,g.shape[1]/32) #recordingframes
     
     ''' normalise data '''

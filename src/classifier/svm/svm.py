@@ -44,49 +44,48 @@ def normalise(arr,nn_avg):
 
     
 def preprocess():
-    path = "../../../gestures/Benjamin/"
+    names = ["Alex", "Annalena", "Benjamin", "Daniel", "Frank"]
+    #names = ["Alex", "Annalena", "Daniel", "Benjamin"]
+    path = "../../../gestures/"
     threshold = 0.1
     
     ''' load and reshape textfile with 18.5khz frequency data '''
-    n = numpy.loadtxt(path+"gesture_6/1389637026.txt",delimiter=",")
+    n = numpy.loadtxt(path+"Benjamin/gesture_6/1389637026.txt",delimiter=",")
     n = n.reshape(n.shape[0],32,n.shape[1]/32) #recordingframes
     nn = normalise(n,0)
     ''' create average of 18.5khz frequency data '''
     nn_avg = numpy.mean(nn, axis=1)
     nn_avg = numpy.mean(nn_avg, axis=0)
-    print nn_avg.shape
+    #print nn_avg.shape
     
     
     gestures = []
     targets = []
     for gesturenumber in range(6):
-        dirf = os.listdir(path+"gesture_"+str(gesturenumber))
-        firsttextfile = dirf[0]
         
-        ''' load and reshape textfile with gesture data '''
-        g = numpy.loadtxt(path+"gesture_"+str(gesturenumber)+"/"+firsttextfile,delimiter=",")
-        g = g.reshape(g.shape[0],32,g.shape[1]/32) #recordingframes
-        print gesturenumber, "\t\t", g.shape
-        gn = normalise(g,nn_avg)
-        
-        gn = gn.reshape(gn.shape[0],gn.shape[1]*gn.shape[2])
-        
-        for i in range(10): #gn.shape[0]):
-            #===================================================================
-            # singlegesture = gn[i]
-            # print gesturenumber, "=> Geste #", i, "\tAnzahl:", singlegesture.shape[0]
-            # for b in range(singlegesture.shape[0]):
-            #     print numpy.amax(singlegesture[b])
-            #===================================================================
+        for name in names:
+            dirf = os.listdir(path+name+"/gesture_"+str(gesturenumber))
+            firsttextfile = dirf[0]
             
-            gestures.append(gn[i])
-            targets.append(gesturenumber)
+            ''' load and reshape textfile with gesture data '''
+            g = numpy.loadtxt(path+name+"/gesture_"+str(gesturenumber)+"/"+firsttextfile,delimiter=",")
+            g = g.reshape(g.shape[0],32,g.shape[1]/32) #recordingframes
+            print name, gesturenumber, "\t\t", g.shape, firsttextfile
+            gn = normalise(g,nn_avg)
+            
+            gn = gn.reshape(gn.shape[0],gn.shape[1]*gn.shape[2])
+            
+            for i in range(10):
+                gestures.append(gn[i])
+                targets.append(gesturenumber)
         
     X_data = numpy.array(gestures)
     X_targets = numpy.array(targets)
     
     print "X_data", "\t\t", X_data.shape
     print "X_targets", "\t", X_targets.shape
+    
+    print X_targets
     
     return X_data, X_targets, nn_avg
     
@@ -108,9 +107,9 @@ def preprocess():
     
     
 def test(nn_avg):
-    path = "../../../gestures/Benjamin/"
+    path = "../../../gestures/Alex/"
     
-    n = numpy.loadtxt(path+"gesture_0/1389637026.txt",delimiter=",")
+    n = numpy.loadtxt(path+"gesture_0/ZimmerLeise2R.txt",delimiter=",")
     n = n.reshape(n.shape[0],32,n.shape[1]/32) #recordingframes
     nn = normalise(n,nn_avg)
     nn = nn.reshape(nn.shape[0],nn.shape[1]*nn.shape[2])
@@ -128,16 +127,15 @@ def test(nn_avg):
 if __name__ == "__main__":
 
     X_data, X_targets, nn_avg = preprocess()
-    c = 1
+    c = 1000
     gamma = 0
-    cv = 3                                     # n times cross-validation
+    cv = 5
     method = "fit"
     kernel = "rbf" 
     
     Y_data,Y_targets = test(nn_avg)
     
     train_svm(X_data, X_targets, Y_data, Y_targets, c, gamma, method, cv, kernel)
-    
-                            # "fit" or "cross"
-    
+
+
    # train_svm(X_train, Y_train, X_test, Y_test)

@@ -58,11 +58,6 @@ if __name__ == "__main__":
     classifier = joblib.load('svm_trained.pkl')
     
     nn_avg = preprocess()
-    c = 1
-    gamma = 0
-    cv = 3                                     # n times cross-validation
-    method = "fit"
-    kernel = "rbf" 
     
     Y_data, Y_targets = test(nn_avg)
     
