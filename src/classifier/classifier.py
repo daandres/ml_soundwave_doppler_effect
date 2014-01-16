@@ -8,11 +8,6 @@ class IClassifier:
         pass
 
     @abc.abstractmethod
-    @DeprecationWarning
-    def startClassify(self):
-        pass
-
-    @abc.abstractmethod
     def startTraining(self):
         pass
 
@@ -38,4 +33,8 @@ class IClassifier:
 
     @abc.abstractmethod
     def saveData(self, filename=""):
+        pass
+
+    @abc.abstractmethod
+    def printClassifier(self):
         pass

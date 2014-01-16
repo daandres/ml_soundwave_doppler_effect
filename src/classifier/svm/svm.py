@@ -47,9 +47,6 @@ class SVM(IClassifier):
     def getName(self):
         return "SVM"
 
-    def startClassify(self):
-        pass
-
     def startTraining(self):
         pass
 
@@ -92,3 +89,6 @@ class SVM(IClassifier):
 
     def saveData(self, filename=""):
         pass
+
+    def printClassifier(self):
+        return

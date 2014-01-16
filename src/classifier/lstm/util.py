@@ -44,14 +44,14 @@ def load(filename):
 
 def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", average="false"):
 #         np.set_printoptions(precision=2, threshold=np.nan)
-    labels = ['Right-To-Left-One-Hand',
-              'Top-to-Bottom-One-Hand',
-              'Entgegengesetzt with two hands',
-              'Single-push with one hand',
-              'Double-push with one hand',
-              'Rotate one hand',
-              'Background silent',
-              'Background loud']
+    labels = {0:'Right-To-Left-One-Hand',
+              1:'Top-to-Bottom-One-Hand',
+              2:'Entgegengesetzt with two hands',
+              3:'Single-push with one hand',
+              4:'Double-push with one hand',
+              5:'Rotate one hand',
+              6:'Background silent',
+              7:'Background loud'}
     nClasses = len(classes)
     g = GestureFileIO(relative=relative)
     data = [0] * 8
@@ -64,7 +64,7 @@ def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", avera
         data[i] = getData(i, [])
         print("data " + str(i) + " loaded shape: " + str(np.shape(data[i])))
     print("data loaded, now creating dataset")
-    ds = SequenceClassificationDataSet(inputs, outputs, nb_classes=nClasses, class_labels=labels)
+    ds = SequenceClassificationDataSet(inputs, outputs, nb_classes=nClasses, class_labels=labels.values())
     for target in classes:
         tupt = getTarget(target, outputs)
         print("Target " + str(tupt))
@@ -99,3 +99,19 @@ def getAverage():
         g = GestureFileIO()
         avg = g.getAvgFrequency()
     return avg
+
+def printNetwork(net):
+    for mod in net.modules:
+        print("Module: " + str(mod.name))
+        if mod.paramdim > 0:
+            print("\t--parameters: " + str(mod.params))
+        for conn in net.connections[mod]:
+            print("\t-connection to " + str(conn.outmod.name))
+            if conn.paramdim > 0:
+                print("\t\t- parameters" + str(conn.params))
+    if hasattr(net, "recurrentConns"):
+        print("Recurrent connections")
+        for conn in net.recurrentConns:
+            print("\t-" + str(conn.inmod.name) + " to " + str(conn.outmod.name))
+            if conn.paramdim > 0:
+                print("\t\t- parameters " + str(conn.params))

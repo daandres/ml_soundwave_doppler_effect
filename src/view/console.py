@@ -87,6 +87,7 @@ class Console:
         self.key_bindings['s'] = self.save
         self.key_bindings['f'] = self.changeFilename
         self.key_bindings['r'] = self.toggleSound
+        self.key_bindings['p'] = self.printClassifier
         self.key_bindings['0'] = self.recordStart
         self.key_bindings['1'] = self.recordStart
         self.key_bindings['2'] = self.recordStart
@@ -223,6 +224,14 @@ class Console:
         elif len(args) > 1:
             filename = args[1]
             self.classificator.save(filename)
+        self.inputEvent.set()
+
+    def printClassifier(self, args):
+        if self.classificator is None:
+            print("No classifier specified")
+            self.inputEvent.set()
+            return
+        self.classificator.printClassifier()
         self.inputEvent.set()
 
     def printHelp(self, args=None):

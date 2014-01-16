@@ -1,16 +1,13 @@
 from classifier.classifier import IClassifier
 from pybrain.structure import LSTMLayer, LinearLayer, SoftmaxLayer, SigmoidLayer
-from pybrain.unsupervised.trainers.deepbelief import DeepBeliefTrainer
 from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
-from pybrain.supervised.trainers.evolino import EvolinoTrainer
 from pybrain.tools.shortcuts import buildNetwork
-from pybrain.structure.modules.evolinonetwork import EvolinoNetwork
 from pybrain.tools.validation import testOnSequenceData
 import classifier.lstm.util as util
 import numpy as np
 from threading import Thread
 import time
-# import arac
+import arac
 
 # Optimization learners imports
 from pybrain.rl.environments.shipsteer.northwardtask import GoNorthwardTask
@@ -62,9 +59,13 @@ class LSTM(IClassifier):
         elif(self.config['outlayer'] == "sigmoid"): layer = SigmoidLayer
         elif(self.config['outlayer'] == "softmax"): layer = SoftmaxLayer
         else: raise Exception("Cannot create network: no output layer specified")
-        self.net = buildNetwork(INPUTS, self.hidden, self.outneurons, hiddenclass=LSTMLayer, outclass=layer, recurrent=True, outputbias=False)
+        if(self.config['fast'] != ""):
+            fast = True
+#             self.net = self.net.convertToFastNetwork()
+        else:
+            fast = False
+        self.net = buildNetwork(INPUTS, self.hidden, self.outneurons, hiddenclass=LSTMLayer, outclass=layer, recurrent=True, outputbias=False, fast=fast)
         self.net.randomize()
-#         if(self.config['fast'] != ""): self.net = self.net.convertToFastNetwork()
         print("LSTM network created: " + self.name)
         return
 
@@ -199,3 +200,7 @@ class LSTM(IClassifier):
         if filename == "":
             filename = self.config['dataset']
         util.save_dataset(self.ds, filename)
+
+    def printClassifier(self):
+        util.printNetwork(self.net)
+        return
