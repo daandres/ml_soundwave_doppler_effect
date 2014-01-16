@@ -8,7 +8,7 @@ class IClassifier:
         pass
 
     @abc.abstractmethod
-    def startTraining(self):
+    def startTraining(self, args=[]):
         pass
 
     @abc.abstractmethod

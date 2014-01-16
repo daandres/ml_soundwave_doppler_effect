@@ -47,7 +47,7 @@ class SVM(IClassifier):
     def getName(self):
         return "SVM"
 
-    def startTraining(self):
+    def startTraining(self, args=[]):
         pass
 
     def startValidation(self):

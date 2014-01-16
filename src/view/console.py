@@ -176,15 +176,15 @@ class Console:
             print("No classifier specified")
         self.inputEvent.set()
 
-    def trainingStart(self, key):
+    def trainingStart(self, args):
         if self.classificator is None:
             print("No classifier specified")
             self.inputEvent.set()
             return
-        self.classificator.startTraining()
+        self.classificator.startTraining(args)
         self.inputEvent.set()
 
-    def validateStart(self, key):
+    def validateStart(self, args):
         if self.classificator is None:
             print("No classifier specified")
             self.inputEvent.set()

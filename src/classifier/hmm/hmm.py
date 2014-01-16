@@ -18,7 +18,7 @@ class HMM(IClassifier):
 
 
 
-    def startTraining(self):
+    def startTraining(self, args=[]):
         pass
 
 

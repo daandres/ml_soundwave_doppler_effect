@@ -18,13 +18,14 @@ class LSTM(IClassifier):
         self.hidden = int(self.config['hiddenneurons'])
         self.outneurons = int(self.config['outneurons'])
         self.epochs = int(self.config['trainingepochs'])
+        self.trainedEpochs = 0
         self.classes = eval(self.config['classes'])
         self.nClasses = len(self.classes)
         self.trainingType = self.config['training']
         self.datanum = 0
         self.relative = relative
-        self.name = "n" + str(self.hidden) + "_o" + str(self.outneurons) + "_l" + self.config['outlayer'] + "_nC" + str(self.nClasses) + "_t" + self.trainingType + "_e" + str(self.epochs) + self.config['fast']
         self.avg = util.getAverage()
+        self.trainer, self.returnsNet = None, False
         self.loadData(self.config['dataset'])
         if(self.config['autoload_network'] == "true"):
             self.load()
@@ -38,7 +39,7 @@ class LSTM(IClassifier):
     def getName(self):
         return NAME
 
-    def startTraining(self):
+    def startTraining(self, args=[]):
         def __getGradientTrainer():
             print("LSTM Gradient " + self.config['trainingalgo'] + " Training started")
             trainAlgo = util.getGradientTrainAlgo(self.config['trainingalgo'])
@@ -53,36 +54,44 @@ class LSTM(IClassifier):
 
         def __train(training, returnsNet):
             start = time.time()
-            print("start training: " + str(start / 3600)) + self.name
-            tenthOfEpochs = self.epochs / 10
-            for i in range(10):
-                inBetweenStart = time.time()
-                if returnsNet: self.net = training(tenthOfEpochs)
-                else: training(tenthOfEpochs)
-                end = time.time()
-                diff = end - inBetweenStart
-                print("Training time of epoch " + str(i) + " : " + str(end / 3600) + "\nDiff: " + str(diff / 3600))
-            lastEpochs = self.epochs - (tenthOfEpochs * 10)
+            print("start training of " + str(self.epochs) + " epochs: " + str(start / 3600)) + self.__getName()
+            if(self.epochs >= 10):
+                tenthOfEpochs = self.epochs / 10
+                for i in range(10):
+                    inBetweenStart = time.time()
+                    if returnsNet: self.net = training(tenthOfEpochs)
+                    else: training(tenthOfEpochs)
+                    end = time.time()
+                    diff = end - inBetweenStart
+                    print("Training time of epoch " + str(i) + " : " + str(end / 3600) + "\nDiff: " + str(diff / 3600))
+                lastEpochs = self.epochs - (tenthOfEpochs * 10)
+            else:
+                lastEpochs = self.epochs
             if(lastEpochs > 0):
                 if returnsNet: self.net = training(lastEpochs)
                 else: training(lastEpochs)
             end = time.time()
             diff = end - start
+            self.trainedEpochs += self.epochs
             print("Training end: " + str(end / 3600) + "\nDiff: " + str(diff / 3600))
             if(self.config['autosave_network'] == "true"):
-                filename = self.name + "_" + str(time.time())
+                filename = self.__getName() + "_" + str(time.time())
                 self.save(filename, overwrite=False)
             self.startValidation()
             return
 
         #==========
         # =Training=
+        if(args != [] and len(args) >= 2):
+            self.epochs = int(args[1])
         if(self.trainingType == "gradient"):
-            trainer, returnsNet = __getGradientTrainer();
-            __train(trainer.trainEpochs, returnsNet)
+            if(self.trainer == None):
+                self.trainer, self.returnsNet = __getGradientTrainer();
+            __train(self.trainer.trainEpochs, self.returnsNet)
         elif(self.trainingType == "optimization"):
-            trainer, returnsNet = __getOptimizationTrainer();
-            __train(trainer.learn, returnsNet)
+            if(self.trainer == None):
+                self.trainer, self.returnsNet = __getOptimizationTrainer();
+            __train(self.trainer.learn, self.returnsNet)
             return
         else:
             raise Exception("Cannot create trainer, no network type specified")
@@ -133,6 +142,7 @@ class LSTM(IClassifier):
         util.save_dataset(self.ds, filename)
 
     def printClassifier(self):
+        print(self.__getName())
         util.printNetwork(self.net)
 
 #======================================================================
@@ -145,14 +155,11 @@ class LSTM(IClassifier):
         elif(self.config['outlayer'] == "sigmoid"): layer = SigmoidLayer
         elif(self.config['outlayer'] == "softmax"): layer = SoftmaxLayer
         else: raise Exception("Cannot create network: no output layer specified")
+        self.net = buildNetwork(INPUTS, self.hidden, self.outneurons, hiddenclass=LSTMLayer, outclass=layer, recurrent=True, outputbias=False)
         if(self.config['fast'] != ""):
-            fast = True
-#             self.net = self.net.convertToFastNetwork()
-        else:
-            fast = False
-        self.net = buildNetwork(INPUTS, self.hidden, self.outneurons, hiddenclass=LSTMLayer, outclass=layer, recurrent=True, outputbias=False, fast=fast)
+            self.net = self.net.convertToFastNetwork()
         self.net.randomize()
-        print("LSTM network created: " + self.name)
+        print("LSTM network created: " + self.__getName())
         return
 
     def __confmat(self):
@@ -178,3 +185,6 @@ class LSTM(IClassifier):
         error = sumWrong / sumAll
         print(confmat)
         print("error: " + str(100. * error) + "%")
+
+    def __getName(self):
+        return "n" + str(self.hidden) + "_o" + str(self.outneurons) + "_l" + self.config['outlayer'] + "_nC" + str(self.nClasses) + "_t" + self.trainingType + "_e" + str(self.trainedEpochs) + self.config['fast']
