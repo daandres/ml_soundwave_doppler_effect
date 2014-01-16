@@ -2,6 +2,10 @@
 from pybrain.tools.customxml.networkwriter import NetworkWriter
 from pybrain.tools.customxml.networkreader import NetworkReader
 from pybrain.datasets import SequenceClassificationDataSet
+from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
+    # Optimization learners imports
+from pybrain.optimization import *  # @UnusedWildImport
+
 import numpy as np
 from gestureFileIO import GestureFileIO
 import time
@@ -122,3 +126,32 @@ def printNetwork(net):
             print("\t-" + str(conn.inmod.name) + " to " + str(conn.outmod.name))
             if conn.paramdim > 0:
                 print("\t\t- parameters " + str(conn.params))
+
+
+def getGradientTrainAlgo(method="rprop"):
+    if(method == "rprop"):
+        return RPropMinusTrainer
+    elif(method == "backprop"):
+        return BackpropTrainer
+    else:
+        raise Exception("No train Alog specified")
+
+def getOptimizationTrainAlgo(method="GA"):
+    if(method == "GA"):
+        return GA
+    elif(method == "HillClimber"):
+        return HillClimber
+    elif(method == "MemeticSearch"):
+        return MemeticSearch
+    elif(method == "NelderMead"):
+        return NelderMead
+    elif(method == "CMAES"):
+        return CMAES
+    elif(method == "OriginalNES"):
+        return OriginalNES
+    elif(method == "ES"):
+        return ES
+    elif(method == "MultiObjectiveGA"):
+        return MultiObjectiveGA
+    else:
+        raise Exception("No train Alog specified")
