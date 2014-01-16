@@ -43,7 +43,7 @@ class LSTM(IClassifier):
         if(self.config['autoload_data'] == "true"):
             self.loadData()
         else:
-            self.ds = util.createPyBrainDatasetFromSamples(self.classes, INPUTS, self.outneurons, "", self.config['data_average'])
+            self.ds = util.createPyBrainDatasetFromSamples(self.classes, INPUTS, self.outneurons, "", self.config['data_average'], self.config['merge67'])
         self.avg = util.getAverage()
         if(self.config['autoload_network'] == "true"):
             self.load()

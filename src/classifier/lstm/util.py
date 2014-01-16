@@ -42,7 +42,7 @@ def load_dataset(filename=""):
 def load(filename):
     return load_network(filename), load_dataset(filename)
 
-def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", average="false"):
+def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", average="false", merge67="false"):
 #         np.set_printoptions(precision=2, threshold=np.nan)
     labels = {0:'Right-To-Left-One-Hand',
               1:'Top-to-Bottom-One-Hand',
@@ -60,8 +60,15 @@ def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", avera
         getData = g.getGesture3DNormalized
     else:
         getData = g.getGesture3DDiffAvg
+    if(merge67 == "true"):
+        merge67 = True
+    else:
+        merge67 = False
     for i in classes:
-        data[i] = getData(i, [])
+        data[i] = getData(i, [], merge67)
+        if(i == 6 and merge67):
+            data7 = getData(7, [], merge67)
+            data[i] = np.append(data[i], data7, axis=0)
         print("data " + str(i) + " loaded shape: " + str(np.shape(data[i])))
     print("data loaded, now creating dataset")
     ds = SequenceClassificationDataSet(inputs, outputs, nb_classes=nClasses, class_labels=labels.values())
