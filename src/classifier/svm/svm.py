@@ -10,6 +10,9 @@ import os
 from sklearn.externals import joblib
 from sklearn.metrics import accuracy_score
 from gestureFileIO import GestureFileIO
+from sklearn import svm
+from sklearn import cross_validation
+
 
 class SVM(IClassifier):
 
@@ -19,7 +22,12 @@ class SVM(IClassifier):
         self.datalist = []
         self.datanum = 0
         self.nClasses = 7
-        self.loadData()
+        self.data, self.targets = self.loadData()
+        self.kernel = "rbf"
+        self.c = 1000000
+        self.gamma = 1
+        self.degree = 3
+        self.coef0 = 10
 
     def getAverage(self):
         g = GestureFileIO()
@@ -51,20 +59,26 @@ class SVM(IClassifier):
         pass
 
     def startTraining(self):
-        pass
+        classifier = svm.SVC(kernel=self.kernel, C=self.c, gamma=self.gamma, degree=self.degree, coef0=self.coef0)
+        classifier.fit(self.data, self.targets)
+        joblib.dump(classifier, 'classifier/svm/svm_trained.pkl', compress=9)
 
     def startValidation(self):
         confmat = np.zeros((self.nClasses, self.nClasses))
-#         print("target-out")
-        for c in range(self.data.shape[0]):
-            out = None
-            target = c
-            j = 0
-            for geste in self.data[c]:
-                out = self.classifier.predict(geste)
-                confmat[target][out[0]] += 1
-#             print("out:\t" + str(out) + "\ttarget:\t" + str(target))
-#             print(str(np.argmax(target)) + "-" + str(np.argmax(out)))
+        for i in range(len(self.targets)):
+            realclass = self.targets[i]
+            predictedclass = self.classifier.predict(self.data[i])[0]
+            confmat[realclass][predictedclass] += 1
+            
+        #=======================================================================
+        # for c in range(self.data.shape[0]):
+        #     out = None
+        #     target = c
+        #     j = 0
+        #     for geste in self.data[c]:
+        #         out = self.classifier.predict(geste)
+        #         confmat[target][out[0]] += 1
+        #=======================================================================
         sumWrong = 0
         sumAll = 0
         for i in range(self.nClasses):
@@ -81,13 +95,20 @@ class SVM(IClassifier):
 
     def loadData(self, filename=""):
         g = GestureFileIO()
-        data = [0] * self.nClasses
+        X = []
+        Y = []
         for i in range(self.nClasses):
             datum = g.getGesture3DDiffAvg(i, [])
             print("data " + str(i) + " loaded shape: " + str(np.shape(datum)))
-            data[i] = datum.reshape(datum.shape[0], datum.shape[1] * datum.shape[2])
-        data = np.asarray(data)
-        self.data = data
+            d = datum.reshape(datum.shape[0], datum.shape[1] * datum.shape[2])
+            for dd in range(d.shape[0]):
+                X.append(d[dd])
+                Y.append(i)
+        
+        data = np.asarray(X)
+        targets = np.asarray(Y)
+        print data.shape, targets.shape
+        return data, targets
 
 
     def saveData(self, filename=""):

@@ -11,12 +11,12 @@ from sklearn.metrics import accuracy_score
 from sklearn.externals import joblib
 
 
-def train_svm(X_train, Y_train, X_test, Y_test, c, gamma, method, cv, kernel):
+def train_svm(X_train, Y_train, X_test, Y_test, c, gamma, method, cv, degree, coef0, kernel):
 
     ''' Initialise the model with best model parameters reported at '''
     ''' http://peekaboo-vision.blogspot.co.uk/2010/09/mnist-for-ever.html '''
     print "...initialising svm"
-    classifier = svm.SVC(kernel=kernel, C=c, gamma=gamma)
+    classifier = svm.SVC(kernel=kernel, C=c, gamma=gamma, degree=degree, coef0=coef0)
 
     ''' Train and validate the classifier '''
     if method == "fit":
@@ -44,7 +44,7 @@ def normalise(arr, nn_avg):
 
 
 def preprocess():
-    names = ["Alex", "Annalena", "Benjamin", "Daniel", "Frank"]
+    names = ["Alex", "Benjamin", "Daniel", "Frank"]
     # names = ["Alex", "Annalena", "Daniel", "Benjamin"]
     path = "../../../gestures/"
     threshold = 0.1
@@ -128,15 +128,17 @@ def test(nn_avg):
 if __name__ == "__main__":
 
     X_data, X_targets, nn_avg = preprocess()
-    c = 1000000
+    c = 10000000
     gamma = 0
     cv = 3
     method = "fit"
-    kernel = "rbf"
+    kernel = "poly"
+    degree = 3
+    coef0 = 1
 
     Y_data, Y_targets = test(nn_avg)
 
-    train_svm(X_data, X_targets, Y_data, Y_targets, c, gamma, method, cv, kernel)
+    train_svm(X_data, X_targets, Y_data, Y_targets, c, gamma, method, cv, degree, coef0, kernel)
 
 
    # train_svm(X_train, Y_train, X_test, Y_test)

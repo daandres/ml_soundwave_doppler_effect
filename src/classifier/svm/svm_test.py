@@ -28,7 +28,7 @@ def preprocess():
     nn_avg = numpy.mean(nn, axis=1)
     nn_avg = numpy.mean(nn_avg, axis=0)
 
-    
+    print nn_avg
     return nn_avg
 
 
