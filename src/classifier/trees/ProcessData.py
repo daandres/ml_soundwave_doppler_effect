@@ -51,3 +51,33 @@ def plotBoth(gestures):
         plt.axis([0,32,0,32])
 
         plt.show()
+        
+def findAmplitude(gesture):
+    print gesture.bins_left
+    print gesture.bins_right
+    amplitudes_left = []
+    amplitudes_right = []
+    plotTestData([gesture])
+    mean_left = np.mean(gesture.bins_left)
+    mean_right = np.mean(gesture.bins_right)
+    temp =[]
+    for i in range(len(gesture.bins_right)):
+        current = gesture.bins_right[i]
+        if(current > mean_right):
+            temp.append(current)
+        else:
+            if(temp != []):
+                if(len(temp) > 2):
+                    print "Amplitude rechts gefunden"
+                    temp = []
+    
+    for i in range(len(gesture.bins_left)):
+        current = gesture.bins_left[i]
+        if(current > mean_left):
+            temp.append(current)
+        else:
+            if(temp != []):
+                if(len(temp) > 2):
+                    print "Amplitude links gefunden"
+                    temp = []
+            
