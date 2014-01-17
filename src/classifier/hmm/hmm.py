@@ -17,11 +17,8 @@ class HMM(IClassifier):
         return NAME
 
 
-    def startClassify(self):
-        pass
 
-
-    def startTraining(self):
+    def startTraining(self, args=[]):
         pass
 
 
@@ -47,3 +44,6 @@ class HMM(IClassifier):
 
     def saveData(self, filename=""):
         pass
+
+    def printClassifier(self):
+        return

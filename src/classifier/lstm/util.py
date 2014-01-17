@@ -2,6 +2,10 @@
 from pybrain.tools.customxml.networkwriter import NetworkWriter
 from pybrain.tools.customxml.networkreader import NetworkReader
 from pybrain.datasets import SequenceClassificationDataSet
+from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
+    # Optimization learners imports
+from pybrain.optimization import *  # @UnusedWildImport
+
 import numpy as np
 from gestureFileIO import GestureFileIO
 import time
@@ -42,16 +46,16 @@ def load_dataset(filename=""):
 def load(filename):
     return load_network(filename), load_dataset(filename)
 
-def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", average="false"):
+def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", average="false", merge67="false"):
 #         np.set_printoptions(precision=2, threshold=np.nan)
-    labels = ['Right-To-Left-One-Hand',
-              'Top-to-Bottom-One-Hand',
-              'Entgegengesetzt with two hands',
-              'Single-push with one hand',
-              'Double-push with one hand',
-              'Rotate one hand',
-              'Background silent',
-              'Background loud']
+    labels = {0:'Right-To-Left-One-Hand',
+              1:'Top-to-Bottom-One-Hand',
+              2:'Entgegengesetzt with two hands',
+              3:'Single-push with one hand',
+              4:'Double-push with one hand',
+              5:'Rotate one hand',
+              6:'Background silent',
+              7:'Background loud'}
     nClasses = len(classes)
     g = GestureFileIO(relative=relative)
     data = [0] * 8
@@ -60,11 +64,18 @@ def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", avera
         getData = g.getGesture3DNormalized
     else:
         getData = g.getGesture3DDiffAvg
+    if(merge67 == "true"):
+        merge67 = True
+    else:
+        merge67 = False
     for i in classes:
-        data[i] = getData(i, [])
+        data[i] = getData(i, [], merge67)
+        if(i == 6 and merge67):
+            data7 = getData(7, [], merge67)
+            data[i] = np.append(data[i], data7, axis=0)
         print("data " + str(i) + " loaded shape: " + str(np.shape(data[i])))
     print("data loaded, now creating dataset")
-    ds = SequenceClassificationDataSet(inputs, outputs, nb_classes=nClasses, class_labels=labels)
+    ds = SequenceClassificationDataSet(inputs, outputs, nb_classes=nClasses, class_labels=labels.values())
     for target in classes:
         tupt = getTarget(target, outputs)
         print("Target " + str(tupt))
@@ -99,3 +110,48 @@ def getAverage():
         g = GestureFileIO()
         avg = g.getAvgFrequency()
     return avg
+
+def printNetwork(net):
+    for mod in net.modules:
+        print("Module: " + str(mod.name))
+        if mod.paramdim > 0:
+            print("\t--parameters: " + str(mod.params))
+        for conn in net.connections[mod]:
+            print("\t-connection to " + str(conn.outmod.name))
+            if conn.paramdim > 0:
+                print("\t\t- parameters" + str(conn.params))
+    if hasattr(net, "recurrentConns"):
+        print("Recurrent connections")
+        for conn in net.recurrentConns:
+            print("\t-" + str(conn.inmod.name) + " to " + str(conn.outmod.name))
+            if conn.paramdim > 0:
+                print("\t\t- parameters " + str(conn.params))
+
+
+def getGradientTrainAlgo(method="rprop"):
+    if(method == "rprop"):
+        return RPropMinusTrainer
+    elif(method == "backprop"):
+        return BackpropTrainer
+    else:
+        raise Exception("No train Alog specified")
+
+def getOptimizationTrainAlgo(method="GA"):
+    if(method == "GA"):
+        return GA
+    elif(method == "HillClimber"):
+        return HillClimber
+    elif(method == "MemeticSearch"):
+        return MemeticSearch
+    elif(method == "NelderMead"):
+        return NelderMead
+    elif(method == "CMAES"):
+        return CMAES
+    elif(method == "OriginalNES"):
+        return OriginalNES
+    elif(method == "ES"):
+        return ES
+    elif(method == "MultiObjectiveGA"):
+        return MultiObjectiveGA
+    else:
+        raise Exception("No train Alog specified")

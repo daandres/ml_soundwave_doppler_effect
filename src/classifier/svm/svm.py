@@ -58,7 +58,7 @@ class SVM(IClassifier):
     def startClassify(self):
         pass
 
-    def startTraining(self):
+    def startTraining(self, args=[]):
         classifier = svm.SVC(kernel=self.kernel, C=self.c, gamma=self.gamma, degree=self.degree, coef0=self.coef0)
         classifier.fit(self.data, self.targets)
         joblib.dump(classifier, 'classifier/svm/svm_trained.pkl', compress=9)
@@ -69,7 +69,7 @@ class SVM(IClassifier):
             realclass = self.targets[i]
             predictedclass = self.classifier.predict(self.data[i])[0]
             confmat[realclass][predictedclass] += 1
-            
+
         #=======================================================================
         # for c in range(self.data.shape[0]):
         #     out = None
@@ -104,7 +104,7 @@ class SVM(IClassifier):
             for dd in range(d.shape[0]):
                 X.append(d[dd])
                 Y.append(i)
-        
+
         data = np.asarray(X)
         targets = np.asarray(Y)
         print data.shape, targets.shape
@@ -113,3 +113,6 @@ class SVM(IClassifier):
 
     def saveData(self, filename=""):
         pass
+
+    def printClassifier(self):
+        return

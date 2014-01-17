@@ -13,7 +13,7 @@ class GestureFileIO():
         self.basePath = relative + gesturePath
         self.name = name
         self.namedPath = self.basePath + "/" + self.name
-
+        self.avg = None
         if name is not "":
             if not os.path.exists(self.namedPath):
                 os.makedirs(self.namedPath)
@@ -79,22 +79,28 @@ class GestureFileIO():
         outfile = outdir + self.filenamebase + FILE_END
         return outfile
 
-    def getGesture3DNormalized(self, recordClass, names=[]):
+    def getGesture3DNormalized(self, recordClass, names=[], merge67=False):
         rawData = self.getGesture3D(recordClass, names)
         normalizedData = self._normalise(rawData)
         return normalizedData
 
-    def getGesture3DDiffAvg(self, recordClass, names=[]):
+    def getGesture3DDiffAvg(self, recordClass, names=[], merge67=False):
         normalizedData = self.getGesture3DNormalized(recordClass, names)
-        avg = self.getAvgFrequency(names)
+        avg = self.getAvgFrequency(names, merge67)
         diffAvgData = normalizedData - avg
         return diffAvgData
 
-    def getAvgFrequency(self, names=[]):
-        normalizedData = self.getGesture3DNormalized(6, names)
-        avg = np.mean(normalizedData, axis=1)
-        avg = np.mean(avg, axis=0)
-        return avg
+    def getAvgFrequency(self, names=[], merge67=False):
+        if(self.avg == None):
+            if(merge67):
+                normalizedData6 = self.getGesture3DNormalized(6, names)
+                normalizedData7 = self.getGesture3DNormalized(7, names)
+                normalizedData = np.append(normalizedData6, normalizedData7, axis=0)
+            else:
+                normalizedData = self.getGesture3DNormalized(6, names)
+            self.avg = np.mean(normalizedData, axis=1)
+            self.avg = np.mean(self.avg, axis=0)
+        return self.avg
 
     def _normalise(self, arr):
         ''' normalise each frame '''
