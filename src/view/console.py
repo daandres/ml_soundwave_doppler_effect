@@ -3,6 +3,7 @@ from threading import Thread, Event
 from visualizer import View
 import properties.config as c
 
+
 class Console:
     def __init__(self, recorder=None, soundplayer=None, applicationClose=None, setFileName=None, getFileName=None):
         if recorder == None:
@@ -49,7 +50,8 @@ class Console:
         elif(name == "svm"):
             if(name not in self.classificators):
                 from classifier.svm.svm import SVM
-                cl = SVM(self.recorder)
+                svmConfig = c.getInstance().getConfig("svm")
+                cl = SVM(self.recorder, svmConfig)
                 self.classificators[name] = cl
             cl = self.classificators[name]
             return cl
