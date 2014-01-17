@@ -1,8 +1,5 @@
-'''
-Created on 13.01.2014
-
-@author: mutz
-'''
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import scipy.ndimage as ndi
 import numpy as np
 import math
@@ -79,17 +76,3 @@ class GestureModel(object):
         
         return (np.argmax(counts_left), np.argmax(counts_right))
         
-    #reihenfolge der frequenzverschiebungen
-    def featureOrderOfShifts(self):
-        pass
-    
-    #verschiebungsrichtungen
-    def featureDirectionsOfShifts(self):
-        pass
-    
-    #anzahl verschiebungen
-    def featureCountOfShifts(self):
-        pass
-    
-    
-    

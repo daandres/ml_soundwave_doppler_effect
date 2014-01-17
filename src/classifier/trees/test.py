@@ -1,8 +1,6 @@
-'''
-Created on 16.01.2014
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-@author: mutz
-'''
 # http://www.hdm-stuttgart.de/~maucher/Python/ComputerVision/html/Filtering.html
 import classifier.trees.ProcessData
 from classifier.trees.GestureModel import GestureModel
