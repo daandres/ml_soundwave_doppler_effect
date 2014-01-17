@@ -13,6 +13,7 @@ from gestureFileIO import GestureFileIO
 from sklearn import svm
 from sklearn import cross_validation
 
+from scipy import stats as stats
 
 class SVM(IClassifier):
 
@@ -29,6 +30,19 @@ class SVM(IClassifier):
         self.degree = 3
         self.coef0 = 10
 
+        self.has32 = False
+        self.previouspredict = 6
+        self.predcounter = 0
+        self.predHistSize = 6
+        self.predHistHalfUpper = 4
+        self.predHistory = self.createArraySix(self.predHistSize,)
+
+    def createArraySix(self, dim):
+        array = np.zeros((dim,))
+        for i in range(dim):
+            array[i] = 6
+        return array
+
     def getAverage(self):
         g = GestureFileIO()
         avg = g.getAvgFrequency()
@@ -44,33 +58,24 @@ class SVM(IClassifier):
 
         self.datanum += 1
         self.datalist.append(diffAvgData)
-        temp = 8
-        has32 = False
         if(self.datanum % 32 == 0):
-            has32 = True
-        previouspredict = 6
-        predcounter = 0
-        if(has32):
-#             predictedlist = np.zeros((self.nClasses,))
-#             for i in range(temp):
+            self.has32 = True
+        if(self.has32):
             b = np.asarray(self.datalist[0:32]).reshape(2048,)
             Y_pred = self.classifier.predict(b)[0]
-            if(previouspredict == Y_pred):
-                print "equal ", Y_pred
-                predcounter += 1
-                if(predcounter >= 3):
-                    print Y_pred
-#                     break
-            else:
-                print "not equal ", Y_pred
-                previouspredict = Y_pred
-                predcounter = 1
-            self.datalist.pop(0)
-            print len(self.datalist)
-#                 predictedlist[Y_pred] += 1
-#             print predictedlist, np.argmax(predictedlist, 0)
-#             self.datalist = []
-#             self.datanum = 0
+            self.predHistory[0] = Y_pred
+            self.predHistory = np.roll(self.predHistory, -1)
+            expected = stats.mode(self.predHistory, 0)
+            if(expected[1][0] >= self.predHistHalfUpper):
+#             if(not (np.shape(expected[0])[0] >= 2)):
+                if(int(expected[0][0]) != self.previouspredict):
+                    self.previouspredict = int(expected[0][0])
+                    print self.previouspredict
+#                 self.datanum = 0
+#                 self.datalist = []
+#                 self.has32 = False
+#             else:
+            del self.datalist[0]
 
 
     def getName(self):
