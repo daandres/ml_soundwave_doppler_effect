@@ -155,3 +155,10 @@ def getOptimizationTrainAlgo(method="GA"):
         return MultiObjectiveGA
     else:
         raise Exception("No train Alog specified")
+
+
+def createArraySix(dim):
+    array = np.zeros((dim,))
+    for i in range(dim):
+        array[i] = 6
+    return array

@@ -4,6 +4,7 @@ from pybrain.tools.shortcuts import buildNetwork
 from pybrain.tools.validation import testOnSequenceData
 import classifier.lstm.util as util
 import numpy as np
+from scipy import stats as stats
 import time
 import arac
 
@@ -22,7 +23,6 @@ class LSTM(IClassifier):
         self.classes = eval(self.config['classes'])
         self.nClasses = len(self.classes)
         self.trainingType = self.config['training']
-        self.datanum = 0
         self.relative = relative
         self.avg = util.getAverage()
         self.trainer, self.returnsNet = None, False
@@ -31,6 +31,15 @@ class LSTM(IClassifier):
             self.load()
         else:
             self._createNetwork()
+
+        self.datalist = []
+        self.datanum = 0
+        self.has32 = False
+        self.previouspredict = 6
+        self.predcounter = 0
+        self.predHistSize = 6
+        self.predHistHalfUpper = 4
+        self.predHistory = util.createArraySix(self.predHistSize,)
 
 #======================================================================
 #=Interface methods====================================================
@@ -100,12 +109,35 @@ class LSTM(IClassifier):
     def classify(self, data):
         normalizedData = data / np.amax(data)
         diffAvgData = normalizedData - self.avg
-        out = self.net.activate(diffAvgData)
+#         out = self.net.activate(diffAvgData)
+#         self.datanum += 1
+#         if(self.datanum % 32 == 0):
+#             self.datanum = 0
+#             self.net.reset()
+#             print(str(np.argmax(out)) + " " + str(out))
+
         self.datanum += 1
+        self.datalist.append(diffAvgData)
         if(self.datanum % 32 == 0):
-            self.datanum = 0
+            self.has32 = True
+        if(self.has32):
             self.net.reset()
-            print(str(np.argmax(out)) + " " + str(out))
+            for i in range(32):
+                out = self.net.activate(self.datalist[i])
+            Y_pred = np.argmax(out)
+            self.predHistory[0] = Y_pred
+            self.predHistory = np.roll(self.predHistory, -1)
+            expected = stats.mode(self.predHistory, 0)
+            if(expected[1][0] >= self.predHistHalfUpper):
+#             if(not (np.shape(expected[0])[0] >= 2)):
+                if(int(expected[0][0]) != self.previouspredict):
+                    self.previouspredict = int(expected[0][0])
+                    print self.previouspredict
+#                 self.datanum = 0
+#                 self.datalist = []
+#                 self.has32 = False
+#             else:
+            del self.datalist[0]
 
     def startValidation(self):
         trnresult = 100. * (1.0 - testOnSequenceData(self.net, self.ds))
