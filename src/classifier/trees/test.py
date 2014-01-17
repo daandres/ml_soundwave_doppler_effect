@@ -59,5 +59,5 @@ filename = "../../../gestures/Daniel/gesture_2/1387660041_fernsehen.txt" #Entgeg
 #filename = "../../../gestures/Daniel/gesture_4/1387647860_zimmer_left.txt" #Double-push with one hand
 #filename = "../../../gestures/Benjamin/gesture_4/1389637026.txt" #Right-To-Left-One-Hand
 
-#showDiffFilteredNoFiltered(filename)
-showSamplesOfFirstGesture(filename)
+showDiffFilteredNoFiltered(filename)
+#showSamplesOfFirstGesture(filename)

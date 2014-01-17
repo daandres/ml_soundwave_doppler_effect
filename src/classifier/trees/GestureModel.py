@@ -43,23 +43,87 @@ class GestureModel(object):
             self.bins_right.append(numBins)
             self.bins_right_filtered.append(numBinsFiltered)
     
-    def smoothFilteredPeaks(self):
+       
+    def smoothRelative(self, left_vals, right_vals, minPeakSize):
         #left
-        for i in range(len(self.bins_left_filtered)-2):
-            current_val = self.bins_left_filtered[i]
-            next_val = self.bins_left_filtered[i+1]
-            next_next_val = self.bins_left_filtered[i+2]
-            if current_val == next_next_val and math.pow(current_val - next_val, 2) == 1:
-                self.bins_left_filtered[i+1] = current_val
+        smoothed_left = []
+        smoothed_left.append(left_vals[0])
+        for i in range(1, len(left_vals)):
+            prev_val = smoothed_left[i-1]
+            current_val = left_vals[i]
+            diff = abs(current_val - prev_val)
+            if diff < minPeakSize:
+                smoothed_left.append(prev_val)
+            else:
+                smoothed_left.append(current_val)
+        
         #right
-        for i in range(len(self.bins_right_filtered)-2):
-            current_val = self.bins_right_filtered[i]
-            next_val = self.bins_right_filtered[i+1]
-            next_next_val = self.bins_right_filtered[i+2]
-            if current_val == next_next_val and math.pow(current_val - next_val, 2) == 1:
-                self.bins_right_filtered[i+1] = current_val
-          
-          
+        smoothed_right = []
+        smoothed_right.append(right_vals[0])
+        for i in range(1, len(right_vals)):
+            prev_val = smoothed_right[i-1]
+            current_val = right_vals[i]
+            diff = abs(current_val - prev_val)
+            if diff < minPeakSize:
+                smoothed_right.append(prev_val)
+            else:
+                smoothed_right.append(current_val)
+        
+        return [smoothed_left, smoothed_right]
+    
+    
+    def smoothAbsolute(self, left_vals, right_vals, minPeakSize):
+        average = self.mostCommonNumberOfBins()
+        
+        #left
+        smoothed_left = []
+        #erase peaks smaller than minPeakSize
+        for value in left_vals:
+            diff = abs(value - average[0])
+            if diff < minPeakSize:
+                smoothed_left.append(average[0])
+            else:
+                smoothed_left.append(value)
+        
+        #right
+        smoothed_right = []
+        #erase peaks smaller than minPeakSize
+        for value in right_vals:
+            diff = abs(value - average[0])
+            if diff < minPeakSize:
+                smoothed_right.append(average[0])
+            else:
+                smoothed_right.append(value)
+        
+        return [smoothed_left, smoothed_right]
+    
+    
+    def smoothToMostCommonNumberOfBins(self, left_vals, right_vals, threshold):
+        average = self.mostCommonNumberOfBins()
+        
+        #left
+        smoothed_left = []
+        #erase peaks smaller than minPeakSize
+        for value in left_vals:
+            diff = abs(value - average[0])
+            if diff > threshold:
+                smoothed_left.append(value)
+            else:
+                smoothed_left.append(average[0])
+        
+        #right
+        smoothed_right = []
+        #erase peaks smaller than minPeakSize
+        for value in right_vals:
+            diff = abs(value - average[1])
+            if diff > threshold:
+                smoothed_right.append(value)
+            else:
+                smoothed_right.append(average[1])
+        
+        return [smoothed_left, smoothed_right]
+    
+    
     #returns the most common number of bins as tuple (count left, count right), not the median!
     def mostCommonNumberOfBins(self):
         #left
@@ -70,7 +134,7 @@ class GestureModel(object):
         
         #right
         vals_right = []
-        for s in self.bins_left_filtered:
+        for s in self.bins_right_filtered:
             vals_right.append(s)
         counts_right = np.bincount(vals_right)
         

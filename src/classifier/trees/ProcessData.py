@@ -47,11 +47,12 @@ def plotBoth(gestures):
         plt.plot(gesture.bins_right_filtered, color='blue')
         plt.axis([0,32,0,32])
         
-        #smooth filtered peaks
-        gesture.smoothFilteredPeaks()
+        #relative_smoothed = gesture.smoothRelative(gesture.bins_left_filtered, gesture.bins_right_filtered, 2)
+        relative_smoothed = gesture.smoothAbsolute(gesture.bins_left_filtered, gesture.bins_right_filtered, 2)
+        #smoothed = gesture.smoothToMostCommonNumberOfBins(relative_smoothed[0], relative_smoothed[1], 1)
         plt.figure(1)
-        plt.plot(gesture.bins_left_filtered, color='magenta')
-        plt.plot(gesture.bins_right_filtered, color='cyan')
+        plt.plot(relative_smoothed[0], color='magenta')
+        plt.plot(relative_smoothed[1], color='cyan')
         plt.axis([0,32,0,32])
 
         plt.show()
