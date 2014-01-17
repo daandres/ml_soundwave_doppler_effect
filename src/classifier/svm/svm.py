@@ -44,12 +44,33 @@ class SVM(IClassifier):
 
         self.datanum += 1
         self.datalist.append(diffAvgData)
+        temp = 8
+        has32 = False
         if(self.datanum % 32 == 0):
-            self.datanum = 0
-            b = np.asarray(self.datalist).reshape(2048,)
-            Y_pred = self.classifier.predict(b)
-            self.datalist = []
-            print Y_pred
+            has32 = True
+        previouspredict = 6
+        predcounter = 0
+        if(has32):
+#             predictedlist = np.zeros((self.nClasses,))
+#             for i in range(temp):
+            b = np.asarray(self.datalist[0:32]).reshape(2048,)
+            Y_pred = self.classifier.predict(b)[0]
+            if(previouspredict == Y_pred):
+                print "equal ", Y_pred
+                predcounter += 1
+                if(predcounter >= 3):
+                    print Y_pred
+#                     break
+            else:
+                print "not equal ", Y_pred
+                previouspredict = Y_pred
+                predcounter = 1
+            self.datalist.pop(0)
+            print len(self.datalist)
+#                 predictedlist[Y_pred] += 1
+#             print predictedlist, np.argmax(predictedlist, 0)
+#             self.datalist = []
+#             self.datanum = 0
 
 
     def getName(self):
@@ -98,7 +119,10 @@ class SVM(IClassifier):
         X = []
         Y = []
         for i in range(self.nClasses):
-            datum = g.getGesture3DDiffAvg(i, [])
+            datum = g.getGesture3DDiffAvg(i, [], True)
+            if(i == 6):
+                data7 = g.getGesture3DDiffAvg(7, [], True)
+                datum = np.append(datum, data7, axis=0)
             print("data " + str(i) + " loaded shape: " + str(np.shape(datum)))
             d = datum.reshape(datum.shape[0], datum.shape[1] * datum.shape[2])
             for dd in range(d.shape[0]):
