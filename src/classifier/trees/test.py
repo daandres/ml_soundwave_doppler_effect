@@ -37,7 +37,7 @@ def showSamplesOfFirstGesture(filename):
             gestures.append(np.reshape(line, (32,64)))
 
     #show samples of first gesture             
-    gesture = gestures[0]
+    gesture = gestures[1]
     for g in gesture:
         threshold_line = []
         max_pos = g[np.argmax(g)]
@@ -56,8 +56,10 @@ def showSamplesOfFirstGesture(filename):
 
 #filename = "../../../gestures/Daniel/gesture_0/1388424714_zimmer_left.txt" #Right-To-Left-One-Hand
 #filename = "../../../gestures/Daniel/gesture_1/1387647578_zimmer_left.txt" #Top-to-Bottom-One-Hand
-filename = "../../../gestures/Daniel/gesture_4/1387647860_zimmer_left.txt" #Double-push with one hand
+filename = "../../../gestures/Daniel/gesture_2/1387660041_fernsehen.txt" #Entgegengesetzt with two hands
+#filename = "../../../gestures/Daniel/gesture_3/1387647860_zimmer_left.txt" #Single-push with one hand
+#filename = "../../../gestures/Daniel/gesture_4/1387647860_zimmer_left.txt" #Double-push with one hand
 #filename = "../../../gestures/Benjamin/gesture_4/1389637026.txt" #Right-To-Left-One-Hand
 
-showDiffFilteredNoFiltered(filename)
-#showSamplesOfFirstGesture(filename)
+#showDiffFilteredNoFiltered(filename)
+showSamplesOfFirstGesture(filename)

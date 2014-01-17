@@ -41,10 +41,12 @@ def plotFilteredTestData(gestures):
 def plotBoth(gestures):
     for gesture in gestures:
         plt.figure(0)
-        plt.plot(gesture.bins_left, color='red')
-        plt.plot(gesture.bins_right, color='blue')
+        plt.plot(gesture.bins_left_filtered, color='red')
+        plt.plot(gesture.bins_right_filtered, color='blue')
         plt.axis([0,32,0,32])
         
+        #smooth filtered peaks
+        gesture.smoothFilteredPeaks()
         plt.figure(1)
         plt.plot(gesture.bins_left_filtered, color='magenta')
         plt.plot(gesture.bins_right_filtered, color='cyan')
