@@ -152,7 +152,7 @@ class LSTM(IClassifier):
     def load(self, filename=""):
         if filename == "":
             filename = self.config['network']
-        self.net = util.load_network(filename)
+        self.net = util.load_network(self.config['networkpath'] + filename)
         self.net.sorted = False
         self.net.sortModules()
         netValues = util.parseNetworkFilename(filename)
@@ -176,7 +176,7 @@ class LSTM(IClassifier):
                 filename = self.config['network']
             else:
                 filename = self.config['network'] + str(time.time())
-        util.save_network(self.net, filename)
+        util.save_network(self.net, self.config['networkpath'] + filename)
 
     def loadData(self, filename=""):
         if(self.config['autoload_data'] == "true"):
