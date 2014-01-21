@@ -212,7 +212,9 @@ class LSTM(IClassifier):
     def __getName(self):
         return "n" + str(self.hidden) + "_o" + str(self.outneurons) + "_l" + self.layer + "_nC" + str(self.nClasses) + "_t" + self.trainingType + "_e" + str(self.trainedEpochs) + self.config['fast']
 
-
+    '''
+    Gesten werden starr nach 32 frames erkannt
+    '''
     def __classify1(self, data):
         out = self.net.activate(data)
         self.datanum += 1
@@ -221,6 +223,15 @@ class LSTM(IClassifier):
             self.net.reset()
             print(str(np.argmax(out)) + " " + str(out))
 
+    '''
+    Gesten werden auf folgende Art erkannt:
+    - wenn 32 Datensätze vorhanden sind wird das Netz aktiviert und der Output in eine Liste gespeichert
+    - Diese Liste wird ständig erweitert und hat ein feste Länge (siehe self.predHistory in init)
+    - Es wird der Modus der Liste gebildet
+    - Ist der Modus über einem  bestimmten Treshold (self.predHistHalfUpper) wird der Wert in self.previouspredict gespeichert
+    - Ist previouspredict 4 mal gleich wird die Gestenklasse ausgegeben, ist die Klasse größer als 4 mal gleich erfolgt keine neue AUsgabe
+    - 
+    '''
     def __classifiy2(self, data):
         self.datanum += 1
         self.datalist.append(data)
@@ -247,11 +258,17 @@ class LSTM(IClassifier):
                     if(self.predcounter == 4):
                         print self.previouspredict
                         self.outkeys.outForClass(self.previouspredict)
-
-
             del self.datalist[0]
 
+    '''
+    Gesten werden innerhalb von der Geste 6 gesucht
+    '''
     def __classifiy3(self, data):
+        pass
+
+    '''
+    Gesten werden anhand eines erkannten Starttresholds erkannt
+    '''
+    def __classifiy4(self, data):
         # sequence maximum erkennen
-        # oder von 6 bis 6
         pass
