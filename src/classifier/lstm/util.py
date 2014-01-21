@@ -41,7 +41,7 @@ def parseNetworkFilename(filename):
     netValues = {}
     for comp in components:
         if(comp[0] == "n" and comp[1] == "C"):
-            netValues['nclasses'] = comp[2:]
+            pass
         elif(comp[0] == "n"):
             netValues['neurons'] = comp[1:]
         elif(comp[0] == "e"):
@@ -49,9 +49,11 @@ def parseNetworkFilename(filename):
         elif(comp[0] == "l"):
             netValues['layer'] = comp[1:]
         elif(comp[0] == "o"):
-            netValues['outneurons'] = comp[1:]
+            netValues['nclasses'] = comp[1:]
         elif(comp[0] == "t"):
             netValues['trainer'] = comp[1:]
+        elif(comp[0] == "p"):
+            netValues['peepholes'] = comp[1:]
     return netValues
 
 def load_dataset(filename=""):

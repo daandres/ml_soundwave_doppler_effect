@@ -18,7 +18,7 @@ class LSTM(IClassifier):
         self.recorder = recorder
         self.config = config
         self.hidden = int(self.config['hiddenneurons'])
-        self.outneurons = int(self.config['outneurons'])
+        self.peepholes = bool(self.config['peepholes'])
         self.epochs = int(self.config['trainingepochs'])
         self.trainedEpochs = 0
         self.classes = eval(self.config['classes'])
@@ -135,16 +135,16 @@ class LSTM(IClassifier):
         for key, value in netValues.items():
             if(key == 'neurons'):
                 self.hidden = int(value)
-            elif(key == 'nclasses'):
-                self.nClasses = int(value)
             elif(key == 'epochs'):
                 self.trainedEpochs = int(value)
             elif(key == 'layer'):
                 self.layer = value
-            elif(key == 'outneurons'):
-                self.outneurons = int(value)
+            elif(key == 'nClasses'):
+                self.nClasses = int(value)
             elif(key == 'trainer'):
                 self.trainingType = value
+            elif(key == 'peepholes'):
+                self.peepholes = bool(value)
 
     def save(self, filename="", overwrite=True):
         if filename == "":
@@ -160,7 +160,7 @@ class LSTM(IClassifier):
                 filename = self.config['dataset']
             self.ds = util.load_dataset(filename)
         else:
-            self.ds = util.createPyBrainDatasetFromSamples(self.classes, INPUTS, self.outneurons, "", self.config['data_average'], self.config['merge67'])
+            self.ds = util.createPyBrainDatasetFromSamples(self.classes, INPUTS, self.nClasses, "", self.config['data_average'], self.config['merge67'])
 
     def saveData(self, filename=""):
         if filename == "":
@@ -181,7 +181,7 @@ class LSTM(IClassifier):
         elif(self.layer == "sigmoid"): layer = SigmoidLayer
         elif(self.layer == "softmax"): layer = SoftmaxLayer
         else: raise Exception("Cannot create network: no output layer specified")
-        self.net = buildNetwork(INPUTS, self.hidden, self.outneurons, hiddenclass=LSTMLayer, outclass=layer, recurrent=True, outputbias=False)
+        self.net = buildNetwork(INPUTS, self.hidden, self.nClasses, hiddenclass=LSTMLayer, outclass=layer, recurrent=True, outputbias=False, peepholes=self.peepholes)
         if(self.config['fast'] != ""):
             self.net = self.net.convertToFastNetwork()
         self.net.randomize()
@@ -203,8 +203,8 @@ class LSTM(IClassifier):
             confmat[np.argmax(target)][np.argmax(out)] += 1
         sumWrong = 0
         sumAll = 0
-        for i in range(self.outneurons):
-            for j in range(self.outneurons):
+        for i in range(self.nClasses):
+            for j in range(self.nClasses):
                 if i != j:
                     sumWrong += confmat[i][j]
                 sumAll += confmat[i][j]
@@ -213,7 +213,7 @@ class LSTM(IClassifier):
         print("error: " + str(100. * error) + "%")
 
     def __getName(self):
-        return "n" + str(self.hidden) + "_o" + str(self.outneurons) + "_l" + self.layer + "_nC" + str(self.nClasses) + "_t" + self.trainingType + "_e" + str(self.trainedEpochs) + self.config['fast']
+        return "n" + str(self.hidden) + "_o" + str(self.nClasses) + "_l" + self.layer + "_p" + str(self.peepholes) + "_t" + self.trainingType + "_e" + str(self.trainedEpochs) + self.config['fast']
 
     '''
     Gesten werden starr nach 32 frames erkannt
