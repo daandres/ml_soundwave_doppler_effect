@@ -65,7 +65,6 @@ def load(filename):
     return load_network(filename), load_dataset(filename)
 
 def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", average="false", merge67="false"):
-#         np.set_printoptions(precision=2, threshold=np.nan)
     labels = {0:'Right-To-Left-One-Hand',
               1:'Top-to-Bottom-One-Hand',
               2:'Entgegengesetzt with two hands',
@@ -93,18 +92,23 @@ def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", avera
             data[i] = np.append(data[i], data7, axis=0)
         print("data " + str(i) + " loaded shape: " + str(np.shape(data[i])))
     print("data loaded, now creating dataset")
-    ds = SequenceClassificationDataSet(inputs, outputs, nb_classes=nClasses, class_labels=labels.values())
+    ds = SequenceClassificationDataSet(inputs, 1, nb_classes=nClasses, class_labels=labels.values())
     for target in classes:
-        tupt = getTarget(target, outputs)
-        print("Target " + str(tupt))
+        tupt = np.asarray([target])
+#         print("Target " + str(tupt))
         for x in data[target]:
             ds.newSequence()
             for y in x:
                 tup = tuple(y)
                 ds.appendLinked(tup, tupt)
+    print(ds.calculateStatistics())
+#     np.set_printoptions(precision=2, threshold=np.nan)
+    ds._convertToOneOfMany(bounds=[0, 1])
+#     print ds.getField('target')
     print("DS entries " + str(ds.getNumSequences()))
     return ds
 
+@DeprecationWarning
 def getTarget(y, dim):
     if(dim == 1):
         target = np.zeros((dim,))
