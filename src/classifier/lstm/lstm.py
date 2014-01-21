@@ -26,6 +26,7 @@ class LSTM(IClassifier):
         self.relative = relative
         self.avg = util.getAverage()
         self.trainer, self.returnsNet = None, False
+        self.layer = self.config['outlayer']
         self.loadData(self.config['dataset'])
         if(self.config['autoload_network'] == "true"):
             self.load()
@@ -37,8 +38,8 @@ class LSTM(IClassifier):
         self.has32 = False
         self.previouspredict = 6
         self.predcounter = 0
-        self.predHistSize = 6
-        self.predHistHalfUpper = 4
+        self.predHistSize = 8
+        self.predHistHalfUpper = 5
         self.predHistory = util.createArraySix(self.predHistSize,)
 
 #======================================================================
@@ -132,11 +133,14 @@ class LSTM(IClassifier):
 #             if(not (np.shape(expected[0])[0] >= 2)):
                 if(int(expected[0][0]) != self.previouspredict):
                     self.previouspredict = int(expected[0][0])
-                    print self.previouspredict
+                    self.predcounter = 1
 #                 self.datanum = 0
 #                 self.datalist = []
 #                 self.has32 = False
-#             else:
+                else:
+                    self.predcounter += 1
+                    if(self.predcounter == 4):
+                        print self.previouspredict
             del self.datalist[0]
 
     def startValidation(self):
@@ -148,9 +152,23 @@ class LSTM(IClassifier):
     def load(self, filename=""):
         if filename == "":
             filename = self.config['network']
-        self.net = util.load_network(filename)
+        self.net = util.load_network(self.config['networkpath'] + filename)
         self.net.sorted = False
         self.net.sortModules()
+        netValues = util.parseNetworkFilename(filename)
+        for key, value in netValues.items():
+            if(key == 'neurons'):
+                self.hidden = int(value)
+            elif(key == 'nclasses'):
+                self.nClasses = int(value)
+            elif(key == 'epochs'):
+                self.trainedEpochs = int(value)
+            elif(key == 'layer'):
+                self.layer = value
+            elif(key == 'outneurons'):
+                self.outneurons = int(value)
+            elif(key == 'trainer'):
+                self.trainingType = value
 
     def save(self, filename="", overwrite=True):
         if filename == "":
@@ -158,7 +176,7 @@ class LSTM(IClassifier):
                 filename = self.config['network']
             else:
                 filename = self.config['network'] + str(time.time())
-        util.save_network(self.net, filename)
+        util.save_network(self.net, self.config['networkpath'] + filename)
 
     def loadData(self, filename=""):
         if(self.config['autoload_data'] == "true"):
@@ -183,9 +201,9 @@ class LSTM(IClassifier):
 
 
     def _createNetwork(self):
-        if(self.config['outlayer'] == "linear"): layer = LinearLayer
-        elif(self.config['outlayer'] == "sigmoid"): layer = SigmoidLayer
-        elif(self.config['outlayer'] == "softmax"): layer = SoftmaxLayer
+        if(self.layer == "linear"): layer = LinearLayer
+        elif(self.layer == "sigmoid"): layer = SigmoidLayer
+        elif(self.layer == "softmax"): layer = SoftmaxLayer
         else: raise Exception("Cannot create network: no output layer specified")
         self.net = buildNetwork(INPUTS, self.hidden, self.outneurons, hiddenclass=LSTMLayer, outclass=layer, recurrent=True, outputbias=False)
         if(self.config['fast'] != ""):
@@ -219,4 +237,4 @@ class LSTM(IClassifier):
         print("error: " + str(100. * error) + "%")
 
     def __getName(self):
-        return "n" + str(self.hidden) + "_o" + str(self.outneurons) + "_l" + self.config['outlayer'] + "_nC" + str(self.nClasses) + "_t" + self.trainingType + "_e" + str(self.trainedEpochs) + self.config['fast']
+        return "n" + str(self.hidden) + "_o" + str(self.outneurons) + "_l" + self.layer + "_nC" + str(self.nClasses) + "_t" + self.trainingType + "_e" + str(self.trainedEpochs) + self.config['fast']
