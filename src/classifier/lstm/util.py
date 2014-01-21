@@ -36,6 +36,24 @@ def load_network(filename=""):
     print("networked loaded from " + filename + '.xml')
     return net
 
+def parseNetworkFilename(filename):
+    components = filename.split("_")
+    netValues = {}
+    for comp in components:
+        if(comp[0] == "n" and comp[1] == "C"):
+            netValues['nclasses'] = comp[2:]
+        elif(comp[0] == "n"):
+            netValues['neurons'] = comp[1:]
+        elif(comp[0] == "e"):
+            netValues['epochs'] = comp[1:]
+        elif(comp[0] == "l"):
+            netValues['layer'] = comp[1:]
+        elif(comp[0] == "o"):
+            netValues['outneurons'] = comp[1:]
+        elif(comp[0] == "t"):
+            netValues['trainer'] = comp[1:]
+    return netValues
+
 def load_dataset(filename=""):
     if filename == "":
         raise Exception("No dataset loaded because no network name provided")
@@ -69,9 +87,9 @@ def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", avera
     else:
         merge67 = False
     for i in classes:
-        data[i] = getData(i, [], merge67)
+        data[i] = getData(i, ["Daniel"], merge67)
         if(i == 6 and merge67):
-            data7 = getData(7, [], merge67)
+            data7 = getData(7, ["Daniel"], merge67)
             data[i] = np.append(data[i], data7, axis=0)
         print("data " + str(i) + " loaded shape: " + str(np.shape(data[i])))
     print("data loaded, now creating dataset")
