@@ -42,17 +42,18 @@ def plotFilteredTestData(gestures):
 
 def plotBoth(gestures):
     for gesture in gestures:
+        #absolute_smoothed = gesture.smoothAbsolute(gesture.bins_left_filtered, gesture.bins_right_filtered, 2)
+        relative_smoothed = gesture.smoothRelative(gesture.bins_left_filtered, gesture.bins_right_filtered, 2)
+        smoothed = gesture.smoothToMostCommonNumberOfBins(relative_smoothed[0], relative_smoothed[1], 1)
         plt.figure(0)
-        plt.plot(gesture.bins_left_filtered, color='red')
-        plt.plot(gesture.bins_right_filtered, color='blue')
+        plt.plot(smoothed[0], color='red')
+        plt.plot(smoothed[1], color='blue')
         plt.axis([0,32,0,32])
         
-        #relative_smoothed = gesture.smoothRelative(gesture.bins_left_filtered, gesture.bins_right_filtered, 2)
-        relative_smoothed = gesture.smoothAbsolute(gesture.bins_left_filtered, gesture.bins_right_filtered, 2)
-        #smoothed = gesture.smoothToMostCommonNumberOfBins(relative_smoothed[0], relative_smoothed[1], 1)
+        combined_smoothed = gesture.combineNearPeaks(smoothed[0], smoothed[1])
         plt.figure(1)
-        plt.plot(relative_smoothed[0], color='magenta')
-        plt.plot(relative_smoothed[1], color='cyan')
+        plt.plot(combined_smoothed[0], color='magenta')
+        plt.plot(combined_smoothed[1], color='cyan')
         plt.axis([0,32,0,32])
 
         plt.show()
