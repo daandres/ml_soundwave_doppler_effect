@@ -43,6 +43,9 @@ class LSTM(IClassifier):
         self.predHistHalfUpper = 5
         self.predHistory = util.createArraySix(self.predHistSize,)
 
+        # Classify3 method
+        self.predhistoryforclassify3 = []
+
         self.outkeys = SystemKeys()
 
 #======================================================================
@@ -222,14 +225,15 @@ class LSTM(IClassifier):
             self.datanum = 0
             self.net.reset()
             print(str(np.argmax(out)) + " " + str(out))
+        return np.argmax(out)
 
     '''
     Gesten werden auf folgende Art erkannt:
-    - wenn 32 Datensätze vorhanden sind wird das Netz aktiviert und der Output in eine Liste gespeichert
-    - Diese Liste wird ständig erweitert und hat ein feste Länge (siehe self.predHistory in init)
+    - wenn 32 Datensaetze vorhanden sind wird das Netz aktiviert und der Output in eine Liste gespeichert
+    - Diese Liste wird staendig erweitert und hat ein feste Laenge (siehe self.predHistory in init)
     - Es wird der Modus der Liste gebildet
-    - Ist der Modus über einem  bestimmten Treshold (self.predHistHalfUpper) wird der Wert in self.previouspredict gespeichert
-    - Ist previouspredict 4 mal gleich wird die Gestenklasse ausgegeben, ist die Klasse größer als 4 mal gleich erfolgt keine neue AUsgabe
+    - Ist der Modus ueber einem  bestimmten Treshold (self.predHistHalfUpper) wird der Wert in self.previouspredict gespeichert
+    - Ist previouspredict 4 mal gleich wird die Gestenklasse ausgegeben, ist die Klasse groesser als 4 mal gleich erfolgt keine neue Ausgabe
     - 
     '''
     def __classifiy2(self, data):
@@ -241,30 +245,50 @@ class LSTM(IClassifier):
             self.net.reset()
             for i in range(32):
                 out = self.net.activate(self.datalist[i])
+            del self.datalist[0]
             Y_pred = np.argmax(out)
             self.predHistory[0] = Y_pred
             self.predHistory = np.roll(self.predHistory, -1)
             expected = stats.mode(self.predHistory, 0)
             if(expected[1][0] >= self.predHistHalfUpper):
-#             if(not (np.shape(expected[0])[0] >= 2)):
                 if(int(expected[0][0]) != self.previouspredict):
+                    oldPrevious, oldPredCounter = self.previouspredict, self.previouspredict
                     self.previouspredict = int(expected[0][0])
                     self.predcounter = 1
-#                 self.datanum = 0
-#                 self.datalist = []
-#                 self.has32 = False
+                    return oldPrevious, oldPredCounter
                 else:
                     self.predcounter += 1
                     if(self.predcounter == 4):
-                        print self.previouspredict
+#                         print self.previouspredict
                         self.outkeys.outForClass(self.previouspredict)
-            del self.datalist[0]
+                    return self.previouspredict, self.predcounter
+        return -1, -1
+
 
     '''
     Gesten werden innerhalb von der Geste 6 gesucht
+    TODO not finished yet
     '''
     def __classifiy3(self, data):
-        pass
+        pred, predcounter = self.__classifiy2(data)
+        if(pred != -1 and predcounter >= 4):
+            try:
+                prevpred, prevpredcounter = self.predhistoryforclassify3.pop()
+                if(prevpred != pred):
+                    self.predhistoryforclassify3.append([prevpred, prevpredcounter])
+            except IndexError:
+                pass
+            self.predhistoryforclassify3.append([pred, predcounter])
+            if(pred == 6 and len(self.predhistoryforclassify3) <= 1):
+                pass
+            else:
+                classes = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+                for pred, count in self.predhistoryforclassify3:
+                    classes[pred] += count
+                classes.pop(6)
+                classifiedclass = stats.mode(np.asarray(classes.values()), 0)
+                print classifiedclass
+
 
     '''
     Gesten werden anhand eines erkannten Starttresholds erkannt
