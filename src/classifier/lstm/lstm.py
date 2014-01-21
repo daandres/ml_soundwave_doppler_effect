@@ -6,7 +6,8 @@ import classifier.lstm.util as util
 import numpy as np
 from scipy import stats as stats
 import time
-import arac
+# import arac
+from systemkeys import SystemKeys
 
 INPUTS = 64
 NAME = "LSTM"
@@ -41,6 +42,8 @@ class LSTM(IClassifier):
         self.predHistSize = 8
         self.predHistHalfUpper = 5
         self.predHistory = util.createArraySix(self.predHistSize,)
+
+        self.outkeys = SystemKeys()
 
 #======================================================================
 #=Interface methods====================================================
@@ -243,4 +246,12 @@ class LSTM(IClassifier):
                     self.predcounter += 1
                     if(self.predcounter == 4):
                         print self.previouspredict
+                        self.outkeys.outForClass(self.previouspredict)
+
+
             del self.datalist[0]
+
+    def __classifiy3(self, data):
+        # sequence maximum erkennen
+        # oder von 6 bis 6
+        pass
