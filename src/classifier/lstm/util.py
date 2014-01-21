@@ -87,9 +87,9 @@ def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", avera
     else:
         merge67 = False
     for i in classes:
-        data[i] = getData(i, ["Daniel"], merge67)
+        data[i] = getData(i, [], merge67)
         if(i == 6 and merge67):
-            data7 = getData(7, ["Daniel"], merge67)
+            data7 = getData(7, [], merge67)
             data[i] = np.append(data[i], data7, axis=0)
         print("data " + str(i) + " loaded shape: " + str(np.shape(data[i])))
     print("data loaded, now creating dataset")

@@ -106,42 +106,12 @@ class LSTM(IClassifier):
         else:
             raise Exception("Cannot create trainer, no network type specified")
 
-
     def classify(self, data):
         normalizedData = data / np.amax(data)
         diffAvgData = normalizedData - self.avg
-#         out = self.net.activate(diffAvgData)
-#         self.datanum += 1
-#         if(self.datanum % 32 == 0):
-#             self.datanum = 0
-#             self.net.reset()
-#             print(str(np.argmax(out)) + " " + str(out))
 
-        self.datanum += 1
-        self.datalist.append(diffAvgData)
-        if(self.datanum % 32 == 0):
-            self.has32 = True
-        if(self.has32):
-            self.net.reset()
-            for i in range(32):
-                out = self.net.activate(self.datalist[i])
-            Y_pred = np.argmax(out)
-            self.predHistory[0] = Y_pred
-            self.predHistory = np.roll(self.predHistory, -1)
-            expected = stats.mode(self.predHistory, 0)
-            if(expected[1][0] >= self.predHistHalfUpper):
-#             if(not (np.shape(expected[0])[0] >= 2)):
-                if(int(expected[0][0]) != self.previouspredict):
-                    self.previouspredict = int(expected[0][0])
-                    self.predcounter = 1
-#                 self.datanum = 0
-#                 self.datalist = []
-#                 self.has32 = False
-                else:
-                    self.predcounter += 1
-                    if(self.predcounter == 4):
-                        print self.previouspredict
-            del self.datalist[0]
+        self.__classifiy2(diffAvgData)
+
 
     def startValidation(self):
         trnresult = 100. * (1.0 - testOnSequenceData(self.net, self.ds))
@@ -238,3 +208,39 @@ class LSTM(IClassifier):
 
     def __getName(self):
         return "n" + str(self.hidden) + "_o" + str(self.outneurons) + "_l" + self.layer + "_nC" + str(self.nClasses) + "_t" + self.trainingType + "_e" + str(self.trainedEpochs) + self.config['fast']
+
+
+    def __classify1(self, data):
+        out = self.net.activate(data)
+        self.datanum += 1
+        if(self.datanum % 32 == 0):
+            self.datanum = 0
+            self.net.reset()
+            print(str(np.argmax(out)) + " " + str(out))
+
+    def __classifiy2(self, data):
+        self.datanum += 1
+        self.datalist.append(data)
+        if(self.datanum % 32 == 0):
+            self.has32 = True
+        if(self.has32):
+            self.net.reset()
+            for i in range(32):
+                out = self.net.activate(self.datalist[i])
+            Y_pred = np.argmax(out)
+            self.predHistory[0] = Y_pred
+            self.predHistory = np.roll(self.predHistory, -1)
+            expected = stats.mode(self.predHistory, 0)
+            if(expected[1][0] >= self.predHistHalfUpper):
+#             if(not (np.shape(expected[0])[0] >= 2)):
+                if(int(expected[0][0]) != self.previouspredict):
+                    self.previouspredict = int(expected[0][0])
+                    self.predcounter = 1
+#                 self.datanum = 0
+#                 self.datalist = []
+#                 self.has32 = False
+                else:
+                    self.predcounter += 1
+                    if(self.predcounter == 4):
+                        print self.previouspredict
+            del self.datalist[0]
