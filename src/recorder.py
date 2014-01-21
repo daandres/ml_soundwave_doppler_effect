@@ -25,8 +25,11 @@ class SwhRecorder:
         self.rightBorder = (frequencyToIndex * self.frequency) + float(recordConfig['rightborder'])
         self.transformedData = None
         self.initRecording()
+        self.waitToFinishCurrentRecord = False
+        self.setupFinish = False
 
         self.threadNum = 0
+        self.thread = None
 #         self.setup()
 
         self.classifyFlag = False
@@ -51,10 +54,12 @@ class SwhRecorder:
         self.audio = np.empty((self.chunksToRecord * self.buffersize), dtype=np.int16)
         self.timerStop = False
 
+        self.setupFinish = True
+
     def close(self):
         self.stopRecording()
         """cleanly back out and release sound card."""
-        if(not self.waitToFinishCurrentRecord):
+        if(self.setupFinish and not self.waitToFinishCurrentRecord):
             self.audioInStream.stop_stream()
             self.audioInStream.close()
             self.audioDev.terminate()

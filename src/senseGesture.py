@@ -28,7 +28,7 @@ class SenseGesture():
         self.config = c.getInstance()
         self.checkNameSet()
         self.checkOSet()
-        
+
         self.audioConfig = self.config.getAudioConfig()
         self.pathsConfig = self.config.getPathsConfig()
         self.recordConfig = self.config.getRecordConfig()
@@ -52,7 +52,7 @@ class SenseGesture():
     def checkOSet(self):
         self.osConfig = self.config.getOSConfig()
         if(self.osConfig['type'] == ""):
-            self.config.setConfig("os","type",os.name)
+            self.config.setConfig("os", "type", os.name)
             self.osConfig = self.config.getOSConfig()
 
     def start(self):
@@ -74,8 +74,9 @@ class SenseGesture():
         self.recorder.close()
         self.soundPlayer.stopPlaying()
 
-        self.recorder.thread.join()
-        self.soundPlayer.t.join()
+        if(self.recorder.thread != None):
+            self.recorder.thread.join()
+            self.soundPlayer.t.join()
 
 def exitApp():
     print(enumerate())
