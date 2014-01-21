@@ -14,16 +14,18 @@ from sklearn import svm
 from sklearn import cross_validation
 from collections import Counter
 from scipy import stats as stats
+import itertools
+
 
 class SVM(IClassifier):
 
     def __init__(self, recorder=None, config=None, relative=""):
-        #self.avg = self.getAverage()
+        self.avg = self.getAverage()
         self.classifier = self.load("classifier/svm/svm_trained.pkl")
         self.datalist = []
         self.datanum = 0
         self.nClasses = 7
-        self.data, self.targets, self.avg = self.loadData()
+        self.data, self.targets = self.loadData()
         self.kernel = "rbf"
         self.c = 1000000
         self.gamma = 1
@@ -55,19 +57,64 @@ class SVM(IClassifier):
         return joblib.load(filename)
 
 
-    def classify(self, data):
+    def classify(self,data):
+        def findConsecutiveMax(alist):
+            numbers = alist
+            currentCount = 0
+            maxCount = 0
+            last = numbers[0]
+            for char in numbers:
+                if char == last:
+                    currentCount = currentCount + 1
+                    last = char
+                    if currentCount > maxCount:
+                        repeated = char
+                else:
+                    if currentCount > maxCount:
+                        maxCount = currentCount
+                    currentCount = 1
+                    last = char
+            return repeated
+        
+        
+        normalizedData = data / np.amax(data)
+        diffAvgData = normalizedData - self.avg
+        
+        self.datalist.append(diffAvgData)
+        self.datanum += 1
+        self.index = 0
+        
+        T = diffAvgData - self.avg
+        diff = np.max(np.abs(T))
+        if diff < 1:
+            print "found gesture"
+            self.index = self.datanum
+        
+        plus = 8
+        if len(self.datalist) == 32+plus:
+            preds = []
+            for i in range(plus):
+                g = np.asarray(self.datalist[:32]).reshape(2048,)
+                Y_pred = self.classifier.predict(g)[0]
+                self.datalist.pop(0)
+                preds.append(Y_pred)
+            #print max(len(list(v)) for g,v in itertools.groupby(preds))
+            print findConsecutiveMax(preds)
+                
+        
+
+    def classify2(self, data):
         normalizedData = data / np.amax(data)
         diffAvgData = normalizedData - self.avg
         
         self.datalist.append(diffAvgData)
         self.datanum += 1
         
-        #=======================================================================
-        # T = diffAvgData - self.avg
-        # diff = np.max(np.abs(T))
-        # if diff < 1:
-        #     self.foundgestureindex = self.datanum
-        #=======================================================================
+        T = diffAvgData - self.avg
+        diff = np.max(np.abs(T))
+        if diff < 1:
+            print "found gesture"
+            #self.foundgestureindex = self.datanum
 
     
         plus = 8
@@ -92,7 +139,7 @@ class SVM(IClassifier):
             #print "\t\t\t new gesture"
             
 
-    def classifyold(self, data):
+    def classify_old(self, data):
         normalizedData = data / np.amax(data)
         diffAvgData = normalizedData - self.avg
 
@@ -130,8 +177,13 @@ class SVM(IClassifier):
         joblib.dump(classifier, 'classifier/svm/svm_trained.pkl', compress=9)
 
     def startValidation(self):
+        l = len(self.targets)/10
+        p = 0
         confmat = np.zeros((self.nClasses, self.nClasses))
         for i in range(len(self.targets)):
+            if i % l == 0:
+                p += 10
+                print p, "%" 
             realclass = self.targets[i]
             predictedclass = self.classifier.predict(self.data[i])[0]
             confmat[realclass][predictedclass] += 1
@@ -160,7 +212,7 @@ class SVM(IClassifier):
         pass
 
     
-    def loadData(self, filename=""):
+    def loadData_new(self, filename=""):
         
         def normalise(arr, nn_avg):
             ''' normalise each frame '''
@@ -173,7 +225,7 @@ class SVM(IClassifier):
         path = "../gestures/"
 
         ''' load and reshape textfile with 18.5khz frequency data '''
-        n = np.loadtxt(path + "Benjamin/gesture_6/1390243484.txt", delimiter=",")
+        n = np.loadtxt(path + "Benjamin/gesture_6/1389637026.txt", delimiter=",")
         n = n.reshape(n.shape[0], 32, n.shape[1] / 32)  # recordingframes
         nn = normalise(n, 0)
         nn_avg = np.mean(nn, axis=1)
@@ -206,7 +258,7 @@ class SVM(IClassifier):
         
         return data, targets, nn_avg
 
-    def loadData_old(self, filename=""):
+    def loadData(self, filename=""):
         g = GestureFileIO()
         X = []
         Y = []
