@@ -152,11 +152,11 @@ class SwhRecorder:
         data = self.audio.flatten()
         left, right = np.split(np.abs(np.fft.fft(data)), 2)
         ys = np.add(left, right[::-1])
-        ys = ys[self.leftBorder:self.rightBorder]
+        ys = ys[int(self.leftBorder):int(self.rightBorder)]
         if logScale:
             ys = np.multiply(20, np.log10(ys))
         xs = np.arange(self.buffersize / 2, dtype=float)
-        xs = xs[self.leftBorder:self.rightBorder]
+        xs = xs[int(self.leftBorder):int(self.rightBorder)]
         if trimBy:
             i = int((self.buffersize / 2) / trimBy)
             ys = ys[:i]
