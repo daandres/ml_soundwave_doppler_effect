@@ -13,7 +13,7 @@ import time
 
 import copy
 
-from enum import Enum
+
 class CallbackMessage():
     bufferFilled = 1
     progress = 2 
