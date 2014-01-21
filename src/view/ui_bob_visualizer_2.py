@@ -9,7 +9,6 @@ from threading import Thread
 from properties.config import ConfigProvider
 import time
 
-#from classifier.k_means.kMeans import kmeans
 
 import copy
 
