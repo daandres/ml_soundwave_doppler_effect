@@ -54,7 +54,10 @@ class SVM(IClassifier):
         return avg
 
     def load(self, filename=""):
-        return joblib.load(filename)
+        try:
+            return joblib.load(filename)
+        except:
+            print "file does not exist"
 
 
     def classify1(self,data):
