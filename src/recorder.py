@@ -35,6 +35,7 @@ class SwhRecorder:
         self.classifyFlag = False
         self.classifier = None
 
+
     def setup(self):
         """initialize sound card."""
         # TODO - windows detection vs. alsa or something for linux
@@ -92,10 +93,13 @@ class SwhRecorder:
         else:
             self.close()
 
+
     def classifyStart(self, classifier):
         self.classifier = classifier
         self.classifyFlag = True
+
     def classifyStop(self):
+        print("classify stopped called")
         self.classifier = None
         self.classifyFlag = False
 

@@ -63,7 +63,14 @@ class SenseGesture():
 #             self.t1.start()
         except:
             print("Error: unable to start thread " + str(sys.exc_info()))
-        self.t3.join()
+        while True:
+            try:
+                self.t3.join(1)
+            except KeyboardInterrupt:
+                print("KeyboardInterrupt. Stopping current task (no guarantees for failures), if possible...")
+                self.view.interrupt()
+            if not self.t3.isAlive():
+                break
 #         self.applicationClose()
 #         print("Player alive: \t" + str(self.t1.is_alive()))
 #         print("Recorder alive:\t" + str(self.recorder.is_alive()))

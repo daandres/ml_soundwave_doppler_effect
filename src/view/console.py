@@ -132,14 +132,21 @@ class Console:
     def start(self):
         self.alive = True
         while self.alive:
-            txtin = raw_input('> ')
-            args = txtin.split(" ")
-            if args[0] not in self.key_bindings:
-                print("No command for " + args[0])
-                continue
-            self.inputEvent.clear()
-            self.key_bindings[args[0]](args)
-            self.inputEvent.wait()
+            try:
+                txtin = raw_input('> ')
+                args = txtin.split(" ")
+                if args[0] not in self.key_bindings:
+                    print("No command for " + args[0])
+                    continue
+                self.inputEvent.clear()
+                self.key_bindings[args[0]](args)
+                self.inputEvent.wait()
+            except EOFError:
+                print("End of File Exception")
+                self.alive = False
+            except KeyboardInterrupt:
+                print("KeyboardInterrupt. Stopping current task (no guarantees for failures), if possible...")
+                self.interrupt()
         return
 
     def exit(self, txtin):
@@ -160,11 +167,12 @@ class Console:
             print("No classifier specified")
             self.inputEvent.set()
             return
-        try:
-            self.recorder.classifyStart(self.classificator)
-        except KeyboardInterrupt:
-            self.recorder.classifyStop()
-            self.inputEvent.set()
+        self.recorder.classifyStart(self.classificator, self.classifyCallback)
+        # no input event set because this done in recorder in another thread
+
+    def classifyCallback(self):
+        # only for checking for new Interrupts
+        pass
 
     def selectClassifier(self, args):
         # TODO do it better... switch case, exception handling, ...
@@ -247,6 +255,10 @@ class Console:
         else:
             newName = str(time.time())[:-3]
         self.setFileName(newName)
+        self.inputEvent.set()
+
+    def interrupt(self):
+        self.recorder.classifyStop()
         self.inputEvent.set()
 
 def printHelp(args=None):
