@@ -57,7 +57,7 @@ class SVM(IClassifier):
         return joblib.load(filename)
 
 
-    def classify(self,data):
+    def classify1(self,data):
         def findConsecutiveMax(alist):
             numbers = alist
             currentCount = 0
@@ -139,7 +139,7 @@ class SVM(IClassifier):
             #print "\t\t\t new gesture"
             
 
-    def classify_old(self, data):
+    def classify(self, data):
         normalizedData = data / np.amax(data)
         diffAvgData = normalizedData - self.avg
 
