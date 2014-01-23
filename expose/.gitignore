@@ -36,3 +36,5 @@ tmp/*
 *.vrb
 *.xdy
 *.tdo
+/tmp
+/out
