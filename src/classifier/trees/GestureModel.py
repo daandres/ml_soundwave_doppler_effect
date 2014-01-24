@@ -26,6 +26,8 @@ class GestureModel(object):
         self.shifts_left = []
         self.shifts_right = []
         
+        self.featureVector = []
+        
         # iterate over samples and extract num of bins on left/right side of peak
         for sample in data:
             filtered = ndi.gaussian_filter1d(sample, sigma=1, output=np.float64, mode='nearest')

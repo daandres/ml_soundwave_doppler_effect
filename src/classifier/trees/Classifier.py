@@ -15,29 +15,39 @@ import numpy
 from MyEstimator import MyEstimator
 
 #gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_0/1388424714_zimmer_left.txt")
-gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_3/1387647860_zimmer_left.txt")
+#gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_3/1387647860_zimmer_left.txt")
 #gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_4/1387647860_zimmer_left.txt")
+gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_2/1387660041_fernsehen.txt")
+
 #classifier.trees.ProcessData.plotBoth(gestures)
 #classifier.trees.ProcessData.findAmplitude(gestures[2])
 
 #Cases = {}
 smoothed = []
 cases = []
-amplitudes = []
-print gestures[0].amplitudes_left_filtered
+
+
+    
 for i in range(len(gestures)):
+    featureVector = []
     relative = gestures[i].smoothRelative(gestures[i].bins_left_filtered, gestures[i].bins_right_filtered, 2)
     gestures[i].bins_left_filtered, gestures[i].bins_right_filtered = gestures[i].smoothToMostCommonNumberOfBins(relative[0], relative[1], 1)
-    print Feature().featureCountOfShifts(gestures[i])
+    shifts_left, shifts_right = Feature().featureCountOfShifts(gestures[i])
+    featureVector.append(shifts_left + shifts_right)
+    featureVector.append(shifts_left)
+    featureVector.append(shifts_right)
     
-    cases.append(Feature().featureOrderOfShifts(gestures[i], 1, []))
-    
-    Feature().featureAmplitudes(gestures[i])
+    #cases.append(Feature().featureOrderOfShifts(gestures[i], 2, []))
+    featureVector.append(Feature().featureOrderOfShifts(gestures[i], 2))
+    featureVector.append(Feature().featureAmplitudes(gestures[i]))
+    gestures[i].featureVector = featureVector
 
-for case in cases:
-    print case
+for gesture in gestures:
+    print gesture.featureVector
+#for case in cases:
+#    print case
 
-print "right cases: ", 100. / len(cases) * cases.count(0), "%"
+#print "right cases: ", 100. / len(cases) * cases.count(2), "%"
 
 print 
 print "sklearn.ensemble: "
@@ -73,8 +83,8 @@ myData = []
 for x in range(20):
     a = random.randint(0,3)
     b = random.randint(0,3)
-    c = random.randint(0,3)
-    myData.append([a,b,c])
+    #c = "right"
+    myData.append([a,b])
 #print numpy.shape(myData)
 myClasses = [random.randint(0,1) for x in range(20)]
 
