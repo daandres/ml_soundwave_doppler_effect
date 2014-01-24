@@ -279,7 +279,7 @@ class LSTM(IClassifier):
                 else:
                     self.predcounter += 1
                     if(self.predcounter == 4):
-                        print self.previouspredict
+                        print(str(self.previouspredict))
                         self.outkeys.outForClass(self.previouspredict)
                     return self.previouspredict, self.predcounter
         return -1, -1
@@ -307,7 +307,7 @@ class LSTM(IClassifier):
                     classes[pred] += count
                 classes.pop(6)
                 classifiedclass = stats.mode(np.asarray(classes.values()), 0)
-                print classifiedclass
+                print(str(classifiedclass))
 
 
     '''

@@ -53,7 +53,7 @@ for _ in range(2000):
     for x, y in itertools.izip(datain, dataout):
         ds.appendLinked(tuple(x), tuple(y))
 
-print ds.getNumSequences()
+print(str(ds.getNumSequences()))
 net.randomize()
 
 trainer = BackpropTrainer(net, ds, verbose=True)
