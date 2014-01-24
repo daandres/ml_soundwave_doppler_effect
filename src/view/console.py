@@ -167,7 +167,7 @@ class Console:
             print("No classifier specified")
             self.inputEvent.set()
             return
-        self.recorder.classifyStart(self.classificator, self.classifyCallback)
+        self.recorder.classifyStart(self.classificator)
         # no input event set because this done in recorder in another thread
 
     def classifyCallback(self):

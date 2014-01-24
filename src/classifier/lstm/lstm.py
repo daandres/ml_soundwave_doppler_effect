@@ -1,7 +1,7 @@
 from classifier.classifier import IClassifier
 from pybrain.structure import LSTMLayer, LinearLayer, SoftmaxLayer, SigmoidLayer
 from pybrain.tools.shortcuts import buildNetwork
-from pybrain.tools.validation import testOnSequenceData
+from pybrain.tools.validation import testOnSequenceData, ModuleValidator, CrossValidator
 import classifier.lstm.util as util
 import numpy as np
 from scipy import stats as stats
@@ -109,6 +109,12 @@ class LSTM(IClassifier):
                 self.trainer, self.returnsNet = __getOptimizationTrainer();
             __train(self.trainer.learn, self.returnsNet)
             return
+        elif(self.trainingType == "crossval"):
+            if(self.trainer == None):
+                self.trainer, self.returnsNet = __getGradientTrainer();
+            evaluation = ModuleValidator.classificationPerformance(self.trainer.module, self.ds)
+            validator = CrossValidator(trainer=self.trainer, dataset=self.trainer.ds, n_folds=5, valfunc=evaluation, verbose=True, max_epochs=1)
+            print(validator.validate())
         else:
             raise Exception("Cannot create trainer, no network type specified")
 
@@ -116,13 +122,11 @@ class LSTM(IClassifier):
         normalizedData = data / np.amax(data)
         diffAvgData = normalizedData - self.avg
 
-        self.__classifiy2(diffAvgData)
+        self.__classify2(diffAvgData)
 
 
     def startValidation(self):
-        trnresult = 100. * (1.0 - testOnSequenceData(self.net, self.ds))
-        print("Validation error: %5.2f%%" % trnresult)
-        print(self.ds.evaluateModuleMSE(self.net))
+        print(self.testds.evaluateModuleMSE(self.net))
         self.__confmat()
 
     def load(self, filename=""):
@@ -161,6 +165,7 @@ class LSTM(IClassifier):
             self.ds = util.load_dataset(filename)
         else:
             self.ds = util.createPyBrainDatasetFromSamples(self.classes, INPUTS, self.nClasses, "", self.config['data_average'], self.config['merge67'])
+        self.testds, self.ds = self.ds.splitWithProportion(0.2)
 
     def saveData(self, filename=""):
         if filename == "":
@@ -188,19 +193,30 @@ class LSTM(IClassifier):
         print("LSTM network created: " + self.__getName())
         return
 
+    '''
+    Activates a sequence and sums up the results for each activation and returns the highest value
+    '''
+    def _activateSequence(self, dataList):
+        out = np.zeros(self.nClasses)
+        for data in dataList:
+            out += self.net.activate(data)
+        return np.argmax(out)
+
+    '''
+    Calculates the confmat based on the testdataset and calculates the error
+    
+    Altenrative for error calculation, but without confmat:
+    trnresult = 100. * (1.0 - testOnSequenceData(self.net, self.testds))
+    '''
+
     def __confmat(self):
         confmat = np.zeros((self.nClasses, self.nClasses))
-        for i in range(self.ds.getNumSequences()):
+        for i in range(self.testds.getNumSequences()):
             self.net.reset()
-            out = None
-            target = None
-            j = 0
-            for dataIter in self.ds.getSequenceIterator(i):
-                data = dataIter[0]
-                target = dataIter[1]
-                out = self.net.activate(data)
-                j += 1
-            confmat[np.argmax(target)][np.argmax(out)] += 1
+            sequence = self.testds.getSequence(i)
+            target = np.argmax(sequence[1][31])
+            out = self._activateSequence(sequence[0])
+            confmat[target][out] += 1
         sumWrong = 0
         sumAll = 0
         for i in range(self.nClasses):
@@ -209,8 +225,9 @@ class LSTM(IClassifier):
                     sumWrong += confmat[i][j]
                 sumAll += confmat[i][j]
         error = sumWrong / sumAll
+        np.set_printoptions(suppress=True)
         print(confmat)
-        print("error: " + str(100. * error) + "%")
+        print("Validation error: %5.2f%%" % (100. * error))
 
     def __getName(self):
         return "n" + str(self.hidden) + "_o" + str(self.nClasses) + "_l" + self.layer + "_p" + str(self.peepholes) + "_t" + self.trainingType + "_e" + str(self.trainedEpochs) + self.config['fast']
@@ -219,13 +236,16 @@ class LSTM(IClassifier):
     Gesten werden starr nach 32 frames erkannt
     '''
     def __classify1(self, data):
-        out = self.net.activate(data)
+        self.datalist.append(data)
         self.datanum += 1
         if(self.datanum % 32 == 0):
-            self.datanum = 0
             self.net.reset()
-            print(str(np.argmax(out)) + " " + str(out))
-        return np.argmax(out)
+            out = self._activateSequence(self.datalist)
+            print(str(out))
+            self.datalist = []
+            self.datanum = 0
+            return out
+        return -1
 
     '''
     Gesten werden auf folgende Art erkannt:
@@ -236,17 +256,15 @@ class LSTM(IClassifier):
     - Ist previouspredict 4 mal gleich wird die Gestenklasse ausgegeben, ist die Klasse groesser als 4 mal gleich erfolgt keine neue Ausgabe
     - 
     '''
-    def __classifiy2(self, data):
+    def __classify2(self, data):
         self.datanum += 1
         self.datalist.append(data)
         if(self.datanum % 32 == 0):
             self.has32 = True
         if(self.has32):
             self.net.reset()
-            for i in range(32):
-                out = self.net.activate(self.datalist[i])
+            Y_pred = self._activateSequence(self.datalist)
             del self.datalist[0]
-            Y_pred = np.argmax(out)
             self.predHistory[0] = Y_pred
             self.predHistory = np.roll(self.predHistory, -1)
             expected = stats.mode(self.predHistory, 0)
@@ -259,7 +277,7 @@ class LSTM(IClassifier):
                 else:
                     self.predcounter += 1
                     if(self.predcounter == 4):
-#                         print self.previouspredict
+                        print self.previouspredict
                         self.outkeys.outForClass(self.previouspredict)
                     return self.previouspredict, self.predcounter
         return -1, -1
@@ -269,7 +287,7 @@ class LSTM(IClassifier):
     Gesten werden innerhalb von der Geste 6 gesucht
     TODO not finished yet
     '''
-    def __classifiy3(self, data):
+    def __classify3(self, data):
         pred, predcounter = self.__classifiy2(data)
         if(pred != -1 and predcounter >= 4):
             try:
@@ -293,6 +311,6 @@ class LSTM(IClassifier):
     '''
     Gesten werden anhand eines erkannten Starttresholds erkannt
     '''
-    def __classifiy4(self, data):
+    def __classify4(self, data):
         # sequence maximum erkennen
         pass
