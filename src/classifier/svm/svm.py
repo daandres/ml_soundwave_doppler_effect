@@ -8,29 +8,35 @@ from classifier.classifier import IClassifier
 import numpy as np
 import os
 from sklearn.externals import joblib
-from sklearn.metrics import accuracy_score
+#from sklearn.metrics import accuracy_score
 from gestureFileIO import GestureFileIO
 from sklearn import svm
-from sklearn import cross_validation
+#from sklearn import cross_validation
 from collections import Counter
 from scipy import stats as stats
-import itertools
+#import itertools
+
+np.set_printoptions(precision=4,suppress=True,threshold='nan')
+np.seterr(all='warn')
+import warnings
+warnings.simplefilter("error", RuntimeWarning)
 
 
 class SVM(IClassifier):
 
     def __init__(self, recorder=None, config=None, relative=""):
-        self.avg = self.getAverage()
+        self.avg = self.getAverage()[:,[14, 15,16,17,18,19, 20,21,22,23,24, 25,26,27,28,29, 30,31,32,33,34, 35,36,37,38,39, 40,41,42,43,44, 45,46,47,48,49, 50,51,52,53]]
+        print self.avg.shape
         self.classifier = self.load("classifier/svm/svm_trained.pkl")
         self.datalist = []
         self.datanum = 0
         self.nClasses = 7
-        self.data, self.targets = self.loadData()
+        self.data, self.targets = self.loadData() #, self.avg 
         self.kernel = "rbf"
-        self.c = 1000000
+        self.c = 100000
         self.gamma = 1
         self.degree = 3
-        self.coef0 = 10
+        self.coef0 = 1
 
         self.has32 = False
         self.previouspredict = 6
@@ -39,8 +45,8 @@ class SVM(IClassifier):
         self.predHistHalfUpper = 4
         self.predHistory = self.createArraySix(self.predHistSize,)
         
-        self.foundgesture = False
-        self.foundgestureindex = 0
+        self.found = False
+        self.index = 0
 
     def createArraySix(self, dim):
         array = np.zeros((dim,))
@@ -60,51 +66,74 @@ class SVM(IClassifier):
             print "file does not exist"
 
 
-    def classify1(self,data):
-        def findConsecutiveMax(alist):
-            numbers = alist
-            currentCount = 0
-            maxCount = 0
-            last = numbers[0]
-            for char in numbers:
-                if char == last:
-                    currentCount = currentCount + 1
-                    last = char
-                    if currentCount > maxCount:
-                        repeated = char
-                else:
-                    if currentCount > maxCount:
-                        maxCount = currentCount
-                    currentCount = 1
-                    last = char
-            return repeated
-        
-        
+
+    def classify(self,data):
         normalizedData = data / np.amax(data)
-        diffAvgData = normalizedData - self.avg
+        diffAvgData = normalizedData[14:54] - self.avg
         
-        self.datalist.append(diffAvgData)
+        frame = diffAvgData**2
+        cond = np.where(frame <= 0.025)
+        frame[cond] = 0.0
+
+        self.datalist.append(frame)
         self.datanum += 1
-        self.index = 0
+        
+        if np.amax(frame) > 0.0 and self.found == False:
+            #print "found gesture",
+            self.index = self.datanum
+            self.found = True
+            
+        if self.index + 20 == self.datanum and self.found == True: #self.datanum % 32 == 0:
+            self.index = 0
+            self.found = False
+            
+            g = np.asarray(self.datalist[-22:])
+            temp = []
+            for rf in range(len(g)):
+                if np.amax(g[rf]) > 0.0:
+                    temp.append(g[rf])
+            
+            allg = np.asarray(temp,dtype=np.float64)
+            muh = np.zeros(40)
+            for t in allg:
+                muh += t
+
+            try:
+                kuh = muh/np.amax(muh)
+                if not np.isnan(np.sum(kuh)):
+                    Y_pred = self.classifier.predict(kuh[::2])[0]
+                    if Y_pred != 6:
+                        print Y_pred
+            except:
+                print "error =("
+        
+        if self.datanum > 40:
+            del self.datalist[0]
+            
+
+        return
+        
         
         T = diffAvgData - self.avg
         diff = np.max(np.abs(T))
-        if diff < 1:
+        if diff < 1 and self.found == False and self.datanum > 32:
             print "found gesture"
             self.index = self.datanum
+            self.found = True
         
-        plus = 8
-        if len(self.datalist) == 32+plus:
-            preds = []
-            for i in range(plus):
-                g = np.asarray(self.datalist[:32]).reshape(2048,)
-                Y_pred = self.classifier.predict(g)[0]
-                self.datalist.pop(0)
-                preds.append(Y_pred)
-            #print max(len(list(v)) for g,v in itertools.groupby(preds))
-            print findConsecutiveMax(preds)
-                
-        
+        if self.datanum == self.index + 20 and self.found:
+            #print self.datanum, self.index
+            #print np.asarray(self.datalist[-32:]).shape
+            g = np.asarray(self.datalist[-32:])   # .reshape(32,64)
+            #print g.shape
+            gn_test = g[:,[14, 15,16,17,18,19, 20,21,22,23,24, 25,26,27,28,29, 30,31,32,33,34, 35,36,37,38,39, 40,41,42,43,44, 45,46,47,48,49]]
+            g = np.asarray(gn_test).reshape(768,)
+            np.savetxt("classifier/svm/gesture"+str(self.datanum)+".txt", g)
+            Y_pred = self.classifier.predict(g)[0]
+            print Y_pred
+            self.found = False
+
+
 
     def classify2(self, data):
         normalizedData = data / np.amax(data)
@@ -142,7 +171,7 @@ class SVM(IClassifier):
             #print "\t\t\t new gesture"
             
 
-    def classify(self, data):
+    def classify3(self, data):
         normalizedData = data / np.amax(data)
         diffAvgData = normalizedData - self.avg
 
@@ -179,6 +208,7 @@ class SVM(IClassifier):
         classifier.fit(self.data, self.targets)
         joblib.dump(classifier, 'classifier/svm/svm_trained.pkl', compress=9)
 
+    
     def startValidation(self):
         l = len(self.targets)/10
         p = 0
@@ -191,15 +221,6 @@ class SVM(IClassifier):
             predictedclass = self.classifier.predict(self.data[i])[0]
             confmat[realclass][predictedclass] += 1
 
-        #=======================================================================
-        # for c in range(self.data.shape[0]):
-        #     out = None
-        #     target = c
-        #     j = 0
-        #     for geste in self.data[c]:
-        #         out = self.classifier.predict(geste)
-        #         confmat[target][out[0]] += 1
-        #=======================================================================
         sumWrong = 0
         sumAll = 0
         for i in range(self.nClasses):
@@ -215,7 +236,7 @@ class SVM(IClassifier):
         pass
 
     
-    def loadData_new(self, filename=""):
+    def loadData_(self, filename=""):
         
         def normalise(arr, nn_avg):
             ''' normalise each frame '''
@@ -233,11 +254,13 @@ class SVM(IClassifier):
         nn = normalise(n, 0)
         nn_avg = np.mean(nn, axis=1)
         nn_avg = np.mean(nn_avg, axis=0)
+        avg = nn_avg[:,[14, 15,16,17,18,19, 20,21,22,23,24, 25,26,27,28,29, 30,31,32,33,34, 35,36,37,38,39, 40,41,42,43,44, 45,46,47,48,49, 50,51,52,53]]
 
     
         gestures = []
         targets = []
         for gesturenumber in range(7):
+            print "Gesture", gesturenumber
             for name in names:
                 dirf = os.listdir(path + name + "/gesture_" + str(gesturenumber))
 
@@ -245,21 +268,41 @@ class SVM(IClassifier):
                     ''' load and reshape textfile with gesture data '''
                     g = np.loadtxt(path + name + "/gesture_" + str(gesturenumber) + "/" + txtfile, delimiter=",")
                     g = g.reshape(g.shape[0], 32, g.shape[1] / 32)  # recordingframes
-                    print name, gesturenumber, "\t\t", g.shape, txtfile
-                    gn = normalise(g, nn_avg)
-    
-                    gn = gn.reshape(gn.shape[0], gn.shape[1] * gn.shape[2])
-    
+                    g_test = g[:,:,[14, 15,16,17,18,19, 20,21,22,23,24, 25,26,27,28,29, 30,31,32,33,34, 35,36,37,38,39, 40,41,42,43,44, 45,46,47,48,49, 50,51,52,53]]
+                    gn = normalise(g_test, avg)
+
                     for i in range(gn.shape[0]):
-                        gestures.append(gn[i])
+                        #print "\tDataset", i, len(gn[i]), "\t\t", 
+                        #print gn[i].shape
+                        temp = []
+                        for rf in range(len(gn[i])):
+                            frame = gn[i][rf]**2
+                            cond = np.where(frame <= 0.025)
+                            frame[cond] = 0
+                            if np.amax(frame) > 0:
+                                temp.append(frame)
+                        
+                        #print ""
+                        allg = np.asarray(temp)
+
+                        muh = np.zeros(40)
+                        for t in allg:
+                            muh += t
+                        try:
+                            kuh = muh/np.amax(muh)
+                        except RuntimeWarning:
+                            kuh = np.zeros(40)
+                            
+                        gestures.append(kuh[::2])
                         targets.append(gesturenumber)
     
         data = np.array(gestures)
         targets = np.array(targets)
-        
+
         print data.shape, targets.shape
         
-        return data, targets, nn_avg
+        return data, targets, avg
+
 
     def loadData(self, filename=""):
         g = GestureFileIO()
@@ -276,9 +319,90 @@ class SVM(IClassifier):
                 X.append(d[dd])
                 Y.append(i)
 
-        data = np.asarray(X)
+        XX = np.asarray(X)
         targets = np.asarray(Y)
+        
+        gestures = []
+        XX = XX.reshape(XX.shape[0], 32, 64)
+        XT = XX[:,:,[14, 15,16,17,18,19, 20,21,22,23,24, 25,26,27,28,29, 30,31,32,33,34, 35,36,37,38,39, 40,41,42,43,44, 45,46,47,48,49, 50,51,52,53]]
+        for gi in range(len(XT)):
+            temp = []
+            for rf in range(len(XT[gi])):
+                frame = XT[gi][rf]**2
+                cond = np.where(frame <= 0.025)
+                frame[cond] = 0
+                if np.amax(frame) > 0:
+                    temp.append(frame)
+
+            allg = np.asarray(temp)
+
+            muh = np.zeros(40)
+            for t in allg:
+                muh += t
+                
+            try:
+                kuh = muh/np.amax(muh)
+            except RuntimeWarning:
+                kuh = np.zeros(40)
+                
+            gestures.append(kuh[::2])
+        
+        data = np.asarray(gestures)
+        
         print data.shape, targets.shape
+        
+        if False:
+            shuffle = np.random.permutation(np.arange(data.shape[0]))
+            data, targets = data[shuffle], targets[shuffle]
+            
+            split = len(data)/4
+            
+            X_train = data[:split*3]
+            Y_train = targets[:split*3]
+            X_test = data[split*3:]
+            Y_test = targets[split*3:]
+            
+            print X_train.shape, Y_train.shape, X_test.shape, Y_test.shape
+            
+            settings = {}
+            smallesterror = 100
+            for e in range(3,10):
+                for f in range(5):
+                    kernel = "sigmoid"
+                    c = 10.0**e
+                    g = f
+                    degree = e
+                    coef0 = f
+                    print("training kernel with (c:" + str(c) + ", gamma:" + str(g) + ", degree:" + str(degree) + ", coef0:" + str(coef0) )
+                    clf = svm.SVC(kernel=kernel,C=c,gamma=g,degree=degree,coef0=coef0)
+                    clf.fit(X_train, Y_train)
+                    
+                    confmat = np.zeros((self.nClasses, self.nClasses))
+                    for i in range(len(Y_test)):
+                        realclass = Y_test[i]
+                        predictedclass = clf.predict(X_test[i])[0]
+                        confmat[realclass][predictedclass] += 1
+            
+                    sumWrong = 0
+                    sumAll = 0
+                    for i in range(self.nClasses):
+                        for j in range(self.nClasses):
+                            if i != j:
+                                sumWrong += confmat[i][j]
+                            sumAll += confmat[i][j]
+                    error = (sumWrong / sumAll) * 100.
+                    print(confmat)
+                    print("error: " + str(error) + "%")
+                    if error < smallesterror:
+                        settings["c"] = c
+                        settings["gamma"] = g
+                        settings["degree"] = degree
+                        settings["coef0"] = coef0
+                        smallesterror = error
+                        print "new settings", settings
+                    print "\n"
+            print settings
+                
         return data, targets
 
 
