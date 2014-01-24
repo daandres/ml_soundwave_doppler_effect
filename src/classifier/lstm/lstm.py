@@ -1,7 +1,7 @@
 from classifier.classifier import IClassifier
 from pybrain.structure import LSTMLayer, LinearLayer, SoftmaxLayer, SigmoidLayer
 from pybrain.tools.shortcuts import buildNetwork
-from pybrain.tools.validation import testOnSequenceData, ModuleValidator, CrossValidator
+from pybrain.tools.validation import ModuleValidator, CrossValidator
 import classifier.lstm.util as util
 import numpy as np
 from scipy import stats as stats
@@ -9,7 +9,7 @@ import time
 # import arac
 from systemkeys import SystemKeys
 
-INPUTS = 64
+INPUTS = 24
 NAME = "LSTM"
 
 class LSTM(IClassifier):
@@ -17,6 +17,7 @@ class LSTM(IClassifier):
     def __init__(self, recorder=None, config=None, relative=""):
         self.recorder = recorder
         self.config = config
+        self.customName = self.config['customname']
         self.hidden = int(self.config['hiddenneurons'])
         self.peepholes = bool(self.config['peepholes'])
         self.epochs = int(self.config['trainingepochs'])
@@ -25,7 +26,7 @@ class LSTM(IClassifier):
         self.nClasses = len(self.classes)
         self.trainingType = self.config['training']
         self.relative = relative
-        self.avg = util.getAverage()
+        self.avg = util.preprocessFrame(util.getAverage())
         self.trainer, self.returnsNet = None, False
         self.layer = self.config['outlayer']
         self.loadData(self.config['dataset'])
@@ -70,7 +71,8 @@ class LSTM(IClassifier):
 
         def __train(training, returnsNet):
             start = time.time()
-            print("start training of " + str(self.epochs) + " epochs: " + str(start / 3600)) + self.__getName()
+            print("start training of " + str(self.epochs) + " epochs: " + str(start / 3600))
+            print(self.__getName())
             if(self.epochs >= 10):
                 tenthOfEpochs = self.epochs / 10
                 for i in range(10):
@@ -120,8 +122,8 @@ class LSTM(IClassifier):
 
     def classify(self, data):
         normalizedData = data / np.amax(data)
-        diffAvgData = normalizedData - self.avg
-
+        preprocessedData = util.preprocessFrame(normalizedData)
+        diffAvgData = preprocessedData - self.avg
         self.__classify2(diffAvgData)
 
 
@@ -164,7 +166,7 @@ class LSTM(IClassifier):
                 filename = self.config['dataset']
             self.ds = util.load_dataset(filename)
         else:
-            self.ds = util.createPyBrainDatasetFromSamples(self.classes, INPUTS, self.nClasses, "", self.config['data_average'], self.config['merge67'])
+            self.ds = util.createPyBrainDatasetFromSamples(self.classes, self.nClasses, "", self.config['data_average'], self.config['merge67'])
         self.testds, self.ds = self.ds.splitWithProportion(0.2)
 
     def saveData(self, filename=""):
@@ -230,7 +232,7 @@ class LSTM(IClassifier):
         print("Validation error: %5.2f%%" % (100. * error))
 
     def __getName(self):
-        return "n" + str(self.hidden) + "_o" + str(self.nClasses) + "_l" + self.layer + "_p" + str(self.peepholes) + "_t" + self.trainingType + "_e" + str(self.trainedEpochs) + self.config['fast']
+        return self.customName + "n" + str(self.hidden) + "_o" + str(self.nClasses) + "_l" + self.layer + "_p" + str(self.peepholes) + "_t" + self.trainingType + "_e" + str(self.trainedEpochs) + self.config['fast']
 
     '''
     Gesten werden starr nach 32 frames erkannt
@@ -314,3 +316,4 @@ class LSTM(IClassifier):
     def __classify4(self, data):
         # sequence maximum erkennen
         pass
+

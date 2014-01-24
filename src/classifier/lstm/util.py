@@ -66,65 +66,94 @@ def load_dataset(filename=""):
 def load(filename):
     return load_network(filename), load_dataset(filename)
 
-def createPyBrainDatasetFromSamples(classes, inputs, outputs, relative="", average="false", merge67="false"):
+def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="false", merge67="false"):
+    def __loadDataFromFile(merge67="false"):
+        g = GestureFileIO(relative=relative)
+        data = [0] * nClasses
+        getData = None
+        if(average == "false"):
+            getData = g.getGesture3DNormalized
+        else:
+            getData = g.getGesture3DDiffAvg
+        if(merge67 == "true"):
+            merge67 = True
+        else:
+            merge67 = False
+        for i in classes:
+            data[i] = getData(i, [], merge67)
+            if(i == 6 and merge67):
+                data7 = getData(7, [], merge67)
+                data[i] = np.append(data[i], data7, axis=0)
+            print("data " + str(i) + " loaded shape: " + str(np.shape(data[i])))
+        print("data loaded, now creating dataset")
+        return data
+
+
+
+    def __createDataset(data):
+        ds = SequenceClassificationDataSet(inputs, 1, nb_classes=nClasses, class_labels=labels.values())
+        for target in classes:
+            tupt = np.asarray([target])
+    #         print("Target " + str(tupt))
+            for x in data[target]:
+                ds.newSequence()
+                for y in x:
+                    tup = tuple(y)
+                    ds.appendLinked(tup, tupt)
+        print(ds.calculateStatistics())
+        ds._convertToOneOfMany(bounds=[0, 1])
+    #     print ds.getField('target')
+        print("DS entries " + str(ds.getNumSequences()))
+        return ds
+
     labels = {0:'Right-To-Left-One-Hand',
-              1:'Top-to-Bottom-One-Hand',
-              2:'Entgegengesetzt with two hands',
-              3:'Single-push with one hand',
-              4:'Double-push with one hand',
-              5:'Rotate one hand',
-              6:'Background silent',
-              7:'Background loud'}
+          1:'Top-to-Bottom-One-Hand',
+          2:'Entgegengesetzt with two hands',
+          3:'Single-push with one hand',
+          4:'Double-push with one hand',
+          5:'Rotate one hand',
+          6:'Background silent',
+          7:'Background loud'}
+
     nClasses = len(classes)
-    g = GestureFileIO(relative=relative)
-    data = [0] * 8
-    getData = None
-    if(average == "false"):
-        getData = g.getGesture3DNormalized
-    else:
-        getData = g.getGesture3DDiffAvg
-    if(merge67 == "true"):
-        merge67 = True
-    else:
-        merge67 = False
-    for i in classes:
-        data[i] = getData(i, [], merge67)
-        if(i == 6 and merge67):
-            data7 = getData(7, [], merge67)
-            data[i] = np.append(data[i], data7, axis=0)
-        print("data " + str(i) + " loaded shape: " + str(np.shape(data[i])))
-    print("data loaded, now creating dataset")
-    ds = SequenceClassificationDataSet(inputs, 1, nb_classes=nClasses, class_labels=labels.values())
-    for target in classes:
-        tupt = np.asarray([target])
-#         print("Target " + str(tupt))
-        for x in data[target]:
-            ds.newSequence()
-            for y in x:
-                tup = tuple(y)
-                ds.appendLinked(tup, tupt)
-    print(ds.calculateStatistics())
-#     np.set_printoptions(precision=2, threshold=np.nan)
-    ds._convertToOneOfMany(bounds=[0, 1])
-#     print ds.getField('target')
-    print("DS entries " + str(ds.getNumSequences()))
+    data = __loadDataFromFile(merge67)
+    for i in range(len(data)):
+        data[i] = preprocessData(data[i])
+    inputs = np.shape(data[0])[2]
+    ds = __createDataset(data)
     return ds
 
-@DeprecationWarning
-def getTarget(y, dim):
-    if(dim == 1):
-        target = np.zeros((dim,))
-        target[0] = y
-        return target
-    if y >= dim:
-        raise Exception("wrong dimension chosen for target")
-    elif y < 0:
-        raise Exception("target is negative")
-    assert(y >= 0 and y < dim)
-    target = np.zeros((dim,))
-    target[y] = 1
-    return target
+'''
+reduces dimensions of data as this is still representative enough
+removes a noise from the quadratic value by setting to zero
+'''
+def preprocessData(data):
+    cut = 8
+    select = 2
+    # removeNoiseTreshold = 0.025
+    # cut 'cut' datapoints from each side
+    data = data[:, :, cut:-cut]
+    # select each 'select' datapoint
+    data = data[:, :, ::select]
+    # remove noise
+#     for i in range(len(data)):
+#         temp = data[i] ** 2
+#         cond = np.where(temp <= removeNoiseTreshold)
+#         data[i][cond] = 0
+    return data
 
+'''
+same as preprocessData but only for a single frame 
+'''
+def preprocessFrame(frame):
+    cut = 8
+    select = 2
+    # removeNoiseTreshold = 0.025
+    # cut 'cut' datapoints from each side
+    frame = frame[cut:-cut]
+    # select each 'select' datapoint
+    frame = frame[::select]
+    return frame
 # Average frequency
 # TODO aktuelle Ruhe Frequenz messen und davon average nehmen.
 avg = None
