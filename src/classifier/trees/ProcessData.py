@@ -41,7 +41,9 @@ def plotFilteredTestData(gestures):
         plt.show()
 
 def plotBoth(gestures):
+    index = 0
     for gesture in gestures:
+        print "current index: ", index
         #absolute_smoothed = gesture.smoothAbsolute(gesture.bins_left_filtered, gesture.bins_right_filtered, 2)
         relative_smoothed = gesture.smoothRelative(gesture.bins_left_filtered, gesture.bins_right_filtered, 2)
         smoothed = gesture.smoothToMostCommonNumberOfBins(relative_smoothed[0], relative_smoothed[1], 1)
@@ -57,6 +59,7 @@ def plotBoth(gestures):
         plt.axis([0,32,0,32])
 
         plt.show()
+        index += 1
         
 def findAmplitude(gesture):
     print gesture.bins_left

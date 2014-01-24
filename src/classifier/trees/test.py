@@ -26,16 +26,32 @@ def showDiffFilteredNoFiltered(filename):
     classifier.trees.ProcessData.plotBoth(gestures)
 
 
-def showSamplesOfFirstGesture(filename):
+def showSamplesOfFirstGesture(filename, index):
     #read data and split samples
     data = classifier.trees.ProcessData.readData(filename)
     gestures = []
     for line in data:
         if (len(line) == 2048):
-            gestures.append(np.reshape(line, (32,64)))
+            tmp = np.reshape(line, (32,64))
+            gestures.append(GestureModel(tmp))
 
-    #show samples of first gesture             
-    gesture = gestures[1]
+    #show samples of gesture at index             
+    gesture = gestures[index]
+    for data in gesture.data:
+        max_pos = data[np.argmax(data)]
+        threshold_line = []
+        for i in range(len(data)):
+            threshold_line.append(max_pos/10)
+            
+        filtered = ndi.gaussian_filter1d(data, sigma=1, output=np.float64, mode='nearest')
+        
+        plt.plot(data, color='red', marker=".")
+        plt.plot(filtered, marker=".")
+        plt.plot(threshold_line, color = 'black')
+        plt.axis([0,64,0,1000])
+        plt.show()
+    
+    return
     for g in gesture:
         threshold_line = []
         max_pos = g[np.argmax(g)]
@@ -55,9 +71,9 @@ def showSamplesOfFirstGesture(filename):
 #filename = "../../../gestures/Daniel/gesture_0/1388424714_zimmer_left.txt" #Right-To-Left-One-Hand
 #filename = "../../../gestures/Daniel/gesture_1/1387647578_zimmer_left.txt" #Top-to-Bottom-One-Hand
 #filename = "../../../gestures/Daniel/gesture_2/1387660041_fernsehen.txt" #Entgegengesetzt with two hands
-filename = "../../../gestures/Daniel/gesture_3/1387647860_zimmer_left.txt" #Single-push with one hand
-#filename = "../../../gestures/Daniel/gesture_4/1387647860_zimmer_left.txt" #Double-push with one hand
+#filename = "../../../gestures/Daniel/gesture_3/1387647860_zimmer_left.txt" #Single-push with one hand
+filename = "../../../gestures/Daniel/gesture_4/1387647860_zimmer_left.txt" #Double-push with one hand
 #filename = "../../../gestures/Benjamin/gesture_4/1389637026.txt" #Right-To-Left-One-Hand
 
-showDiffFilteredNoFiltered(filename)
-#showSamplesOfFirstGesture(filename)
+#showDiffFilteredNoFiltered(filename)
+showSamplesOfFirstGesture(filename, 3)

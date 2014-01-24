@@ -6,8 +6,12 @@ import math
 
 class GestureModel(object):
 
-    def __init__(self, data):
+    def __init__(self, data, normalize=True):
         self.data = data
+        
+        if (normalize):
+            self.normalize()
+        
         self.bins_left = []
         self.bins_right = []
         self.bins_left_filtered = []
@@ -178,7 +182,23 @@ class GestureModel(object):
         combined_right.append(right_vals[-1])
         
         return (combined_left, combined_right)
-                
+    
+    #normalizes all samples and all values to median peak
+    def normalize(self):
+        #compute median peak value
+        median = 0
+        for sample in self.data:
+            max_value = sample[np.argmax(sample)]
+            median += max_value
+        median = math.floor(median / len(self.data)) 
+        
+        #normalize samples
+        for sample in self.data:
+            diff = median / sample[len(sample)/2]
+            for i in range(len(sample)):
+                sample[i] = sample[i] * diff
+    
+              
     #returns the most common number of bins as tuple (count left, count right), not the median!
     def mostCommonNumberOfBins(self):
         #left
