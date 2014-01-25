@@ -99,6 +99,28 @@ Diese Unterscheidungsmerkmale können sehr gut durch einen Entscheidungsbaum abg
 Dazu kann die Verschiebungsrichtung als Maß dienen, um die Eingabemenge zu unterteilen und 
 somit eine Klassifizierung zu erreichen.
 
+\subsection{Merkmalsextraktion}
+Durch die Filterung und Glättung können nun die einzelnen Frequenzverschiebungen eindeutig identifiziert werden. So lassen sich durch die Anordnung, Ausprägung und Aufkommen der Frequenzverschiebungen die unterschiedlichen Charakteristiken der einzelnen Gesten erkennen. Das Ziel der Merkmalsextraktion ist es, aus den 32 Datenpunkten weitere eindeutige Merkmale herauszuarbeiten um schließlich einen Merkmalsvektor mit überschaubarer Anzahl an Merkmalen zu generieren. Um dies zu realisieren, wurden folgende Eigenschaften der einzelnen Gesten untersucht:
+
+\begin{itemize} 
+\item Anzahl der Frequenzverschiebungen
+\item Zeitliche Abfolge der Frequenzverschiebungen
+\item Amplitudenunterschiede zwischen den Frequenzverschiebungen
+\end{itemize}
+
+
+
+\subsubsection*{Anzahl der Frequenzverschiebungen}
+Die Anzahl der Frequenzverschiebung sagt bereits einiges über die Geste aus, wobei auch wichtig ist, ob die Frequenzverschiebungen im höheren oder niedrigeren Frequenzbereich liegen. Wie bereits in Abschnitt~\ref{} erwähnt, erzeugt eine Bewegung auf das Aufnahmegerät zu eine Frequenzverschiebung auf der rechten Seite, also eine Ausdehnung in Richtung der höheren Frequenzen. Durch das Bewegen vom Aufnahmegerät weg, erfolgt eine Frequenzverschiebung zur linken Seite, bzw. in Richtung der niedrigeren Frequenzen. 
+
+Ein einfacher \glqq Single-Push\grqq erzeugt deshalb im optimalen Fall eine Frequenzverschiebung auf der rechten Seite des Peaks. Wird die Hand wieder zurückgezogen, tritt auch eine Frequenzverschiebung auf der linken Seite auf. Klar davon abgegrenzt werden kann beispielsweise die Geste \glqq Double-Push\grqq. Diese erzeugt mit dem Zurückziehen der Hand nach dem zweiten Push zwei Frequenzverschiebungen auf der linken und zwei auf der rechten Seite.
+
+\subsubsection*{Zeitliche Abfolge der Frequenzverschiebungen}
+Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq Single-Push\glqq erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die Geste \glqq Two hands contrary\glqq dagegen beschreibt die gleichzeitige gegensätzliche Bewegungen in Richtung des Aufnahmegeräts und von diesem weg. Somit tritt in diesem Fall gleichzeitig je eine Verschiebung nach rechts und links auf. 
+
+
+\subsubsection*{Amplitudenunterschiede zwischen den Frequenzverschiebungen}
+Die Gesten \glqq Single-Push\glqq und \glqq Right-to-Left-One-Hand\glqq unterscheiden sich in der zeitlichen Abfolge der Verschiebungen nicht. In beiden Fällen tritt erst eine Verschiebung rechts, dann links auf. Jedoch unterscheiden sich die Verschiebungen an sich. Bei \glqq Single-Push\glqq unterscheiden sich die beiden Verschiebungen im optimalen Fall nur dadurch, dass die eine Verschiebung links und die andere rechts vom Peak auftritt. Bei \glqq Right-to-Left-One-Hand\glqq dagegen ist die Amplitude der zweiten Verschiebung, links vom Peak, schwächer als die andere.
 
 \subsection{Klassifikator}
 
