@@ -88,7 +88,8 @@ Sie kann beispielsweise von der rechten zur linken oder von der linken zur recht
 um den Referenzton wandern, sowie gleichzeitig auf beiden Seiten stattfinden. 
 Ein Beispiel dafür zeigt die folgende Abbildung:
 
-\begin{center}
+\begin{center} 
+\label{fig:contrary}
   \includegraphics[height=60mm]{trees/gesture2-peaksize-smoothed2.jpg}
 \end{center}
 
@@ -116,7 +117,7 @@ Die Anzahl der Frequenzverschiebung sagt bereits einiges über die Geste aus, wo
 Ein einfacher \glqq Single-Push\grqq erzeugt deshalb im optimalen Fall eine Frequenzverschiebung auf der rechten Seite des Peaks. Wird die Hand wieder zurückgezogen, tritt auch eine Frequenzverschiebung auf der linken Seite auf. Klar davon abgegrenzt werden kann beispielsweise die Geste \glqq Double-Push\grqq. Diese erzeugt mit dem Zurückziehen der Hand nach dem zweiten Push zwei Frequenzverschiebungen auf der linken und zwei auf der rechten Seite.
 
 \subsubsection*{Zeitliche Abfolge der Frequenzverschiebungen}
-Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq Single-Push\glqq erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die Geste \glqq Two hands contrary\glqq dagegen beschreibt die gleichzeitige gegensätzliche Bewegungen in Richtung des Aufnahmegeräts und von diesem weg. Somit tritt in diesem Fall gleichzeitig je eine Verschiebung nach rechts und links auf. 
+Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq Single-Push\glqq erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die Geste \glqq Two-hands-contrary\glqq , dargestellt in Abbildung~\ref{fig:contrary}, dagegen beschreibt die gleichzeitige gegensätzliche Bewegungen in Richtung des Aufnahmegeräts und von diesem weg. Somit tritt in diesem Fall gleichzeitig je eine Verschiebung nach rechts und links auf. 
 
 
 \subsubsection*{Amplitudenunterschiede zwischen den Frequenzverschiebungen}
@@ -125,6 +126,7 @@ Die Gesten \glqq Single-Push\glqq und \glqq Right-to-Left-One-Hand\glqq untersch
 \subsection{Klassifikator}
 
 \subsection{Implementierung}
+
 Die Bibliothek \textit{sklearn}~\cite{sklearn} stellt mit dem Modul \textit{sklearn.ensemble}~\cite{sklearn.ensemble} einige hilfreiche Klassen und Methoden zur Klassifikation bereit.
 
 \subsection{Training}
