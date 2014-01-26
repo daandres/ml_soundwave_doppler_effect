@@ -13,7 +13,9 @@ import numpy
 
 
 #gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_0/1388424714_zimmer_left.txt")
-gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_2/1387660041_fernsehen.txt")
+
+gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_1/1387647578_zimmer_left.txt")
+gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_2/1387660041_fernsehen.txt")
 gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_3/1387647860_zimmer_left.txt")
 gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_4/1387647860_zimmer_left.txt")
 
@@ -28,17 +30,30 @@ for i in range(len(gestures)):
     
     featureVector.append(Feature().featureOrderOfShifts(gestures[i], 2))
     featureVector.append(Feature().featureAmplitudes(gestures[i]))
+    
+    distance_contrary, distance_equal = Feature().shiftDistance(gestures[i])
+    featureVector.append(distance_contrary)
+    featureVector.append(distance_equal)
+
+    
     gestures[i].featureVector = featureVector
     
+    
 data = []
+data2 = []
 for gesture in gestures:
     data.append(gesture.featureVector)
+    l = []
+    l.extend(gesture.bins_left_filtered)
+    l.extend(gesture.bins_right_filtered)
+    data2.append(l)
 
 targets = []
-for class_ in [2,3,4]:
+for class_ in [1,2,3,4]:
     for frameIndex in range(50):
         targets.append(class_)
 
+#X_train, X_test, y_train, y_test = cross_validation.train_test_split(data2, targets, test_size=0.4, random_state=0)
 X_train, X_test, y_train, y_test = cross_validation.train_test_split(data, targets, test_size=0.4, random_state=0)
 
 clf = AdaBoostClassifier(n_estimators=5)

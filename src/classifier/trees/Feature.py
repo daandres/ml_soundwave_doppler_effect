@@ -58,6 +58,35 @@ class Feature(object):
         return -1 
         #print "no case available", orderList
         # Herausfinden, welche Kombinationen auch noch oft vorkommen pro case oder rauswerfen?
+    
+    def shiftDistance(self, gesture):
+        shift_order = gesture.shift_order
+        distance_contrary = 0
+        distance_equal = 0
+        
+        contrary_list = []
+        equal_list = []
+        
+        shifts_left = gesture.shifts_left
+        shifts_right = gesture.shifts_right
+        shifts = shifts_left + shifts_right
+        shifts = sorted(shifts,key=lambda x: x[1])
+        if(len(shift_order) > 1):
+            prev = 0
+            for shift in shifts:
+                if(prev != 0):
+                    distance = prev[2] - shift[1]
+                    distance = 0 if distance <0 else distance
+                    if(prev[0] != shift[0]):
+                        contrary_list.append(distance)
+                    else:
+                        equal_list.append(distance)
+                prev = shift
+            if(len(contrary_list) > 0):
+                distance_contrary = sum(contrary_list) / len(contrary_list)
+            if(len(equal_list) > 0):
+                distance_equal = sum(equal_list) / len(equal_list)
+        return distance_contrary, distance_equal
            
     def featureAmplitudes(self, gesture):
         ampl_val = 0
@@ -101,12 +130,6 @@ class Feature(object):
         countOfShiftLeft = len(self.findShifts(gesture.bins_left_filtered, 'left'))
         countOfShiftRight = len(self.findShifts(gesture.bins_right_filtered, 'right'))
         return countOfShiftRight, countOfShiftLeft
-  
-    def findShiftCases(self, orderList, dataClass, Cases):
-        #cases = {}
-   
-        Cases[','.join(orderList)] = Cases.get(','.join(orderList), 0) + 1
-        return Cases
   
     # Verschiebung ist charakterisiert durch Anfang, Ende, maximale Binanzahl 
     # und ob sie links oder rechts des Peaks ist        
