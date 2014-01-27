@@ -54,6 +54,13 @@ class Console:
                 cl = SVM(self.recorder, svmConfig)
                 self.classificators[name] = cl
             cl = self.classificators[name]
+        elif(name == "trees"):
+            if(name not in self.classificators):
+                #sfrom classifier.trees.Trees import Trees
+                treeConfig = c.getInstance().getConfig("tree")
+                cl = SVM(self.recorder, treeConfig)
+                self.classificators[name] = cl
+            cl = self.classificators[name]
             return cl
 
     def recordStart(self, args):
@@ -180,6 +187,9 @@ class Console:
             self.classificator = self.getClassificator(args[1])
             print("Using now classificator " + self.classificator.getName())
         elif(args[1] == 'svm'):
+            self.classificator = self.getClassificator(args[1])
+            print("Using now classificator " + self.classificator.getName())
+        elif(args[1] == 'trees'):
             self.classificator = self.getClassificator(args[1])
             print("Using now classificator " + self.classificator.getName())
         else:
