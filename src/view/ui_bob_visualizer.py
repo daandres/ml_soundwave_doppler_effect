@@ -20,7 +20,7 @@ from sklearn import cluster, svm
 
 import copy
 
-from classifier.k_means.kMeans_Helper import CallbackMessage
+#from classifier.k_means.kMeans_Helper import CallbackMessage
     
     
 
@@ -29,7 +29,7 @@ class ViewUIBob:
     def __init__(self, recorder=None, applicationClose=None):
     #def __init__(self, applicationClose=None):
         
-        self.cm = CallbackMessage()
+        #self.cm = CallbackMessage()
         self.callbackButton = None
         self.calibrationBarValue = 0
         self.recordsBarValue = 0

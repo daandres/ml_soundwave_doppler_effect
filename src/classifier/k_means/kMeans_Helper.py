@@ -21,13 +21,13 @@ from sklearn import cluster, svm
 import copy
 import numpy as np
 from scipy import stats
-
+'''
 from enum import Enum
 class CallbackMessage():
     bufferFilled = 1
     progress = 2 
     checkKMeans = 3
-    
+'''    
     
 
 class kMeansHepler():
