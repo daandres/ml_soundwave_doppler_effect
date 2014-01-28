@@ -3,15 +3,22 @@
 
 %\subsection{Hintergrund (Motivation/Geschichtliches)}
 
-Der Begriff k-Means bezeichnet einen Clustering-Algorithmus von Stuart P. Lloyd \cite{Lloyd}, der 1957 entwickelt und erst 1982 in einer Fachzeitschrift veröffentlicht wurde. Unter Clustering versteht man hierbei die Gruppierung von Daten mit ähnlichen Eigenschaften in gleiche Klassen. 
-Ein solches Verfahren gehört zur Obergruppe des unüberwachten Lernens, bei die Trainingsphase durchlaufen wird, ohne dass Informationen über die zu den jeweiligen Daten passenden Klassen vorliegen.
+Der Begriff k-Means bezeichnet einen Clustering-Algorithmus von Stuart P. Lloyd \cite{Lloyd}, der 1957 entwickelt und erst 1982 in einer Fachzeitschrift veröffentlicht wurde. Unter Clustering versteht man hierbei die Gruppierung von Daten mit ähnlichen Eigenschaften in gleiche Klassen. Die Berechnung der optimalen Lösung eines solchen Klassifikationsproblems ist NP-schwer \cite{kMeansNPhard}. Aus diesem Grund sind Heuristiken wie k-Means hilfreich, um dennoch in angemessener Zeit eine akzeptable Lösung zu finden.
+Ein solches Verfahren gehört zur Obergruppe des unüberwachten Lernens, bei denen die Trainingsphase durchlaufen wird, ohne dass Informationen über die zu den jeweiligen Daten passenden Klassen vorliegen.
+
+
 
 \subsection{Funktionsweise des Klassifikators (Allgemein)}
+%benötigt numerische Attribute, k muss vorher festgelegt werden
+Der Algorithmus segmentiert eine Datenmenge in\emph{ k }verschiedene Cluster, indem\emph{ k }Cluster-Schwerpunkte berechnet werden und ein zu klassifizierendes Objekt immer dem nächstgelegenen Cluster-Schwerpunkt zugeordnet wird.
+
+Der beschriebene Algorithmus arbeitet schnell und effizient, findet jedoch im besten Fall nur ein lokales Optimum. Unter bestimmten Bedingungen konvergiert der k-Means Algorithmus jedoch nicht einmal zum lokalen Optimum\cite{kMeansMinimum}. Aus diesem Grund ist es hilfreich, die Lernphase mehrere Male zu wiederholen und anschließend den Klassifikator mit der geringsten Fehlerquote zu benutzen.  
+
 
 Der Algorithmus läuft folgendermaßen ab \cite{Marsland}:
 \begin{itemize}
 
-\item \emph{Initialisierung:} Es wird ein geeigneter Wert k für die Anzahl der zu findenden Cluster gewählt. In Abschnitt XX wird darauf eingegangen, wie ein solches k gewählt werden kann. Anschließend werden k zufällige Positionen im Eingaberaum gewählt und jeweils als Cluster-Zentren festgelegt.
+\item \emph{Initialisierung:} Es wird ein geeigneter Wert \emph{k} für die Anzahl der zu findenden Cluster gewählt. In Abschnitt XX wird darauf eingegangen, wie ein solches \emph{k} gewählt werden kann. Anschließend werden \emph{k} zufällige Positionen im Eingaberaum gewählt und jeweils als Cluster-Zentren festgelegt.
 \item \emph{Lernvorgang:} Für jeden Datenpunkt wird der Abstand zu allen Cluster-Zentren berechnet und anschließend der Datenpunkt dem Zentrum mit dem geringsten Abstand zugeordnet. Danach 
 Danach wird jedes Cluster-Zentrum in den Mittelpunkt aller ihm zugeordneten Punkte verschoben.
 werden die Cluster-Zentren 
@@ -24,22 +31,18 @@ Der gesamte Lernvorgang wiederholt sich solange, bis sich die Position der Clust
 K-Means benötigt in der Regel beim Lernen mehr Zeit als bei der Benutzung, da im ersten Fall die Cluster-Zentren unter Umständen oft verschoben werden müssen und nach jeder Verschiebung erneut die Abstände zu allen dem Zentrum zugeordneten Punkten berechnet werden müssen. Bei der Benutzung hingegen genügt es, nur die Abstände des zu klassifizierenden Punkts zu allen Cluster-Zentren zu berechnen, um das passende Cluster zu bestimmen. Der Algorithmus arbeitet jedoch im Vergleich zu anderen Klassifikatoren (TODO Beispiel??) in beiden Phasen schnell, da immer nur einfache Berechnungen des euklidischen Abstands im Eingaberaum erfolgen.
 
 Es existieren weiterhin einige Variationen des Basis-Algorithmus, mit dem dieser weiter optimiert werden kann. Dazu gehört etwa ein vorzeitiger Abbruch des Lernens, wenn eine festgelegte Maximalzahl von Iterationen erreicht wurde. Mit dem k-Means++ Algorithmus \cite{kMeans++} kann die Dauer der Lernphase verkürzt und die Fehlerrate bei der Benutzung gesenkt werden. Dieser Algorithmus wird in der Initialisierungsphase zur Bestimmung der Startpositionen der Cluster-Zentren verwendet. 
+%TODO k-Means++ genauer beschreiben
 
 
-Unüberwachtes Lernen, Clustering 
 
-Bei k-Means (genauer gesagt: Algorithmus von Lloyds) handelt es sich um einen Algorithmus für unüberwachtes Lernen, der eine Datenmenge in k verschiedene Cluster unterteilt und dabei jedes Objekt einem Cluster zuordnet. Dazu existieren k Cluster-Schwerpunkte (cluster centers), wobei ein Objekt immer dem nächstgelegenen Cluster-Schwerpunkt zugeordnet wird.
-Die Berechnung der optimalen Lösung eines solchen Klassifikationsproblems ist NP-schwer \cite{kMeansNPhard}. 
 
-Der beschriebene Algorithmus arbeitet jedoch schnell und effizient, findet jedoch im besten Fall nur ein lokales Optimum. Unter bestimmten Bedingungen konvergiert der k-Means Algorithmus jedoch nicht einmal zum lokalen Optimum\cite{kMeansMinimum}. Aus diesem Grund ist es hilfreich, die Lernphase mehrere Male zu wiederholen und anschließend den Klassifikator mit der geringsten Fehlerquote zu benutzen.  
-
-Wahl von optimalen Wert für k, in diesem Anwendungsfall (natürlich) mindestens Anzahl der Gesten, aber auch größere Werte möglich. Im einfachen Fall k = AnzahlGesten wird jedem Clustercenter eine Geste zugeordnet. Im Idealfall wenig Überlappung der Confusion Matrix, sodass bei jeder Geste ein eindeutiges Cluster am häufigsten vorkommt und umgekehrt in jedes Cluster eine einzige Geste am häufigsten fällt (TODO: Später bei k > AnzahlGesten muss das nicht für jedes Cluster gelten, aber mindestens für k Stück). Wenn k größer ist als die Anzahl der Gesten, sind mindestens einer Geste mehrere Cluster-Schwerpunkte zugeordnet. --> Algorithmus, um Clustercenter den einzelnen Gesten zuzuordnen. 
+Wahl von optimalen Wert für k, in diesem Anwendungsfall (natürlich) mindestens Anzahl der Gesten, aber auch größere Werte möglich. Im einfachen Fall \emph{k} = AnzahlGesten wird jedem Clustercenter eine Geste zugeordnet. Im Idealfall wenig Überlappung der Confusion Matrix, sodass bei jeder Geste ein eindeutiges Cluster am häufigsten vorkommt und umgekehrt in jedes Cluster eine einzige Geste am häufigsten fällt (TODO: Später bei\emph{ k }> AnzahlGesten muss das nicht für jedes Cluster gelten, aber mindestens für\emph{ k }Stück). Wenn\emph{ k }größer ist als die Anzahl der Gesten, sind mindestens einer Geste mehrere Cluster-Schwerpunkte zugeordnet. --> Algorithmus, um Clustercenter den einzelnen Gesten zuzuordnen. 
 
 \subsection{Anwendung auf Projekt}
 
 
 \subsubsection{Datenaufbereitung}
-Die Anzahl der zu bestimmenden Cluster (der Wert von k) muss bereits vor der Trainingsphase festgelegt werden. Dabei muss k mindestens gleich der Anzahl der Gesten sein, damit der Algorithmus in der Lage ist, die einzelnen Gesten voneinander zu unterscheiden. Zur Erkennung des Grundrauschens gibt es zwei Möglichkeiten: Entweder eine oder mehrere „Bullshit-Klassen“ einführen, die Aufnahmen entsprechen, bei denen keine (bekannte) Geste ausgeführt wurde. Die zweite Möglichkeit ist, den maximalen Abstand einer Geste zum nächstgelegenen Cluster-Center zu begrenzen, sodass beim Überschreiten des Grenzwerts „keine Geste“ klassifiziert wird.
+Die Anzahl der zu bestimmenden Cluster (der Wert von k) muss bereits vor der Trainingsphase festgelegt werden. Dabei muss\emph{ k }mindestens gleich der Anzahl der Gesten sein, damit der Algorithmus in der Lage ist, die einzelnen Gesten voneinander zu unterscheiden. Zur Erkennung des Grundrauschens gibt es zwei Möglichkeiten: Entweder eine oder mehrere „Bullshit-Klassen“ einführen, die Aufnahmen entsprechen, bei denen keine (bekannte) Geste ausgeführt wurde. Die zweite Möglichkeit ist, den maximalen Abstand einer Geste zum nächstgelegenen Cluster-Center zu begrenzen, sodass beim Überschreiten des Grenzwerts „keine Geste“ klassifiziert wird.
 2 Cluster für Hintergrundrauschen, eins für leise und eins für laute Umgebung
 Ziel: Besser eine Geste fälschlicherweise als Grundrauschen einstufen und nicht erkennen, als das Grundrauschen oder andere Bewegungen beim Bedienen des Rechners als Geste einstufen. Im ersten Fall wird der Anwender die Geste einfach erneut ausführen (und sie wird dann – hoffentlich – auch erkannt), im zweiten Fall ist es nervig, da die mit der erkannten Geste verknüpfte Aktion ausgeführt wird. 
 
@@ -57,10 +60,10 @@ Die Komplexität im ungünstigsten Fall liegt bei $O(n^{(k+2)/p})$ \cite{kMeansH
 
 
 \subsubsection{Training}
-Zu Beginn der Lernphase des Algorithmus wird ein Wert für k festgelegt und anschließend werden k zufällige Positionen im Eingaberaum als Cluster-Schwerpunkte gesetzt (Abbildung XX). Danach wird jeder Schwerpunkt so verschoben, dass der Abstand zwischen ihm und den zugeordneten Objekten einen minimalen Wert annimmt. Diese Verschiebungen werden solange wiederholt, bis sich die Cluster-Schwerpunkte nicht mehr bewegen. 
+Zu Beginn der Lernphase des Algorithmus wird ein Wert für\emph{ k }festgelegt und anschließend werden\emph{ k }zufällige Positionen im Eingaberaum als Cluster-Schwerpunkte gesetzt (Abbildung XX). Danach wird jeder Schwerpunkt so verschoben, dass der Abstand zwischen ihm und den zugeordneten Objekten einen minimalen Wert annimmt. Diese Verschiebungen werden solange wiederholt, bis sich die Cluster-Schwerpunkte nicht mehr bewegen. 
 Um nun zu einem Objekt den passenden Cluster zuzuordnen, wird der Abstand zwischen Objekt und den Cluster-Schwerpunkten berechnet. Das Objekt wird dann dem Cluster-Schwerpunkt mit dem geringsten Abstand zugeordnet. Abbildung XX zeigt eine solche Bestimmung anhand der zuvor berechneten Cluster-Schwerpunkte. Die Zugehörigkeit beliebiger Objekte zu den jeweiligen Cluster-Centern ist farbig markiert, sodass ein zu klassifizierendes Objekt das der Farbe entsprechende Cluster zugeordnet wird.
 k-Means ist anfällig für Ausreißer
-Wahl eines guten Werts für k von Bedeutung, offensichtlich mindestens Anzahl der Gruppen (wenn Anzahl der Gruppen vorher bekannt ist). Verschiedene Methoden, die einfachste ist die Faustregel, dass $k \approx \sqrt{n/2}$ (REF).
+Wahl eines guten Werts für\emph{ k }von Bedeutung, offensichtlich mindestens Anzahl der Gruppen (wenn Anzahl der Gruppen vorher bekannt ist). Verschiedene Methoden, die einfachste ist die Faustregel, dass $k \approx \sqrt{n/2}$ (REF).
 %Quelle:  Faustregel: Kanti Mardia et al. (1979). Multivariate Analysis. Academic Press. (via http://en.wikipedia.org/wiki/Determining_the_number_of_clusters_in_a_data_set)
 
 
@@ -70,4 +73,4 @@ Confusion Matrix in lauter und leiser Umgebung für die verschiedenen Gesten. We
 
 
 \subsection{Fazit}
-Die Erkennung funktioniert mittelmäßig/gut/sehr gut. Sehr gut erkannt werden das Grundrauschen und Geste(n) XX. Schlecht/kaum erkannt werden Geste(n) XX. (siehe Confusion Matrix).
+Die Erkennung funktioniert mittelmäßig/gut/sehr gut. Sehr gut erkannt werden das Grundrauschen und Geste(n) XX. Schlecht/kaum erkannt werden Geste(n) XX (siehe Confusion Matrix). Ausblick auf potentielle weiterführende Arbeiten
