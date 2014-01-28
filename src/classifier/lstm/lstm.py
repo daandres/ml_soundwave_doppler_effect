@@ -16,24 +16,29 @@ class LSTM(IClassifier):
     def __init__(self, recorder=None, config=None, relative=""):
         self.recorder = recorder
         self.config = config
-        self.customName = self.config['customname']
-        self.inputdim = int(self.config['inputdim'])
-        self.hidden = int(self.config['hiddenneurons'])
-        self.peepholes = bool(self.config['peepholes'])
-        self.epochs = int(self.config['trainingepochs'])
-        self.trainedEpochs = 0
+        self.relative = relative
+
+        self.trainer, self.returnsNet = None, False
+
         self.classes = eval(self.config['classes'])
         self.nClasses = len(self.classes)
-        self.trainingType = self.config['training']
-        self.relative = relative
-        self.avg = util.getAverage(self.inputdim)
-        self.trainer, self.returnsNet = None, False
+        self.customName = self.config['customname']
+        self.hidden = int(self.config['hiddenneurons'])
+        self.peepholes = bool(self.config['peepholes'])
         self.layer = self.config['outlayer']
-        self.loadData(self.config['dataset'])
+        self.epochs = int(self.config['trainingepochs'])
+        self.trainedEpochs = 0
+        self.trainingType = self.config['training']
+        self.datafold = int(self.config['data_fold'])
+        self.datacut = int(self.config['data_cut'])
+        self.avg = util.getAverage(self.datacut, self.datafold)
+        self.inputdim = np.ceil((64 - 2 * self.datacut) / self.datafold)
+
         if(self.config['autoload_network'] == "true"):
             self.load()
         else:
             self._createNetwork()
+        self.loadData(self.config['dataset'])
 
         self.datalist = []
         self.datanum = 0
@@ -91,7 +96,7 @@ class LSTM(IClassifier):
             end = time.time()
             diff = end - start
             self.trainedEpochs += self.epochs
-            print("Training end: " + str(end / 3600) + "\nDiff: " + str(diff / 3600))
+            print("Training end: " + str(end / 3600) + "\nTotaldiff: " + str(diff / 3600))
             if(self.config['autosave_network'] == "true"):
                 filename = self.__getName() + "_" + str(time.time())
                 self.save(filename, overwrite=False)
@@ -100,6 +105,9 @@ class LSTM(IClassifier):
 
         #==========
         # =Training=
+        if(self.ds == None):
+            print("Can't train without loaded data")
+            return
         if(args != [] and len(args) >= 2):
             self.epochs = int(args[1])
         if(self.trainingType == "gradient"):
@@ -122,13 +130,15 @@ class LSTM(IClassifier):
 
     def classify(self, data):
         preprocessedData = data / np.amax(data)
-        if(self.inputdim != 64):
-            preprocessedData = util.preprocessFrame(preprocessedData)
+        preprocessedData = util.preprocessFrame(preprocessedData, self.datacut, self.datafold)
         diffAvgData = preprocessedData - self.avg
         self.__classify2(diffAvgData)
 
 
     def startValidation(self):
+        if(self.testds == None):
+            print("Can't validate without loaded data")
+            return
         print(self.testds.evaluateModuleMSE(self.net))
         self.__confmat()
 
@@ -163,17 +173,21 @@ class LSTM(IClassifier):
 
     def loadData(self, filename=""):
         if(self.config['autoload_data'] == "true"):
-            if filename == "":
-                filename = self.config['dataset']
-            self.ds = util.load_dataset(filename)
+            if(self.config['autoload_dataset'] == "true"):
+                if filename == "":
+                    filename = self.config['dataset']
+                self.ds, self.testds = util.load_dataset(filename)
+            else:
+                self.ds = util.createPyBrainDatasetFromSamples(self.classes, self.nClasses, "", self.config['data_average'], self.config['merge67'], self.datacut, self.datafold)
+                self.testds, self.ds = self.ds.splitWithProportion(0.2)
         else:
-            self.ds = util.createPyBrainDatasetFromSamples(self.classes, self.nClasses, "", self.config['data_average'], self.config['merge67'], self.inputdim)
-        self.testds, self.ds = self.ds.splitWithProportion(0.2)
+            self.testds, self.ds = None, None
+            print("No data loaded as configured")
 
     def saveData(self, filename=""):
         if filename == "":
             filename = self.config['dataset']
-        util.save_dataset(self.ds, filename)
+        util.save_dataset(self.ds, self.testds, filename)
 
     def printClassifier(self):
         print(self.__getName())
@@ -233,7 +247,21 @@ class LSTM(IClassifier):
         print("Validation error: %5.2f%%" % (100. * error))
 
     def __getName(self):
-        return self.customName + "n" + str(self.hidden) + "_o" + str(self.nClasses) + "_l" + self.layer + "_p" + str(self.peepholes) + "_t" + self.trainingType + "_e" + str(self.trainedEpochs) + self.config['fast']
+        parms = []
+        if(self.customName != ""):
+            parms.append(self.customName)
+        parms.append("n" + str(self.hidden))
+        parms.append("l" + self.layer)
+        parms.append("p" + str(self.peepholes))
+        parms.append("o" + str(self.nClasses))
+        parms.append("c" + str(self.datacut))
+        parms.append("f" + str(self.datafold))
+        parms.append("t" + self.trainingType)
+        parms.append("e" + str(self.trainedEpochs))
+        if(self.config['fast'] != ""):
+            parms.append(self.config['fast'])
+        return "_".join(parms)
+#         return custom + hidden + out + layer + peepholes + train + epochs + fast
 
     '''
     Gesten werden starr nach 32 frames erkannt

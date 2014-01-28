@@ -3,10 +3,10 @@ from threading import Thread, Event
 from visualizer import View
 import properties.config as c
 
-#bob
+# bob
 import ntpath
 from ui_bob_visualizer import ViewUIBob
-#bob end
+# bob end
 
 
 class Console:
@@ -96,9 +96,9 @@ class Console:
         self.key_bindings['e'] = self.exit
         self.key_bindings['h'] = self.printHelp
         self.key_bindings['g'] = self.view
-        #bob so you can see bob GUI
+        # bob so you can see bob GUI
         self.key_bindings["gg"] = self.viewBob
-        #bob end
+        # bob end
         self.key_bindings['u'] = self.selectClassifier
         self.key_bindings['c'] = self.classifyStart
         self.key_bindings['t'] = self.trainingStart
@@ -175,13 +175,13 @@ class Console:
     def view(self, command):
         self.view = View(self.recorder, self.viewCallback)
         self.view.startNewThread()
-    #bob
-    def viewBob(self, command):    
+    # bob
+    def viewBob(self, command):
         self.viewUiBOB = ViewUIBob(self.recorder, self.viewCallback)
-        #self.viewUiBOB = ViewUIBob(self.viewCallback)
+        # self.viewUiBOB = ViewUIBob(self.viewCallback)
         self.viewUiBOB.startNewThread()
-    #bob end
-   
+    # bob end
+
     def viewCallback(self, code):
         print("View closed with code " + str(code))
         self.inputEvent.set()
@@ -199,11 +199,12 @@ class Console:
         pass
 
     def selectClassifier(self, args):
-        try:
-            self.classificator = self.getClassificator(args[1])
-            print("Using now classificator " + self.classificator.getName())
-        except Exception as e:
-            print("Classifier not known: " + args[1] + "; " + str(e))
+#         try:
+        self.classificator = self.getClassificator(args[1])
+        print("Using now classificator " + self.classificator.getName())
+#         except Exception as e:
+#             print("Classifier not known: " + args[1] + "; " + str(e))
+#             raise e
         self.inputEvent.set()
 
     def trainingStart(self, args):

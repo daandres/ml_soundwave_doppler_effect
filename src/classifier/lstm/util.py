@@ -22,10 +22,12 @@ def save_network(net, filename=""):
     print("networked saved in " + filename + '.xml')
     return
 
-def save_dataset(ds, filename=""):
+def save_dataset(ds, testds, filename=""):
     if filename == "":
         filename = time.time()[:-3]
     ds.saveToFile(filename + '.data')
+    print("dataset saved in " + filename + '.data')
+    testds.saveToFile(filename + '.data')
     print("dataset saved in " + filename + '.data')
     return
 
@@ -36,37 +38,43 @@ def load_network(filename=""):
     print("networked loaded from " + filename + '.xml')
     return net
 
-def parseNetworkFilename(filename):
-    components = filename.split("_")
-    netValues = {}
-    for comp in components:
-        if(comp[0] == "n" and comp[1] == "C"):
-            pass
-        elif(comp[0] == "n"):
-            netValues['neurons'] = comp[1:]
-        elif(comp[0] == "e"):
-            netValues['epochs'] = comp[1:]
-        elif(comp[0] == "l"):
-            netValues['layer'] = comp[1:]
-        elif(comp[0] == "o"):
-            netValues['nclasses'] = comp[1:]
-        elif(comp[0] == "t"):
-            netValues['trainer'] = comp[1:]
-        elif(comp[0] == "p"):
-            netValues['peepholes'] = comp[1:]
-    return netValues
-
 def load_dataset(filename=""):
     if filename == "":
         raise Exception("No dataset loaded because no network name provided")
     ds = SequenceClassificationDataSet.loadFromFile(filename + '.data')
     print("dataset loaded from " + filename + '.data')
-    return ds
+    testds = SequenceClassificationDataSet.loadFromFile(filename + '_test' + '.data')
+    print("testdataset loaded from " + '_test' + filename + '.data')
+    return ds, testds
+
+def parseNetworkFilename(filename):
+    components = filename.split("_")
+    netValues = {}
+    for comp in components:
+        if(comp[0] == "n"):
+            netValues['neurons'] = comp[1:]
+        elif(comp[0] == "l"):
+            netValues['layer'] = comp[1:]
+        elif(comp[0] == "p"):
+            netValues['peepholes'] = comp[1:]
+        elif(comp[0] == "o"):
+            netValues['nclasses'] = comp[1:]
+        elif(comp[0] == "c"):
+            netValues['datacut'] = comp[1:]
+        elif(comp[0] == "f"):
+            netValues['datafold'] = comp[1:]
+        elif(comp[0] == "t"):
+            netValues['trainer'] = comp[1:]
+        elif(comp[0] == "e"):
+            netValues['epochs'] = comp[1:]
+        return netValues
+
+
 
 def load(filename):
     return load_network(filename), load_dataset(filename)
 
-def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="false", merge67="false", inputdim=64):
+def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="false", merge67="false", cut=0, fold=1):
     def __loadDataFromFile(merge67="false"):
         g = GestureFileIO(relative=relative)
         data = [0] * nClasses
@@ -117,9 +125,8 @@ def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="fals
 
     nClasses = len(classes)
     data = __loadDataFromFile(merge67)
-    if(inputdim != 64):
-        for i in range(len(data)):
-            data[i] = preprocessData(data[i])
+    for i in range(len(data)):
+        data[i] = preprocessData(data[i], cut, fold)
     inputs = np.shape(data[0])[2]
     ds = __createDataset(data)
     return ds
@@ -128,43 +135,44 @@ def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="fals
 reduces dimensions of data as this is still representative enough
 removes a noise from the quadratic value by setting to zero
 '''
-def preprocessData(data):
-    cut = 8
-    select = 2
-    # removeNoiseTreshold = 0.025
+def preprocessData(data, cut, fold):
     # cut 'cut' datapoints from each side
     data = data[:, :, cut:-cut]
-    # select each 'select' datapoint
-    data = data[:, :, ::select]
+    # folds each 'fold' datapoints
+    newData = np.zeros((data.shape[0], data.shape[1], np.ceil(data.shape[2] / fold)))
+    for i in range(fold):
+        newData += data[:, :, i::fold]
+#     data = data[:, :, ::select]
     # remove noise
 #     for i in range(len(data)):
 #         temp = data[i] ** 2
 #         cond = np.where(temp <= removeNoiseTreshold)
 #         data[i][cond] = 0
-    return data
+    print np.shape(newData)
+    return newData
 
 '''
 same as preprocessData but only for a single frame 
 '''
-def preprocessFrame(frame):
-    cut = 8
-    select = 2
-    # removeNoiseTreshold = 0.025
+def preprocessFrame(frame, cut, fold):
     # cut 'cut' datapoints from each side
     frame = frame[cut:-cut]
-    # select each 'select' datapoint
-    frame = frame[::select]
-    return frame
+    # folds each 'fold' datapoints
+    newFrame = np.zeros((np.ceil(frame.shape[0] / fold)))
+    for i in range(fold):
+        newFrame += frame[i::fold]
+#     frame = frame[::select]
+    return newFrame
+
 # Average frequency
 # TODO aktuelle Ruhe Frequenz messen und davon average nehmen.
 avg = None
-def getAverage(inputdim=64):
+def getAverage(cut, fold):
     global avg
     if avg == None:
         g = GestureFileIO()
         avg = g.getAvgFrequency()
-        if(inputdim != 64):
-            avg = preprocessFrame(avg)
+        avg = preprocessFrame(avg, cut, fold)
     return avg
 
 def printNetwork(net):
