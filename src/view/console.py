@@ -55,10 +55,9 @@ class Console:
             cl = self.classificators[name]
         elif(name == "trees"):
             if(name not in self.classificators):
-                from classifier.svm.svm import SVM
-                # sfrom classifier.trees.Trees import Trees
+                from classifier.trees.Trees import Trees
                 treeConfig = c.getInstance().getConfig("trees")
-                cl = SVM(self.recorder, treeConfig)
+                cl = Trees(self.recorder, treeConfig)
                 self.classificators[name] = cl
             cl = self.classificators[name]
         else:
