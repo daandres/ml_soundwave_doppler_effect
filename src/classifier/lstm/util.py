@@ -25,10 +25,10 @@ def save_network(net, filename=""):
 def save_dataset(ds, testds, filename=""):
     if filename == "":
         filename = time.time()[:-3]
-    ds.saveToFile(filename + '.data')
+    ds.saveToFile(filename + '.data', format='pickle', protocol=0)
     print("dataset saved in " + filename + '.data')
-    testds.saveToFile(filename + '.data')
-    print("dataset saved in " + filename + '.data')
+    testds.saveToFile(filename + '_test.data', format='pickle', protocol=0)
+    print("testdataset saved in " + filename + '_test.data')
     return
 
 def load_network(filename=""):
@@ -43,8 +43,8 @@ def load_dataset(filename=""):
         raise Exception("No dataset loaded because no network name provided")
     ds = SequenceClassificationDataSet.loadFromFile(filename + '.data')
     print("dataset loaded from " + filename + '.data')
-    testds = SequenceClassificationDataSet.loadFromFile(filename + '_test' + '.data')
-    print("testdataset loaded from " + '_test' + filename + '.data')
+    testds = SequenceClassificationDataSet.loadFromFile(filename + '_test.data')
+    print("testdataset loaded from " + filename + '_test.data')
     return ds, testds
 
 def parseNetworkFilename(filename):
@@ -109,7 +109,7 @@ def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="fals
                     tup = tuple(y)
                     ds.appendLinked(tup, tupt)
         print(ds.calculateStatistics())
-        ds._convertToOneOfMany(bounds=[0, 1])
+#         ds._convertToOneOfMany(bounds=[0, 1])
     #     print ds.getField('target')
         print("DS entries " + str(ds.getNumSequences()))
         return ds
@@ -137,7 +137,8 @@ removes a noise from the quadratic value by setting to zero
 '''
 def preprocessData(data, cut, fold):
     # cut 'cut' datapoints from each side
-    data = data[:, :, cut:-cut]
+    if(cut != 0):
+        data = data[:, :, cut:-cut]
     # folds each 'fold' datapoints
     newData = np.zeros((data.shape[0], data.shape[1], np.ceil(data.shape[2] / fold)))
     for i in range(fold):
@@ -156,7 +157,8 @@ same as preprocessData but only for a single frame
 '''
 def preprocessFrame(frame, cut, fold):
     # cut 'cut' datapoints from each side
-    frame = frame[cut:-cut]
+    if(cut != 0):
+        frame = frame[cut:-cut]
     # folds each 'fold' datapoints
     newFrame = np.zeros((np.ceil(frame.shape[0] / fold)))
     for i in range(fold):

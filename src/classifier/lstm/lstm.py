@@ -14,6 +14,7 @@ NAME = "LSTM"
 class LSTM(IClassifier):
 
     def __init__(self, recorder=None, config=None, relative=""):
+        self.init = True
         self.recorder = recorder
         self.config = config
         self.relative = relative
@@ -38,7 +39,7 @@ class LSTM(IClassifier):
             self.load()
         else:
             self._createNetwork()
-        self.loadData(self.config['dataset'])
+        self.loadData()
 
         self.datalist = []
         self.datanum = 0
@@ -53,6 +54,8 @@ class LSTM(IClassifier):
         self.predhistoryforclassify3 = []
 
         self.outkeys = SystemKeys()
+
+        self.init = False
 
 #======================================================================
 #=Interface methods====================================================
@@ -145,23 +148,28 @@ class LSTM(IClassifier):
     def load(self, filename=""):
         if filename == "":
             filename = self.config['network']
-        self.net = util.load_network(self.config['networkpath'] + filename)
+        self.net = util.load_network(self.config['path'] + "networks/" + filename)
         self.net.sorted = False
         self.net.sortModules()
         netValues = util.parseNetworkFilename(filename)
         for key, value in netValues.items():
             if(key == 'neurons'):
                 self.hidden = int(value)
-            elif(key == 'epochs'):
-                self.trainedEpochs = int(value)
             elif(key == 'layer'):
                 self.layer = value
-            elif(key == 'nClasses'):
-                self.nClasses = int(value)
-            elif(key == 'trainer'):
-                self.trainingType = value
             elif(key == 'peepholes'):
                 self.peepholes = bool(value)
+            elif(key == 'nClasses'):
+                self.nClasses = int(value)
+            elif(key == 'datacut'):
+                self.datacut = int(value)
+            elif(key == 'datafold'):
+                self.datafold = int(value)
+            elif(key == 'trainer'):
+                self.trainingType = value
+            elif(key == 'epochs'):
+                self.trainedEpochs = int(value)
+
 
     def save(self, filename="", overwrite=True):
         if filename == "":
@@ -169,25 +177,50 @@ class LSTM(IClassifier):
                 filename = self.config['network']
             else:
                 filename = self.config['network'] + str(time.time())
-        util.save_network(self.net, self.config['networkpath'] + filename)
+        util.save_network(self.net, self.config['path'] + "networks/" + filename)
 
     def loadData(self, filename=""):
-        if(self.config['autoload_data'] == "true"):
-            if(self.config['autoload_dataset'] == "true"):
-                if filename == "":
-                    filename = self.config['dataset']
-                self.ds, self.testds = util.load_dataset(filename)
+        if(self.init):
+            if(self.config['autoload_data'] == "true"):
+                if(self.config['autoload_dataset'] == "true"):
+                    self.__loadDataset(filename)
+                else:
+                    self.ds = util.createPyBrainDatasetFromSamples(self.classes, self.nClasses, "", self.config['data_average'], self.config['merge67'], self.datacut, self.datafold)
+                    self.testds, self.ds = self.ds.splitWithProportion(0.2)
+                    if(self.config['autosave_dataset'] == "true"):
+                        parms = []
+                        parms.append("o" + str(self.nClasses))
+                        parms.append("c" + str(self.datacut))
+                        parms.append("f" + str(self.datafold))
+                        self.saveData("_".join(parms))
             else:
-                self.ds = util.createPyBrainDatasetFromSamples(self.classes, self.nClasses, "", self.config['data_average'], self.config['merge67'], self.datacut, self.datafold)
-                self.testds, self.ds = self.ds.splitWithProportion(0.2)
+                self.testds, self.ds = None, None
+                print("No data loaded as configured")
+                return
         else:
-            self.testds, self.ds = None, None
-            print("No data loaded as configured")
+            self.__loadDataset(filename)
+        print("Train sequences " + str(self.ds.getNumSequences()))
+        print("Train set: " + str(self.ds.calculateStatistics()))
+        print("Test sequences " + str(self.testds.getNumSequences()))
+        print("Test set: " + str(self.testds.calculateStatistics()))
+        self.ds._convertToOneOfMany(bounds=[0, 1])
+        self.testds._convertToOneOfMany(bounds=[0, 1])
+
+    def __loadDataset(self, filename=""):
+        if filename == "":
+            filename = self.config['dataset']
+            if filename == "":
+                parms = []
+                parms.append("o" + str(self.nClasses))
+                parms.append("c" + str(self.datacut))
+                parms.append("f" + str(self.datafold))
+                filename = "_".join(parms)
+        self.ds, self.testds = util.load_dataset(self.config['path'] + "data/" + filename)
 
     def saveData(self, filename=""):
         if filename == "":
             filename = self.config['dataset']
-        util.save_dataset(self.ds, self.testds, filename)
+        util.save_dataset(self.ds, self.testds, self.config['path'] + "data/" + filename)
 
     def printClassifier(self):
         print(self.__getName())
