@@ -8,13 +8,11 @@ from classifier.classifier import IClassifier
 import numpy as np
 import os
 from sklearn.externals import joblib
-#from sklearn.metrics import accuracy_score
 from gestureFileIO import GestureFileIO
 from sklearn import svm
-#from sklearn import cross_validation
-from collections import Counter
 from scipy import stats as stats
-#import itertools
+import subprocess as sp
+
 
 np.set_printoptions(precision=4,suppress=True,threshold='nan')
 np.seterr(all='warn')
@@ -25,28 +23,25 @@ warnings.simplefilter("error", RuntimeWarning)
 class SVM(IClassifier):
 
     def __init__(self, recorder=None, config=None, relative=""):
-        self.avg = self.getAverage()[:,[14, 15,16,17,18,19, 20,21,22,23,24, 25,26,27,28,29, 30,31,32,33,34, 35,36,37,38,39, 40,41,42,43,44, 45,46,47,48,49, 50,51,52,53]]
-        print self.avg.shape
+        #self.avg = self.getAverage()[:,[14, 15,16,17,18,19, 20,21,22,23,24, 25,26,27,28,29, 30,31,32,33,34, 35,36,37,38,39, 40,41,42,43,44, 45,46,47,48,49, 50,51,52,53]]
         self.classifier = self.load("classifier/svm/svm_trained.pkl")
         self.datalist = []
         self.datanum = 0
         self.nClasses = 7
-        self.data, self.targets = self.loadData() #, self.avg 
-        self.kernel = "rbf"
-        self.c = 100000
+        self.data, self.targets, self.avg  = self.loadData() #, self.avg 
+        self.kernel = "poly"
+        self.c = 1
         self.gamma = 1
         self.degree = 3
         self.coef0 = 1
-
-        self.has32 = False
-        self.previouspredict = 6
-        self.predcounter = 0
-        self.predHistSize = 6
-        self.predHistHalfUpper = 4
-        self.predHistory = self.createArraySix(self.predHistSize,)
+        
+        self.predicted = False
+        self.predHistory = []
         
         self.found = False
         self.index = 0
+        
+        self.executed = {"notepad": False, "taskmgr": False, "calc": False}
 
     def createArraySix(self, dim):
         array = np.zeros((dim,))
@@ -74,20 +69,21 @@ class SVM(IClassifier):
         frame = diffAvgData**2
         cond = np.where(frame <= 0.025)
         frame[cond] = 0.0
-
+        
+        rr = 20
         self.datalist.append(frame)
         self.datanum += 1
         
+
         if np.amax(frame) > 0.0 and self.found == False:
-            #print "found gesture",
             self.index = self.datanum
             self.found = True
-            
-        if self.index + 20 == self.datanum and self.found == True: #self.datanum % 32 == 0:
+        
+        if self.index + rr == self.datanum and self.found == True: 
             self.index = 0
             self.found = False
             
-            g = np.asarray(self.datalist[-22:])
+            g = np.asarray(self.datalist[-rr:])
             temp = []
             for rf in range(len(g)):
                 if np.amax(g[rf]) > 0.0:
@@ -103,73 +99,49 @@ class SVM(IClassifier):
                 if not np.isnan(np.sum(kuh)):
                     Y_pred = self.classifier.predict(kuh[::2])[0]
                     if Y_pred != 6:
-                        print Y_pred
+                        self.executeCommand(Y_pred)
             except:
                 print "error =("
         
         if self.datanum > 40:
             del self.datalist[0]
+
             
-
-        return
+    def executeCommand(self, number):
+        print number, 
         
-        
-        T = diffAvgData - self.avg
-        diff = np.max(np.abs(T))
-        if diff < 1 and self.found == False and self.datanum > 32:
-            print "found gesture"
-            self.index = self.datanum
-            self.found = True
-        
-        if self.datanum == self.index + 20 and self.found:
-            #print self.datanum, self.index
-            #print np.asarray(self.datalist[-32:]).shape
-            g = np.asarray(self.datalist[-32:])   # .reshape(32,64)
-            #print g.shape
-            gn_test = g[:,[14, 15,16,17,18,19, 20,21,22,23,24, 25,26,27,28,29, 30,31,32,33,34, 35,36,37,38,39, 40,41,42,43,44, 45,46,47,48,49]]
-            g = np.asarray(gn_test).reshape(768,)
-            np.savetxt("classifier/svm/gesture"+str(self.datanum)+".txt", g)
-            Y_pred = self.classifier.predict(g)[0]
-            print Y_pred
-            self.found = False
+        if number == 0 and self.executed["notepad"] == False:
+            print "starting notepad"
+            proc = sp.Popen("notepad")
+            self.executed["notepad"] = proc.pid
 
-
-
-    def classify2(self, data):
-        normalizedData = data / np.amax(data)
-        diffAvgData = normalizedData - self.avg
-        
-        self.datalist.append(diffAvgData)
-        self.datanum += 1
-        
-        T = diffAvgData - self.avg
-        diff = np.max(np.abs(T))
-        if diff < 1:
-            print "found gesture"
-            #self.foundgestureindex = self.datanum
-
-    
-        plus = 8
-        if(self.datanum == 32+plus):
-            preds = []
-            for i in range(plus):
-                g = np.asarray(self.datalist[i:32+i]).reshape(2048,)
-                Y_pred = self.classifier.predict(g)[0]
-                preds.append(Y_pred)
+        elif number == 1 and self.executed["notepad"] != False:
+            sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["notepad"]))
+            print "terminating notepad"
+            self.executed["notepad"] = False
             
-            c = Counter(preds)
+        elif number == 2 and self.executed["taskmgr"] == False:
+            print "starting taskmanager"
+            proc = sp.Popen("taskmgr")
+            self.executed["taskmgr"] = proc.pid
             
-            #if np.unique(np.asarray(preds)).size != len(preds): # and (self.datanum-32-plus) < self.foundgestureindex:
-            if max(set(preds), key=preds.count) != 6:
-                #print preds
-                print "unique classes:\t\t",len(list(set(preds)))
-                print "count of classes:\t",c
-                print "predicted class:\t",max(set(preds), key=preds.count)
-                print "\n",60*"=","\n"
-            self.datalist = []
-            self.datanum = 0
-            #print "\t\t\t new gesture"
-            
+        elif number == 3 and self.executed["taskmgr"] != False:
+            sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["taskmgr"]))
+            print "terminating taskmanager"
+            self.executed["taskmgr"] = False
+        
+        elif number == 4 and self.executed["calc"] == False:
+            print "starting calculator"
+            proc = sp.Popen("calc")
+            self.executed["calc"] = proc.pid
+        
+        elif number == 5 and self.executed["calc"] != False:
+            sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["calc"]))
+            print "terminating calculator"
+            self.executed["calc"] = False
+        
+        print ""
+        
 
     def classify3(self, data):
         normalizedData = data / np.amax(data)
@@ -214,7 +186,7 @@ class SVM(IClassifier):
         p = 0
         confmat = np.zeros((self.nClasses, self.nClasses))
         for i in range(len(self.targets)):
-            if i % l == 0:
+            if (i+1) % l == 0:
                 p += 10
                 print p, "%" 
             realclass = self.targets[i]
@@ -236,7 +208,7 @@ class SVM(IClassifier):
         pass
 
     
-    def loadData_(self, filename=""):
+    def loadData(self, filename=""):
         
         def normalise(arr, nn_avg):
             ''' normalise each frame '''
@@ -304,7 +276,7 @@ class SVM(IClassifier):
         return data, targets, avg
 
 
-    def loadData(self, filename=""):
+    def loadData__(self, filename=""):
         g = GestureFileIO()
         X = []
         Y = []
