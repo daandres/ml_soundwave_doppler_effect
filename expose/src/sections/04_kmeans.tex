@@ -1,20 +1,73 @@
 \section{k-Means}
 \textit{Alex Baumgärtner, Robert Brylka}
-\subsection{Kurzbeschreibung des Klassifikators}
-Bei k-Means handelt es sich um einen Algorithmus für unüberwachtes Lernen, der eine Datenmenge in k verschiedene Cluster unterteilt und dabei jedes Objekt einem Cluster zuordnet. Dazu existieren k Cluster-Schwerpunkte (cluster centers), wobei ein Objekt immer dem nächstgelegenen Cluster-Schwerpunkt zugeordnet wird.
 
-Zu Beginn der Lernphase des Algorithmus wird ein Wert für k festgelegt und anschließend werden k zufällige Positionen im Eingaberaum als Cluster-Schwerpunkte gesetzt. Danach wird jeder Schwerpunkt so verschoben, dass der Abstand zwischen ihm und den zugeordneten Objekten einen minimalen Wert annimmt. Diese Verschiebungen werden solange wiederholt, bis sich die Cluster-Schwerpunkte nicht mehr bewegen.
+%\subsection{Hintergrund (Motivation/Geschichtliches)}
 
-Um nun zu einem Objekt den passenden Cluster zuzuordnen, wird der Abstand zwischen Objekt und den Cluster-Schwerpunkten berechnet. Das Objekt wird dann dem Cluster-Schwerpunkt mit dem geringsten Abstand zugeordnet.
+Der Begriff k-Means bezeichnet einen Clustering-Algorithmus von Stuart P. Lloyd \cite{Lloyd}, der 1957 entwickelt und erst 1982 in einer Fachzeitschrift veröffentlicht wurde. Unter Clustering versteht man hierbei die Gruppierung von Daten mit ähnlichen Eigenschaften in gleiche Klassen. 
+Ein solches Verfahren gehört zur Obergruppe des unüberwachten Lernens, bei die Trainingsphase durchlaufen wird, ohne dass Informationen über die zu den jeweiligen Daten passenden Klassen vorliegen.
+
+\subsection{Funktionsweise des Klassifikators (Allgemein)}
+
+Der Algorithmus läuft folgendermaßen ab \cite{Marsland}:
+\begin{itemize}
+
+\item \emph{Initialisierung:} Es wird ein geeigneter Wert k für die Anzahl der zu findenden Cluster gewählt. In Abschnitt XX wird darauf eingegangen, wie ein solches k gewählt werden kann. Anschließend werden k zufällige Positionen im Eingaberaum gewählt und jeweils als Cluster-Zentren festgelegt.
+\item \emph{Lernvorgang:} Für jeden Datenpunkt wird der Abstand zu allen Cluster-Zentren berechnet und anschließend der Datenpunkt dem Zentrum mit dem geringsten Abstand zugeordnet. Danach 
+Danach wird jedes Cluster-Zentrum in den Mittelpunkt aller ihm zugeordneten Punkte verschoben.
+werden die Cluster-Zentren 
+zur Mitte aller zugeordneten Punkte verschoben.
+so verschoben, dass die Summe der Abstände aller zugeordneten Punkte minimal ist. 
+Der gesamte Lernvorgang wiederholt sich solange, bis sich die Position der Cluster-Zentren nicht mehr verändert. 
+\item \emph{Benutzung:} Um das passende Cluster zu einen Datenpunkt zu bestimmen, wird dessen Abstand zu allen Cluster-Zentren berechnet. Das Cluster, dessen Zentrum den geringsten Abstand hat, wird dem Datenpunkt zugeordnet.
+\end{itemize}
+
+K-Means benötigt in der Regel beim Lernen mehr Zeit als bei der Benutzung, da im ersten Fall die Cluster-Zentren unter Umständen oft verschoben werden müssen und nach jeder Verschiebung erneut die Abstände zu allen dem Zentrum zugeordneten Punkten berechnet werden müssen. Bei der Benutzung hingegen genügt es, nur die Abstände des zu klassifizierenden Punkts zu allen Cluster-Zentren zu berechnen, um das passende Cluster zu bestimmen. Der Algorithmus arbeitet jedoch im Vergleich zu anderen Klassifikatoren (TODO Beispiel??) in beiden Phasen schnell, da immer nur einfache Berechnungen des euklidischen Abstands im Eingaberaum erfolgen.
+
+Es existieren weiterhin einige Variationen des Basis-Algorithmus, mit dem dieser weiter optimiert werden kann. Dazu gehört etwa ein vorzeitiger Abbruch des Lernens, wenn eine festgelegte Maximalzahl von Iterationen erreicht wurde. Mit dem k-Means++ Algorithmus \cite{kMeans++} kann die Dauer der Lernphase verkürzt und die Fehlerrate bei der Benutzung gesenkt werden. Dieser Algorithmus wird in der Initialisierungsphase zur Bestimmung der Startpositionen der Cluster-Zentren verwendet. 
 
 
-\subsection{Verwendung des Klassifikators im Gestenerkennungssystem}
+Unüberwachtes Lernen, Clustering 
+
+Bei k-Means (genauer gesagt: Algorithmus von Lloyds) handelt es sich um einen Algorithmus für unüberwachtes Lernen, der eine Datenmenge in k verschiedene Cluster unterteilt und dabei jedes Objekt einem Cluster zuordnet. Dazu existieren k Cluster-Schwerpunkte (cluster centers), wobei ein Objekt immer dem nächstgelegenen Cluster-Schwerpunkt zugeordnet wird.
+Die Berechnung der optimalen Lösung eines solchen Klassifikationsproblems ist NP-schwer \cite{kMeansNPhard}. 
+
+Der beschriebene Algorithmus arbeitet jedoch schnell und effizient, findet jedoch im besten Fall nur ein lokales Optimum. Unter bestimmten Bedingungen konvergiert der k-Means Algorithmus jedoch nicht einmal zum lokalen Optimum\cite{kMeansMinimum}. Aus diesem Grund ist es hilfreich, die Lernphase mehrere Male zu wiederholen und anschließend den Klassifikator mit der geringsten Fehlerquote zu benutzen.  
+
+Wahl von optimalen Wert für k, in diesem Anwendungsfall (natürlich) mindestens Anzahl der Gesten, aber auch größere Werte möglich. Im einfachen Fall k = AnzahlGesten wird jedem Clustercenter eine Geste zugeordnet. Im Idealfall wenig Überlappung der Confusion Matrix, sodass bei jeder Geste ein eindeutiges Cluster am häufigsten vorkommt und umgekehrt in jedes Cluster eine einzige Geste am häufigsten fällt (TODO: Später bei k > AnzahlGesten muss das nicht für jedes Cluster gelten, aber mindestens für k Stück). Wenn k größer ist als die Anzahl der Gesten, sind mindestens einer Geste mehrere Cluster-Schwerpunkte zugeordnet. --> Algorithmus, um Clustercenter den einzelnen Gesten zuzuordnen. 
+
+\subsection{Anwendung auf Projekt}
+
+
+\subsubsection{Datenaufbereitung}
+Die Anzahl der zu bestimmenden Cluster (der Wert von k) muss bereits vor der Trainingsphase festgelegt werden. Dabei muss k mindestens gleich der Anzahl der Gesten sein, damit der Algorithmus in der Lage ist, die einzelnen Gesten voneinander zu unterscheiden. Zur Erkennung des Grundrauschens gibt es zwei Möglichkeiten: Entweder eine oder mehrere „Bullshit-Klassen“ einführen, die Aufnahmen entsprechen, bei denen keine (bekannte) Geste ausgeführt wurde. Die zweite Möglichkeit ist, den maximalen Abstand einer Geste zum nächstgelegenen Cluster-Center zu begrenzen, sodass beim Überschreiten des Grenzwerts „keine Geste“ klassifiziert wird.
+2 Cluster für Hintergrundrauschen, eins für leise und eins für laute Umgebung
+Ziel: Besser eine Geste fälschlicherweise als Grundrauschen einstufen und nicht erkennen, als das Grundrauschen oder andere Bewegungen beim Bedienen des Rechners als Geste einstufen. Im ersten Fall wird der Anwender die Geste einfach erneut ausführen (und sie wird dann – hoffentlich – auch erkannt), im zweiten Fall ist es nervig, da die mit der erkannten Geste verknüpfte Aktion ausgeführt wird. 
+
+Rohdaten sind zu hochdimensional, um ohne Vorverarbeitung in den Klassifikator gesteckt werden zu können. Bei der verwendeten Implementierung (siehe später) sind pro Geste beispielsweise 32 Frames $\cdot$ 64 Lautstärkewerte, die je einem Frequenzbereich entsprechen (siehe FFT \cite{fftMathebuch}), = 2048 Daten vorhanden. Da hochdimensionale Eingabedaten bei Clustering-Verfahren oft schlechte Ergebnisse liefern \cite{kMeansHighDimensions}, ist es notwendig, bei der Datenaufbereitung die Dimension der Eingabedaten zu reduzieren. Erste Tests mit nicht aufbereiteten 2048-dimensionalen Eingabedaten lieferten eine korrekte Erkennungsrate von etwa 25 bis 30 Prozent bei 6 Klassen (5 Gesten sowie Grundrauschen ohne Geste). Lediglich das Grundrauschen kann einigermaßen zuverlässig erkannt werden, eine korrekte Unterscheidung der einzelnen Gesten ist jedoch war jedoch nicht möglich. Dies zeigt deutlich die Notwendigkeit einer Datenaufbereitung.
+
+
+\subsubsection{Anpassung des Klassifikators}
 Bei dem k-Means Algorithmus ist zu beachten, dass die Anzahl der Cluster vorher bekannt sein muss, da sie beim Start des Algorithmus festgelegt wird. Dies ist jedoch kein Problem, weil die Anzahl der Gesten im Erkennungssystem auf eine bestimmte Zahl (voraussichtlich 6) festgelegt ist. Da der Klassifikator jede beliebige Eingabe einem der Cluster zuordnet, ist es notwendig, eine oder mehrere zusätzliche Gruppen für nicht erkannte Gesten zu definieren. Ansonsten würde jede Eingabe – unabhängig ob es tatsächlich eine Geste war oder nicht – grundsätzlich der ähnlichsten bekannten Gesten zugeordnet. Denkbar sind hierbei beispielsweise zwei solcher zusätzlicher Gruppen, eine für das Hintergrundrauschen ohne Bewegung und eine weitere für alle Bewegungen, die keiner gespeicherten Geste entsprechen.
+Die Features zur Klassifikation müssen so gewählt werden, dass sich gleiche Gesten im gleichen Cluster anordnen und es möglichst nicht zu einer Überschneidung von verschiedenen Clustern kommt. Dies ist notwendig, da der Klassifikator ansonsten nicht mehr in der Lage ist, die einzelnen Gesten voneinander zu unterscheiden. Anhand des im aktuellen Prototyp dargestellten Frequenzspektrums lässt sich erkennen, dass sich die Gesten weniger durch die zu einem bestimmten Zeitpunkt gemessenen Frequenzwerte unterscheiden lassen, sondern eher durch den zeitlichen Verlauf dieser Frequenzwerte von Beginn bis Ende der Geste.
 
-Die Features zur Klassifikation müssen so gewählt werden, dass sich gleiche Gesten im gleichen Cluster anordnen und es möglichst nicht zu einer Überschneidung von verschiedenen Clustern kommt. Dies ist notwendig, da der Klassifikator ansonsten nicht mehr in der Lage ist, die einzelnen Gesten voneinander zu unterscheiden. Anhand des im aktuellen Prototyp dargestellten Frequenzspektrums lässt sich erkennen, dass sich die Gesten weniger durch die zu einem bestimmten Zeitpunkt gemessenen Frequenzwerte unterscheiden lassen, sondern eher durch den zeitlichen Verlauf dieser Frequenzwerte von Beginn bis Ende der Geste. Diese Beobachtung führt zu folgenden ersten Ideen, welche Daten des Frequenzspektrums zur Klassifikation verwendet werden können:
 
-\begin{enumerate}
-\item \emph{Peaks und deren zeitlicher Verlauf:} Zu jedem Zeitpunkt einer Messung werden die Frequenzen ermittelt, bei denen lokale Maxima (Peaks) auftreten. Hierbei ist zu überlegen, die Anzahl der Peaks auf einen vorher festgelegten Maximalwert zu begrenzen, sodass beim Überschreiten dieses Maximalwerts nur die Peaks mit der höchsten Lautstärke berücksichtigt werden.
-\item \emph{Überschreitungen eines Schwellwerts und deren zeitlicher Verlauf:} Es wird für jeden von der Fourier-Transformation ausgewerteten Frequenzbereich überprüft, ob die zugehörige Lautstärke einen Schwellwert überschreitet. Falls ja wird diesem der Wert 1, ansonsten der Wert 0 zugeordnet. Ebenso ist eine Erweiterung dieses Verfahrens denkbar, bei dem mehrere solcher Schwellwerte existieren und dem Frequenzbereich der Wert 1 beim Überschreiten des niedrigsten Schwellwerts, der Wert 2 beim Überschreiten des nächsthöheren Schwellwerts usw. zugeordnet wird. 
-\item\emph{ Kombination der in Punkt 1 und 2 bestimmten Daten.}
-\end{enumerate}
+\subsubsection{Implementierung}
+Die Implementierung erfolgte in der Programmiersprache Python unter Verwendung der Bibliothek skikit-learn (Version 0.14) \cite{sklearn}. Diese Bibliothek verwendet den beschriebenen k-Means Algorithmus von Lloyd. Außerdem bietet sie noch die Möglichkeit, dass die Startpunkte der Cluster-Center nicht wie im ursprünglichen Algorithmus vorgesehen zufällig gewählt werden, sondern stattdessen mit dem k-Means++ Algorithmus \cite{kMeans++} bestimmt werden. Zusätzlich können noch weitere kleine Einstellungen vorgenommen werden, um den Klassifikator für den jeweiligen Anwendungsfall  zu optimieren. Dazu gehört beispielsweise eine Beschränkung der Iterationen beim Lernen auf einen bestimmten Maximalwert.
+Die Komplexität im ungünstigsten Fall liegt bei $O(n^{(k+2)/p})$ \cite{kMeansHowSlow}, wobei $n$ der Anzahl der Trainingsdaten und $p$ der Anzahl der Dimensionen entspricht.
+
+
+\subsubsection{Training}
+Zu Beginn der Lernphase des Algorithmus wird ein Wert für k festgelegt und anschließend werden k zufällige Positionen im Eingaberaum als Cluster-Schwerpunkte gesetzt (Abbildung XX). Danach wird jeder Schwerpunkt so verschoben, dass der Abstand zwischen ihm und den zugeordneten Objekten einen minimalen Wert annimmt. Diese Verschiebungen werden solange wiederholt, bis sich die Cluster-Schwerpunkte nicht mehr bewegen. 
+Um nun zu einem Objekt den passenden Cluster zuzuordnen, wird der Abstand zwischen Objekt und den Cluster-Schwerpunkten berechnet. Das Objekt wird dann dem Cluster-Schwerpunkt mit dem geringsten Abstand zugeordnet. Abbildung XX zeigt eine solche Bestimmung anhand der zuvor berechneten Cluster-Schwerpunkte. Die Zugehörigkeit beliebiger Objekte zu den jeweiligen Cluster-Centern ist farbig markiert, sodass ein zu klassifizierendes Objekt das der Farbe entsprechende Cluster zugeordnet wird.
+k-Means ist anfällig für Ausreißer
+Wahl eines guten Werts für k von Bedeutung, offensichtlich mindestens Anzahl der Gruppen (wenn Anzahl der Gruppen vorher bekannt ist). Verschiedene Methoden, die einfachste ist die Faustregel, dass $k \approx \sqrt{n/2}$ (REF).
+%Quelle:  Faustregel: Kanti Mardia et al. (1979). Multivariate Analysis. Academic Press. (via http://en.wikipedia.org/wiki/Determining_the_number_of_clusters_in_a_data_set)
+
+
+\subsubsection{Evaluation}
+Confusion Matrix in lauter und leiser Umgebung für die verschiedenen Gesten. Welche Gesten werden sehr gut/gut/mittelmäßig oder gar nicht erkannt? Erkennungsrate praxistauglich?
+
+
+
+\subsection{Fazit}
+Die Erkennung funktioniert mittelmäßig/gut/sehr gut. Sehr gut erkannt werden das Grundrauschen und Geste(n) XX. Schlecht/kaum erkannt werden Geste(n) XX. (siehe Confusion Matrix).
