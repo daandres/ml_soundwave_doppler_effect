@@ -66,7 +66,7 @@ def load_dataset(filename=""):
 def load(filename):
     return load_network(filename), load_dataset(filename)
 
-def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="false", merge67="false"):
+def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="false", merge67="false", inputdim=64):
     def __loadDataFromFile(merge67="false"):
         g = GestureFileIO(relative=relative)
         data = [0] * nClasses
@@ -117,8 +117,9 @@ def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="fals
 
     nClasses = len(classes)
     data = __loadDataFromFile(merge67)
-    for i in range(len(data)):
-        data[i] = preprocessData(data[i])
+    if(inputdim != 64):
+        for i in range(len(data)):
+            data[i] = preprocessData(data[i])
     inputs = np.shape(data[0])[2]
     ds = __createDataset(data)
     return ds
@@ -157,11 +158,13 @@ def preprocessFrame(frame):
 # Average frequency
 # TODO aktuelle Ruhe Frequenz messen und davon average nehmen.
 avg = None
-def getAverage():
+def getAverage(inputdim=64):
     global avg
     if avg == None:
         g = GestureFileIO()
         avg = g.getAvgFrequency()
+        if(inputdim != 64):
+            avg = preprocessFrame(avg)
     return avg
 
 def printNetwork(net):

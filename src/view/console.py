@@ -46,7 +46,6 @@ class Console:
                 cl = LSTM(self.recorder, lstmConfig)
                 self.classificators[name] = cl
             cl = self.classificators[name]
-            return cl
         elif(name == "svm"):
             if(name not in self.classificators):
                 from classifier.svm.svm import SVM
@@ -56,12 +55,17 @@ class Console:
             cl = self.classificators[name]
         elif(name == "trees"):
             if(name not in self.classificators):
-                #sfrom classifier.trees.Trees import Trees
-                treeConfig = c.getInstance().getConfig("tree")
+                from classifier.svm.svm import SVM
+                # sfrom classifier.trees.Trees import Trees
+                treeConfig = c.getInstance().getConfig("trees")
                 cl = SVM(self.recorder, treeConfig)
                 self.classificators[name] = cl
             cl = self.classificators[name]
-            return cl
+        else:
+            raise Exception("Classificator not existing")
+
+        return cl
+
 
     def recordStart(self, args):
         fileName = self.getFileName(args[0])
@@ -182,18 +186,11 @@ class Console:
         pass
 
     def selectClassifier(self, args):
-        # TODO do it better... switch case, exception handling, ...
-        if(args[1] == 'lstm'):
+        try:
             self.classificator = self.getClassificator(args[1])
             print("Using now classificator " + self.classificator.getName())
-        elif(args[1] == 'svm'):
-            self.classificator = self.getClassificator(args[1])
-            print("Using now classificator " + self.classificator.getName())
-        elif(args[1] == 'trees'):
-            self.classificator = self.getClassificator(args[1])
-            print("Using now classificator " + self.classificator.getName())
-        else:
-            print("No classifier specified")
+        except Exception as e:
+            print("Classifier not known: " + args[1] + "; " + str(e))
         self.inputEvent.set()
 
     def trainingStart(self, args):

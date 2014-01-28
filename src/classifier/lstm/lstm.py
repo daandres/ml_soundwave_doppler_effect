@@ -9,7 +9,6 @@ import time
 # import arac
 from systemkeys import SystemKeys
 
-INPUTS = 24
 NAME = "LSTM"
 
 class LSTM(IClassifier):
@@ -18,6 +17,7 @@ class LSTM(IClassifier):
         self.recorder = recorder
         self.config = config
         self.customName = self.config['customname']
+        self.inputdim = int(self.config['inputdim'])
         self.hidden = int(self.config['hiddenneurons'])
         self.peepholes = bool(self.config['peepholes'])
         self.epochs = int(self.config['trainingepochs'])
@@ -26,7 +26,7 @@ class LSTM(IClassifier):
         self.nClasses = len(self.classes)
         self.trainingType = self.config['training']
         self.relative = relative
-        self.avg = util.preprocessFrame(util.getAverage())
+        self.avg = util.getAverage(self.inputdim)
         self.trainer, self.returnsNet = None, False
         self.layer = self.config['outlayer']
         self.loadData(self.config['dataset'])
@@ -121,8 +121,9 @@ class LSTM(IClassifier):
             raise Exception("Cannot create trainer, no network type specified")
 
     def classify(self, data):
-        normalizedData = data / np.amax(data)
-        preprocessedData = util.preprocessFrame(normalizedData)
+        preprocessedData = data / np.amax(data)
+        if(self.inputdim != 64):
+            preprocessedData = util.preprocessFrame(preprocessedData)
         diffAvgData = preprocessedData - self.avg
         self.__classify2(diffAvgData)
 
@@ -166,7 +167,7 @@ class LSTM(IClassifier):
                 filename = self.config['dataset']
             self.ds = util.load_dataset(filename)
         else:
-            self.ds = util.createPyBrainDatasetFromSamples(self.classes, self.nClasses, "", self.config['data_average'], self.config['merge67'])
+            self.ds = util.createPyBrainDatasetFromSamples(self.classes, self.nClasses, "", self.config['data_average'], self.config['merge67'], self.inputdim)
         self.testds, self.ds = self.ds.splitWithProportion(0.2)
 
     def saveData(self, filename=""):
@@ -188,7 +189,7 @@ class LSTM(IClassifier):
         elif(self.layer == "sigmoid"): layer = SigmoidLayer
         elif(self.layer == "softmax"): layer = SoftmaxLayer
         else: raise Exception("Cannot create network: no output layer specified")
-        self.net = buildNetwork(INPUTS, self.hidden, self.nClasses, hiddenclass=LSTMLayer, outclass=layer, recurrent=True, outputbias=False, peepholes=self.peepholes)
+        self.net = buildNetwork(self.inputdim, self.hidden, self.nClasses, hiddenclass=LSTMLayer, outclass=layer, recurrent=True, outputbias=False, peepholes=self.peepholes)
         if(self.config['fast'] != ""):
             self.net = self.net.convertToFastNetwork()
         self.net.randomize()
