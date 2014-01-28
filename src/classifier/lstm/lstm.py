@@ -1,199 +1,157 @@
 from classifier.classifier import IClassifier
-from pybrain.structure import LSTMLayer, LinearLayer, SoftmaxLayer
-from pybrain.unsupervised.trainers.deepbelief import DeepBeliefTrainer
-from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
-from pybrain.supervised.trainers.evolino import EvolinoTrainer
+from pybrain.structure import LSTMLayer, LinearLayer, SoftmaxLayer, SigmoidLayer
 from pybrain.tools.shortcuts import buildNetwork
-from pybrain.structure.modules.evolinonetwork import EvolinoNetwork
-from pybrain.tools.validation import testOnSequenceData
+from pybrain.tools.validation import ModuleValidator, CrossValidator
 import classifier.lstm.util as util
 import numpy as np
-from threading import Thread
+from scipy import stats as stats
 import time
 # import arac
+from systemkeys import SystemKeys
 
-# Optimization learners imports
-from pybrain.rl.environments.shipsteer.northwardtask import GoNorthwardTask
-from pybrain.optimization import *  # @UnusedWildImport
-# algo = HillClimber
-algo = GA
-# algo = MemeticSearch
-# algo = NelderMead
-# algo = CMAES
-# algo = OriginalNES
-# algo = ES
-# algo = MultiObjectiveGA
-
-INPUTS = 64
-OUTPUTS = 1
-NCLASSES = 8
-CLASSES = [0, 1, 2, 3, 4, 5, 6, 7]
 NAME = "LSTM"
 
 class LSTM(IClassifier):
 
     def __init__(self, recorder=None, config=None, relative=""):
-#         if recorder == None:
-#             raise Exception("No Recorder, so go home")
         self.recorder = recorder
         self.config = config
+        self.customName = self.config['customname']
+        self.inputdim = int(self.config['inputdim'])
         self.hidden = int(self.config['hiddenneurons'])
+        self.peepholes = bool(self.config['peepholes'])
         self.epochs = int(self.config['trainingepochs'])
-        self.datanum = 0
+        self.trainedEpochs = 0
+        self.classes = eval(self.config['classes'])
+        self.nClasses = len(self.classes)
+        self.trainingType = self.config['training']
         self.relative = relative
-        if(self.config['autoload_data'] == "true"):
-            self.loadData()
-        else:
-            self.ds = util.createPyBrainDatasetFromSamples(CLASSES, INPUTS, OUTPUTS, "")
+        self.avg = util.getAverage(self.inputdim)
+        self.trainer, self.returnsNet = None, False
+        self.layer = self.config['outlayer']
+        self.loadData(self.config['dataset'])
         if(self.config['autoload_network'] == "true"):
             self.load()
         else:
-            self.createNetwork()
+            self._createNetwork()
+
+        self.datalist = []
+        self.datanum = 0
+        self.has32 = False
+        self.previouspredict = 6
+        self.predcounter = 0
+        self.predHistSize = 8
+        self.predHistHalfUpper = 5
+        self.predHistory = util.createArraySix(self.predHistSize,)
+
+        # Classify3 method
+        self.predhistoryforclassify3 = []
+
+        self.outkeys = SystemKeys()
+
+#======================================================================
+#=Interface methods====================================================
+#======================================================================
 
     def getName(self):
         return NAME
 
-    def createNetwork(self):
-        if(self.config['network_type'] == "gradient" or self.config['network_type'] == "optimization"):
-            self.net = buildNetwork(INPUTS, self.hidden, OUTPUTS, hiddenclass=LSTMLayer, outclass=LinearLayer, recurrent=True, outputbias=False)
-            self.net.randomize()
-#         self.net = self.net.convertToFastNetwork()
-        elif(self.config['network_type'] == "evolino"):
-            self.net = EvolinoNetwork(OUTPUTS, self.hidden)
-        else:
-            raise Exception("cannot create network, no network type specified")
-        print("LSTM network created with " + str(self.hidden) + " LSTM neurons")
-        return
+    def startTraining(self, args=[]):
+        def __getGradientTrainer():
+            print("LSTM Gradient " + self.config['trainingalgo'] + " Training started")
+            trainAlgo = util.getGradientTrainAlgo(self.config['trainingalgo'])
+            trainer = trainAlgo(self.net, dataset=self.ds, verbose=True)
+            return trainer, False
 
-    def startClassify(self):
-        self.t = Thread(name=NAME, target=self.start, args=())
-        self.t.start()
-        return self.t
+        def __getOptimizationTrainer():
+            print("LSTM Optimization " + self.config['trainingalgo'] + " Training started")
+            trainAlgo = util.getOptimizationTrainAlgo(self.config['trainingalgo'])
+            l = trainAlgo(self.ds.evaluateModuleMSE, self.net, verbose=True)
+            return l, True
 
-    def startTraining(self):
-        assert self.net != None
-        assert self.ds != None
-
-        def getRPropTrainer():
-            print("LSTM RPropMinusTrainer Training started")
-            trainer = RPropMinusTrainer(self.net, dataset=self.ds, verbose=True)
-    #         trainer = BackpropTrainer(self.net, dataset=self.ds, verbose=True)
-            return trainer
-
-        def getEvolino():
-            print("LSTM Evolino Training started")
-            wtRatio = 1. / 3.
-            trainer = EvolinoTrainer(
-                self.net,
-                dataset=self.ds,
-                subPopulationSize=20,
-                nParents=8,
-                nCombinations=1,
-                initialWeightRange=(-0.01 , 0.01),
-            #    initialWeightRange = ( -0.1 , 0.1 ),
-            #    initialWeightRange = ( -0.5 , -0.2 ),
-                backprojectionFactor=0.001,
-                mutationAlpha=0.001,
-            #    mutationAlpha = 0.0000001,
-                nBurstMutationEpochs=np.Infinity,
-                wtRatio=wtRatio,
-                verbosity=2)
-            return trainer
-
-        def getOptimizationTrainer():
-            task = GoNorthwardTask()
-            l = algo(self.ds.evaluateModuleMSE, self.net, verbose=True)
-            return l
-
-        def train(training):
+        def __train(training, returnsNet):
             start = time.time()
-            print("start training with " + str(self.epochs) + " epochs: " + str(start))
-            tenthOfEpochs = self.epochs / 10
-            for i in range(10):
-                inBetweenStart = time.time()
-                training(tenthOfEpochs)
-                end = time.time()
-                diff = end - inBetweenStart
-                print("Training time of epoch " + str(i) + " : " + str(end) + "\nDiff: " + str(diff))
-            if(self.epochs - (tenthOfEpochs * 10) > 0):
-                training(self.epochs - (tenthOfEpochs * 10))
+            print("start training of " + str(self.epochs) + " epochs: " + str(start / 3600))
+            print(self.__getName())
+            if(self.epochs >= 10):
+                tenthOfEpochs = self.epochs / 10
+                for i in range(10):
+                    inBetweenStart = time.time()
+                    if returnsNet: self.net = training(tenthOfEpochs)
+                    else: training(tenthOfEpochs)
+                    end = time.time()
+                    diff = end - inBetweenStart
+                    print("Training time of epoch " + str(i) + " : " + str(end / 3600) + "\nDiff: " + str(diff / 3600))
+                lastEpochs = self.epochs - (tenthOfEpochs * 10)
+            else:
+                lastEpochs = self.epochs
+            if(lastEpochs > 0):
+                if returnsNet: self.net = training(lastEpochs)
+                else: training(lastEpochs)
             end = time.time()
             diff = end - start
-            print("Training end: " + str(end) + "\nDiff: " + str(diff))
+            self.trainedEpochs += self.epochs
+            print("Training end: " + str(end / 3600) + "\nDiff: " + str(diff / 3600))
             if(self.config['autosave_network'] == "true"):
-                filename = str(time.time()) + "_n" + str(self.hidden) + "_e" + str(self.epochs) + "_o" + OUTPUTS
+                filename = self.__getName() + "_" + str(time.time())
                 self.save(filename, overwrite=False)
-            self.validate()
+            self.startValidation()
             return
 
         #==========
         # =Training=
-        if(self.config['network_type'] == "gradient"):
-            trainer = getRPropTrainer();
-            train(trainer.trainEpochs)
-        elif(self.config['network_type'] == "evolino"):
-            trainer = getEvolino();
-            train(trainer.trainEpochs)
-        elif(self.config['network_type'] == "optimization"):
-            trainer = getOptimizationTrainer();
-            train(trainer.learn)
+        if(args != [] and len(args) >= 2):
+            self.epochs = int(args[1])
+        if(self.trainingType == "gradient"):
+            if(self.trainer == None):
+                self.trainer, self.returnsNet = __getGradientTrainer();
+            __train(self.trainer.trainEpochs, self.returnsNet)
+        elif(self.trainingType == "optimization"):
+            if(self.trainer == None):
+                self.trainer, self.returnsNet = __getOptimizationTrainer();
+            __train(self.trainer.learn, self.returnsNet)
             return
+        elif(self.trainingType == "crossval"):
+            if(self.trainer == None):
+                self.trainer, self.returnsNet = __getGradientTrainer();
+            evaluation = ModuleValidator.classificationPerformance(self.trainer.module, self.ds)
+            validator = CrossValidator(trainer=self.trainer, dataset=self.trainer.ds, n_folds=5, valfunc=evaluation, verbose=True, max_epochs=1)
+            print(validator.validate())
         else:
             raise Exception("Cannot create trainer, no network type specified")
 
-
-    def validateOnData(self):
-        trnresult = 100. * (1.0 - testOnSequenceData(self.net, self.ds))
-        print("Validation error: %5.2f%%" % trnresult)
-
     def classify(self, data):
-        out = self.net.activate(data)
-        self.datanum += 1
-        if(self.datanum >= 32):
-            self.datanum = 0
-            self.net.reset()
-            print(str(np.argmax(out)) + " " + str(out))
+        preprocessedData = data / np.amax(data)
+        if(self.inputdim != 64):
+            preprocessedData = util.preprocessFrame(preprocessedData)
+        diffAvgData = preprocessedData - self.avg
+        self.__classify2(diffAvgData)
+
 
     def startValidation(self):
-        self.validate()
-
-    def validate(self):
-        self.validateOnData()
-#         print(self.ds.evaluateMSE(self.net))
-        confmat = np.zeros((NCLASSES, NCLASSES))
-        for i in range(self.ds.getNumSequences()):
-            self.net.reset()
-            out = None
-            target = None
-            j = 0
-            for dataIter in self.ds.getSequenceIterator(i):
-                data = dataIter[0]
-                target = dataIter[1]
-#                 print(str(i) + "\t" + str(j) + "\tbefore activate")
-                out = self.net.activate(data)
-#                 print(str(i) + "\t" + str(j) + "\tafter activate")
-                j += 1
-            # confmat[np.round(target)[0]][np.round(out)[0]] += 1
-            print "out:\t", str(out), "\ttarget:\t", str(target)
-#                 print("target:\t", np.argmax(target)
-#                 print("out:\t", np.argmax(out)
-#                 print(""
-        sumWrong = 0
-        sumAll = 0
-        for i in range(OUTPUTS):
-            for j in range(OUTPUTS):
-                if i != j:
-                    sumWrong += confmat[i][j]
-                sumAll += confmat[i][j]
-        error = sumWrong / sumAll
-        print(confmat)
-        print("error: " + str(100. * error) + "%")
-
+        print(self.testds.evaluateModuleMSE(self.net))
+        self.__confmat()
 
     def load(self, filename=""):
         if filename == "":
             filename = self.config['network']
-        self.net = util.load_network(filename)
+        self.net = util.load_network(self.config['networkpath'] + filename)
+        self.net.sorted = False
+        self.net.sortModules()
+        netValues = util.parseNetworkFilename(filename)
+        for key, value in netValues.items():
+            if(key == 'neurons'):
+                self.hidden = int(value)
+            elif(key == 'epochs'):
+                self.trainedEpochs = int(value)
+            elif(key == 'layer'):
+                self.layer = value
+            elif(key == 'nClasses'):
+                self.nClasses = int(value)
+            elif(key == 'trainer'):
+                self.trainingType = value
+            elif(key == 'peepholes'):
+                self.peepholes = bool(value)
 
     def save(self, filename="", overwrite=True):
         if filename == "":
@@ -201,14 +159,162 @@ class LSTM(IClassifier):
                 filename = self.config['network']
             else:
                 filename = self.config['network'] + str(time.time())
-        util.save_network(self.net, filename)
+        util.save_network(self.net, self.config['networkpath'] + filename)
 
     def loadData(self, filename=""):
-        if filename == "":
-            filename = self.config['dataset']
-        self.ds = util.load_dataset(filename)
+        if(self.config['autoload_data'] == "true"):
+            if filename == "":
+                filename = self.config['dataset']
+            self.ds = util.load_dataset(filename)
+        else:
+            self.ds = util.createPyBrainDatasetFromSamples(self.classes, self.nClasses, "", self.config['data_average'], self.config['merge67'], self.inputdim)
+        self.testds, self.ds = self.ds.splitWithProportion(0.2)
 
     def saveData(self, filename=""):
         if filename == "":
             filename = self.config['dataset']
         util.save_dataset(self.ds, filename)
+
+    def printClassifier(self):
+        print(self.__getName())
+        util.printNetwork(self.net)
+
+#======================================================================
+#=Internal methods=====================================================
+#======================================================================
+
+
+    def _createNetwork(self):
+        if(self.layer == "linear"): layer = LinearLayer
+        elif(self.layer == "sigmoid"): layer = SigmoidLayer
+        elif(self.layer == "softmax"): layer = SoftmaxLayer
+        else: raise Exception("Cannot create network: no output layer specified")
+        self.net = buildNetwork(self.inputdim, self.hidden, self.nClasses, hiddenclass=LSTMLayer, outclass=layer, recurrent=True, outputbias=False, peepholes=self.peepholes)
+        if(self.config['fast'] != ""):
+            self.net = self.net.convertToFastNetwork()
+        self.net.randomize()
+        print("LSTM network created: " + self.__getName())
+        return
+
+    '''
+    Activates a sequence and sums up the results for each activation and returns the highest value
+    '''
+    def _activateSequence(self, dataList):
+        out = np.zeros(self.nClasses)
+        for data in dataList:
+            out += self.net.activate(data)
+        return np.argmax(out)
+
+    '''
+    Calculates the confmat based on the testdataset and calculates the error
+    
+    Altenrative for error calculation, but without confmat:
+    trnresult = 100. * (1.0 - testOnSequenceData(self.net, self.testds))
+    '''
+
+    def __confmat(self):
+        confmat = np.zeros((self.nClasses, self.nClasses))
+        for i in range(self.testds.getNumSequences()):
+            self.net.reset()
+            sequence = self.testds.getSequence(i)
+            target = np.argmax(sequence[1][31])
+            out = self._activateSequence(sequence[0])
+            confmat[target][out] += 1
+        sumWrong = 0
+        sumAll = 0
+        for i in range(self.nClasses):
+            for j in range(self.nClasses):
+                if i != j:
+                    sumWrong += confmat[i][j]
+                sumAll += confmat[i][j]
+        error = sumWrong / sumAll
+        np.set_printoptions(suppress=True)
+        print(confmat)
+        print("Validation error: %5.2f%%" % (100. * error))
+
+    def __getName(self):
+        return self.customName + "n" + str(self.hidden) + "_o" + str(self.nClasses) + "_l" + self.layer + "_p" + str(self.peepholes) + "_t" + self.trainingType + "_e" + str(self.trainedEpochs) + self.config['fast']
+
+    '''
+    Gesten werden starr nach 32 frames erkannt
+    '''
+    def __classify1(self, data):
+        self.datalist.append(data)
+        self.datanum += 1
+        if(self.datanum % 32 == 0):
+            self.net.reset()
+            out = self._activateSequence(self.datalist)
+            print(str(out))
+            self.datalist = []
+            self.datanum = 0
+            return out
+        return -1
+
+    '''
+    Gesten werden auf folgende Art erkannt:
+    - wenn 32 Datensaetze vorhanden sind wird das Netz aktiviert und der Output in eine Liste gespeichert
+    - Diese Liste wird staendig erweitert und hat ein feste Laenge (siehe self.predHistory in init)
+    - Es wird der Modus der Liste gebildet
+    - Ist der Modus ueber einem  bestimmten Treshold (self.predHistHalfUpper) wird der Wert in self.previouspredict gespeichert
+    - Ist previouspredict 4 mal gleich wird die Gestenklasse ausgegeben, ist die Klasse groesser als 4 mal gleich erfolgt keine neue Ausgabe
+    - 
+    '''
+    def __classify2(self, data):
+        self.datanum += 1
+        self.datalist.append(data)
+        if(self.datanum % 32 == 0):
+            self.has32 = True
+        if(self.has32):
+            self.net.reset()
+            Y_pred = self._activateSequence(self.datalist)
+            del self.datalist[0]
+            self.predHistory[0] = Y_pred
+            self.predHistory = np.roll(self.predHistory, -1)
+            expected = stats.mode(self.predHistory, 0)
+            if(expected[1][0] >= self.predHistHalfUpper):
+                if(int(expected[0][0]) != self.previouspredict):
+                    oldPrevious, oldPredCounter = self.previouspredict, self.previouspredict
+                    self.previouspredict = int(expected[0][0])
+                    self.predcounter = 1
+                    return oldPrevious, oldPredCounter
+                else:
+                    self.predcounter += 1
+                    if(self.predcounter == 4):
+                        print(str(self.previouspredict))
+                        self.outkeys.outForClass(self.previouspredict)
+                    return self.previouspredict, self.predcounter
+        return -1, -1
+
+
+    '''
+    Gesten werden innerhalb von der Geste 6 gesucht
+    TODO not finished yet
+    '''
+    def __classify3(self, data):
+        pred, predcounter = self.__classifiy2(data)
+        if(pred != -1 and predcounter >= 4):
+            try:
+                prevpred, prevpredcounter = self.predhistoryforclassify3.pop()
+                if(prevpred != pred):
+                    self.predhistoryforclassify3.append([prevpred, prevpredcounter])
+            except IndexError:
+                pass
+            self.predhistoryforclassify3.append([pred, predcounter])
+            if(pred == 6 and len(self.predhistoryforclassify3) <= 1):
+                pass
+            else:
+                classes = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+                for pred, count in self.predhistoryforclassify3:
+                    classes[pred] += count
+                classes.pop(6)
+                classifiedclass = stats.mode(np.asarray(classes.values()), 0)
+                print(str(classifiedclass))
+
+
+    '''
+    Gesten werden anhand eines erkannten Starttresholds erkannt
+    '''
+    def __classify4(self, data):
+        # sequence maximum erkennen
+        pass
+

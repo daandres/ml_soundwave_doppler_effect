@@ -1,8 +1,8 @@
 import time
 from threading import Thread, Event
-from classifier.lstm.lstm import LSTM
 from visualizer import View
 import properties.config as c
+
 
 class Console:
     def __init__(self, recorder=None, soundplayer=None, applicationClose=None, setFileName=None, getFileName=None):
@@ -23,7 +23,6 @@ class Console:
         self.repeatedRecords = 0
         self.setFileName = setFileName
         self.getFileName = getFileName
-        self.lstmConfig = c.getInstance().getConfig("lstm")
         self.classificators = {}
         self.classificator = None
         self.loadUserConfig()
@@ -42,10 +41,31 @@ class Console:
             raise Exception("No classificator specified")
         elif(name == "lstm"):
             if(name not in self.classificators):
-                cl = LSTM(self.recorder, self.lstmConfig)
+                from classifier.lstm.lstm import LSTM
+                lstmConfig = c.getInstance().getConfig("lstm")
+                cl = LSTM(self.recorder, lstmConfig)
                 self.classificators[name] = cl
             cl = self.classificators[name]
-            return cl
+        elif(name == "svm"):
+            if(name not in self.classificators):
+                from classifier.svm.svm import SVM
+                svmConfig = c.getInstance().getConfig("svm")
+                cl = SVM(self.recorder, svmConfig)
+                self.classificators[name] = cl
+            cl = self.classificators[name]
+        elif(name == "trees"):
+            if(name not in self.classificators):
+                from classifier.svm.svm import SVM
+                # sfrom classifier.trees.Trees import Trees
+                treeConfig = c.getInstance().getConfig("trees")
+                cl = SVM(self.recorder, treeConfig)
+                self.classificators[name] = cl
+            cl = self.classificators[name]
+        else:
+            raise Exception("Classificator not existing")
+
+        return cl
+
 
     def recordStart(self, args):
         fileName = self.getFileName(args[0])
@@ -80,6 +100,7 @@ class Console:
         self.key_bindings['s'] = self.save
         self.key_bindings['f'] = self.changeFilename
         self.key_bindings['r'] = self.toggleSound
+        self.key_bindings['p'] = self.printClassifier
         self.key_bindings['0'] = self.recordStart
         self.key_bindings['1'] = self.recordStart
         self.key_bindings['2'] = self.recordStart
@@ -122,14 +143,21 @@ class Console:
     def start(self):
         self.alive = True
         while self.alive:
-            txtin = raw_input('> ')
-            args = txtin.split(" ")
-            if args[0] not in self.key_bindings:
-                print("No command for " + args[0])
-                continue
-            self.inputEvent.clear()
-            self.key_bindings[args[0]](args)
-            self.inputEvent.wait()
+            try:
+                txtin = raw_input('> ')
+                args = txtin.split(" ")
+                if args[0] not in self.key_bindings:
+                    print("No command for " + args[0])
+                    continue
+                self.inputEvent.clear()
+                self.key_bindings[args[0]](args)
+                self.inputEvent.wait()
+            except EOFError:
+                print("End of File Exception")
+                self.alive = False
+            except KeyboardInterrupt:
+                print("KeyboardInterrupt. Stopping current task (no guarantees for failures), if possible...")
+                self.interrupt()
         return
 
     def exit(self, txtin):
@@ -150,30 +178,30 @@ class Console:
             print("No classifier specified")
             self.inputEvent.set()
             return
-        try:
-            self.recorder.classifyStart(self.classificator)
-        except KeyboardInterrupt:
-            self.recorder.classifyStop()
-            self.inputEvent.set()
+        self.recorder.classifyStart(self.classificator)
+        # no input event set because this done in recorder in another thread
+
+    def classifyCallback(self):
+        # only for checking for new Interrupts
+        pass
 
     def selectClassifier(self, args):
-        # TODO do it better... switch case, exception handling, ...
-        if(args[1] == 'lstm'):
+        try:
             self.classificator = self.getClassificator(args[1])
             print("Using now classificator " + self.classificator.getName())
-        else:
-            print("No classifier specified")
+        except Exception as e:
+            print("Classifier not known: " + args[1] + "; " + str(e))
         self.inputEvent.set()
 
-    def trainingStart(self, key):
+    def trainingStart(self, args):
         if self.classificator is None:
             print("No classifier specified")
             self.inputEvent.set()
             return
-        self.classificator.startTraining()
+        self.classificator.startTraining(args)
         self.inputEvent.set()
 
-    def validateStart(self, key):
+    def validateStart(self, args):
         if self.classificator is None:
             print("No classifier specified")
             self.inputEvent.set()
@@ -215,6 +243,14 @@ class Console:
             self.classificator.save(filename)
         self.inputEvent.set()
 
+    def printClassifier(self, args):
+        if self.classificator is None:
+            print("No classifier specified")
+            self.inputEvent.set()
+            return
+        self.classificator.printClassifier()
+        self.inputEvent.set()
+
     def printHelp(self, args=None):
         printHelp()
         self.inputEvent.set()
@@ -226,6 +262,10 @@ class Console:
         else:
             newName = str(time.time())[:-3]
         self.setFileName(newName)
+        self.inputEvent.set()
+
+    def interrupt(self):
+        self.recorder.classifyStop()
         self.inputEvent.set()
 
 def printHelp(args=None):
