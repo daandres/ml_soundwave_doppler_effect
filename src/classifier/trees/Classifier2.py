@@ -14,10 +14,12 @@ import numpy
 
 #gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_0/1388424714_zimmer_left.txt")
 
-gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_1/1387647578_zimmer_left.txt")
-gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_2/1387660041_fernsehen.txt")
+#gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_1/1387647578_zimmer_left.txt")
+gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_2/1387660041_fernsehen.txt")
 gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_3/1387647860_zimmer_left.txt")
 gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_4/1387647860_zimmer_left.txt")
+gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_6/gesture_6_zimmer_1.txt")
+
 
 for i in range(len(gestures)):
     featureVector = []
@@ -37,6 +39,7 @@ for i in range(len(gestures)):
 
     
     gestures[i].featureVector = featureVector
+    print featureVector
     
     
 data = []
@@ -49,15 +52,22 @@ for gesture in gestures:
     data2.append(l)
 
 targets = []
-for class_ in [1,2,3,4]:
+for class_ in [2,3,4,6]:
     for frameIndex in range(50):
         targets.append(class_)
 
 #X_train, X_test, y_train, y_test = cross_validation.train_test_split(data2, targets, test_size=0.4, random_state=0)
 X_train, X_test, y_train, y_test = cross_validation.train_test_split(data, targets, test_size=0.4, random_state=0)
 
-clf = AdaBoostClassifier(n_estimators=5)
-clf.fit(X_train, y_train)
-result = clf.predict(X_test) == y_test
-rightPredicts = len([x for x in result if x == True])
-print 100. / len(result) * rightPredicts
+for i in range(1,100):
+    #clf = AdaBoostClassifier(n_estimators=i)
+    #clf.fit(X_train, y_train)
+    #result = clf.predict(X_test) == y_test
+    #rightPredicts = len([x for x in result if x == True])
+    #print i, 100. / len(result) * rightPredicts
+    
+    clf = GradientBoostingClassifier(n_estimators=i, max_depth=2, random_state=0).fit(X_train, y_train)
+    result = clf.predict(X_test) == y_test
+    rightPredicts = len([x for x in result if x == True])
+    print i, 100. / len(result) * rightPredicts
+print clf.predict([0, 0, 0, -1, 0, 0, 0])

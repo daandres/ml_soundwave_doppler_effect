@@ -26,6 +26,10 @@ def getTestData(filename):
             gestures.append(GestureModel(tmp))
     return gestures
 
+def makeGesture(dataArray):
+    gesture = GestureModel(dataArray)
+    return gesture
+
 def plotTestData(gestures): 
     for gesture in gestures:
         plt.plot(gesture.bins_left, color='red')
