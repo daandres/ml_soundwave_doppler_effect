@@ -15,7 +15,7 @@ class Trees(IClassifier):
     def __init__(self, recorder=None, n_est=5):
         self.name = "trees"
         self.maxlen = 32
-        self.clf = AdaBoostClassifier(n_estimators=5)
+        self.clf = AdaBoostClassifier(n_estimators=20)
         self.data = []
         self.queue = deque()
         self.temp = deque()
@@ -76,7 +76,14 @@ class Trees(IClassifier):
             gesture = classifier.trees.ProcessData.makeGesture(list(self.queue))
             gestures.append(gesture)
             processedData = self.__preProcess(gestures)
-            print "PREDICT", self.clf.predict(processedData[0])
+            self.temp.append(processedData)
+            if(len(self.temp) == self.maxlen):
+                recognizedGestures = []
+                for item in list(self.temp):
+                    recognizedGestures.extend(self.clf.predict(item))
+                print "mean prediction", numpy.argmax(numpy.bincount(recognizedGestures))
+                self.temp.clear()
+            #print "PREDICT", self.clf.predict(processedData[0])
             self.queue.popleft()
         self.queue.append(data)
         
