@@ -122,8 +122,52 @@ Diese Unterscheidungsmerkmale können sehr gut durch einen Entscheidungsbaum abg
 Dazu kann die Verschiebungsrichtung als Maß dienen, um die Eingabemenge zu unterteilen und 
 somit eine Klassifizierung zu erreichen.
 
+\subsubsection{Charakteristiken der Gesten} \label{charakteristiken}
+Durch die Vorverarbeitung der Daten entstehen für die einzelnen Gesten Charakteristiken, anhand dessen sie unterschieden werden können. 
+
+%\paragraph*{Right-to-left}
+
+%\paragraph*{Top-to-bottom}
+
+\paragraph*{Two-hands-contrary}
+Die Geste \glqq Two-hands-contrary\grqq , dargestellt in Abbildung~\ref{fig:contrary}, zeigt üblicherweise je zwei gleichzeitige, also übereinanderliegende, Frequenzverschiebungen. Dies ist dadurch zu erklären, dass zur selben Zeit eine Bewegung auf das Aufnahmegerät zu und von diesem weg durchgeführt wird.
+
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/contrary.png}
+\caption{Two-hands-contrary}
+\label{fig:contrary}
+\end{figure}
+
+
+\paragraph*{Single-Push}
+Der \glqq Single-Push\grqq ist eine einfache Bewegung auf das Aufnahmegerät zu, sodass eine Frequenzverschiebung auf der rechten Seite des Frequenzspektrums festgestellt werden kann. Dies ist in Abbildung~\ref{fig:single_push} dargestellt.
+
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/single_push.png}
+\caption{Single-Push}
+\label{fig:single_push}
+\end{figure}
+
+\paragraph*{Double-Push}
+Die Geste \glqq Double-Push\grqq ist in Abbildung~\ref{fig:double_push} abgebildet. Sie zeichnet sich aus durch in der Regel je zwei Verschiebungen auf der rechten und auf der linken Seite. Die Rechts-Links-Verschiebungen treten dabei kurz hintereinander auf und können sich auch teilweise überlappen. 
+
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/double_push.png}
+\caption{Double-Push}
+\label{fig:double_push}
+\end{figure}
+
+\paragraph*{Nothing}
+Um später Gesten live zu erkennen, muss auch definiert sein, wann keine Geste auftritt. In diesem Fall ist in Abbildung~\ref{fig:nothing} keine Frequenzverschiebung zu erkennen. Der Graph zeigt keinen Ausschlag.
+
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/nothing.png}
+\caption{Keine Geste}
+\label{fig:nothing}
+\end{figure}
+
 \subsection{Merkmalsextraktion}
-Durch die Filterung und Glättung können nun die einzelnen Frequenzverschiebungen eindeutig identifiziert werden. So lassen sich durch die Anordnung, Ausprägung und Aufkommen der Frequenzverschiebungen die unterschiedlichen Charakteristiken der einzelnen Gesten erkennen. Das Ziel der Merkmalsextraktion ist es, aus den 32 Datenpunkten weitere eindeutige Merkmale herauszuarbeiten um schließlich einen Merkmalsvektor mit überschaubarer Anzahl an Merkmalen zu generieren. Um dies zu realisieren, wurden folgende Eigenschaften der einzelnen Gesten untersucht:
+Durch die Filterung und Glättung können nun die einzelnen Frequenzverschiebungen eindeutig identifiziert werden. Zudem ist in Abschnitt~\ref{charakteristiken} beschrieben, welche typische Gestalten der Graph für die verschiedenen Gesten annimmt. So lassen sich durch die Anordnung, Ausprägung und Aufkommen der Frequenzverschiebungen die unterschiedlichen Charakteristiken der einzelnen Gesten erkennen. Das Ziel der Merkmalsextraktion ist es, aus den 32 Datenpunkten weitere eindeutige Merkmale herauszuarbeiten um schließlich einen Merkmalsvektor mit überschaubarer Anzahl an Merkmalen zu generieren. Um dies zu realisieren, wurden folgende Eigenschaften der einzelnen Gesten untersucht:
 
 \begin{itemize} 
 \item Anzahl der Frequenzverschiebungen
@@ -131,21 +175,19 @@ Durch die Filterung und Glättung können nun die einzelnen Frequenzverschiebung
 \item Amplitudenunterschiede zwischen den Frequenzverschiebungen
 \end{itemize}
 
-
-
 \subsubsection*{Anzahl der Frequenzverschiebungen}
 Die Anzahl der Frequenzverschiebung sagt bereits einiges über die Geste aus, wobei auch wichtig ist, ob die Frequenzverschiebungen im höheren oder niedrigeren Frequenzbereich liegen. Wie bereits in Abschnitt~\ref{} erwähnt, erzeugt eine Bewegung auf das Aufnahmegerät zu eine Frequenzverschiebung auf der rechten Seite, also eine Ausdehnung in Richtung der höheren Frequenzen. Durch das Bewegen vom Aufnahmegerät weg, erfolgt eine Frequenzverschiebung zur linken Seite, bzw. in Richtung der niedrigeren Frequenzen. 
 
 Ein einfacher \glqq Single-Push\grqq\ erzeugt deshalb im optimalen Fall eine Frequenzverschiebung auf der rechten Seite des Peaks. Wird die Hand wieder zurückgezogen, tritt auch eine Frequenzverschiebung auf der linken Seite auf. Klar davon abgegrenzt werden kann beispielsweise die Geste \glqq Double-Push\grqq. Diese erzeugt mit dem Zurückziehen der Hand nach dem zweiten Push zwei Frequenzverschiebungen auf der linken und zwei auf der rechten Seite.
 
 \subsubsection*{Zeitliche Abfolge der Frequenzverschiebungen}
-Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq Single-Push\glqq erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die Geste \glqq Two-hands-contrary\glqq , dargestellt in Abbildung~\ref{fig:contrary}, dagegen beschreibt die gleichzeitige gegensätzliche Bewegungen in Richtung des Aufnahmegeräts und von diesem weg. Somit tritt in diesem Fall gleichzeitig je eine Verschiebung nach rechts und links auf. 
+Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq Single-Push\grqq erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die Geste \glqq Two-hands-contrary\grqq , dargestellt in Abbildung~\ref{fig:contrary}, dagegen beschreibt die gleichzeitige gegensätzliche Bewegungen in Richtung des Aufnahmegeräts und von diesem weg. Somit tritt in diesem Fall gleichzeitig je eine Verschiebung nach rechts und links auf. 
 
 
 \subsubsection*{Amplitudenunterschiede zwischen den Frequenzverschiebungen}
-Die Gesten \glqq Single-Push\glqq und \glqq Right-to-Left-One-Hand\glqq unterscheiden sich in der zeitlichen Abfolge der Verschiebungen nicht. In beiden Fällen tritt erst eine Verschiebung rechts, dann links auf. Jedoch unterscheiden sich die Verschiebungen an sich. Bei \glqq Single-Push\glqq unterscheiden sich die beiden Verschiebungen im optimalen Fall nur dadurch, dass die eine Verschiebung links und die andere rechts vom Peak auftritt. Bei \glqq Right-to-Left-One-Hand\glqq dagegen ist die Amplitude der zweiten Verschiebung, links vom Peak, schwächer als die andere.
+Die Gesten \glqq Single-Push\grqq und \glqq Right-to-Left-One-Hand\grqq unterscheiden sich in der zeitlichen Abfolge der Verschiebungen nicht. In beiden Fällen tritt erst eine Verschiebung rechts, dann links auf. Jedoch unterscheiden sich die Verschiebungen an sich. Bei \glqq Single-Push\grqq unterscheiden sich die beiden Verschiebungen im optimalen Fall nur dadurch, dass die eine Verschiebung links und die andere rechts vom Peak auftritt. Bei \glqq Right-to-Left-One-Hand\grqq dagegen ist die Amplitude der zweiten Verschiebung, links vom Peak, schwächer als die andere.
 
-\subsection{Klassifikator}
+\subsection{Anpassung des Klassifikators}
 
 \subsection{Implementierung}
 

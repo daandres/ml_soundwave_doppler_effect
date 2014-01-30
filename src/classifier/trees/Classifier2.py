@@ -68,6 +68,7 @@ for i in range(1,100):
     
     clf = GradientBoostingClassifier(n_estimators=i, max_depth=2, random_state=0).fit(X_train, y_train)
     result = clf.predict(X_test) == y_test
+    #result = clf.predict(data[150:]) == targets[150:]
     rightPredicts = len([x for x in result if x == True])
     print i, 100. / len(result) * rightPredicts
 print clf.predict([0, 0, 0, -1, 0, 0, 0])
