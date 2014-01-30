@@ -1,10 +1,46 @@
-\section{Support Vector Machine}
+1. \section{Support Vector Machine}
 \textit{Manuel Dudda, Benjamin Weißer}
 
-Die Support Vector Machine (SVM) ist eine Methode des überwachten Lernens zum Erstellen eines linearen Klassifikators. 
-Ein Klassifikator bestimmt für einen gegebenes Datum eine zugehörige Zuteilung (Klasse). Mit einem Satz von Daten (Merkmalsvektoren) inklusive dessen Klassenzugehörigkeiten wird eine mathematische Trenngerade generiert, die die Daten räumlich in zwei Klassen trennt. 
-Im Gegensatz zu MLPs wird die Anpassung der Trennung nicht empirisch durch Trainingsmethoden, sondern durch die Datengrundlage mathematisch optimal ermittelt. 
-Dabei wird der Abstand zu den nächstliegenden Daten, den sogennanten Stützvektoren der Klassenräume, maximiert.
+Neulich bei meinem Lieblingsitaliener haben wir wieder mal hervorragend gegessen.
+Nach dem Essen bestelle ich ab und an gerne einen Espresso, nicht nur wegen dem anregendem Effekt,
+sondern allein die Servierung ist ein Spektakel.
+Der Kellner offeriert dem Gast mit einer Dosis Zucker in das koffeinhaltige Getränk zu versüßen.
+Und dies tut er auf eine ganz spezielle Weise: Aus ca. 2 Meter Entfernung peilt er stehend mit dem Zuckerstreuer die Mini-Tasse Espresso an und vollführt eine meisterhafte Punktlandung.
+Der Zucker fliegt in einer leicht absenkenden Flugbahn aus dem Streuer des Kellners Hand in meine Espressotasse auf dem Tisch.
+Trotz der großen Distanz ist kaum ein Zuckerkristall neben der Tasse zu sehen.
+Es ist für das gesamte Lokal immer wieder eine Freude diesem Kunststück zuzuschauen.
+Doch wie macht der Kellner das?
+Packt er nach Feierabend Papier und Taschenrechner aus und berechnet anhand der physikalischen Gegebenheiten die notwendige Kraft und Winkel um diese Flugbahn zu nehmen?
+Höchstwahrscheinlich nicht. Vielmehr befähigt ihn jahrelanges Training dies zu tun.
+
+Um Training geht es auch bei der Anwendung der Support Vector Machine (SVM) und des Multi-Layer-Perzeptrons (MLP).
+Sie sind Methoden des Überwachten Lernens zum Erstellen eines linearen Klassifikators.
+Ein Klassifikator bestimmt für einen gegebenes Datum eine zugehörige Zuteilung (Klasse).
+Verglichen mit dem Espressobeispiel könnte eine Klasse das "{}Treffen"{} und das "Nicht-Treffen" der Tasse sein.
+Das zugehörige Datum, welches bestimmt, das getroffen oder nicht getroffen wird sind Kraft, Winkel und Distanz.
+Man erkennt, ein Datum ist mehrdimensional und kann somit mathematisch als (Merkmals-)Vektor betrachtet werden.
+
+Es gibt Modelle, die mithilfe von mehreren Merkmalsvektoren trainiert werden und
+anschließend eine hohe zuverlässige Vorhersage über einen weiteren Vektor bestimmen können.
+Eines dieses der Modelle ist das Multi-Layer-Perceptron (MLP).
+Das MLP entstammt der Neurologie und kann mit dem erlernten Kellner am Ehesten verglichen werden.
+Es ist ein vereinfachtes künstliches Netz von Neuronen (neuronales Netz), zuerst vorgestellt von Franz Rosenblatt im Jahr 1958.
+Ein Neuron ist ein formales Modell einer Nervenzelle und besteht aus mehrerern Eingaben und einem Ausgang.
+Der Eingang entspricht dabei genau dem Fromat des Merkmalvektors und die Ausgabe der zugehörigen Klasse.
+Ist die Klasse bekannt, so kann das MLP trainiert werden.
+Innerhalb des Netzes werden Informationen in einer bestimmten Gewichtung weitergeleitet.
+Diese Gewichtung ist der zentrale Punkt des MLP, den es zu trainieren gilt.
+Anhand der Differenz von erwarteter und erreichter Ausgabe, dem sogennaten Fehler, werden die Gewichte angepasst.
+Dieses Training orientiert sich nach einer bestimmten Updateregel, die die Gewichte anhand des Fehlers in die richtige Richtung anpasst.
+Je öfter diese Regel angewendet wird, desto mehr nähern sich die Ergebnisse der Erwartung an.
+Durch häufige Anwendung entsteht mit dem MLP ein trainierter Klassifikator.
+
+Im Gegensatz zu MLPs wird bei einer SVM die Anpassung der Trennung nicht empirisch durch Trainingsmethoden,
+sondern durch die Datengrundlage mathematisch optimal ermittelt.
+Mit einem Satz von Daten (Merkmalsvektoren) inklusive dessen Klassenzugehörigkeiten wird eine mathematische Trenngerade generiert,
+die in einem Koordinatensystem betrachtet, die Daten räumlich in zwei Klassen trennt.
+Dabei wird der Abstand von der Trenngeraden zu den nächstliegendsten Daten, den sogennanten Stützvektoren der Klassenräume, maximiert.
+Es entseht eine Trennlinie, die die Klassen trennt.
 
 
 \begin{wrapfigure}{r}{0.48\textwidth}
@@ -17,16 +53,21 @@ Dabei wird der Abstand zu den nächstliegenden Daten, den sogennanten Stützvekt
 	\vspace{-15pt} 
 \end{wrapfigure}
 
-Durch dieses Optimierungskriterium ist die Trennlinie eindeutig. 
-Ist die Entscheidungsgrenze gefunden, lassen sich neue Daten durch die Zuordnung eines Merkmalsvektors in den jeweiligen Klassenraum schnell klassifizieren, d. h. ob der Punkt oberhalb oder unterhalb der Trennlinie ist.
+Durch das Optimierungskriterium entseht eine eindeutige Trennlinie.
+Ist die Entscheidungsgrenze gefunden, lassen sich neue Daten durch die Zuordnung in einen Klassenraum schnell klassifizieren,
+d. h. ob der Punkt im Koordinatensystem "oberhalb" oder "unterhalb" der Trennlinie ist.
 
-Die Support Vector Machine ist somit ein binärer Klassifikator, der die Daten lediglich in 2 Klassen unterteilen kann. 
-Für eine Klassifikation von mehreren Klassen wurden Strategien entwickelt, die das Prinzip der SVM erweitern. 
-Eine dieser Strategien ist die Kombination von mehreren SVMs von “Einer gegen den Rest-Klassifikatoren”. 
-Als Klassifikation wird die SVM mit dem höchsten Ergebnis gewählt (“winner takes it all”).
+Prinzipiell ist die Support Vector Machine somit ein binärer Klassifikator,
+der die Daten lediglich in 2 Klassen unterteilen kann.
+Für eine Klassifikation von mehreren Klassen wurden Strategien entwickelt, die das Prinzip der SVM erweitern.
+Eine dieser Strategien ist die Kombination von mehreren SVMs von  "Einer gegen den Rest-Klassifikatoren"
+Als Klassifikation wird die SVM mit dem höchsten Ergebnis gewählt ("Winner takes it all").
 
-Ein Problem entsteht, wenn die gegebenen Merkmalsdaten nicht durch eine Trennline (Hyperbene) trennbar sind, sondern die Trennung der Daten nur durch eine Kurve o. Ä. beschrieben werden kann. 
-Für die Lösung nichtlinear separierbarer Probleme bedient sich die SVM des Kernel-Tricks aus der RKHS-Theorie (Reproducing Kernel Hilbert Spaces). 
+Ein Problem entsteht, wenn die gegebenen Merkmalsdaten nicht durch eine Trennline (Hyperbene) trennbar sind,
+sondern die Trennung der Daten nur durch eine Kurve o. Ä. beschrieben werden kann.
+
+Für die Lösung solcher nichtlinear separierbarer Probleme bedient sich die SVM des sogenannten Kernel-Tricks.
+
 \begin{wrapfigure}{l}{0.45\textwidth}
 	\vspace{-30pt}
 	\begin{center}
