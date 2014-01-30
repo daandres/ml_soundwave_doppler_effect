@@ -8,6 +8,8 @@ from classifier.trees.GestureModel import GestureModel
 from collections import deque
 import numpy
 from sklearn import cross_validation
+import matplotlib.pyplot as plt
+
 
 
 class Trees(IClassifier):
@@ -15,7 +17,7 @@ class Trees(IClassifier):
     def __init__(self, recorder=None, n_est=5):
         self.name = "trees"
         self.maxlen = 32
-        self.clf = AdaBoostClassifier(n_estimators=20)
+        self.clf = AdaBoostClassifier(n_estimators=18)
         self.data = []
         self.queue = deque()
         self.temp = deque()
@@ -63,8 +65,10 @@ class Trees(IClassifier):
                 targets.append(class_)
         
         #X_train, X_test, y_train, y_test = cross_validation.train_test_split(data2, targets, test_size=0.4, random_state=0)
-        X_train, X_test, y_train, y_test = cross_validation.train_test_split(data, targets, test_size=0.1, random_state=0)
+        X_train, X_test, y_train, y_test = cross_validation.train_test_split(data, targets, test_size=0.4, random_state=0)
         self.clf.fit(X_train, y_train)
+        #self.clf.fit(data, targets)
+        print "XXXXXXXXXX", self.clf.predict([0,0,0,-1,0,0,0])
         print "trained"
 
 
@@ -80,8 +84,13 @@ class Trees(IClassifier):
             if(len(self.temp) == self.maxlen):
                 recognizedGestures = []
                 for item in list(self.temp):
-                    recognizedGestures.extend(self.clf.predict(item))
+                    prediction = self.clf.predict(item)
+                    recognizedGestures.extend(prediction)
+                    print "item", item
+                    print "prediction", prediction
+                    print recognizedGestures
                 print "mean prediction", numpy.argmax(numpy.bincount(recognizedGestures))
+                
                 self.temp.clear()
             #print "PREDICT", self.clf.predict(processedData[0])
             self.queue.popleft()

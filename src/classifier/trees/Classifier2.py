@@ -60,15 +60,15 @@ for class_ in [2,3,4,6]:
 X_train, X_test, y_train, y_test = cross_validation.train_test_split(data, targets, test_size=0.4, random_state=0)
 
 for i in range(1,100):
-    #clf = AdaBoostClassifier(n_estimators=i)
-    #clf.fit(X_train, y_train)
+    clf = AdaBoostClassifier(n_estimators=i)
+    clf.fit(X_train, y_train)
     #result = clf.predict(X_test) == y_test
     #rightPredicts = len([x for x in result if x == True])
     #print i, 100. / len(result) * rightPredicts
     
-    clf = GradientBoostingClassifier(n_estimators=i, max_depth=2, random_state=0).fit(X_train, y_train)
+    #clf = GradientBoostingClassifier(n_estimators=i, max_depth=2, random_state=0).fit(X_train, y_train)
     result = clf.predict(X_test) == y_test
     #result = clf.predict(data[150:]) == targets[150:]
     rightPredicts = len([x for x in result if x == True])
     print i, 100. / len(result) * rightPredicts
-print clf.predict([0, 0, 0, -1, 0, 0, 0])
+    print clf.predict([0, 0, 0, -1, 0, 0, 0])
