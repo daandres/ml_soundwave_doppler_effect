@@ -28,7 +28,7 @@ Es gibt verschiedene Kriterien, nach denen die Reihenfolge der Merkmale so gewä
 \[E = - \sum \limits_{i=1}^n p_i \cdot \log (p_i)\] berechnen, wobei $n$ die Menge aller Merkmale ist und $p_i$ die relative Häufigkeit des Merkmals $i$.
 Um nun das Vorkommen der Merkmale in Relation zu den möglichen Klassifikationen zu setzen, wird die bedingte Wahrscheinlichkeit für die Merkmale bezogen auf die möglichen Klassen ermittelt, woraus sich der mittlere Informationsgewinn ermitteln lässt. Dieser ist definiert als 
 \[H = - \sum \limits_{i=1}^n p_i \cdot (\sum \limits_{j=1}^m \frac{x_{ij}}{x_i} \cdot \log (\frac{x_{ij}}{x_i}))\] wobei $n$ die Anzahl der Merkmale ist und $m$ die Anzahl der Klassen. Der Wert $x_i$ beschreibt die Anzahl der Vorkommen der Merkmalsausprägung $i$ und $x_{ij}$ die Anzahl der Vorkommen dieser Merkmalsausprägung unter der Bedingung, dass das Objekt zur Klasse $j$ gehört.
-Beim Erstellen eines Entscheidungsbaumes ist dann das Merkmal für die Teilung am interessantesten, was den Größten mittleren Informationsgewinn H hat, also die innere Summe minimal ist.
+Beim Erstellen eines Entscheidungsbaumes ist dann das Merkmal für die Teilung am interessantesten, was den größten mittleren Informationsgewinn H hat, also die innere Summe minimal ist.
 Da sich durch das Merkmal \glqq Farbe\grqq\ aus dem vorigen Beispiel direkt alle möglichen Klassen unterscheiden lassen, hat dieses Merkmal z.B. einen höheren Informationsgewinn als das Merkmal \glqq Form\grqq\ und bietet sich daher als erstes Entscheidungskriterium an.
 
 Ein anderes Maß zur Auswahl von geeigneten Entscheidungsmerkmalen ist die sogenannte \glqq Reinheit\grqq\ von Merkmalen. Die Reinheit eines Merkmales ergibt sich daraus, wie viele verschiedene Klassen die jeweiligen Merkmalsausprägungen beinhalten. Das Attribut \glqq Farbe\grqq\ aus dem vorigen Beispiel führt zu drei Blattknoten, bei denen durch jeden Knoten genau eine Klasse repräsentiert wird (nämlich jeweils die Klassen Tomate, Gurke und Möhre) während beim Merkmal \glqq Form\grqq\ sowohl Möhren als auch Gurken als mögliches Ergebnis in Frage kommen, falls das zu klassifizierende Objekt die Merkmalsausprägung \glqq länglich\grqq\ hat. Die Reinheit ist dementsprechend ein Maß dafür, wie groß das Risiko einer falschen Klassifikation ist. Ziel ist es anhand von Merkmalen Teilungen im Entscheidungsbaum vorzunehmen, die ein möglichst geringes Risiko für falsche Klassifikationen haben.
@@ -69,29 +69,32 @@ Eine Geste setzt sich zunächst aus 32 Einzelaufnahmen (Samples) zusammen, welch
 Da wie einführend beschrieben die Amplituden der Frequenzanteile einer Geste durch ein lokales Minimum vom Referenzton 
 getrennt sein können, werden die Amplituden der einzelnen Samples zunächst mit einem Gauß-Filter geglättet, 
 so dass größere Schwankungen aus dem Signal entfernt werden. 
-Die folgende Abbildung zeigt die Amplituden des Frequenzspektrums von einem Sample 
+Abbildung~\ref{fig:gauss} zeigt die Amplituden des Frequenzspektrums von einem Sample 
 vor dem Glätten mit einem Gauß-Filter (rot) und danach (blau).
 
-\begin{center}
-  \includegraphics[height=60mm]{trees/gesture4-gauss1.jpg}
-\end{center}
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/gesture4-gauss1.jpg}
+\caption{Rot: Ungefilterte Amplitudenwerte, Blau: Durch Gauß-Filter geglättete Amplitudenwerte}
+\label{fig:gauss}
+\end{figure}
 
 Für die effiziente und robuste Klassifizierung der Gesten bietet es sich weiterhin an, 
 die Komplexität der generierten Eingabedaten zu reduzieren. Dazu wird in jedem Sample einer Geste 
 auf der linken und rechten Seite des Referenztons die Anzahl der Amplituden des geglätteten Signals ermittelt, 
 deren Wert größer als 10\% ist. Der daraus resultierende Graph zeigt dann für eine Geste die zeitliche 
-Änderung der Amplitudenanteile um den Referenzton auf der linken und rechten Seite an. Dieser Graph ist in der folgenden 
-Abbildung dargestellt, wobei die Anzahl der zum Referenzton gehörenden Amplituden aller Frequenzen unterhalb des
+Änderung der Amplitudenanteile um den Referenzton auf der linken und rechten Seite an. Dieser Graph ist in Abbildung~\ref{fig:sum_of_bins} dargestellt, wobei die Anzahl der zum Referenzton gehörenden Amplituden aller Frequenzen unterhalb des
 Referenztons in rot dargestellt sind, die Frequenzanteile oberhalb des Referenztons in blau:
 
-\begin{center}
-  \includegraphics[height=60mm]{trees/gesture4-peaksize.jpg}
-\end{center}
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/gesture4-peaksize.jpg}
+\caption{Frequenzanteile links (rot) und rechts (blau) von dem Referenzton}
+\label{fig:sum_of_bins}
+\end{figure}
 
-Bei der in der Grafik dargestellten Geste handelt es sich um einen \glqq Double-Tap\grqq\ , also eine Geste, bei der die Hand zwei mal 
+Bei der in der Grafik dargestellten Geste handelt es sich um einen \glqq Double-Push\grqq , also eine Geste, bei der die Hand zwei mal 
 hintereinander schnell auf den Monitor bzw. das Mikrofon zubewegt wird. Diese Geste äußert sich in jeweils zwei aufeinander folgenden 
 Verschiebungen der Frequenzen nach rechts (auf den Monitor zu bewegen) und links (vom Monitor weg bewegen). 
-Diese Charakteristik lässt sich in der Grafik erkennen, da die Anzahl der zum Referenzton gehörenden Frequenzanteile zunächst nach rechts (erster Peak blau) und dann nach links (zweiter Peak rot) ansteigt. Aufgrund des \glqq Double-Tap\grqq\  erfolgt diese 
+Diese Charakteristik lässt sich in der Grafik erkennen, da die Anzahl der zum Referenzton gehörenden Frequenzanteile zunächst nach rechts (erster Peak blau) und dann nach links (zweiter Peak rot) ansteigt. Aufgrund des \glqq Double-Push\grqq\  erfolgt diese 
 Verschiebung zwei mal hintereinander, so dass insgesamt vier Ausschläge (zwei nach rechts und zwei nach links) zu erkennen sind. 
 Somit kann in einem Schritt die Anzahl der Daten pro zu klassifizierender Geste von 32*64=2048 Amplitudenwerten 
 auf 2*32=64 reduziert werden, wobei diese Werte keinen Rückschluss auf die genauen Frequenzanteile zulassen sondern 
@@ -100,21 +103,25 @@ ein Maß dafür sind, wie sich die Frequenzanteile ober- und unterhalb des Refer
 Die daraus entstehenden Daten können in einem weiteren Schritt geglättet werden, da nur Amplitudenschwankungen ab einer gewissen 
 Größe auf eine ausgeführte Bewegung schließen lassen. Dazu werden alle Schwankungen auf der rechten oder linken Seite entfernt, 
 die unterhalb eines definierten Grenzwertes liegen. 
-Die folgende Abbildung zeigt ein gefilterten Graph, in dem alle Ausschläge entfernt werden, die kleiner als 2 sind:
+Abbildung~\ref{fig:filtered} zeigt ein gefilterten Graph, in dem alle Ausschläge entfernt werden, die kleiner als 2 sind:
 
-\begin{center}
-  \includegraphics[height=60mm]{trees/gesture4-peaksize-smoothed.jpg}
-\end{center}
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/gesture4-peaksize-smoothed.jpg}
+\caption{Geglättete Frequenzanteile}
+\label{fig:filtered}
+\end{figure}
 
 In einen dritten Schritt werden die Amplitudenwechsel dahingehend weiter geglättet, indem zunächst die Anzahl der am häufigsten 
 auftretenden Frequenzanteile auf der linken und rechten Seite vom Referenzton ermittelt werden. Anschließend werden alle Werte,
 die in einem vorher definierten Bereich ober- oder unterhalb dieses Wertes liegen auf den am häufigsten vorkommenden Wert gesetzt.
-Dieser Schritt ist in der folgenden Abbildung zu sehen, wobei alle Werte die +1 oder -1 um den häufigsten Wert verteilt sind 
+Dieser Schritt ist in Abbildung~\ref{fig:frequent_value} zu sehen, wobei alle Werte die +1 oder -1 um den häufigsten Wert verteilt sind 
 auf den häufigsten Wert gesetzt wurden:
 
-\begin{center}
-  \includegraphics[height=60mm]{trees/gesture4-peaksize-smoothed2.jpg}
-\end{center}
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/gesture4-peaksize-smoothed2.jpg}
+\caption{Geglätteter Graph anhand des am häufigsten vorkommenden Wertes}
+\label{fig:frequent_value}
+\end{figure}
 
 
 Stark vereinfacht unterscheiden sich die Gesten dahingehend, ob und auf welcher Seite 
@@ -122,12 +129,13 @@ eine Veränderung der Anzahl aller zum Referenzton gehörenden Frequenzanteile s
 Weiterhin muss unterschieden werden, in welche Richtung sich diese Verschiebung ausbreitet. 
 Sie kann beispielsweise von der rechten zur linken oder von der linken zur rechten Seite 
 um den Referenzton wandern, sowie gleichzeitig auf beiden Seiten stattfinden. 
-Ein Beispiel dafür zeigt die folgende Abbildung:
+Ein Beispiel dafür zeigt Abbildung~\ref{fig:left_right_same_time}
 
-\begin{center} 
-\label{fig:contrary}
-  \includegraphics[height=60mm]{trees/gesture2-peaksize-smoothed2.jpg}
-\end{center}
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/gesture2-peaksize-smoothed2.jpg}
+\caption{Gleichzeitige Verschiebung zur rechten und linken Seite des Referenztons}
+\label{fig:left_right_same_time}
+\end{figure}
 
 Bei der in der Grafik abgebildeten Geste handelt es sich um ein mit der rechten und linken Hand entgegengesetztes zu und 
 wegbewegen von dem Monitor, so dass gleichzeitig auf der rechten und linken Seite eine Vergrößerung der 
