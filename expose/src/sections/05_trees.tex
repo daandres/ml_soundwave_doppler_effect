@@ -39,14 +39,11 @@ Bezugnehmend auf das einführende Beispiel zur Klassifikation verschiedener Gem�
 Eine einfache Methode, um mehrere Klassifikatoren miteinander zu kombinieren, wird als Bagging bezeichnet, eine Abkürzung für Bootstrap Aggregating. Der Name steht im Zusammenhang mit der Ziehung von Stichproben aus einer Menge in der Statistik, wo ein \glqq bootstrap sample\grqq\ eine Bezeichnung dafür ist, ein Testdatensatz \glqq mit Zurücklegen\grqq\ aus der Testmenge zu ziehen. Somit können manche Testdaten mehrfach, andere gar nicht in der Trainingsmenge vorhanden sein. Durch die daraus resultierenden unterschiedlichen Trainingsdaten entstehen Klassifikatoren, die verschiedene Klassen unterschiedlich gut unterscheiden können. Die Klassifikation erfolgt dann aufgrund einer Mehrheitsentscheidung.
 
 \subsection*{Boosting}
-Das bekannteste Boosting-Verfahren heißt AdaBoost und existiert seit Mitte der 90er Jahre. Die grundsätzliche Idee bei dem Verfahren ist es jeden Datensatz um ein zusätzliches Gewicht als Maß dafür zu erweitern, wie fehlerbehaftet dieser Datensatz in den vergangenen Trainingsrunden klassifiziert worden ist. AdaBoost ist ein iterativer Algorithmus, der für jede neue Iteration die Fehlklassifikationen der vergangenen Trainings mit einbezieht und somit die \glqq schwierig\grqq\ zu klassifizierenden Daten stärker berücksichtigt.  Ziel ist es mit jedem weiteren Training einen neuen Klassifikator zu erhalten, der ein niedrigeren Fehler hat als in den vorangegangenen Iterationen.
+Boosting-Verfahren beruhen darauf, dass unterschiedliche Klassifikatoren zusammenarbeiten und dabei im Gegensatz zur Bagging-Methode, mit den gleichen Trainings- und Testdaten arbeiten. Nacheinander klassifizieren die Klassifikatoren die Daten, die der Vorgänger falsch klassifiziert hat, um im besten Fall am Ende alle Testdaten richtig zuzuordnen.
 
-\subsection*{Random Forests}
-
-Die Besonderheit von Ensemble Learning ist, dass mit Hilfe von vielen schwachen Klassifikatoren 
-gute Klassifikationsergebnisse erzielt werden können. 
-Die Entscheidungen, die die verschiedenen Klassifikatoren treffen, sind dabei verschieden, 
-was jedoch auch die Stärke dieser Methode ist, denn sie ergänzen sich gegenseitig
+Das bekannteste Boosting-Verfahren heißt AdaBoost und existiert seit Mitte der 90er Jahre. Die grundsätzliche Idee bei dem Verfahren ist es, jeden Datensatz um ein zusätzliches Gewicht als Maß dafür zu erweitern, wie fehlerbehaftet dieser Datensatz in den vergangenen Trainingsrunden klassifiziert worden ist. AdaBoost ist ein iterativer Algorithmus, der für jede neue Iteration die Fehlklassifikationen des vorherigen Trainings mit einbezieht. Das Gewicht berechnet sich anhand des jeweiligen Fehlers $\epsilon$, der sich aus der Summe der Gewichte der falsch klassifizierten Datenpunkte zusammensetzt. Das Gewicht dieser Datenpunkte wird mit
+$ \alpha = \frac{\epsilon}{(1-\epsilon)} $ 
+multipliziert, sodass die \glqq schwierig\grqq\ zu klassifizierenden Daten stärker berücksichtigt werden. Ziel ist es mit jedem weiteren Training einen neuen Klassifikator zu erhalten, der ein niedrigeren Fehler hat als in den vorangegangenen Iterationen. Die Trainingsphase kann dadurch beendet werden, dass eine feste Anzahl an auszuführenden Iterationen vorgegeben wird oder wenn das Optimum, dass alle Datenpunkte richtig klassifiziert wurden, erreicht wurde.
 
 \subsection{Datenaufbereitung}
 
@@ -141,7 +138,7 @@ Durch die Vorverarbeitung der Daten entstehen für die einzelnen Gesten Charakte
 %\paragraph*{Top-to-bottom}
 
 \paragraph*{Two-hands-contrary}
-Die Geste \glqq Two-hands-contrary\grqq , dargestellt in Abbildung~\ref{fig:contrary}, zeigt üblicherweise je zwei gleichzeitige, also übereinanderliegende, Frequenzverschiebungen. Dies ist dadurch zu erklären, dass zur selben Zeit eine Bewegung auf das Aufnahmegerät zu und von diesem weg durchgeführt wird.
+Die Geste \glqq Two-hands-contrary\grqq\ , dargestellt in Abbildung~\ref{fig:contrary}, zeigt üblicherweise je zwei gleichzeitige, also übereinanderliegende, Frequenzverschiebungen. Dies ist dadurch zu erklären, dass zur selben Zeit eine Bewegung auf das Aufnahmegerät zu und von diesem weg durchgeführt wird.
 
 \begin{figure}[htbp] \centering
 \includegraphics[height=60mm]{trees/contrary.png}
@@ -151,7 +148,7 @@ Die Geste \glqq Two-hands-contrary\grqq , dargestellt in Abbildung~\ref{fig:cont
 
 
 \paragraph*{Single-Push}
-Der \glqq Single-Push\grqq ist eine einfache Bewegung auf das Aufnahmegerät zu, sodass eine Frequenzverschiebung auf der rechten Seite des Frequenzspektrums festgestellt werden kann. Dies ist in Abbildung~\ref{fig:single_push} dargestellt.
+Der \glqq Single-Push\grqq\ ist eine einfache Bewegung auf das Aufnahmegerät zu, sodass eine Frequenzverschiebung auf der rechten Seite des Frequenzspektrums festgestellt werden kann. Dies ist in Abbildung~\ref{fig:single_push} dargestellt.
 
 \begin{figure}[htbp] \centering
 \includegraphics[height=60mm]{trees/single_push.png}
@@ -160,7 +157,7 @@ Der \glqq Single-Push\grqq ist eine einfache Bewegung auf das Aufnahmegerät zu,
 \end{figure}
 
 \paragraph*{Double-Push}
-Die Geste \glqq Double-Push\grqq ist in Abbildung~\ref{fig:double_push} abgebildet. Sie zeichnet sich aus durch in der Regel je zwei Verschiebungen auf der rechten und auf der linken Seite. Die Rechts-Links-Verschiebungen treten dabei kurz hintereinander auf und können sich auch teilweise überlappen. 
+Die Geste \glqq Double-Push\grqq\ ist in Abbildung~\ref{fig:double_push} abgebildet. Sie zeichnet sich aus durch in der Regel je zwei Verschiebungen auf der rechten und auf der linken Seite. Die Rechts-Links-Verschiebungen treten dabei kurz hintereinander auf und können sich auch teilweise überlappen. 
 
 \begin{figure}[htbp] \centering
 \includegraphics[height=60mm]{trees/double_push.png}
@@ -192,11 +189,11 @@ Die Anzahl der Frequenzverschiebung sagt bereits einiges über die Geste aus, wo
 Ein einfacher \glqq Single-Push\grqq\ erzeugt deshalb im optimalen Fall eine Frequenzverschiebung auf der rechten Seite des Peaks. Wird die Hand wieder zurückgezogen, tritt auch eine Frequenzverschiebung auf der linken Seite auf. Klar davon abgegrenzt werden kann beispielsweise die Geste \glqq Double-Push\grqq. Diese erzeugt mit dem Zurückziehen der Hand nach dem zweiten Push zwei Frequenzverschiebungen auf der linken und zwei auf der rechten Seite.
 
 \subsubsection*{Zeitliche Abfolge der Frequenzverschiebungen}
-Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq Single-Push\grqq erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die Geste \glqq Two-hands-contrary\grqq , dargestellt in Abbildung~\ref{fig:contrary}, dagegen beschreibt die gleichzeitige gegensätzliche Bewegungen in Richtung des Aufnahmegeräts und von diesem weg. Somit tritt in diesem Fall gleichzeitig je eine Verschiebung nach rechts und links auf. 
+Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq Single-Push\grqq\ erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die Geste \glqq Two-hands-contrary\grqq , dargestellt in Abbildung~\ref{fig:contrary}, dagegen beschreibt die gleichzeitige gegensätzliche Bewegungen in Richtung des Aufnahmegeräts und von diesem weg. Somit tritt in diesem Fall gleichzeitig je eine Verschiebung nach rechts und links auf. 
 
 
 \subsubsection*{Amplitudenunterschiede zwischen den Frequenzverschiebungen}
-Die Gesten \glqq Single-Push\grqq und \glqq Right-to-Left-One-Hand\grqq unterscheiden sich in der zeitlichen Abfolge der Verschiebungen nicht. In beiden Fällen tritt erst eine Verschiebung rechts, dann links auf. Jedoch unterscheiden sich die Verschiebungen an sich. Bei \glqq Single-Push\grqq unterscheiden sich die beiden Verschiebungen im optimalen Fall nur dadurch, dass die eine Verschiebung links und die andere rechts vom Peak auftritt. Bei \glqq Right-to-Left-One-Hand\grqq dagegen ist die Amplitude der zweiten Verschiebung, links vom Peak, schwächer als die andere.
+Die Gesten \glqq Single-Push\grqq\ und \glqq Right-to-Left-One-Hand\grqq\ unterscheiden sich in der zeitlichen Abfolge der Verschiebungen nicht. In beiden Fällen tritt erst eine Verschiebung rechts, dann links auf. Jedoch unterscheiden sich die Verschiebungen an sich. Bei \glqq Single-Push\grqq\ unterscheiden sich die beiden Verschiebungen im optimalen Fall nur dadurch, dass die eine Verschiebung links und die andere rechts vom Peak auftritt. Bei \glqq Right-to-Left-One-Hand\grqq\ dagegen ist die Amplitude der zweiten Verschiebung, links vom Peak, schwächer als die andere.
 
 \subsection{Anpassung des Klassifikators}
 
