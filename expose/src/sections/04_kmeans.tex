@@ -3,13 +3,15 @@
 
 %Hintergrund (Motivation/Geschichtliches) %OK
 Der Begriff k-Means bezeichnet einen Clustering-Algorithmus von Stuart P. Lloyd \cite{Lloyd}, der 1957 entwickelt und erst 1982 in einer Fachzeitschrift veröffentlicht wurde. Unter Clustering versteht man hierbei die Gruppierung von Daten mit ähnlichen Eigenschaften in gleiche Klassen. Die Berechnung der optimalen Lösung eines solchen Klassifikationsproblems ist NP-schwer \cite{kMeansNPhard}. Aus diesem Grund sind Heuristiken wie k-Means hilfreich, um dennoch in angemessener Zeit eine akzeptable Lösung zu finden.
-Solche Verfahren gehören zur Obergruppe des unüberwachten Lernens, bei denen die Trainingsphase durchlaufen wird, ohne dass Informationen über die zu den jeweiligen Daten passenden Klassen vorliegen.
+Solche Verfahren gehören zur Obergruppe des unüberwachten Lernens, bei denen die Trainingsphase durchlaufen wird, ohne dass 
+bekannt ist, welche Daten zu welcher Klasse gehören.
+%Informationen über die zu den jeweiligen Daten passenden Klassen vorliegen.
 
 
 
 \subsection{Funktionsweise des Klassifikators (Allgemein)} \label{subsec:kMeansFunktionsweise}
-K-Means segmentiert eine Datenmenge in \emph{k} verschiedene Cluster, indem \emph{k}Cluster-Schwerpunkte berechnet werden und ein zu klassifizierendes Objekt immer dem nächstgelegenen Cluster-Schwerpunkt zugeordnet wird. Dazu ist es jedoch notwendig, dass die Daten numerisch vorhanden sind. Textuelle Daten kann k-Means beispielsweise nicht verarbeiten.
-Der Algorithmus arbeitet schnell und effizient, findet jedoch im besten Fall nur ein lokales Optimum. Unter bestimmten Bedingungen konvergiert der k-Means Algorithmus jedoch nicht einmal zum lokalen Optimum \cite{kMeansMinimum}. Aus diesem Grund ist es hilfreich, die Lernphase mehrere Male zu wiederholen und anschließend den Klassifikator mit der geringsten Fehlerquote zu benutzen.  
+K-Means segmentiert eine Datenmenge in \emph{k} verschiedene Cluster, indem \emph{k} Cluster-Zentren berechnet werden und ein zu klassifizierendes Objekt immer dem nächstgelegenen Cluster-Zentrum zugeordnet wird. Dazu ist es jedoch notwendig, dass die Daten numerisch vorhanden sind. Textuelle Daten kann k-Means nicht verarbeiten.
+Der Algorithmus arbeitet schnell und effizient, findet jedoch im besten Fall nur ein lokales Optimum. Unter bestimmten Bedingungen konvergiert der k-Means Algorithmus jedoch nicht einmal zum lokalen Optimum \cite{kMeansMinimum}. Aus diesem Grund ist es hilfreich, die Lernphase mehrere Male zu wiederholen und anschließend den Klassifikator mit der geringsten Fehlerquote zu verwenden.  
 
 Der Algorithmus läuft folgendermaßen ab \cite{Marsland}:
 \begin{itemize}
@@ -18,7 +20,7 @@ Der Algorithmus läuft folgendermaßen ab \cite{Marsland}:
 % In Abschnitt  wird darauf eingegangen, wie ein solches \emph{k} gewählt werden kann.
 Anschließend werden \emph{k} zufällige Positionen im Eingaberaum bestimmt und jeweils als Cluster-Zentren festgelegt.
 \item \emph{Training:} Für jeden Datenpunkt wird der Abstand zu allen Cluster-Zentren berechnet und anschließend der Datenpunkt dem Zentrum mit dem geringsten Abstand zugeordnet. 
-Danach wird jedes Cluster-Zentrum in den Mittelpunkt aller ihm zugeordneten Punkte verschoben.
+Danach wird jedes Cluster-Zentrum in den Schwerpunkt aller ihm zugeordneten Punkte verschoben.
 %werden die Cluster-Zentren zur Mitte aller zugeordneten Punkte verschoben.
 %so verschoben, dass die Summe der Abstände aller zugeordneten Punkte minimal ist. 
 Der gesamte Lernvorgang wiederholt sich solange, bis sich die Position der Cluster-Zentren nicht mehr verändert. Eine ausführlichere Beschreibung des Trainingsvorgangs befindet sich in Abschnitt~\ref{subsubsec:kMeansTraining}
@@ -28,7 +30,7 @@ Der gesamte Lernvorgang wiederholt sich solange, bis sich die Position der Clust
 K-Means benötigt in der Regel beim Lernen mehr Zeit als bei der Benutzung, da im ersten Fall die Cluster-Zentren unter Umständen oft verschoben werden müssen und nach jeder Verschiebung erneut die Abstände zu allen dem Zentrum zugeordneten Punkten berechnet werden müssen. Bei der Benutzung hingegen genügt es, nur die Abstände des zu klassifizierenden Punkts zu allen Cluster-Zentren zu berechnen, um das passende Cluster zu bestimmen. Der Algorithmus arbeitet jedoch
 % im Vergleich zu anderen Klassifikatoren (TODO Beispiel??) in beiden Phasen schnell,
 in beiden Phasen verhältnismäßig schnell, da immer nur 
-der -- rechnerisch nicht aufwändige -- euklidische Abstand ermittelt wird.
+der -- rechnerisch wenig aufwändige -- euklidische Abstand ermittelt wird.
 Weiterhin ist festzuhalten, dass k-Means anfällig für Ausreißer ist, d.h. einzelne falsche Daten wie beispielsweise Messfehler können ein Cluster-Zentrum unter Umständen stark verschieben.
 % einfache Berechnungen des euklidischen Abstands im Eingaberaum erfolgen.
 
@@ -38,8 +40,8 @@ Es existieren weiterhin einige Variationen des Basis-Algorithmus, mit dem dieser
 
 \subsection{Anwendung auf Projekt}
 %oder andere Bewegungen beim Bedienen des Rechners 
-Selbstverständlich wird versucht, die Fehlerquote bei der Gestenerkennung zu minimieren. Dabei ist es jedoch besonders wichtig, dass das Grundrauschen möglichst nicht fälschlicherweise als Geste erkannt wird. In einem solchen Fall würde es zu einer ungewollten Steuerung ohne Bewegung des Benutzers kommen, da die Aktion der irrtümlich erkannten Geste ausgeführt wird. Ebenso sollten andere Bewegungen beim Bedienen des Rechners wie etwa das Tippen auf der Tastatur eine Bewegung der Maus möglichst nicht als Geste erkannt werden.
-Weniger schlimm ist es hingegen, wenn umgekehrt eine Geste als Grundrauschen klassifiziert wird. In diesem Fall wird der Anwender die Geste wiederholen, bis diese erkannt und die zugeordnete Aktion ausgeführt wird.
+Selbstverständlich wird versucht, die Fehlerquote bei der Gestenerkennung zu minimieren. Dabei ist es jedoch besonders wichtig, dass das Grundrauschen nicht fälschlicherweise als Geste erkannt wird. In einem solchen Fall würde es zu einer ungewollten Steuerung ohne Bewegung des Benutzers kommen, da die Aktion der irrtümlich erkannten Geste ausgeführt wird. Ebenso sollten andere Bewegungen beim Bedienen des Rechners wie etwa das Tippen auf der Tastatur oder eine Bewegung der Maus möglichst nicht als Geste erkannt werden.
+Weniger bedeutend ist es hingegen, wenn umgekehrt eine Geste als Grundrauschen klassifiziert wird. In diesem Fall wird der Anwender die Geste wiederholen, bis diese erkannt und die zugeordnete Aktion ausgeführt wird.
 
 Zur Erkennung des Grundrauschens gibt es zwei Möglichkeiten: Entweder können eine oder mehrere weitere Klassen eingeführt werden, die für das Grundrauschen stehen. Oder der maximale Abstand von Geste und Cluster-Zentrum wird auf einen Maximalwert begrenzt, sodass
 eine Aufnahme als Grundrauschen klassifiziert wird, wenn der Abstand zu allen Cluster-Zentren den Maximalwert überschreitet.
@@ -53,7 +55,7 @@ In ersten Tests zeigte sich, dass eine Erkennung des Grundrauschens mit einer zu
 %2 Cluster für Hintergrundrauschen, eins für leise und eins für laute Umgebung
 %Ziel: Besser eine Geste fälschlicherweise als Grundrauschen einstufen und nicht erkennen, als das Grundrauschen oder andere Bewegungen beim Bedienen des Rechners als Geste einstufen. Im ersten Fall wird der Anwender die Geste einfach erneut ausführen (und sie wird dann – hoffentlich – auch erkannt), im zweiten Fall ist es nervig, da die mit der erkannten Geste verknüpfte Aktion ausgeführt wird. 
 
-Die Rohdaten einer Aufnahme bestehen aus 32 Frames, die jeweils 64 Lautstärkewerte beinhalten. Jeder Lautstärkewert entspricht dabei der Intensität des Tonsignals in dem jeweiligen Frequenzbereich, welche mithilfe der schnellen Fourier-Transformation (\emph{FFT}) \cite{fftMathebuch} berechnet wurde. Jede einzelne Aufnahme besteht daher aus $32 \cdot 64 = 2048$ Dimensionen.  Da hochdimensionale Eingabedaten bei Clustering-Verfahren oft schlechte Ergebnisse liefern \cite{kMeansHighDimensions}, ist es notwendig, bei der Datenaufbereitung die Dimension der Eingabedaten zu reduzieren.  Erste Tests mit nicht aufbereiteten 2048-dimensionalen Eingabedaten lieferten eine korrekte Erkennungsrate von etwa 25 bis 30 Prozent bei 6 Klassen (5 Gesten sowie Grundrauschen ohne Geste). Lediglich das Grundrauschen kann einigermaßen zuverlässig erkannt werden, eine korrekte Unterscheidung der einzelnen Gesten ist jedoch war jedoch nicht möglich. Dies zeigt deutlich die Notwendigkeit einer Datenaufbereitung.
+Die Rohdaten einer Aufnahme bestehen aus 32 Frames, die jeweils 64 Lautstärkewerte beinhalten. Jeder Lautstärkewert entspricht dabei der Intensität des Tonsignals in dem jeweiligen Frequenzbereich, welche mithilfe der schnellen Fourier-Transformation (\emph{FFT}) \cite{fftMathebuch} berechnet wurde. Jede einzelne Aufnahme besteht daher aus $32 \cdot 64 = 2048$ Dimensionen.  Da hochdimensionale Eingabedaten bei Clustering-Verfahren oft schlechte Ergebnisse liefern \cite{kMeansHighDimensions}, ist es notwendig, bei der Datenaufbereitung die Dimension der Eingabedaten zu reduzieren.  Erste Tests mit nicht aufbereiteten 2048-dimensionalen Eingabedaten lieferten eine korrekte Erkennungsrate von etwa 25 bis 30 Prozent bei 6 Klassen (5 Gesten sowie Grundrauschen ohne Geste). Lediglich das Grundrauschen kann so einigermaßen zuverlässig erkannt werden, eine korrekte Unterscheidung der einzelnen Gesten ist jedoch nicht möglich. Dies zeigt deutlich die Notwendigkeit einer Datenaufbereitung.
 
 %TODO
 TODO: Datenaufbereitung beschreiben 
@@ -70,25 +72,25 @@ Der Klassifikator wurde nur geringfügig angepasst. Die Startpunkte der Cluster-
 Ansonsten wurden keine Veränderungen am Algorithmus vorgenommen.
 %keine, kMeans++ für Optimierung von Geschwindigkeit und Erkennungsrate, hohe Anzahl für maxIter, da Algorithmus schnell ist, precomputeDistances=True, da Kl
 
-Für die Qualität der Klassifikation ist weiterhin jedoch die Wahl eines geeigneten Werts für \emph{k} von Bedeutung. Dabei muss \emph{k} mindestens um eins größer sein als die Anzahl der Gesten (da mindestens eine Klasse für das Grundrauschen benötigt wird)
+Für die Qualität der Klassifikation ist weiterhin jedoch die Wahl eines geeigneten Werts für \emph{k} von Bedeutung. Dabei muss \emph{k} mindestens um eins größer sein als die Anzahl der Gesten (da mindestens eine Klasse für das Grundrauschen benötigt wird),
 %gleich der Anzahl der Gesten +  sein
-, damit der Algorithmus in der Lage ist, die einzelnen Gesten voneinander zu unterscheiden.  
+damit der Algorithmus in der Lage ist, die einzelnen Aufnahmen voneinander zu unterscheiden.  
 
 %Die größte "Anpassung" ist die Wahl eines geeigneten Werts für k. Ausprobieren, ob k=Anzahl Gesten (+Grundrauschen) bereits gute Ergebnisse liefert, ansonsten größere Werte für k wählen und manchen Gesten mehr als ein Cluster-Zentrum zuordnen.
 % Es existieren zwar Faustregeln/Algorithmen, wie k gewählt werden kann, aber die sind hier weniger geeignet
 %ansonsten keine Anpassungen vorgenommen.( da es sich um einen einfachen Algorithmus handelt, der wenig Möglichkeiten zur  Anpassung bietet
 %Die Anzahl der zu bestimmenden Cluster -- d.h. der Wert von \emph{k} -- muss bereits vor der Trainingsphase festgelegt werden. Dabei muss \emph{k} mindestens gleich der Anzahl der Gesten sein, damit der Algorithmus in der Lage ist, die einzelnen Gesten voneinander zu unterscheiden. 
 
-Grundsätzlich gibt es zur Ermittlung der Anzahl an Clustern in einem Datensatz viele verschiedene Ansätze, etwa die Faustregel $k \approx \sqrt{n/2}$ \cite{WikipediaKMeansKValue}. In Fall der hier beschriebenen Gestenerkennung kann der Wert für k jedoch auch bereits grob abgeschätzt werden. Die untere Grenze ist wie bereits erwähnt gleich der Anzahl der Gesten + 1. Als obere Grenze lässt sich grob der fünffache Wert der unteren Grenze abschätzen, da davon auszugehen ist, dass es nur wenige Variationsmöglichkeiten beim Ausführen einer Geste gibt.
+Grundsätzlich gibt es zur Ermittlung der Anzahl an Clustern in einem Datensatz viele verschiedene Ansätze, etwa die Faustregel $k \approx \sqrt{n/2}$ \cite{WikipediaKMeansKValue}. In Fall der hier beschriebenen Gestenerkennung kann der Wert für \emph{k} jedoch bereits grob abgeschätzt werden. Die untere Grenze ist wie bereits erwähnt gleich der Anzahl der Gesten + 1. Als obere Grenze lässt sich grob der fünffache Wert der unteren Grenze abschätzen, da davon auszugehen ist, dass es nur wenige Variationsmöglichkeiten beim Ausführen einer Geste gibt.
 %Denkbar sind hierbei beispielsweise zwei solcher zusätzlicher Gruppen, eine für das Hintergrundrauschen ohne Bewegung und eine weitere für alle Bewegungen, die keiner gespeicherten Geste entsprechen.
 
 %TODO Zuordnung Cluster-Zentren zu Gesten ausformulieren
 Nach der Lernphase ist es noch notwendig, dass den einzelnen Cluster-Zentren je eine Geste zugeordnet wird. Dazu wird ermittelt, welche Geste wie oft in die einzelnen Cluster-Zentren eingeordnet wird. Falls \emph{k} gleich dem oben genannten Minimalwert ist, ist es ausreichend, dem ersten Cluster die am häufigsten dort vorkommende Geste zuzuordnen, dem zweiten Cluster die häufigste vorkommende Geste der übrigen Gesten etc. 
 %TODO ggf siehe Listing XX
-Ist \emph{k} größer als der Minimalwert, werden zuerst den \emph{k} Clustern, bei denen die Anzahl der am häufigsten zugeordneten Geste maximal ist, gemäß dem vorherigen Algorithmus durchlaufen und jedem dieser Cluster eine andere Geste zugeordnet. Anschließend wird jedem übrigen Cluster die Geste zugeordnet, die am häufigsten in das Cluster eingeordnet wird.
+Ist \emph{k} größer als der Minimalwert, werden zuerst die \emph{k} Cluster, bei denen die Anzahl der am häufigsten zugeordneten Geste maximal ist, gemäß dem vorherigen Algorithmus durchlaufen und jedem dieser Cluster eine andere Geste zugeordnet. Anschließend wird jedem übrigen Cluster die Geste zugeordnet, die am häufigsten in das Cluster eingeordnet wurde.
 
-Dieser Algorithmus arbeitet zuverlässig, wenn die Gesten -- bis auf wenige Ausreißer -- eindeutig einem Cluster zugeordnet werden können. Ist dies nicht der Fall, kann keine akzeptable Gestenerkennung realisiert werden und die Vorverarbeitung und/oder der Wert von k sollte angepasst werden.
- Falls \emph{k} gleich dem 
+Dieser Algorithmus arbeitet zuverlässig, wenn die Gesten -- bis auf wenige Ausnahmen -- eindeutig einem Cluster zugeordnet werden können. Ist dies nicht der Fall, kann keine akzeptable Gestenerkennung realisiert werden und die Vorverarbeitung und/oder der Wert von \emph{k} sollte angepasst werden.
+% Falls \emph{k} gleich dem 
 
 %Wahl von optimalen Wert für k, in diesem Anwendungsfall (natürlich) mindestens Anzahl der Gesten, aber auch größere Werte möglich. Im einfachen Fall \emph{k} = AnzahlGesten wird jedem Clustercenter eine Geste zugeordnet. Im Idealfall wenig Überlappung der Confusion Matrix, sodass bei jeder Geste ein eindeutiges Cluster am häufigsten vorkommt und umgekehrt in jedes Cluster eine einzige Geste am häufigsten fällt (TODO: Später bei\emph{ k } $>$ AnzahlGesten muss das nicht für jedes Cluster gelten, aber mindestens für\emph{ k }Stück). Wenn\emph{ k }größer ist als die Anzahl der Gesten, sind mindestens einer Geste mehrere Cluster-Schwerpunkte zugeordnet. $->$ Algorithmus, um Clustercenter den einzelnen Gesten zuzuordnen. 
 
@@ -104,7 +106,7 @@ Dieser Algorithmus arbeitet zuverlässig, wenn die Gesten -- bis auf wenige Ausr
 
 
 \subsubsection{Implementierung} \label{subsubsec:kMeansImpl}%OK
-Die Implementierung erfolgte in der Programmiersprache Python unter Verwendung der Bibliothek skikit-learn (Version 0.14) \cite{sklearn}. Diese Bibliothek verwendet den beschriebenen k-Means Algorithmus von Lloyd. Außerdem bietet sie noch die Möglichkeit, dass die Startpunkte der Cluster-Center nicht wie im ursprünglichen Algorithmus vorgesehen zufällig gewählt werden, sondern stattdessen mit dem k-Means++ Algorithmus \cite{kMeans++} bestimmt werden. Zusätzlich können noch weitere 
+Die Implementierung erfolgt in der Programmiersprache Python unter Verwendung der Bibliothek skikit-learn (Version 0.14) \cite{sklearn}. Diese Bibliothek verwendet den beschriebenen k-Means Algorithmus von Lloyd. Außerdem bietet sie noch die Möglichkeit, dass die Startpunkte der Cluster-Zentren nicht wie im ursprünglichen Algorithmus vorgesehen zufällig gewählt werden, sondern stattdessen mit dem k-Means++ Algorithmus \cite{kMeans++} bestimmt werden. Zusätzlich können noch weitere 
 %kleine 
 Einstellungen vorgenommen werden, um den Klassifikator für den jeweiligen Anwendungsfall  zu optimieren. Dazu gehört beispielsweise eine Beschränkung der Iterationen beim Lernen auf einen bestimmten Maximalwert.
 Die Komplexität im ungünstigsten Fall liegt bei $O(n^{(k+2)/p})$ \cite{sklearn.kmeans, kMeansHowSlow}, wobei $n$ der Anzahl der Trainingsdaten und $p$ der Anzahl der Dimensionen entspricht.
@@ -126,8 +128,8 @@ Die Komplexität im ungünstigsten Fall liegt bei $O(n^{(k+2)/p})$ \cite{sklearn
 %\end{figure}
 
 
-Zu Beginn der Lernphase des Algorithmus wird ein Wert für \emph{k}festgelegt und anschließend werden \emph{k}zufällige Positionen im Eingaberaum als Cluster-Schwerpunkte gesetzt (siehe Abbildung~\ref{fig:lernenEinfach}, oben links). Danach wird jeder Schwerpunkt so verschoben, dass der Abstand zwischen ihm und den zugeordneten Objekten einen minimalen Wert annimmt. Diese Verschiebungen werden solange wiederholt, bis sich die Cluster-Schwerpunkte nicht mehr bewegen. 
-Um nun zu einem Objekt den passenden Cluster zuzuordnen, wird der Abstand zwischen Objekt und den Cluster-Schwerpunkten berechnet. Das Objekt wird dann dem Cluster-Schwerpunkt mit dem geringsten Abstand zugeordnet. In Abbildung~\ref{fig:lernenEinfach} unten rechts ist  eine solche Bestimmung anhand der zuvor berechneten Cluster-Schwerpunkte dargestellt. Die Zugehörigkeit beliebiger Objekte zu den jeweiligen Cluster-Centern ist farbig markiert, sodass ein zu klassifizierendes Objekt das der Farbe entsprechende Cluster zugeordnet wird.
+Zu Beginn der Lernphase des Algorithmus wird ein Wert für \emph{k} festgelegt und anschließend werden \emph{k} zufällige Positionen im Eingaberaum als Cluster-Zentren gesetzt (siehe Abbildung~\ref{fig:lernenEinfach}, oben links). Danach wird jedes Zentrum in den Schwerpunkt der ihm zugeordneten Objekte verschoben, sodass der Abstand zwischen Cluster-Zentrum und zugeordneten Objekten minimal wird. Diese Verschiebungen werden solange wiederholt, bis sich die Cluster-Zentren nicht mehr bewegen. 
+Um nun zu einem Objekt den passenden Cluster-Zentrum zuzuordnen, wird der Abstand zwischen Objekt und den Cluster-Zentrum berechnet. Das Objekt wird nun dem Cluster-Zentrum mit dem geringsten Abstand zugeordnet. In Abbildung~\ref{fig:lernenEinfach} unten rechts ist  eine solche Bestimmung anhand der zuvor berechneten Cluster-Zentren dargestellt. Die Zugehörigkeit beliebiger Objekte zu den jeweiligen Cluster-Zentren ist farbig markiert, sodass ein zu klassifizierendes Objekt das der Farbe entsprechende Cluster zugeordnet wird.
 
 \subsubsection{Evaluation}%OK
 TODO: Confusion Matrix in lauter und leiser Umgebung für die verschiedenen Gesten. Welche Gesten werden sehr gut/gut/mittelmäßig oder gar nicht erkannt? Ist die Erkennungsrate praxistauglich?
