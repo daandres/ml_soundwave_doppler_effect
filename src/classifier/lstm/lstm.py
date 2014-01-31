@@ -129,7 +129,7 @@ class LSTM(IClassifier):
             validator = CrossValidator(trainer=self.trainer, dataset=self.trainer.ds, n_folds=5, valfunc=evaluation, verbose=True, max_epochs=1)
             print(validator.validate())
         else:
-            raise Exception("Cannot create trainer, no network type specified")
+            raise Exception("Cannot create trainer, no network type specified" + self.trainingType)
 
     def classify(self, data):
         preprocessedData = data / np.amax(data)
@@ -158,7 +158,10 @@ class LSTM(IClassifier):
             elif(key == 'layer'):
                 self.layer = value
             elif(key == 'peepholes'):
-                self.peepholes = bool(value)
+                if(value == 'True'):
+                    self.peepholes = True
+                else:
+                    self.peepholes = False
             elif(key == 'nClasses'):
                 self.nClasses = int(value)
             elif(key == 'datacut'):
@@ -169,6 +172,8 @@ class LSTM(IClassifier):
                 self.trainingType = value
             elif(key == 'epochs'):
                 self.trainedEpochs = int(value)
+            elif(key == 'arac'):
+                self.net.convertToFastNetwork()
 
 
     def save(self, filename="", overwrite=True):
