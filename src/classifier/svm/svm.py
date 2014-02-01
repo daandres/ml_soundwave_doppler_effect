@@ -23,9 +23,9 @@ warnings.simplefilter("error", RuntimeWarning)
 
 
 class SVM(IClassifier):
-    SLICE_LEFT = 12
-    SLICE_RIGHT = 12
-    NUM_SAMPLES_PER_FRAME = 32  #config.recordingFrames
+    SLICE_LEFT = 0
+    SLICE_RIGHT = 0
+    NUM_SAMPLES_PER_FRAME = 64  #config.recordingFrames
 
     def __init__(self, recorder=None, config=None, relative=""):
         self.classifier = self.load("classifier/svm/svm_trained.pkl")
@@ -52,25 +52,25 @@ class SVM(IClassifier):
     def loadData(self, filename=""):
 
 
-        def normalise(framesets, noise_frame, slice_left=SVM.SLICE_LEFT, slice_right=SVM.SLICE_RIGHT):
+        def normalise(framesets, noise_frame):
+            print framesets.shape
             ''' normalise each frame '''
-            samples_per_frame = 0
             for frameset_nr in range(len(framesets)):
                 for frame_nr in range(len(framesets[frameset_nr])):
                     current_frameset = framesets[frameset_nr][frame_nr]
-                    if samples_per_frame == 0:
-                        samples_per_frame = current_frameset.shape[0]
                     framesets[frameset_nr][frame_nr] = (current_frameset / np.amax(current_frameset)) - noise_frame
+            return framesets
 
-            return framesets[:, :, slice_left:(samples_per_frame - slice_right)]
+        def slice(framesets, slice_left=SVM.SLICE_LEFT, slice_right=SVM.SLICE_RIGHT):
+            return framesets#[:, :, slice_left:(SVM.NUM_SAMPLES_PER_FRAME - slice_right)]
 
         def load_gesture(txt_file):
             gesture_plain = np.loadtxt(txt_file, delimiter=",")  # all frames in one array
-            num_frames_per_frameset = gesture_plain.shape[0]
+            num_framesets = gesture_plain.shape[0]
             num_samples_total = gesture_plain.shape[1]
 
-            gesture_frameset_plain = gesture_plain.reshape(num_frames_per_frameset, SVM.NUM_SAMPLES_PER_FRAME,
-                                                           num_samples_total / SVM.NUM_SAMPLES_PER_FRAME)  # split the array to a frameset
+            gesture_frameset_plain = gesture_plain.reshape(num_framesets, num_samples_total / SVM.NUM_SAMPLES_PER_FRAME,
+                                                           SVM.NUM_SAMPLES_PER_FRAME)  # split the array to a frameset
             return gesture_frameset_plain
 
         subdirs = ["Benjamin"]
@@ -80,8 +80,7 @@ class SVM(IClassifier):
         ''' load and reshape textfile with 18.5khz no gesture frequency data '''
         noise_framesets_plain = load_gesture(noise_txt_file)
 
-        noise_framesets = normalise(noise_framesets_plain, 0, slice_left=0,
-                                    slice_right=0)  # max amplitude = 1, dont subtract noise and dont slice
+        noise_framesets = slice(normalise(noise_framesets_plain, 0))  # max amplitude = 1, dont subtract noise
 
         noise_avg_frameset = np.mean(noise_framesets, axis=1)  # reduce to 1 frame per frameset
 
@@ -101,28 +100,30 @@ class SVM(IClassifier):
                     gesture_framesets = normalise(gesture_framesets_plain, self.noise_frame)
 
                     num_framesets = gesture_framesets.shape[0]
-                    for frameset_nr in range(num_framesets):
+                    for frameset_nr in range(num_framesets):  # make one avg frame
                         current_frameset = gesture_framesets[frameset_nr]
-                        temp = []
+                        tmp_relevant_frameset = []
                         for frame_nr in range(len(current_frameset)):
                             frame = current_frameset[frame_nr] ** 2  # why square?!?
-                            cond = np.where(frame <= 0.025)
-                            frame[cond] = 0
+                            irrelevant_samples = np.where(frame <= 0.025)
+                            frame[irrelevant_samples] = 0
                             if np.amax(frame) > 0:
-                                temp.append(frame)
+                                tmp_relevant_frameset.append(frame)
 
                         #print ""
-                        allg = np.asarray(temp)
+                        relevant_frameset = np.asarray(tmp_relevant_frameset)
 
-                        muh = np.zeros(SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT - SVM.SLICE_RIGHT)
-                        for t in allg:
-                            muh += t
+                        gesture_frame = np.zeros(SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT - SVM.SLICE_RIGHT)
+                        for frame in relevant_frameset:
+                            gesture_frame += frame
+
+                        # normalise
                         try:
-                            kuh = muh / np.amax(muh)
+                            normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
                         except RuntimeWarning:
-                            kuh = np.zeros(SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT - SVM.SLICE_RIGHT)
+                            normalised_gesture_frame = np.zeros(SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT - SVM.SLICE_RIGHT)
 
-                        gestures.append(kuh[::2])
+                        gestures.append(normalised_gesture_frame[::2])
                         targets.append(gesture_nr)
 
         data = np.array(gestures)
@@ -130,7 +131,7 @@ class SVM(IClassifier):
 
         print data.shape, targets.shape
 
-        return data, targets, noise_frame
+        return data, targets, self.noise_frame
 
     def createArraySix(self, dim):
         array = np.zeros((dim,))
