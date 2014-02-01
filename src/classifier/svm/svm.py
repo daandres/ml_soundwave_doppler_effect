@@ -22,10 +22,14 @@ import warnings
 warnings.simplefilter("error", RuntimeWarning)
 
 
+''' Usage:
+> t
+> l classifier/svm/svm_trained.pkl
+> c '''
 class SVM(IClassifier):
     SLICE_LEFT = 12
     SLICE_RIGHT = 12
-    NUM_SAMPLES_PER_FRAME = 64  #config.recordingFrames
+    NUM_SAMPLES_PER_FRAME = 64  #config.leftBorder + config.rightBorder
 
     def __init__(self, recorder=None, config=None, relative=""):
         self.classifier = self.load("classifier/svm/svm_trained.pkl")
@@ -155,7 +159,9 @@ class SVM(IClassifier):
 
     def classify(self, data):
         normalizedData = data / np.amax(data)
-        diffAvgData = normalizedData[14:54] - self.avg
+        diffAvgData = normalizedData[SVM.SLICE_LEFT:(SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT)] - self.noise_frame[
+                                                                                                     SVM.SLICE_LEFT:(
+                                                                                                     SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT)]
 
         frame = diffAvgData ** 2
         cond = np.where(frame <= 0.025)
