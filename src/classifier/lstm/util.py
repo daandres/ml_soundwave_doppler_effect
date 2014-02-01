@@ -69,8 +69,6 @@ def parseNetworkFilename(filename):
             netValues['trainer'] = comp[1:]
         elif(comp[0] == "e"):
             netValues['epochs'] = comp[1:]
-        elif(comp[0] == "a"):
-            netValues['arac'] = comp[1:]
     return netValues
 
 
