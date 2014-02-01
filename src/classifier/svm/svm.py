@@ -23,8 +23,8 @@ warnings.simplefilter("error", RuntimeWarning)
 
 
 class SVM(IClassifier):
-    SLICE_LEFT = 0
-    SLICE_RIGHT = 0
+    SLICE_LEFT = 12
+    SLICE_RIGHT = 12
     NUM_SAMPLES_PER_FRAME = 64  #config.recordingFrames
 
     def __init__(self, recorder=None, config=None, relative=""):
@@ -53,7 +53,6 @@ class SVM(IClassifier):
 
 
         def normalise(framesets, noise_frame):
-            print framesets.shape
             ''' normalise each frame '''
             for frameset_nr in range(len(framesets)):
                 for frame_nr in range(len(framesets[frameset_nr])):
@@ -61,8 +60,8 @@ class SVM(IClassifier):
                     framesets[frameset_nr][frame_nr] = (current_frameset / np.amax(current_frameset)) - noise_frame
             return framesets
 
-        def slice(framesets, slice_left=SVM.SLICE_LEFT, slice_right=SVM.SLICE_RIGHT):
-            return framesets#[:, :, slice_left:(SVM.NUM_SAMPLES_PER_FRAME - slice_right)]
+        def slice_framesets(framesets, slice_left=SVM.SLICE_LEFT, slice_right=SVM.SLICE_RIGHT):
+            return framesets[:, :, slice_left:(SVM.NUM_SAMPLES_PER_FRAME - slice_right)]
 
         def load_gesture(txt_file):
             gesture_plain = np.loadtxt(txt_file, delimiter=",")  # all frames in one array
@@ -80,11 +79,11 @@ class SVM(IClassifier):
         ''' load and reshape textfile with 18.5khz no gesture frequency data '''
         noise_framesets_plain = load_gesture(noise_txt_file)
 
-        noise_framesets = slice(normalise(noise_framesets_plain, 0))  # max amplitude = 1, dont subtract noise
+        noise_framesets = normalise(noise_framesets_plain, 0)  # max amplitude = 1, dont subtract noise
 
         noise_avg_frameset = np.mean(noise_framesets, axis=1)  # reduce to 1 frame per frameset
 
-        self.noise_frame = np.mean(noise_avg_frameset, axis=0)  # reduce to 1 frame
+        self.noise_frame = np.mean(noise_avg_frameset, axis=0)  # reduce to 1 frame, dont sliced
 
         gestures = []
         targets = []
@@ -97,10 +96,12 @@ class SVM(IClassifier):
                     ''' load and reshape textfile with gesture data '''
                     gesture_framesets_plain = load_gesture(
                         path + subdir + "/gesture_" + str(gesture_nr) + "/" + txtfile)
-                    gesture_framesets = normalise(gesture_framesets_plain, self.noise_frame)
+                    gesture_framesets = slice_framesets(normalise(gesture_framesets_plain, self.noise_frame))
+                    print gesture_framesets.shape
 
                     num_framesets = gesture_framesets.shape[0]
-                    for frameset_nr in range(num_framesets):  # make one avg frame
+                    ''' create one gesture frame from relevant frames '''
+                    for frameset_nr in range(num_framesets):
                         current_frameset = gesture_framesets[frameset_nr]
                         tmp_relevant_frameset = []
                         for frame_nr in range(len(current_frameset)):
@@ -117,13 +118,14 @@ class SVM(IClassifier):
                         for frame in relevant_frameset:
                             gesture_frame += frame
 
-                        # normalise
+                        ''' normalise summed gesture frame '''
                         try:
                             normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
                         except RuntimeWarning:
-                            normalised_gesture_frame = np.zeros(SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT - SVM.SLICE_RIGHT)
+                            normalised_gesture_frame = np.zeros(
+                                SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT - SVM.SLICE_RIGHT)
 
-                        gestures.append(normalised_gesture_frame[::2])
+                        gestures.append(normalised_gesture_frame[::2]) #  only each second?!?
                         targets.append(gesture_nr)
 
         data = np.array(gestures)
