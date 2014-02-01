@@ -32,8 +32,8 @@ Ausgabewert $y$. Die Eingabewerte entsprechen der Aktivierung eines
 Vorgängerneurons und der Ausgabewert der Aktivierung des betrachteten Neurons.
 \textbf{TODO Picture McCulloch and Pitts Neuron} Die \autoref{} zeigt den Aufbau
 eines solchen Neurons. Die Eingaben weren dabei zuerst im \textit{Addierer}
-summiert, eine Schwellwert (bzw. allgemeiner eine Aktivierungsfunktion) bestimmt
-dann mit der Summe den Ausgabewert (die Aktivierung) des Neurons. De Weiteren
+summiert, eine Schwellwertfunktion (bzw. allgemeiner eine Aktivierungsfunktion)
+bestimmt dann mit der Summe den Ausgabewert (die Aktivierung) des Neurons. De Weiteren
 werden auch die Synapsen nachgebildet in dem jeder Eingabewert bei der
 Summierung individuell gewichtet wird. Die Gewichte entsprechen den
 unterschiedlich stark ausgeprägten Synapsen. Das klassische Modell erlaubt nur
@@ -71,37 +71,74 @@ Datenaufbereitung, die Anpassung des Klassifikators, die Implementierung in
 Python, das Training und eine Evaluierung besprochen. 
 
 
- 
 \subsection{Funktionsweise des Klassifikators (Allgemein)}
-
  
-\begin{figure}[htfp]
-	\begin{center}
-	\includegraphics[width=0.3\textwidth]{lstm/lstm_block}
-	\caption{Schema eines \acs{LSTM} Blocks}
-	Quelle: \cite{WIKI2013}
-	\label{fig:lstm_block}
-	\end{center}
-\end{figure}
-
-
 \subsection{Anwednug auf Projekt}
-
-\cite{schaul2010} 
-
-\begin{lstlisting}[caption={Aufbau eines LSTM Netzes},label={lst:lstm_example}]{lst:lstm_example} 
-net = buildNetwork(INPUTS, HIDDEN, OUTPUTS, hiddenclass=LSTMLayer,
-outclass=SigmoidLayer, recurrent=True, bias=True) 
-ds = DATASET 
-trainer = BackpropTrainer(net, ds)
-for _ in range(1000):
-    trainer.train()
-\end{lstlisting}
-
-
 
 \subsubsection{Datenaufbereitung}
 \label{sec:lstm_data}
+
+In Kapitel \ref{Kapitel 1 TODO} wird beschrieben wie die Daten aufgenommen und
+im Allgemeinen verarbeitet werden, bevor sie den Klassifikatoren zur
+Verfügung gestellt werden. Diese erhalten jeweils einzelne Frames mit je 64
+Daten. Die Daten entprechen dem Frequenzspektrum im Umfeld der
+Referenzfrequenz von $18500\text{kHz}$. Eine Geste wurde mit 32 Frames
+aufgenommen. Für \ac{LSTM}-Netzwerke sind diese rohen Daten eher ungeignet. Die
+Netzwerke können zwar im Allgemeinen mit unverarbeiteteten Daten umgehen,
+tortzdem ist ein Vorverarbeitung sinnvoll, da sich dadurch die Verallgemeinerung
+des Problems verbessert, die Trainingszeit verkürzt und die benötigten Beispiele
+verringern \textbf{Cite}. Aus diesen Gründen wird eine Vorverarbeitung der Daten
+vorgenommen. 
+
+Die Beispieldaten sind auf verschiedenen Hardwareplattformen mit
+unterschiedlichen Lautstärke und Aufnahmelautstärke Konfigurationen erzeugt
+worden. Der Wertebereich dieser Daten ist somit groß und unterschiedlich bei
+gleichen Gesten. Das Problem dass durch diese Varianz der Wertemenge entseht
+ist, dass \acp{LSTM} Netze (bzw. jede Form von neuronalen Netzen) die Gewichte
+entsprechend groß kalibirieren muss, um Unterschiede ausgleichen zu können und
+eine verallgemeinertes Ergebnis zu liefern. Da jedoch das (später beschriebene)
+Trainigsverfahren iterativ die Gewichte in kleinen Schritten anpasst, führen
+große Gewichte zu einem hohen Trainingsaufwand. Um dies zu vermeiden werden die
+Daten normalisiert. Konkret wird dabei der Maximalwert eines Frames als
+Normierungsfaktor gewählt. Dadurch liegen alle Werte im Intervall $[0,1]$.
+Eine Transformation \textbf{richtiges Wort?} des SPektrums hin zu den
+Veränderungen der Spektrums im Vergleich zum Ruhespektrum wird ebenfalls
+vorgenommen. Dies wird aufgrund durchgeführter Tests vorgenommen, die eine
+bessere Klassifizierungen für die transformierten Daten bescheinigen
+(\textbf{Tests einbinden}). Der allgemeine Ruhezustand wird aus den Beispielen
+des Ruhzustands (Geste 6 und 7) durch das normalisierte Mittel gewonnen. Der
+Ruhezustand wird dann von jedem Beispiel abgezogen. Es werden hierbei lediglich
+die Beispiele verwendet, denkbar ist jedoch auch die Aufnahme des Ruhezustands
+auf dem Zielgerät, um spezifischere Daten zu erhalten. 
+
+Bei der Betrachtung der Daten fällt auf, dass der Doppler-Effekt in einem
+kleinen Intervall um die Referenzfrequenz auftritt und die Daten außerhalb
+dieses Intervalls keine große Bedeutung spielen. Aus diesem Grund ist eine
+Verkleinerung der Frame Größe in Betracht zu ziehen. Da jedoch eine manuelle
+Betrachtung aller Daten nicht möglich ist, lässt sich diese Beobachtung nicht
+verifzieren. Daher werden mehrere \ac{LSTM}-Netze mit unterschiedlichen
+Inputframelängen trainiert und die Ergebnisse verglichen. \textbf{TODO Tabelle
+mit Ergebnissen} Erstaunlicherweise ist die aufgestellte Vermutung falsch und die
+Netzwerke ohne zugeschnittenen Trainingsdaten klassifizieren besser. 
+
+Eine weitere Beobachtung die gemacht werden kann ist, dass benachbarte
+Datenpunkte sich nicht wesentlich unterscheiden. Dies kann genutzt werden um die
+Eingabedimension zu verringern, indem z.B. jeweils zwei benachbarte Datenpunkte
+miteinander addiert werden. Dies kann auch mit dem verkleinern der Frames
+kombiniert werden. Um den Einfluss auf das Klassifierzungsverhalten von
+\ac{LSTM}-Netzen zu zeigen sind auch hier Tests durchgeführt worden.
+\textbf{TODO Tabelle mit Ergebnissen} Das Ergebnis zeigt, dass die Netze ohne
+die Summe benachbarter Werte besser klassifizieren als mit der Summe. 
+
+Weitere Methoden der Datenvorverarbeitung wurden ebenfalls untersucht, jedoch
+hat dies die Ergebnisse ebenfalls negativ beeinflusst, weshalb sie nicht näher
+betrachtet wurden. Darunter fällt u.a. die statische Eliminierung von Rauschen.
+Diese Methode setzt jeden Wert der unter einem bestimmten Schwellwert ist zu 0,
+da dies kein signifikanter Beitrag zur Geste ist sondern ein Rauschen. Das
+Ergebnis dieser Untersuchung ist jedoch unbefridigend, sodass die Idee nicht
+genutzt wird. \textbf{TODO Messwerte?}
+
+
 
 \subsubsection{Anpassung des Klassifikators}
 \subsubsection{Implementierung}
@@ -113,4 +150,4 @@ for _ in range(1000):
 \subsection{Fazit}
 
 
-\nocite{GERS2001,WIKI2013,Schmidhuber2013,LSTM1,Nerbonne1}
+\nocite{schaul2010,GERS2001,WIKI2013,Schmidhuber2013,LSTM1,Nerbonne1,Hochreiter:1997}
