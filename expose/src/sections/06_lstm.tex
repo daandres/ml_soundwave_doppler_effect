@@ -1,71 +1,93 @@
 \section{\acl{LSTM}}
 \textit{Daniel Andrés López, Frank Reichwein}
 
-\ac{LSTM} ist ein \ac{RNN}, welches die Eigenschaft hat Zustände über einen
-bestimmten Zeitraum zu behalten und danach wieder zu vergessen. \acp{LSTM} sind
-somit eine spezielle Form von \acp{MLP}. Ein \ac{LSTM} definiert rekurrente
-Verbindungen (Verbindungen von Neuronen zu vorhergehenden bzw. denselben
-Neuronen) in der Art und Weise, dass die Eingabe Daten bzw.
-die Ausgabe Daten gespeichert über mehrere Aufrufe des Netzwerkes hinaus
-gespeichert werden. Diese gespeicherten Daten werden bei bestimmten
-Eingangsdaten ausgegeben, bei anderen \textit{vergessen} bzw. überschrieben oder
-nicht verwendet. 
-  
-\acp{RNN} und vielmehr noch \acp{LSTM} sind Modelle für das menschliche Gehirn.
-Im Gehirn sind viele Neuronen untereinander, also mit sich selbst, nachfolgenden
-und vorhergehenden Neuronen vernetzt, sogenannten Feedback Verbindungen. Jedes
-Neueron ist dabei ein speziell aufgebaut um Informationen zu speichern.
-\acp{RNN} haben keine bzw. einfache Erinnerungsneuronen und sind aus diesem
-Grund nicht für länger Erinnerungen geeignet. Bei \acp{LSTM} hingegen sind
-komplexe Erinnerungsneuronen (\ac{LSTM}-Neuronen) miteinander verknüpft. Jedes
-einzelne Neuron kann Informationen über einen längeren Zeitraum, d.h. auch bei
-häufiger Nutzung des Netzes, Daten speichern. Dadurch dass \acp{LSTM} Daten auch
-nach dem Training speichern können, also verschiedene Zustände haben,
-unterscheiden sie sich von vielen anderen Machine Learning Verfahren, wie z.B.
-\ac{HMM} oder \acp{SVM}. Sie sind besonders für komplexe Aufgaben mit unscharfen
-Beobachtungen geeignet und werden bevorzugt in Handschrift- und Spracherkennung,
-Proteinanalyse und weiteren dynamischen Feldern verwendet. Durch die Analogie
-zum Gehirn können \acp{LSTM} biologisch motiviert werden.
+Eine weitere Art eine Klassifizierung vorzunehmen ist es ein neuronales Netz zu
+verwenden. Dieser Ansatz ist durch die Biologie motiviert und lehnt sich an die
+Arbeitsweise eines Gehirns an. Im Gehirn sind Neuronen über Synapsen iteinander
+verbunden. Nervenbahnen aus dem gesamten Körper erreichen die Neuronen und
+stimulieren sie in unterschiedlicher Intensität. Wird dabei ein Schwellwert
+überschritten ist dieses Neuron aktiviert und sendet ebenfalls einen Impuls an
+die mit ihm über die Synapsen verbundenen Neuronen. Dies geschieht fortlaufend.
+Die Synapsen sind jedoch unterschiedlich stark ausgeprägt, um auch eine
+unterschiedliche Stimulierungsintensität weiterzugeben. Dies kommt einer
+Gewichtung der Neuronen gleich, da die Eingangssignale einen unterschiedlich
+starken Einfluss auf das stimulierte Neuron haben. Die Synapsen sind jedoch
+nicht fest und von vornerein vorgegeben. Sie werden kontinuerlich auf- und
+abgebaut bzw. verändert. Diesen Vorgang wird im Allgemeinen Lernen bezeichnet.
+Die erlebten Erfahrungen werden in dem Netz von Neuronen und Synapsen
+verarbeitet und dadurch gespeichert. Erreichen das Gehirn nun neue
+Sinneseindrücke werden die Neuronen erneut stimuliert und je nach Ergebnis
+werden bestimmte Erinnerungen, Gefühle, Aktionen oder anderes erlebt und
+ausgeführt. Jedoch sind sie nicht direkt an ein bestimmtes Ereignis geknüpft,
+sondern wurden durch verschiedene Erfahrungen verallgemeinert, um so
+verschiedenen Situationen gut verarbeiten zu können. 
+
+\paragraph{Modelle von Neuronen und Synapsen}
+Im Bereich des maschinellen Lernen wird versucht die Funktionsweise eines
+Gehirns bzw. Netzes aus Neuronen und Synapsen nachzubilden. Dies wird durch
+vereinfachte Modelle von Neuroen und Synapsen erreicht. Als Grundlage dient
+dabei das Modell von McCulloch und Pitts von 1943 (vgl. \cite{Mcc43}). Es
+modelliert ein Neuron mit $n$-vielen Eingabewerten ($x_1,\ldots,x_n$) und einem
+Ausgabewert $y$. Die Eingabewerte entsprechen der Aktivierung eines
+Vorgängerneurons und der Ausgabewert der Aktivierung des betrachteten Neurons.
+\textbf{TODO Picture McCulloch and Pitts Neuron} Die \autoref{} zeigt den Aufbau
+eines solchen Neurons. Die Eingaben weren dabei zuerst im \textit{Addierer}
+summiert, eine Schwellwert (bzw. allgemeiner eine Aktivierungsfunktion) bestimmt
+dann mit der Summe den Ausgabewert (die Aktivierung) des Neurons. De Weiteren
+werden auch die Synapsen nachgebildet in dem jeder Eingabewert bei der
+Summierung individuell gewichtet wird. Die Gewichte entsprechen den
+unterschiedlich stark ausgeprägten Synapsen. Das klassische Modell erlaubt nur
+binäre Ein- und Ausgaben, dies kann jedoch auf Reelle Zahlen erweitert werden,
+um unterschiedlich starke Stimulierungen bzw. auch negative Werte (Hemmungen)
+zuzulassen.
+
+\paragraph{Neuronale Netzwerke}
+Einzelne Neuronen können allerdings kein Gehrin nachbilden. Aus diesem Grund ist
+di Kombination mehrerer Neuronen zu einem neuronalen Netz nötig. Im einfachsten
+Fall entsteht dabei ein \textit{Perzeptron}. Es werden $n$-viele Neuronen
+verwendet. Alle Eingaben werden von allen Neuronen verarbeitet und jedes Neuron
+hat eine eigene Aktivierung. Die Gewichte (Synapsen) sind individuell für jedes
+Neuron. Die Ausgaben ergeben den Ausgabevektor $\bf{y}$ des Netzwerkes. Um
+komplexere Sachverhalte darstellen zu können ist es nötig Neuronen in
+Abhängigkeit voneinander zu betrachten. Dies wird in \acp{MLP} vorgenommen.
+Mehrere Perzeptrons werden hintereinandergeschaltet, sodass die Ausgabe des
+einen Perzeptrons (ein Layer) die Eingabe des nächsten Perzeptrons ist.
+Lediglich die Ausgabe des letzten Perzeptrons ist die Ausgabe des Netzwerks. 
+Ein Netzwerk kann als gerichteter Graph dargestellt werden. Die Richtung
+entspricht dem Datenfluss. Perzeptrons und \acp{MLP} sind azyklische Graphen,
+d.h. die Verbindungen von Neuronen gehen nur in Vorwärtsrichtung und bilden
+somit keinen Kreis. Daher werden diese Netzwerke \textit{Feedforward}-Netzwerke
+genannt. Um besser die Funktionsweise von Gehirnen nachzubilden ist es
+notwendig auch Verbidnungen von Neuronen auf sich selbst zuzulassen. Somit
+entsteht ein zyklischer Graph und das Netzwerk wird zu einem Rekurrenten
+Neuronalen Netz (\acsu{RNN}). 
+\textbf{TODO Bilder von Neuronalen Netzen zur Verdeutlichung}
+
+In den folgenden Kapiteln wird eine Sonderform von \acp{RNN} verwendet, ein
+\ac{LSTM}. Dazu wird zuerst darauf eingegangen wie ein \ac{LSTM} im
+Allgemeinen funktioniert und wie ein solches Netzwerk trainiert werden kann.
+Darauf aufbauend wird das Verfahren auf das Projekt angepasst. Es werden die
+Datenaufbereitung, die Anpassung des Klassifikators, die Implementierung in
+Python, das Training und eine Evaluierung besprochen. 
+
+
  
-\subsection{Architektur von \aclp{LSTM}}
-Ein \ac{RNN} mit \ac{LSTM} Einheiten hat ein Hiddenlayer in dem die
-verschiedenen \ac{LSTM} Knoten enthalten sind. Das Outputlayer ist dann ein
-einfaches lineares oder sigmoidales Layer. 
+\subsection{Funktionsweise des Klassifikators (Allgemein)}
+
  
 \begin{figure}[htfp]
 	\begin{center}
-	\includegraphics[width=0.3\textwidth]{lstm_block}
+	\includegraphics[width=0.3\textwidth]{lstm/lstm_block}
 	\caption{Schema eines \acs{LSTM} Blocks}
 	Quelle: \cite{WIKI2013}
 	\label{fig:lstm_block}
 	\end{center}
 \end{figure}
 
-In \autoref{fig:lstm_block} ist das Schema eines \ac{LSTM} dargestellt. sind die
-verschiedenen Knoten in der unteren Zeile folgendes: Input, Input Gate, Forgot
-Gate, Output Gate. Die drei Gates bestimmen ihrem Namen entsprechend, ob der
-Input in den Block hineingelassen wird, ob der vorhandene Datensatz vergessen
-werden soll oder ob das Datum ausgegeben werden soll. Der erste Knoten dient zur
-Verarbeitung der Inputwerte. Die $\Pi$ Knoten sind zur Berechnung der
-entsprechenden Werte:
 
-links in der zweiten Zeile ist zur Weitergabe des verarbeiteten Inputwertes
-(bei Aktivierung durch das Input Gate wird dieser weitergereicht); der rechte
-$\Pi$ Knoten reicht entweder den gespeicherten Wert des $\Sigma$ Knotens weiter
-oder einen Initialwert bei Aktivierung des Forgot Gates; Der $\Pi$ Knoten in der
-obersten Zeile dient der Weitergabe des gespeicherten Wertes, falls das Output
-Gate aktiviert ist, andernfalls erfolgt keine Aktivierung dieses Knotens. Im
-$\Sigma$ Knoten wird der Wert gespeichert und durch eine Rückverbindung über
-mehrere Schritte erhalten. Wird das Input Gate aktiv, wird $\Sigma$ durch den
-verarbeiteten Input ersetzt, mit einem aktiven Forgot Gate \textit{gelöscht}. 
+\subsection{Anwednug auf Projekt}
 
-
-\subsection{Funktionsweise von der \acs{PyBrain} \acs{LSTM} Implementierung}
-\ac{PyBrain}\cite{schaul2010} ist eine Bibliothek für Python und stellt
-verschiedene Module aus dem Bereich des maschinellen Lernes bereit. Dabei
-spielen neuronale Netzwerke eine zentrale Rolle, diese werden in verschiedenen
-Lernmethoden angewendet wie z.B. im Reinforcement, unüberwachten oder
-evolutionären Lernen.
+\cite{schaul2010} 
 
 \begin{lstlisting}[caption={Aufbau eines LSTM Netzes},label={lst:lstm_example}]{lst:lstm_example} 
 net = buildNetwork(INPUTS, HIDDEN, OUTPUTS, hiddenclass=LSTMLayer,
@@ -76,55 +98,19 @@ for _ in range(1000):
     trainer.train()
 \end{lstlisting}
 
-In \autoref{lst:lstm_example} ist ein Beispiel aufgezeigt wie \ac{PyBrain}
-verwendet werden kann. Es gibt dabei verschiedene Möglichkeiten im Aufbau des
-Netzes (v.a. Anzahl der Neuronen und \ac{LSTM}-Blocks), in der Datenhaltung
-(\ref{sec:lstm_data}) sowie in der Trainingsmethode (z.B. Backpropagation).
-Die \ac{PyBrain} Implmenetierung bringt bereits die Umsetzung der
-\ac{LSTM}-Blocks mit, sodass die konkrete Umsetzung der Blöcke nicht
-durchgeführt werden muss.
 
-\subsection{Verwendetes Datenmodell}
+
+\subsubsection{Datenaufbereitung}
 \label{sec:lstm_data}
 
-Im \autoref{sec:gestures_dataformat} wird beschrieben wie Gesten aufgenommen und
-abgespeichert werden. Dabei wird ein Trainingsdatenset erzeugt, dass für
-jeden Datensatz eine bestimmte Anzahl an Frames mit je 64 Datenpunkte im
-gewünschten Frequenzbereich enthält. 
+\subsubsection{Anpassung des Klassifikators}
+\subsubsection{Implementierung}
 
-Für das \ac{LSTM} Netz wird jeder Datensatz als linear aus den einzelnen Frames
-aufgebaut. Dadurch entsteht ein einzelner Eingabevektor inkl. der
-Klassifizierung. Zur Vereinheitlichung und Vergleichbarkeit werden die Daten
-noch normalisiert.
-Dies ist notwendig, da Datensätze unter verschiedenen Bedingungen erzeugt werden
-können, z.B. im lauten Umfeld, andere Anordnung von Mikrofon und Lautsprecher,
-unterschiedlicher Größe der Hände, unterschiedliche Lautstärke, etc. Um
-vergleichbare Daten zu erhalten wird daher die Amplitude der Referenzfrequenz
-als Normailisrungsfaktor verwendet, diese ist i.d.R. am größten. Durch diese
-Normalisierung der Referenzfrequenz auf 1 werden alle weiteren Datenpunkte im
-Intervall zwischen 0 und 1 liegen. Eine weitere Möglichkeit die es zu
-untersuchen gilt, ist die Betrachtung der Abweichung der Amplituden im Verlauf
-der Geste im Vergleich zu einem Frame ohne Geste. Diese Änderungen pro Frame
-können dann anstatt der Originaldaten gelernt werden. Alternativ kann zur
-Unterscheidung von Gesten vom Hintegrundrauschen noch ein Datenset mit
-Hintergrundrauschen genutzt werden. Hier muss sich noch zeigen wie gut das
-\ac{LSTM} Netz ohne diese Daten klassifiziert, je nach Ergebnis wird es noch
-hinzugezogen. 
+\subsubsection{Training}
 
-Durch die Erinnerungsmöglichkeit des \ac{LSTM} Netzes ist es möglich die die
-Frames in einer einzeln (d.h. lediglich die 64 Datenpunkte an einem Zeitpunkt)
-in das Netzwerk gegeben werden. Die \ac{LSTM}-Blöcke merken sich dann jeweils
-die verschiedenen vorherigen Eingabedaten und werden daran dann die
-entsprechende Klasse bei neuen Eingaben erkennen. Dazu ist es dann auch nicht
-mehr notwendig, dass die Gestenaufnahme diskret abläuft (je 0,5 Sekunden dem
-Klassifikator zur Verfügung stellen), sie kann auch kontinuierlich ablaufen,
-d.h. jedes neu aufgenommene Frame kann sofort weitergegeben werden und wird vom
-Netz verarbeitet. Mit dem richitgen Erinnerungszeitraum, erkennt das Netz dann
-die Gesten direkt hintereinander bzw. ineinander übergehend. Diese Idee gilt es
-noch zu überprüfen, insbesondere auf die technische Umsetzung (PyBrain
-Parameter korrekt setzen).
+\subsubsection{Evaluation}
 
-
+\subsection{Fazit}
 
 
 \nocite{GERS2001,WIKI2013,Schmidhuber2013,LSTM1,Nerbonne1}

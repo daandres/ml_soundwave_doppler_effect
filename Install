@@ -1,0 +1,19 @@
+Install Instructions for Python Application Sense Gesture
+
+Dependencies:
+python 2.7
+
+Install the following libraries (on Linuy you can use the commands):
+PyBrain 0.3.1 from GitHub repository and master branch https://github.com/pybrain/pybrain
+> git clone https://github.com/pybrain/pybrain.git
+> cd pybrain
+> python setup.py install
+
+Python-uinput
+> git clone https://github.com/tuomasjjrasanen/python-uinput.git
+> cd python-uinput
+> python setup.py build
+> python setup.py install
+> sudo addgroup uinput
+> sudo adduser $USER uinput
+-- relogin your user to apply changes
