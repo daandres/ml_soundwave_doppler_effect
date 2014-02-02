@@ -73,7 +73,7 @@ Python, das Training und eine Evaluierung besprochen.
 
 \subsection{Funktionsweise des Klassifikators (Allgemein)}
 
-Ein spezielles \ac{RNN} ist ein \acl{LSTM}. Es wurde 1997
+Ein \acl{LSTM} ist ein spezielles \ac{RNN}. Es wurde 1997
 vorgestellt\cite{Hochreiter:1997}. Wie allgemein Neuronale Netze und
 insbesondere \ac{RNN} können auch \ac{LSTM}-Netze biologisch motiviert werden.
 Neuronen im Gehirn verhalten sich nicht mit der gleichen Eingabe gleich.
@@ -83,6 +83,77 @@ einen zeitlichen Bezug gestellt und dadurch entseht eine zusammenhängende
 Erinnerung. Diese wird wie eine einzelne Eingabe ebenfalls generalisiert in den
 Synapsen und Neuronen gespeichert. Mit Hilfe der \ac{LSTM} Architektur wird
 versucht dieses Verhalten nachzuahmen. 
+
+In einem Netz mit \ac{LSTM}-Einheiten sind diese keine einzelnen
+Neuronen sondern Blöcke aus mehreren Neuronen und Toren. Die Blöcke werden im
+Netz wie ein Neuron behandelt. Sie erhalten alle Eingaben und geben einen Wert
+aus. Aufgrund ihrer verallgemeinerten Erinnerungsfähigkeiten ist es sinnvoll die
+Daten nicht direkt ihre Klassenzugehörigkeit über \ac{LSTM}-Blöcke zu speichern,
+sondern ein weiters Layer hintendran zu schalten, welches die Ausgaben
+verschiedener Blöcke konsolidiert und eine Klasse ausgibt. Damit ist ein
+\ac{LSTM}-Layer ein Hidden-Layer in einer \ac{MLP}-Architektur. Es ist jedoch
+kein weiteres Hidden-Layer nötig. Für das Ausgabe-Layer werden je nach
+Problemstellung unterschiedliche Arten verwendet, z.B. lineare, sigmoidale oder
+Softmax-Layer.
+
+\paragraph{\ac{LSTM}-Block}
+In einem \ac{LSTM}-Block sind ein oder mehrere Erinnerungszellen enthalten. Jede
+dieser Zelle ist mit den gleichen Eingabewerten verbunden. Eine Erinnerungszelle
+behält ihren Zustand indem sie eine rekurrente Verbindung mit dem Gewicht 1 auf
+sich selbst hat (nach der Bedeutung in Trainingsphase \ac{CEC} genannt).
+Dieses Gewicht hat eine zentrale Bedeutung in der globalen Verllgemeinerungsfähigkeit der Zelle, da es nicht die bekannte Zieldaten in
+vorherige Zustände zurückpropagiert wie es klassische \ac{RNN} Netzwerken beim
+Training machen (vgl. \ac{RNN} und Backpropagation \textbf{TODO Zitat von
+Schmidhuber}). Die Eingaben der Zelle werden mit dem vorherigen Wert addiert und
+das Ergebnis wird ausgegeben. Der Wert der Zelle ist somit linear bestimmt. 
+Zusätzlich zur Zelle werden noch verschiedene weitere Bestandteile benötigt. Dies sind die Tore (engl. gate).
+\textbf{Erweiterung mit forgot gate Zitat} In der erweiterten Form von
+\ac{LSTM}-Blöcken gibt es drei verschiedene Gates.
+Diese haben eine eindeutige Funktion und bestimmen so den Zustand des Blocks.
+Jedes Gate erhält anhand einer sigmoidalen Funktion der Eingabewerte einen Wert,
+den es zusammen mit einem weiteren Wert verarbeitet und eine entsprechende
+Ausgabe liefert.
+
+\begin{figure}[htfp]
+	\begin{center}
+	\includegraphics[width=0.7\columnwidth]{lstm/lstm_block}
+	\caption[\acs{LSTM} Block]{\acs{LSTM} Block mit einer Memoryzelle ohne
+	Peepholes} \tiny Quelle: \cite{WIKI2013}
+	\label{fig:lstm_block}
+	\end{center}
+\end{figure} 
+
+\autoref{fig:lstm_block} zeigt den Aufbau eines \ac{LSTM}-Blocks. Dort werden
+drei unterschiedliche Knotentypen genutzt. Der $\bf\Sigma$-Knoten ist die oben
+beschriebene lineare Memoryzelle. Die vier Knoten in der unteren Zeile sind
+sigmoidale Squashingknoten, um die Eingaben auf für den \ac{LSTM}-Block
+verwertbare Werte zu reduzieren. Die $\Pi$-Knoten sind drei verschiedene Gates,
+die das Verhalten bestimmen. Diese werden nachfolgend näher erläutert.
+\begin{itemize}
+	\item Eingabegate (3. Zeile links)
+	\item Forgotgate (3. Zeile rechts)
+	\item Ausgabegate (1. Zeile)
+\end{itemize}
+Jedes Gate hat zwei Eingaben, welche miteinader multipliziert werden. Da ein
+Wert sigmoidal reduziert wurde, ist das Ergebnis entweder nahe 0 oder nahe 1.
+% Stimmen 1 und 0 Zitat
+Die Gates \textit{öffnen} wenn ihr Ergebnis nahe 1 oder größer ist. Wird das
+Eingabegate geöffnet kann ein neuer Wert zur Erinnerungszelle hinzuaddiert
+werden. Das Eingabegate hat als Eingaben eine Repräsentaion der Eingabewerte und
+den sigmoidalen Wert der Eingabewerte. Das Forgotgate schaltet sich zwischen die
+rekurrente Verbindung der Memoryzelle, so sind die Eingaben der Wert der
+Memoryzelle am Zeitpunkt $t-1$ und der sigmoidale Wert der Eingabewerte. Ist es
+geschlossen (also nahe 0) löscht sich der Wert der Zelle.\textbf{TODO} Das 
+Ausgabegate bestimmt wann der Wert der Erinnerungszelle ausgegeben wird. Dabei
+nimmt es den aktuellen Wert der Memoryzelle und den sigmoidalen Wert der
+Eingabewerte aus Eingabe. 
+
+Jede Gateeingaben und die Eingaben werden zu Beginn durch eine sigmoidale
+Squashing Funktion reduziert. Dabei hat jede Eingabe bei jder Funktion ein
+eigenes Gewicht. Somit gibt es $4*Inputdimension$ viele Gewichte für ein
+\ac{LSTM}-Block. 
+
+\textbf{TODO Formeln zur Berechnung der Werte}
 
 \subsection{Anwednug auf Projekt}
 Für das Projekt wurde ein LSTM-Netz erstellt welches konfiguriert wurde:
@@ -164,7 +235,7 @@ Diese Methode setzt jeden Wert der unter einem bestimmten Schwellwert ist zu 0,
 da dies kein signifikanter Beitrag zur Geste ist sondern ein Rauschen. Das
 Ergebnis dieser Untersuchung ist jedoch unbefridigend, sodass die Idee nicht
 genutzt wird. \textbf{TODO Messwerte?}
-
+ 
 
 
 \subsubsection{Anpassung des Klassifikators}
