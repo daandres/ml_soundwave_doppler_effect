@@ -74,6 +74,8 @@ Python, das Training und eine Evaluierung besprochen.
 \subsection{Funktionsweise des Klassifikators (Allgemein)}
  
 \subsection{Anwednug auf Projekt}
+TODO diagramm des netztes
+
 
 \subsubsection{Datenaufbereitung}
 \label{sec:lstm_data}
@@ -142,8 +144,90 @@ genutzt wird. \textbf{TODO Messwerte?}
 
 \subsubsection{Anpassung des Klassifikators}
 \subsubsection{Implementierung}
+Da es zum Ende des Projektes ein Programm geben soll, indem alle Klassifikatoren 
+eingebunden sind, haben sich alle Teilnehmer auf ein Interface geeingtt, was 
+jeder Klassifikator implementieren muss. Dies ist die abstrakte Klasse \textit{IClassifier}.
+
+\textbf{TODO Klassendiagramm}
+
+Die Implementation des \ac{LSTM}-Klassifikators ist in der Klasse LSTM zu finden.
+Für diese wurde \cite{PyBrain} verwendet. Diese Bibliothek stellt verschiedene
+Machine Learning Algorithmen bereit, unter anderem Neuronale Netzwerke mit 
+\ac{LSTM}-Neuronen.
+Außerdem wurden in der Datei util verschiedene Hilfsfunktionen erstellt.
+Des weiteren werden Konfigurationseinstellungen in einer Datei gespeichert und zur 
+initialisierung der geladen. 
+Da beabsichtigt ist mit dem Programm den PC zu steuern, wurde die Python Bibliothek 
+\cite{Python-uinput} eingebunden. Mit dieser können Keycodes an den Kernel geschickt werden.
+Die Bibliothek funktioniert nur unter Linux und erfordert Root-Rechte.
+Im folgenden wird auf die Implementation der einzelnen MEthoden der 
+\textit{IClassifier}-Klasse eingegangen.
+
+\subsubsection*{classify}
+Die \textit{classify}-Methode dient der Live-Klassifikation. Der Methode wird 
+der Datensatz der aktuellen Aufnahme übergeben. Dieser enthält ein Array 
+mit 64-Datenpunkten. Die übergebenen Daten werden Normalisiert und anschließend 
+wird der Durchschnitt abgezogen, wie in Kapitel \ref{sec:lstm_data} beschrieben.
+Nachdem die Daten vorbearbeitet wurden, werden diese einer Classify-Methode 
+übergeben. Es wurden zwei verschiede Ideen implementiert.
+
+\begin{lstlisting}[language=Python]
+def __classify1(self, data):
+	self.datalist.append(data)
+	self.datanum += 1
+	if(self.datanum % 32 == 0):
+	    self.net.reset()
+	    out = self._activateSequence(self.datalist)
+	    print(str(out))
+	    self.datalist = []
+	    self.datanum = 0
+	    return out
+	return -1
+\end{lstlisting}
+
+Die Methode \textit{classify1} speichert so lange die übergebenen Datenwerte, 
+bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz 
+übergeben und eine Klassifikation gestartet.
+
+\begin{lstlisting}[language=Python]
+def __classify2(self, data):
+	self.datanum += 1
+	self.datalist.append(data)
+	if(self.datanum % 32 == 0):
+	    self.has32 = True
+	if(self.has32):
+	    self.net.reset()
+	    Y_pred = self._activateSequence(self.datalist)
+	    del self.datalist[0]
+	    self.predHistory[0] = Y_pred
+	    self.predHistory = np.roll(self.predHistory, -1)
+	    expected = stats.mode(self.predHistory, 0)
+	    if(expected[1][0] >= self.predHistHalfUpper):
+	        if(int(expected[0][0]) != self.previouspredict):
+	            oldPrevious, oldPredCounter = self.previouspredict, self.previouspredict
+	            self.previouspredict = int(expected[0][0])
+	            self.predcounter = 1
+	            return oldPrevious, oldPredCounter
+	        else:
+	            self.predcounter += 1
+	            if(self.predcounter == 4):
+	                print(str(self.previouspredict))
+	                self.outkeys.outForClass(self.previouspredict)
+	            return self.previouspredict, self.predcounter
+	return -1, -1
+\end{lstlisting}
+
+Die Methode \textit{classify2} speichert so lange die übergebenen Datenwerte, 
+bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz 
+übergeben und eine Klassifikation gestartet. Die erkannte Geste wird in einer 
+Liste gespeichert. Von dieser Liste wird, mittels der Python-Funktion mode, 
+der Wert ermittelt der am häufigsten vorkommt. Ist dieser Wert größer als eine 
+definierte Schranke wird er in \textit{previouspredict} gespeichert. Wenn vier 
+mal hinter einander die gleiche Geste erkannt wurde, wird diese ausgegeben.
 
 \subsubsection{Training}
+python dataset
+trainingsalgo
 
 \subsubsection{Evaluation}
 
