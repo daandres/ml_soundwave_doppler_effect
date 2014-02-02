@@ -28,8 +28,52 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \usepackage{longtable}
 
 \usepackage{listings} 
-\listingssetup
-
+	\definecolor{grey1}{rgb}{0.95,0.95,0.95}
+	\DeclareCaptionFont{white}{\color{white}}
+	\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\columnwidth}{#1#2#3}}}
+	\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+	\renewcommand\lstlistingname{Quelltext}
+	\renewcommand\lstlistlistingname{Quelltexte}  
+	\lstset{
+		language=Python,            % the language of the code
+		basicstyle=\ttfamily\footnotesize,       % the size of the fonts that are
+		% used for the code
+		numbers=left,                   % where to put the line-numbers
+		% numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+		stepnumber=1,                   % the step between two line-numbers. If it's 1, each line 
+		                                % will be numbered
+		numbersep=3pt,                  % how far the line-numbers are from the code
+		backgroundcolor=\color{grey1},  % choose the background color. You must add \usepackage{color}
+		showspaces=false,               % show spaces adding particular underscores
+		showstringspaces=false,         % underline spaces within strings
+		showtabs=false,                 % show tabs within strings adding particular underscores
+		frame=tb,                   % adds a frame around the code
+		rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+		tabsize=1,                      % sets default tabsize to 2 spaces
+		captionpos=t,                   % sets the caption-position to bottom
+		breaklines=true,                % sets automatic line breaking
+		breakatwhitespace=false,        % sets if automatic 0.4775\textwidthbreaks
+		% should only happen at whitespace
+		title=\lstname,                 % show the filename of files included with \lstinputlisting;
+		                                % also try caption instead of title
+		keywordstyle=\color{blue},      % keyword style
+		commentstyle=\color{darkgreen},     % comment style
+		stringstyle=\color{gray},       % string literal style
+		escapeinside={\%*}{*)},         % if you want to add LaTeX within your code
+		morekeywords={*,...},            % if you want to add more keywords to the set
+		xleftmargin=20pt,
+		framexleftmargin=20pt,
+		framexrightmargin=6pt
+	}
+	\lstset{literate=
+		{Ö}{{\"O}}1
+		{Ä}{{\"A}}1
+		{Ü}{{\"U}}1
+		{ß}{{\ss}}2
+		{ü}{{\"u}}1
+		{ä}{{\"a}}1
+		{ö}{{\"o}}1
+	}
 \hypersetup{
 	pdftitle=\reporttitle\ - \students ,
 	pdfauthor=\students , 
@@ -163,14 +207,15 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \bibliographystyle{alphadin}
 \clearpage
 \phantomsection
-\headAndTocENDE{List of abbreviations}{Abk{\"u}rzungsverzeichnis}
+\headAndTocENDE{Lists}{Verzeichnisse}
+% \headAndTocENDE{List of abbreviations}{Abk{\"u}rzungsverzeichnis}
 \section*{Abk{\"u}rzungsverzeichnis}
 \begin{acronym}[Internship]
 \input{acronym}
 \end{acronym} 
 % \clearpage
 \phantomsection
-\headAndTocENDE{List of Figures}{Abbildungsverzeichnis}
+% \headAndTocENDE{List of Figures}{Abbildungsverzeichnis}
 \listoffigures
 % \clearpage
 
@@ -180,7 +225,7 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 % \clearpage
 
 \phantomsection
-\headAndTocENDE{Listings}{Quellcodeverzeichnis}
+% \headAndTocENDE{Listings}{Quellcodeverzeichnis}
 \lstlistoflistings
 \clearpage
  

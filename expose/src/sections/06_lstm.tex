@@ -171,17 +171,18 @@ wird der Durchschnitt abgezogen, wie in Kapitel \ref{sec:lstm_data} beschrieben.
 Nachdem die Daten vorbearbeitet wurden, werden diese einer Classify-Methode 
 übergeben. Es wurden zwei verschiede Ideen implementiert.
 
-\begin{lstlisting}[language=Python]
-def __classify1(self, data):
+\begin{lstlisting}[language=Python,caption={Classify
+Variante 1},label={lst:lstm_classify1}]{lst:lstm_classify1}
+def __classify1(self,data):
 	self.datalist.append(data)
 	self.datanum += 1
 	if(self.datanum % 32 == 0):
-	    self.net.reset()
-	    out = self._activateSequence(self.datalist)
-	    print(str(out))
-	    self.datalist = []
-	    self.datanum = 0
-	    return out
+		self.net.reset()
+		out = self._activateSequence(self.datalist)
+		print(str(out))
+		self.datalist = []
+		self.datanum = 0
+		return out
 	return -1
 \end{lstlisting}
 
@@ -189,31 +190,32 @@ Die Methode \textit{classify1} speichert so lange die übergebenen Datenwerte,
 bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz 
 übergeben und eine Klassifikation gestartet.
 
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[language=Python,caption={Classify
+Variante 2},label={lst:lstm_classify2}]{lst:lstm_classify2}
 def __classify2(self, data):
 	self.datanum += 1
 	self.datalist.append(data)
 	if(self.datanum % 32 == 0):
-	    self.has32 = True
+		self.has32 = True
 	if(self.has32):
-	    self.net.reset()
-	    Y_pred = self._activateSequence(self.datalist)
-	    del self.datalist[0]
-	    self.predHistory[0] = Y_pred
-	    self.predHistory = np.roll(self.predHistory, -1)
-	    expected = stats.mode(self.predHistory, 0)
-	    if(expected[1][0] >= self.predHistHalfUpper):
-	        if(int(expected[0][0]) != self.previouspredict):
-	            oldPrevious, oldPredCounter = self.previouspredict, self.previouspredict
-	            self.previouspredict = int(expected[0][0])
-	            self.predcounter = 1
-	            return oldPrevious, oldPredCounter
-	        else:
-	            self.predcounter += 1
-	            if(self.predcounter == 4):
-	                print(str(self.previouspredict))
-	                self.outkeys.outForClass(self.previouspredict)
-	            return self.previouspredict, self.predcounter
+		self.net.reset()
+		Y_pred = self._activateSequence(self.datalist)
+		del self.datalist[0]
+		self.predHistory[0] = Y_pred
+		self.predHistory = np.roll(self.predHistory, -1)
+		expected = stats.mode(self.predHistory, 0)
+		if(expected[1][0] >= self.predHistHalfUpper):
+			if(int(expected[0][0]) != self.previouspredict):
+				oldPrevious, oldPredCounter = self.previouspredict, self.previouspredict
+				self.previouspredict = int(expected[0][0])
+				self.predcounter = 1
+				return oldPrevious, oldPredCounter
+			else:
+				self.predcounter += 1
+				if(self.predcounter == 4):
+					print(str(self.previouspredict))
+					self.outkeys.outForClass(self.previouspredict)
+				return self.previouspredict, self.predcounter
 	return -1, -1
 \end{lstlisting}
 
