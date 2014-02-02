@@ -72,7 +72,18 @@ Python, das Training und eine Evaluierung besprochen.
 
 
 \subsection{Funktionsweise des Klassifikators (Allgemein)}
- 
+
+Ein spezielles \ac{RNN} ist ein \acl{LSTM}. Es wurde 1997
+vorgestellt\cite{Hochreiter:1997}. Wie allgemein Neuronale Netze und
+insbesondere \ac{RNN} können auch \ac{LSTM}-Netze biologisch motiviert werden.
+Neuronen im Gehirn verhalten sich nicht mit der gleichen Eingabe gleich.
+Vielmehr reagieren sie abhängig von verschiedenen Situationen anders. Beinflusst
+wird dies durch vorangegangene Ereignisse. Eindrücke (Eingaben) werden so in
+einen zeitlichen Bezug gestellt und dadurch entseht eine zusammenhängende
+Erinnerung. Diese wird wie eine einzelne Eingabe ebenfalls generalisiert in den
+Synapsen und Neuronen gespeichert. Mit Hilfe der \ac{LSTM} Architektur wird
+versucht dieses Verhalten nachzuahmen. 
+
 \subsection{Anwednug auf Projekt}
 TODO diagramm des netztes
 
@@ -234,6 +245,9 @@ trainingsalgo
 \subsubsection{Evaluation}
 
 \subsection{Fazit}
+- LSTM (NN) können Eingaben nur synchron verarbeiten und nicht asynchron wie ein
+Gehrin
+- zusätzliche Einflüsse wie Botenstoffe die sich auf die Neuronenaktivität
+auswirken werden ebenfalls nicht nachgebildet. 
 
-
-\nocite{schaul2010,GERS2001,WIKI2013,Schmidhuber2013,LSTM1,Nerbonne1,Hochreiter:1997}
+\nocite{schaul2010,GERS2001,WIKI2013,Schmidhuber2013,LSTM1,Nerbonne1}
