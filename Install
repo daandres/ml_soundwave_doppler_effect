@@ -1,19 +1,68 @@
 Install Instructions for Python Application Sense Gesture
 
-Dependencies:
-python 2.7
+Checkout the latest version from repository. 
 
-Install the following libraries (on Linuy you can use the commands):
-PyBrain 0.3.1 from GitHub repository and master branch https://github.com/pybrain/pybrain
-> git clone https://github.com/pybrain/pybrain.git
-> cd pybrain
-> python setup.py install
+### Dependencies:
+Python 2.7 
+	Installation instructions on the internet
 
-Python-uinput
-> git clone https://github.com/tuomasjjrasanen/python-uinput.git
-> cd python-uinput
-> python setup.py build
-> python setup.py install
-> sudo addgroup uinput
-> sudo adduser $USER uinput
--- relogin your user to apply changes
+SciPy: (should be already shipped with the next libraries)
+	Installation instructions on: http://scipy.org/
+	
+NumPy: (tested with version 1.7.1)
+	Installation instructions on: http://www.numpy.org/
+
+Matplotlib: (tested with version 1.2.1)
+	Installation instructions on: http://matplotlib.org/
+	
+Pandas: (tested with version 0.12.0)
+	Installation instructions on: http://pandas.pydata.org/
+
+Scikit-learn: (tested with version 0.14 development branch)
+	Installation instructions on: http://scikit-learn.org/stable/
+
+PyQT4 und Qwt5: (for GUI only)
+	Install instructions on the internet
+
+PyAudio: (tested with version 0.2.7)
+	Installation instructions on: http://people.csail.mit.edu/hubert/pyaudio/
+
+Soundplayer:
+	For Linux: (tested with version 0.2, commit id: c3898436f4e1d804a05e6f8e7518962d4c9e931d)
+	> git clone https://github.com/zacharydenton/wavebender.git
+	> cd wavebender
+	> sudo python setup.py install
+	For Windows:
+	install package python package 'winsound' through package repository
+
+PyBrain: (tested with version 0.3.1, from current master branch)
+	> git clone https://github.com/pybrain/pybrain.git
+	> cd pybrain
+	> sudo python setup.py install
+	
+Python-uinput: (https://github.com/tuomasjjrasanen/python-uinput.git)
+	> cd PROJECTPATH/lib/python-uinput
+	> python setup.py build
+	> python setup.py install
+	> sudo addgroup uinput
+	> sudo adduser $USER uinput
+	-- relogin your user to apply changes
+	
+	
+arac: (https://github.com/bayerj/arac): Not longer necessary for LSTM
+	-- no need for google testing framework: comment lines 44,45,61,62 in SConstruct
+	-- follow install instructions on arac wiki
+	-- link libarac.so to /usr/lib/ and not /usr/local/lib/
+	-- do fix in issue 15: https://github.com/bayerj/arac/issues/15
+	
+
+####
+### Build instructions for Gui with Qt
+####
+
+pyuic4 -o ui_plot.py ui_plot.ui
+# open ui_plot.ui:
+# add 'Qwt5' to imports from 'PyQt4'
+# and change the following line:
+from:    self.qwtPlot = QwtPlot(self.centralwidget)
+to-->    self.qwtPlot = Qwt5.QwtPlot(self.centralwidget)
