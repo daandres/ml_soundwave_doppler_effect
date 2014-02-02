@@ -27,7 +27,11 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \usepackage{supertabular}
 \usepackage{longtable}
 
-\usepackage{listings} 
+\usepackage{chngcntr}
+\usepackage{float}
+\newfloat{listing}{htbp}{scl}
+\floatname{listing}{Listing}
+\usepackage[numberbychapter=false]{listings} 
 	\definecolor{grey1}{rgb}{0.95,0.95,0.95}
 	\DeclareCaptionFont{white}{\color{white}}
 	\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\columnwidth}{#1#2#3}}}
@@ -74,6 +78,19 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 		{ä}{{\"a}}1
 		{ö}{{\"o}}1
 	}
+ \AtBeginDocument{
+	\renewcommand{\subsectionautorefname}{\sectionautorefname}
+	\renewcommand{\subsubsectionautorefname}{\sectionautorefname}
+	\renewcommand{\figureautorefname}{Abbildung}
+	\renewcommand{\tableautorefname}{Tabelle}
+	\renewcommand{\equationautorefname}{Formel}
+	\counterwithin{equation}{section}
+	\counterwithin{lstlisting}{section}
+	\counterwithin{figure}{section}
+	\counterwithin{table}{section}
+	\renewcommand{\thelstlisting}{\thesection.\arabic{lstlisting}}
+ }	
+
 \hypersetup{
 	pdftitle=\reporttitle\ - \students ,
 	pdfauthor=\students , 
@@ -101,6 +118,13 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \newcommand{\headAndTocENDE}[2] {
 	\headAndToc{#2}
 }
+
+
+
+\definecolor{darkblue}{rgb}{0, 0, .5}
+\definecolor{darkgreen}{rgb}{0, .5, 0}
+\definecolor{lightgray}{rgb}{.7, .7, .7}
+\definecolor{darkgray}{rgb}{.4, .4, .4}
 
 %% math
 \usepackage{amsmath,amssymb,amsfonts}
@@ -221,7 +245,7 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 
 % \phantomsection
 % \headAndTocENDE{List of Tables}{Tabellenverzeichnis}
-% \listoftables 
+\listoftables 
 % \clearpage
 
 \phantomsection
