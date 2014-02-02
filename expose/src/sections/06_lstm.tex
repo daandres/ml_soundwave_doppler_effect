@@ -85,7 +85,21 @@ Synapsen und Neuronen gespeichert. Mit Hilfe der \ac{LSTM} Architektur wird
 versucht dieses Verhalten nachzuahmen. 
 
 \subsection{Anwednug auf Projekt}
-TODO diagramm des netztes
+Für das Projekt wurde ein LSTM-Netz erstellt welches konfiguriert wurde:
+
+\begin{itemize}
+\item \textbf{Input Layer} Das Netzwerk hat 64 Inputs.
+\item \textbf{Hidden Layer} Für das Hidden Layer werden 18 LSTM-Neuronen verwendet.
+\item \textbf{Output Layer} Das Output Layer besteht aus 7 Neuronen, die die 
+Softmax Funktion als Aktivierungsfunktion verwenden.
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+   \includegraphics[height=50mm]{lstm/lstm_netz}
+\caption{LSTM-Netz}
+\label{fig:lstm_netz}
+\end{figure}
 
 
 \subsubsection{Datenaufbereitung}
@@ -174,14 +188,14 @@ Die Bibliothek funktioniert nur unter Linux und erfordert Root-Rechte.
 Im folgenden wird auf die Implementation der einzelnen MEthoden der 
 \textit{IClassifier}-Klasse eingegangen.
 
-\subsubsection*{classify}
-Die \textit{classify}-Methode dient der Live-Klassifikation. Der Methode wird 
-der Datensatz der aktuellen Aufnahme übergeben. Dieser enthält ein Array 
-mit 64-Datenpunkten. Die übergebenen Daten werden Normalisiert und anschließend 
-wird der Durchschnitt abgezogen, wie in Kapitel \ref{sec:lstm_data} beschrieben.
-Nachdem die Daten vorbearbeitet wurden, werden diese einer Classify-Methode 
-übergeben. Es wurden zwei verschiede Ideen implementiert.
-
+\subsubsection*{Live Klassifikation}
+Für die Live Klassifikation wurde zwei verschiedene Ideen implementiert. 
+Bei beiden wird zuerst die \textit{classify} Methode der LSTM-Klasse 
+aufgerufen. Diese bekommt den Datensatz der aktuellen Aufnahme übergeben. 
+Der Datensatz enthält ein Array mit 64-Datenpunkten. Die übergebenen Daten werden 
+Normalisiert und anschließend wird der Durchschnitt abgezogen, wie in Kapitel 
+\autoref{sec:lstm_data} beschrieben. Nachdem die Daten vorbearbeitet wurden, 
+werden diese einer \textit{classify1}-Methode übergeben. 
 \begin{lstlisting}[language=Python,caption={Classify
 Variante 1},label={lst:lstm_classify1}]{lst:lstm_classify1}
 def __classify1(self,data):
@@ -199,7 +213,9 @@ def __classify1(self,data):
 
 Die Methode \textit{classify1} speichert so lange die übergebenen Datenwerte, 
 bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz 
-übergeben und eine Klassifikation gestartet.
+übergeben und eine Klassifikation gestartet. Da es bei diesem Ansatz passieren kann, 
+dass eine Geste nicht komplett in diesen 32-Werte enthalten ist, wurde ein zweite 
+Idee umgesetzt, welche in der Methode \textit{classify2} umgesetzt ist.
 
 \begin{lstlisting}[language=Python,caption={Classify
 Variante 2},label={lst:lstm_classify2}]{lst:lstm_classify2}
@@ -239,8 +255,38 @@ definierte Schranke wird er in \textit{previouspredict} gespeichert. Wenn vier
 mal hinter einander die gleiche Geste erkannt wurde, wird diese ausgegeben.
 
 \subsubsection{Training}
-python dataset
-trainingsalgo
+Für das Trainieren von Neuronalen Netzen bietet PyBrain verschiedene 
+Trainer an:
+\begin{itemize}
+\item BackpropTrainer
+\item RPropMinusTrainer
+\end{itemize}
+Da der RPropMinusTrainer eine Erweiterung des BackpropTrainer ist, wurde mit 
+diesem trainiert. Für die verwendung der zu verfügung gestellten Trainer 
+muss ein PyBrain Dataset erstellt werden. Um dieses zu erstellen wurde eine 
+Methode geschrieben. Diese erstellt aus den Aufnahmen ein Dataset. Dazu wird 
+aus den Aufnahmen ein Array generiert. Nach der generierung werden die Daten 
+normalisiert. Anschließend werden noch weitere Schritte durchgeführt, diese 
+sind in Kapitel \autoref{sec:lstm_data} beschrieben und können mit den folgenden 
+Parametern konfiguriert werden:
+\begin{itemize}
+\item \textbf{merge67} Dieser Parameter gibt an, ob die Gesten 6 und 7 
+zusammengefasst werden sollen.
+\item \textbf{average} Definiert ob nach der Normalisierung der Datensätze der 
+Durchschnitt abgezogen wird. 
+\item \textbf{cut} Gibt an um wieviel jeder Datensatz beschnitten wird.
+\item \textbf{fold} Konfiguriert ob jeder der Datensätze verwendet wird oder
+wieviele übersprungen werden.
+\end{itemize} 
+Nach der Erstelung des Datasets wird es gespaltet. Für das Training werden 
+80\% und für die Validierung 20\% verwendet.
+
+Für die Validierung des Netzes wurde eine Methode implementiert, die anahnd 
+des Testsets validiert wie gut das Neuronale Netzwerk die Gesten erkennt. Nach 
+diesem Test wird eine Matrix erstellt, die die Anzahl der richtig erkannten Gesten 
+sowie die Anzahl der falsch erkannten Gesten anzeigt. 
+
+\textbf{TODO MAtrix anzeigen}
 
 \subsubsection{Evaluation}
 
