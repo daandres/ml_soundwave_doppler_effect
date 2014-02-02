@@ -1,10 +1,10 @@
 \documentclass[12pt,twocolumn]{scrartcl}
 
-\usepackage[utf8]{inputenc} %Zeichenkodierung
+\usepackage[utf8]{inputenc}
 \input{setup}
 
 \usepackage{lipsum}
-\usepackage{fancyhdr} %für Kopf- und Fußzeilen
+\usepackage{fancyhdr} 
 %\usepackage{scrpage2}
 \usepackage{caption}
 \usepackage{calc}
@@ -19,7 +19,7 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \usepackage[]{acronym}
 \usepackage{graphicx}
 \usepackage{wrapfig}
-
+ 
 \usepackage{hhline} %% extended line features for tables with \hhline{}
 \usepackage{multirow} %% merges several cells over rows: \multirow{Zeilen}{Breite}{Inhalt}; over columns: \multicolumn{Spalten}{Ausrichtung}{Inhalt}
 \usepackage{colortbl} %% use defined colors in tables
@@ -27,7 +27,11 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \usepackage{supertabular}
 \usepackage{longtable}
 
-\usepackage{listings} 
+\usepackage{chngcntr}
+\usepackage{float}
+\newfloat{listing}{htbp}{scl}
+\floatname{listing}{Listing}
+\usepackage[numberbychapter=false]{listings} 
 	\definecolor{grey1}{rgb}{0.95,0.95,0.95}
 	\DeclareCaptionFont{white}{\color{white}}
 	\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\columnwidth}{#1#2#3}}}
@@ -35,32 +39,28 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 	\renewcommand\lstlistingname{Quelltext}
 	\renewcommand\lstlistlistingname{Quelltexte}  
 	\lstset{
-		language=Python,            % the language of the code
-		basicstyle=\ttfamily\footnotesize,       % the size of the fonts that are
-		% used for the code
-		numbers=left,                   % where to put the line-numbers
-		% numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
-		stepnumber=1,                   % the step between two line-numbers. If it's 1, each line 
-		                                % will be numbered
-		numbersep=3pt,                  % how far the line-numbers are from the code
-		backgroundcolor=\color{grey1},  % choose the background color. You must add \usepackage{color}
-		showspaces=false,               % show spaces adding particular underscores
-		showstringspaces=false,         % underline spaces within strings
-		showtabs=false,                 % show tabs within strings adding particular underscores
-		frame=tb,                   % adds a frame around the code
-		rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
-		tabsize=1,                      % sets default tabsize to 2 spaces
-		captionpos=t,                   % sets the caption-position to bottom
-		breaklines=true,                % sets automatic line breaking
-		breakatwhitespace=false,        % sets if automatic 0.4775\textwidthbreaks
-		% should only happen at whitespace
-		title=\lstname,                 % show the filename of files included with \lstinputlisting;
-		                                % also try caption instead of title
-		keywordstyle=\color{blue},      % keyword style
-		commentstyle=\color{darkgreen},     % comment style
-		stringstyle=\color{gray},       % string literal style
-		escapeinside={\%*}{*)},         % if you want to add LaTeX within your code
-		morekeywords={*,...},            % if you want to add more keywords to the set
+		language=Python,
+		basicstyle=\ttfamily\footnotesize,
+		numbers=left,
+		% numberstyle=\tiny\color{gray}, 
+		stepnumber=1,
+		numbersep=3pt,
+		backgroundcolor=\color{grey1},
+		showspaces=false,
+		showstringspaces=false,
+		showtabs=false,
+		frame=tb,
+		rulecolor=\color{black},
+		tabsize=1,
+		captionpos=t,
+		breaklines=true,
+		breakatwhitespace=false,
+		title=\lstname,
+		keywordstyle=\color{blue},
+		commentstyle=\color{darkgreen},
+		stringstyle=\color{gray},
+		escapeinside={\%*}{*)},
+		morekeywords={*,...},
 		xleftmargin=20pt,
 		framexleftmargin=20pt,
 		framexrightmargin=6pt
@@ -74,6 +74,19 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 		{ä}{{\"a}}1
 		{ö}{{\"o}}1
 	}
+ \AtBeginDocument{
+	\renewcommand{\subsectionautorefname}{\sectionautorefname}
+	\renewcommand{\subsubsectionautorefname}{\sectionautorefname}
+	\renewcommand{\figureautorefname}{Abbildung}
+	\renewcommand{\tableautorefname}{Tabelle}
+	\renewcommand{\equationautorefname}{Formel}
+	\counterwithin{equation}{section}
+	\counterwithin{lstlisting}{section}
+	\counterwithin{figure}{section}
+	\counterwithin{table}{section}
+	\renewcommand{\thelstlisting}{\thesection.\arabic{lstlisting}}
+ }	
+
 \hypersetup{
 	pdftitle=\reporttitle\ - \students ,
 	pdfauthor=\students , 
@@ -98,9 +111,10 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 	\addcontentsline{toc}{section}{#1}
 }
 
-\newcommand{\headAndTocENDE}[2] {
-	\headAndToc{#2}
-}
+\definecolor{darkblue}{rgb}{0, 0, .5}
+\definecolor{darkgreen}{rgb}{0, .5, 0}
+\definecolor{lightgray}{rgb}{.7, .7, .7}
+\definecolor{darkgray}{rgb}{.4, .4, .4}
 
 %% math
 \usepackage{amsmath,amssymb,amsfonts}
@@ -109,17 +123,15 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \newcommand{\IV}{\mathrm{IV}}
 \newcommand{\tmod}{\!\!\mod}
 
-
-
- \renewcommand\sectionmark[1]{%
-  \def\sectionname{#1}%
-  \markright{\thesection #1}%oder was aus immer 
-  } 
+\renewcommand\sectionmark[1]{
+  \def\sectionname{#1}
+  \markright{\thesection #1}
+} 
   
-  \renewcommand\subsectionmark[1]{%
-  \def\subsectionname{#1}% 
-  \markright{\thesubsection #1}%oder was aus immer 
-  } 
+\renewcommand\subsectionmark[1]{
+  \def\subsectionname{#1}
+  \markright{\thesubsection #1}
+} 
 	
 \graphicspath{{./ref/images/}}
 
@@ -151,8 +163,6 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
  
 \lfoot{\ifthispageodd{}{\thepage}}	
 \rfoot{\ifthispageodd{\thepage}{}}
-% 	\lfoot{}	
-% 	\rfoot{\thepage}
 
 \pagenumbering{Roman}
 
@@ -162,36 +172,21 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \end{titlepage} 
  
 \clearpage
-% \shipout\null
-% \addtocounter{page}{1}
 
-% \phantomsection
-% \headAndToc{Abstract}
-% \section*{Abstract}
-% 	\paragraph{English} 
-% 	\input{sections/abstractEN}
-% 	\paragraph{German} 
-% 	\input{sections/abstractDE}
-% \clearpage
 
 \phantomsection
-\headAndTocENDE{Contents}{Inhaltsverzeichnis}
+\headAndToc{Inhaltsverzeichnis}
 \begin{spacing}{1}
 \tableofcontents
 \end{spacing}
 \clearpage
-
-%\onehalfspacing 
-%\shipout\null
-
+\singlespacing
+ 
 \setcounter{table}{0}
 \setcounter{figure}{0}
 \pagenumbering{arabic}
-% \head{\nouppercase{\leftmark}}
-  	\lhead{\ifthispageodd{}{\nouppercase{\leftmark}}}
-  	\rhead{\ifthispageodd{\rightmark}{}}
-%\fancyhead[LE]{\sffamily \nouppercase{\leftmark}  }
-% \fancyhead[RO]{\sffamily \nouppercase{\rightmark}  } 
+\lhead{\ifthispageodd{}{\nouppercase{\leftmark}}}
+\rhead{\ifthispageodd{\rightmark}{}}
 \include{sections/content}
 \pagenumbering{roman}
 
@@ -201,37 +196,25 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \singlespacing
 \small
 \phantomsection
-\headAndTocENDE{References}{Literatur}
+\headAndToc{Literatur}
 \bibliography{ref/bib}{} 
 %\bibliographystyle{phcpcDE}
 \bibliographystyle{alphadin}
 \clearpage
 \phantomsection
-\headAndTocENDE{Lists}{Verzeichnisse}
-% \headAndTocENDE{List of abbreviations}{Abk{\"u}rzungsverzeichnis}
+\headAndToc{Verzeichnisse}
 \section*{Abk{\"u}rzungsverzeichnis}
 \begin{acronym}[Internship]
 \input{acronym}
 \end{acronym} 
-% \clearpage
-\phantomsection
-% \headAndTocENDE{List of Figures}{Abbildungsverzeichnis}
 \listoffigures
-% \clearpage
-
-% \phantomsection
-% \headAndTocENDE{List of Tables}{Tabellenverzeichnis}
-% \listoftables 
-% \clearpage
-
-\phantomsection
-% \headAndTocENDE{Listings}{Quellcodeverzeichnis}
+\listoftables 
 \lstlistoflistings
 \clearpage
  
-% \appendix
-% \head{\nouppercase{\leftmark}}
-% \pdfbookmark[0]{Anhang}{appendix}
-% \include{sections/appendix}
+\appendix
+\head{\nouppercase{\leftmark}}
+\pdfbookmark[0]{Anhang}{appendix}
+\include{sections/appendix}
 
 \end{document}

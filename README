@@ -58,6 +58,9 @@ Usage:
 	type 'h' for print available commands
 	- not all commands can be used by all classificators
 	
+
+### Usage of a classifier see in README_[classifier]
+
 ###Available commands (output of 'h u' command)
 Usage: <command> [<option>]
 
