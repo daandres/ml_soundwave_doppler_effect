@@ -129,7 +129,9 @@ Die Komplexität im ungünstigsten Fall liegt bei $O(n^{(k+2)/p})$ \cite{sklearn
 
 
 Zu Beginn der Lernphase des Algorithmus wird ein Wert für \emph{k} festgelegt und anschließend werden \emph{k} zufällige Positionen im Eingaberaum als Cluster-Zentren gesetzt (siehe Abbildung~\ref{fig:lernenEinfach}, oben links). Danach wird jedes Zentrum in den Schwerpunkt der ihm zugeordneten Objekte verschoben, sodass der Abstand zwischen Cluster-Zentrum und zugeordneten Objekten minimal wird. Diese Verschiebungen werden solange wiederholt, bis sich die Cluster-Zentren nicht mehr bewegen. 
-Um nun zu einem Objekt den passenden Cluster-Zentrum zuzuordnen, wird der Abstand zwischen Objekt und den Cluster-Zentrum berechnet. Das Objekt wird nun dem Cluster-Zentrum mit dem geringsten Abstand zugeordnet. In Abbildung~\ref{fig:lernenEinfach} unten rechts ist  eine solche Bestimmung anhand der zuvor berechneten Cluster-Zentren dargestellt. Die Zugehörigkeit beliebiger Objekte zu den jeweiligen Cluster-Zentren ist farbig markiert, sodass ein zu klassifizierendes Objekt das der Farbe entsprechende Cluster zugeordnet wird.
+Um nun zu einem Objekt das passende Cluster-Zentrum zuzuordnen, wird der Abstand zwischen Objekt und den Cluster-Zentrum berechnet. Das Objekt wird nun dem Cluster-Zentrum mit dem geringsten Abstand zugeordnet. In Abbildung~\ref{fig:lernenEinfach} unten rechts ist  eine solche Bestimmung anhand der zuvor berechneten Cluster-Zentren dargestellt. Die Zugehörigkeit beliebiger Objekte zu den jeweiligen Cluster-Zentren ist durch Trennlinien markiert.
+%, sodass ein zu klassifizierendes Objekt 
+%dem Cluster das der Farbe entsprechende Cluster zugeordnet wird.
 
 \subsubsection{Evaluation}%OK
 TODO: Confusion Matrix in lauter und leiser Umgebung für die verschiedenen Gesten. Welche Gesten werden sehr gut/gut/mittelmäßig oder gar nicht erkannt? Ist die Erkennungsrate praxistauglich?
