@@ -13,7 +13,7 @@ unterschiedliche Stimulierungsintensität weiterzugeben. Dies kommt einer
 Gewichtung der Neuronen gleich, da die Eingangssignale einen unterschiedlich
 starken Einfluss auf das stimulierte Neuron haben. Die Synapsen sind jedoch
 nicht fest und von vornerein vorgegeben. Sie werden kontinuerlich auf- und
-abgebaut bzw. verändert. Diesen Vorgang wird im Allgemeinen Lernen bezeichnet.
+abgebaut bzw. verändert. Dieser Vorgang wird im Allgemeinen Lernen bezeichnet.
 Die erlebten Erfahrungen werden in dem Netz von Neuronen und Synapsen
 verarbeitet und dadurch gespeichert. Erreichen das Gehirn nun neue
 Sinneseindrücke werden die Neuronen erneut stimuliert und je nach Ergebnis
@@ -25,30 +25,31 @@ verschiedenen Situationen gut verarbeiten zu können.
 \paragraph{Modelle von Neuronen und Synapsen}
 Im Bereich des maschinellen Lernen wird versucht die Funktionsweise eines
 Gehirns bzw. Netzes aus Neuronen und Synapsen nachzubilden. Dies wird durch
-vereinfachte Modelle von Neuroen und Synapsen erreicht. Als Grundlage dient
-dabei das Modell von McCulloch und Pitts von 1943 (vgl. \cite{Mcc43}). Es
-modelliert ein Neuron mit $n$-vielen Eingabewerten ($x_1,\ldots,x_n$) und einem
-Ausgabewert $y$. Die Eingabewerte entsprechen der Aktivierung eines
-Vorgängerneurons und der Ausgabewert der Aktivierung des betrachteten Neurons.
+vereinfachte Modelle von Neuronen und Synapsen erreicht. Ein einfaches Modell
+wird hier als Grundlage verwendet. Es ist das Modell von McCulloch und Pitts von
+1943 (vgl. \cite{Mcc43}) und modelliert ein Neuron mit $n$-vielen Eingabewerten
+($x_1,\ldots,x_n$) und einem Ausgabewert $y$. Die Eingabewerte entsprechen der
+Aktivierung eines Vorgängerneurons und der Ausgabewert der Aktivierung des
+betrachteten Neurons.
 \textbf{TODO Picture McCulloch and Pitts Neuron} Die \autoref{} zeigt den Aufbau
 eines solchen Neurons. Die Eingaben weren dabei zuerst im \textit{Addierer}
 summiert, eine Schwellwertfunktion (bzw. allgemeiner eine Aktivierungsfunktion)
-bestimmt dann mit der Summe den Ausgabewert (die Aktivierung) des Neurons. De Weiteren
-werden auch die Synapsen nachgebildet in dem jeder Eingabewert bei der
+bestimmt dann mit der Summe den Ausgabewert (die Aktivierung) des Neurons. Des
+Weiteren werden auch die Synapsen nachgebildet in dem jeder Eingabewert bei der
 Summierung individuell gewichtet wird. Die Gewichte entsprechen den
 unterschiedlich stark ausgeprägten Synapsen. Das klassische Modell erlaubt nur
-binäre Ein- und Ausgaben, dies kann jedoch auf Reelle Zahlen erweitert werden,
+binäre Ein- und Ausgaben, dies kann jedoch auf reelle Zahlen erweitert werden,
 um unterschiedlich starke Stimulierungen bzw. auch negative Werte (Hemmungen)
 zuzulassen.
 
 \paragraph{Neuronale Netzwerke}
 Einzelne Neuronen können allerdings kein Gehrin nachbilden. Aus diesem Grund ist
-di Kombination mehrerer Neuronen zu einem neuronalen Netz nötig. Im einfachsten
+die Kombination mehrerer Neuronen zu einem neuronalen Netz nötig. Im einfachsten
 Fall entsteht dabei ein \textit{Perzeptron}. Es werden $n$-viele Neuronen
 verwendet. Alle Eingaben werden von allen Neuronen verarbeitet und jedes Neuron
 hat eine eigene Aktivierung. Die Gewichte (Synapsen) sind individuell für jedes
 Neuron. Die Ausgaben ergeben den Ausgabevektor $\bf{y}$ des Netzwerkes. Um
-komplexere Sachverhalte darstellen zu können ist es nötig Neuronen in
+komplexere Sachverhalte darstellen zu können, ist es nötig Neuronen in
 Abhängigkeit voneinander zu betrachten. Dies wird in \acp{MLP} vorgenommen.
 Mehrere Perzeptrons werden hintereinandergeschaltet, sodass die Ausgabe des
 einen Perzeptrons (ein Layer) die Eingabe des nächsten Perzeptrons ist.
@@ -63,12 +64,13 @@ entsteht ein zyklischer Graph und das Netzwerk wird zu einem Rekurrenten
 Neuronalen Netz (\acsu{RNN}). 
 \textbf{TODO Bilder von Neuronalen Netzen zur Verdeutlichung}
 
-In den folgenden Kapiteln wird eine Sonderform von \acp{RNN} verwendet, ein
-\ac{LSTM}. Dazu wird zuerst darauf eingegangen wie ein \ac{LSTM} im
+Im Rahmen dieses Kpaitel wird erläutert, wie \acsp{LSTM}, eine spezielle Form
+von \acp{RNN}, zur Klassifikation von Gesten des schallbasierten Dopplereffekts
+genutzt werden können. Dazu wird zuerst darauf eingegangen wie ein \ac{LSTM} im
 Allgemeinen funktioniert und wie ein solches Netzwerk trainiert werden kann.
 Darauf aufbauend wird das Verfahren auf das Projekt angepasst. Es werden die
 Datenaufbereitung, die Anpassung des Klassifikators, die Implementierung in
-Python, das Training und eine Evaluierung besprochen. 
+Python, das Training und eine Evaluierung besprochen.
 
 
 \subsection{Funktionsweise des Klassifikators (Allgemein)}
@@ -79,7 +81,7 @@ insbesondere \ac{RNN} können auch \ac{LSTM}-Netze biologisch motiviert werden.
 Neuronen im Gehirn verhalten sich nicht mit der gleichen Eingabe gleich.
 Vielmehr reagieren sie abhängig von verschiedenen Situationen anders. Beinflusst
 wird dies durch vorangegangene Ereignisse. Eindrücke (Eingaben) werden so in
-einen zeitlichen Bezug gestellt und dadurch entseht eine zusammenhängende
+einen zeitlichen Bezug gestellt und dadurch entsteht eine zusammenhängende
 Erinnerung. Diese wird wie eine einzelne Eingabe ebenfalls generalisiert in den
 Synapsen und Neuronen gespeichert. Mit Hilfe der \ac{LSTM} Architektur wird
 versucht dieses Verhalten nachzuahmen. 
@@ -139,8 +141,8 @@ Wert sigmoidal reduziert wurde, ist das Ergebnis entweder nahe 0 oder nahe 1.
 % Stimmen 1 und 0 Zitat
 Die Gates \textit{öffnen} wenn ihr Ergebnis nahe 1 oder größer ist. Wird das
 Eingabegate geöffnet kann ein neuer Wert zur Erinnerungszelle hinzuaddiert
-werden. Das Eingabegate hat als Eingaben eine Repräsentaion der Eingabewerte und
-den sigmoidalen Wert der Eingabewerte. Das Forgotgate schaltet sich zwischen die
+werden. Das Eingabegate hat als Eingaben eine Repräsentation der Eingabewerte
+und den sigmoidalen Wert der Eingabewerte. Das Forgotgate schaltet sich zwischen die
 rekurrente Verbindung der Memoryzelle, so sind die Eingaben der Wert der
 Memoryzelle am Zeitpunkt $t-1$ und der sigmoidale Wert der Eingabewerte. Ist es
 geschlossen (also nahe 0) löscht sich der Wert der Zelle.\textbf{TODO} Das 
@@ -150,7 +152,7 @@ Eingabewerte aus Eingabe.
 
 Jede Gateeingaben und die Eingaben werden zu Beginn durch eine sigmoidale
 Squashing Funktion reduziert. Dabei hat jede Eingabe bei jder Funktion ein
-eigenes Gewicht. Somit gibt es $4*Inputdimension$ viele Gewichte für ein
+eigenes Gewicht. Somit gibt es $4\cdot Inputdimension$ viele Gewichte für ein
 \ac{LSTM}-Block. 
 
 Eine Erweiterung zu dem vorgestellten \ac{LSTM}-Block sind zusätzlich weitere
@@ -159,7 +161,7 @@ Verbindungen werden \textit{Peepholes} genannt und verbinden die
 
 \textbf{TODO Formeln zur Berechnung der Werte}
 
-\subsection{Anwednug auf Projekt}
+\subsection{Anwendnug auf Projekt}
 Für das Projekt wurde ein LSTM-Netz erstellt welches konfiguriert wurde:
 
 \begin{itemize}
@@ -187,7 +189,7 @@ Daten. Die Daten entprechen dem Frequenzspektrum im Umfeld der
 Referenzfrequenz von $18500\text{kHz}$. Eine Geste wurde mit 32 Frames
 aufgenommen. Für \ac{LSTM}-Netzwerke sind diese rohen Daten eher ungeignet. Die
 Netzwerke können zwar im Allgemeinen mit unverarbeiteteten Daten umgehen,
-tortzdem ist ein Vorverarbeitung sinnvoll, da sich dadurch die Verallgemeinerung
+trotzdem ist ein Vorverarbeitung sinnvoll, da sich dadurch die Verallgemeinerung
 des Problems verbessert, die Trainingszeit verkürzt und die benötigten Beispiele
 verringern \textbf{Cite}. Aus diesen Gründen wird eine Vorverarbeitung der Daten
 vorgenommen. 
@@ -203,7 +205,7 @@ Trainigsverfahren iterativ die Gewichte in kleinen Schritten anpasst, führen
 große Gewichte zu einem hohen Trainingsaufwand. Um dies zu vermeiden werden die
 Daten normalisiert. Konkret wird dabei der Maximalwert eines Frames als
 Normierungsfaktor gewählt. Dadurch liegen alle Werte im Intervall $[0,1]$.
-Eine Transformation \textbf{richtiges Wort?} des SPektrums hin zu den
+Eine Transformation \textbf{richtiges Wort?} des Spektrums hin zu den
 Veränderungen der Spektrums im Vergleich zum Ruhespektrum wird ebenfalls
 vorgenommen. Dies wird aufgrund durchgeführter Tests vorgenommen, die eine
 bessere Klassifizierungen für die transformierten Daten bescheinigen
@@ -218,7 +220,7 @@ kleinen Intervall um die Referenzfrequenz auftritt und die Daten außerhalb
 dieses Intervalls keine große Bedeutung spielen. Aus diesem Grund ist eine
 Verkleinerung der Frame Größe in Betracht zu ziehen. Da jedoch eine manuelle
 Betrachtung aller Daten nicht möglich ist, lässt sich diese Beobachtung nicht
-verifzieren. Daher werden mehrere \ac{LSTM}-Netze mit unterschiedlichen
+manuell verifzieren. Daher werden mehrere \ac{LSTM}-Netze mit unterschiedlichen
 Inputframelängen trainiert und die Ergebnisse verglichen. \textbf{TODO Tabelle
 mit Ergebnissen} Erstaunlicherweise ist die aufgestellte Vermutung falsch und die
 Netzwerke ohne zugeschnittenen Trainingsdaten klassifizieren besser. 
@@ -287,7 +289,8 @@ Die Implementation des \ac{LSTM}-Klassifikators ist in der Klasse LSTM zu finden
 Für diese wurde \cite{PyBrain} verwendet. Diese Bibliothek stellt verschiedene
 Machine Learning Algorithmen bereit, unter anderem Neuronale Netzwerke mit 
 \ac{LSTM}-Neuronen.
-Außerdem wurden in der Datei util verschiedene Hilfsfunktionen erstellt.
+Außerdem wurden in der Datei \texttt{util.py} verschiedene Hilfsfunktionen
+erstellt.
 Des weiteren werden Konfigurationseinstellungen in einer Datei gespeichert und zur 
 initialisierung der geladen. 
 Da beabsichtigt ist mit dem Programm den PC zu steuern, wurde die Python Bibliothek 
