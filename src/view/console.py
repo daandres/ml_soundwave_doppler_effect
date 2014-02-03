@@ -266,7 +266,7 @@ class Console:
         self.inputEvent.set()
 
     def printHelp(self, args=None):
-        printHelp()
+        printHelp(args)
         self.inputEvent.set()
 
     def changeFilename(self, args):
@@ -283,20 +283,69 @@ class Console:
         self.inputEvent.set()
 
 def printHelp(args=None):
-    print("Gesture Recognition based on the Soundwave doppler effect")
-    print("Usage: <command> [<option>]")
-    print("<num> [<num>]\t0-7 record a gesture and associate with class number [repeat <digit> times]")
-    print("u <classifier> \tconfigure classifier to use. Supported classifiers: [svm, trees, hmm, k-means, lstm]")
-    print("c \t\tstart real time classifying with the configured classifier")
-    print("t \t\tstart training for the configured classifier with the saved data")
-    print("l <filename> \tload configured classifier and dataset from file")
-    print("s [<filename>] \tsave configured classifier and dataset to file with filename or timestamp")
-    print("v \t\tstart validation for the configured classifier with the saved data")
-    print("e \t\texit application")
-    print("g \t\tstart view [BUG: works only one time per runime]")
-    print("f [<string>] \tchange filename for recording. if empty use current time ")
-    print("r \t\tstart/stop sound playing and recording")
-    print("h \t\tprint(this help")
-    print("")
-    print("0 Right-To-Left-One-Hand\n1 Top-to-Bottom-One-Hand\n2 Entgegengesetzt with two hands\n3 Single-push with one hand\n4 Double-push with one hand\n5 Rotate one hand\n6 Background noise (no gesture, but in silent room)\n7 No gesture with background sound (in a Pub, at office, in the kitchen, etc.)")
-    print("")
+    def printAbout(args=None):
+        print("Gesture Recognition based on the Soundwave doppler effect")
+
+
+    def printUsage(args=None):
+        print("Usage: <command> [<option>]")
+        print("")
+
+        print("Record example gestures")
+        print("  r \t\tstart/stop sound playing and recording")
+        print("  <num> [<num>]\t0-7 record a gesture and associate with class number [repeat <digit> times]")
+        print("  f [<string>] \tchange filename for recording. if empty use current time ")
+        print("")
+
+        print("Gui [BUG: works only one time per runtime]")
+        print("  g \t\tstart view (can record single gestures)")
+        print("  gg \t\tstart bob view")
+        print("")
+
+        print("Classifier commands")
+        print("  u <classifier> \tconfigure classifier to use. Supported classifiers: [svm, trees, hmm, k-means, lstm]")
+        print("  c \t\t\tstart real time classifying with the configured classifier (requires active sound, see 'r' command)")
+        print("  t [<num>] \t\tstart training for the configured classifier with the saved data, <num> Number of epochs, if applicable")
+        print("  l <filename> \t\tload configured classifier from file")
+        print("  l ds <filename> \tload configured dataset from file")
+        print("  s [<filename>] \tsave configured classifier to file with filename or timestamp")
+        print("  s ds [<filename>] \tsave configured dataset to file with filename or timestamp")
+        print("  v \t\t\tstart validation for the configured classifier with the saved data")
+        print("  p \t\t\tprint the classifier options")
+        print("")
+
+        print("General")
+        print("  h \t\tprint all help")
+        print("  h u \t\tprint usage help")
+        print("  h g \t\tprint gesture table")
+        print("  e \t\texit application")
+
+    def printGestures(args=None):
+        print("Class number\tGesture Shortcode\tGesture description")
+        print("  0 RLO\tRight-To-Left-One-Hand or Left-To-Right-One-hand")
+        print("  1 TBO\tTop-To-Bottom-One-Hand")
+        print("  2 OT\tOpposed-With-Two-hands")
+        print("  3 SPO\tSingle-Push-One-Hand")
+        print("  4 DPO\tDouble-Push-One-Hand")
+        print("  5 RO\tRotate-One-Hand")
+        print("  6 BNS\tBackground-Noise-Silent (no gesture, but in silent room)")
+        print("  7 BNN\tBackground-Noise-Noisy (no gesture, but in a noisy room like a Pub, an office, a kitchen, etc.)")
+
+
+    if(args != None and len(args) > 1):
+        if(args[1][0] == "g"):
+            printGestures()
+        elif(args[1][0] == "u"):
+            printUsage()
+        else:
+            printAbout()
+            print("")
+            printUsage()
+            print("")
+            printGestures()
+    else:
+        printAbout()
+        print("")
+        printUsage()
+        print("")
+        printGestures()

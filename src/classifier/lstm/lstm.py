@@ -6,7 +6,6 @@ import classifier.lstm.util as util
 import numpy as np
 from scipy import stats as stats
 import time
-# import arac
 from systemkeys import SystemKeys
 
 NAME = "LSTM"
@@ -129,7 +128,7 @@ class LSTM(IClassifier):
             validator = CrossValidator(trainer=self.trainer, dataset=self.trainer.ds, n_folds=5, valfunc=evaluation, verbose=True, max_epochs=1)
             print(validator.validate())
         else:
-            raise Exception("Cannot create trainer, no network type specified")
+            raise Exception("Cannot create trainer, no network type specified" + self.trainingType)
 
     def classify(self, data):
         preprocessedData = data / np.amax(data)
@@ -158,7 +157,10 @@ class LSTM(IClassifier):
             elif(key == 'layer'):
                 self.layer = value
             elif(key == 'peepholes'):
-                self.peepholes = bool(value)
+                if(value == 'True'):
+                    self.peepholes = True
+                else:
+                    self.peepholes = False
             elif(key == 'nClasses'):
                 self.nClasses = int(value)
             elif(key == 'datacut'):
@@ -237,8 +239,6 @@ class LSTM(IClassifier):
         elif(self.layer == "softmax"): layer = SoftmaxLayer
         else: raise Exception("Cannot create network: no output layer specified")
         self.net = buildNetwork(self.inputdim, self.hidden, self.nClasses, hiddenclass=LSTMLayer, outclass=layer, recurrent=True, outputbias=False, peepholes=self.peepholes)
-        if(self.config['fast'] != ""):
-            self.net = self.net.convertToFastNetwork()
         self.net.randomize()
         print("LSTM network created: " + self.__getName())
         return
@@ -291,10 +291,8 @@ class LSTM(IClassifier):
         parms.append("f" + str(self.datafold))
         parms.append("t" + self.trainingType)
         parms.append("e" + str(self.trainedEpochs))
-        if(self.config['fast'] != ""):
-            parms.append(self.config['fast'])
         return "_".join(parms)
-#         return custom + hidden + out + layer + peepholes + train + epochs + fast
+#         return custom + hidden + out + layer + peepholes + train + epochs
 
     '''
     Gesten werden starr nach 32 frames erkannt

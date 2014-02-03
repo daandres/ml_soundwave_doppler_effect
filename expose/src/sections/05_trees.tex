@@ -2,8 +2,8 @@
 \textit{Annalena Gutheil, Matthias Volland}
 
 Die Verwendung von baumartigen Strukturen zur Klassifikation von Daten bietet sich aus mehreren Gründen an. 
-Einerseits handelt es sich bei Bäumen um eine Datenstruktur, die häufig in der Informatik verwendet wird und daher 
-vom Verständnis intuitiver ist, als beispielsweise ein neuronales Netzwerk oder eine SVM. 
+%Einerseits handelt es sich bei Bäumen um eine Datenstruktur, die häufig in der Informatik verwendet wird und daher vom Verständnis intuitiver ist, als beispielsweise ein neuronales Netzwerk oder eine SVM. 
+Einerseits handelt es sich bei Bäumen um eine Datenstruktur, die häufig in der Informatik verwendet wird. Durch ihre nachvollziehbare hierarchische Struktur, sind sie vom Verständnis intuitiver als beispielsweise eine neuronales Netz.
 Andererseits ist das Erzeugen von Bäumen im Allgemeinen relativ effizient, was bei Machine-Learning-Algorithmen 
 in der Traningsphase wichtig ist. Das Verwenden bzw. Durchlaufen eines Baumes hat lediglich eine logarithmische Komplexität, 
 so dass auch die Klassifikation durch einem Baum sehr effizient ist, sofern dieser nicht entartet ist. 
@@ -23,8 +23,15 @@ Kante mit dem Merkmal \glqq länglich\grqq\ in einen weiteren Knoten münden, du
 
 In dem Beispiel hätte als erstes Unterscheidungsmerkmal auch die Farbe dienen können, wodurch direkt in einem Schritt alle drei Gemüsesorten hätten klassifiziert werden können. Somit hat die Wahl der Reihenfolge der Merkmale einen wesentlichen Einfluss auf die Form des Entscheidungsbaumes sowie die Effizienz, mit der Testdaten klassifiziert werden können. Weiterhin können durch die ungünstige Wahl von Kriterien verschiedene Klassen mehrfach in dem Entscheidungsbaum vorkommen, was darauf schließen lässt, dass der Baum aufgrund der Redundanz mehr Knoten enthält, als für eine Klassifizierung notwendig wäre.
 
-Es gibt verschiedene Kriterien, nach denen die Reihenfolge der Merkmale so gewählt werden kann, dass ein möglichst kompakter und damit effizienter Entscheidungsbaum entsteht. Ein Ansatz besteht darin zu berechnen, wie groß der Informationsgehalt der zu unterscheidenden Merkmale ist. Da sich durch das Merkmal \glqq Farbe\grqq\ aus dem vorigen Beispiel direkt alle möglichen Klassen unterscheiden lassen, hat dieses Merkmal z.B. einen höheren Informationsgehalt als das Merkmal \glqq Form\grqq\ und bietet sich daher als erstes Entscheidungskriterium an. Dieser Informationsgehalt wird auch als \glqq Entropie\grqq\ bezeichnet.
-Ein anderes Maß zur Auswahl von geeigneten Entscheidungsmerkmalen ist die sogenannte \glqq Reinheit\grqq\ von Merkmalen. Die Reinheit eines Merkmales ergibt sich daraus, wie viele verschiedene Klassen die jeweiligen Merkmalsausprägungen beinhalten. Das Attribut \glqq Farbe\grqq\ aus dem vorigen Beispiel führt zu drei Blattknoten, bei denen durch jeden Knoten genau eine Klasse repräsentiert wird (nämlich jeweils die Klassen Tomate, Gurke und Möhre) während beim Merkmal \glqq Form\grqq\ sowohl Möhren als auch Gurken als mögliches Ergebnis in Frage kommen, falls das zu klassifizierende Objekt die Merkmalsausprägung \glqq länglich\grqq\ hat. 
+Es gibt verschiedene Kriterien, nach denen die Reihenfolge der Merkmale so gewählt werden kann, dass ein möglichst kompakter und damit effizienter Entscheidungsbaum entsteht. Ein Ansatz besteht darin zu berechnen, wie groß der Informationsgehalt der zu unterscheidenden Merkmale ist. Der Informationsgehalt eines Merkmals bestimmt sich daraus, wie häufig es vorkommt und ist definiert als 
+\[I = -log(p_i)\] wobei $p_i$ die relative Häufigkeit ist, mit der das Merkmal $i$ vorkommt. Ein sehr häufig vorkommendes Merkmal hat dementsprechend einen niedrigeren Informationsgehalt als ein seltenes Merkmal. Der Mittlere Informationsgehalt aller Merkmale wird auch als Entropie bezeichnet lässt sich dann mit Hilfe der Formel 
+\[E = - \sum \limits_{i=1}^n p_i \cdot \log (p_i)\] berechnen, wobei $n$ die Menge aller Merkmale ist und $p_i$ die relative Häufigkeit des Merkmals $i$.
+Um nun das Vorkommen der Merkmale in Relation zu den möglichen Klassifikationen zu setzen, wird die bedingte Wahrscheinlichkeit für die Merkmale bezogen auf die möglichen Klassen ermittelt, woraus sich der mittlere Informationsgewinn ermitteln lässt. Dieser ist definiert als 
+\[H = - \sum \limits_{i=1}^n p_i \cdot (\sum \limits_{j=1}^m \frac{x_{ij}}{x_i} \cdot \log (\frac{x_{ij}}{x_i}))\] wobei $n$ die Anzahl der Merkmale ist und $m$ die Anzahl der Klassen. Der Wert $x_i$ beschreibt die Anzahl der Vorkommen der Merkmalsausprägung $i$ und $x_{ij}$ die Anzahl der Vorkommen dieser Merkmalsausprägung unter der Bedingung, dass das Objekt zur Klasse $j$ gehört.
+Beim Erstellen eines Entscheidungsbaumes ist dann das Merkmal für die Teilung am interessantesten, was den größten mittleren Informationsgewinn H hat, also die innere Summe minimal ist.
+Da sich durch das Merkmal \glqq Farbe\grqq\ aus dem vorigen Beispiel direkt alle möglichen Klassen unterscheiden lassen, hat dieses Merkmal z.B. einen höheren Informationsgewinn als das Merkmal \glqq Form\grqq\ und bietet sich daher als erstes Entscheidungskriterium an.
+
+Ein anderes Maß zur Auswahl von geeigneten Entscheidungsmerkmalen ist die sogenannte \glqq Reinheit\grqq\ von Merkmalen. Die Reinheit eines Merkmales ergibt sich daraus, wie viele verschiedene Klassen die jeweiligen Merkmalsausprägungen beinhalten. Das Attribut \glqq Farbe\grqq\ aus dem vorigen Beispiel führt zu drei Blattknoten, bei denen durch jeden Knoten genau eine Klasse repräsentiert wird (nämlich jeweils die Klassen Tomate, Gurke und Möhre) während beim Merkmal \glqq Form\grqq\ sowohl Möhren als auch Gurken als mögliches Ergebnis in Frage kommen, falls das zu klassifizierende Objekt die Merkmalsausprägung \glqq länglich\grqq\ hat. Die Reinheit ist dementsprechend ein Maß dafür, wie groß das Risiko einer falschen Klassifikation ist. Ziel ist es anhand von Merkmalen Teilungen im Entscheidungsbaum vorzunehmen, die ein möglichst geringes Risiko für falsche Klassifikationen haben.
 
 %Entscheidungsbäume funktionieren nach dem \glqq teile und herrsche\grqq\ -Prinzip. 
 %Beginnend beim Wurzelknoten wird bei jedem Knoten mithilfe einer Testfunktion berechnet, welche Abzweigung genommen werden muss. 
@@ -32,24 +39,20 @@ Ein anderes Maß zur Auswahl von geeigneten Entscheidungsmerkmalen ist die sogen
 
 \subsection{Ensemble Learning}
 Die Idee von Ensemble Learning ist es, mehrere Klassifikatoren gleichzeitig zu verwenden anstatt eines einzigen Klassifikators, um bessere Ergebnisse zu erzielen. Der Vorteil bei der Verwendung mehrerer Klassifikatoren ist es, dass nicht ein einzelner Klassifikator alle Klassen möglichst gut unterscheiden können muss, sondern dass mehrere (unabhängig voneinander gesehen schwächere) Klassifikatoren zusammen einen starken Klassifikator bilden können. Wichtig ist dabei lediglich, dass jeder der schwachen Klassifikatoren geringfügig besser sein muss als raten, also bei einer binären Klassifikation eine Erfolgsrate von mehr als 50\% hat.
-Bezugnehmend auf das einführende Beispiel zur Klassifikation verschiedener Gemüsesorten könnte man also beispielsweise einen Klassifikator verwenden, der sehr gut anhand der Form klassifizieren kann und ein weiterer anhand der Farbe. Ein Nachteil von Ensemble Learning ist jedoch, dass der Trainingsaufwand mit der Anzahl der Klassifikatoren steigt. Da bei Entscheidungsbäumen das Training verglichen mit anderen Klassifikatoren jedoch relativ effizient ist, bieten sich Entscheidungsbäume besonders als Klassifikatoren für Ensemble Learning an. Im Folgenden werden daher zwei verschiedene Ansätze des Ensemble Learning vorgestellt.
+Bezugnehmend auf das einführende Beispiel zur Klassifikation verschiedener Gemüsesorten könnte man also beispielsweise einen Klassifikator verwenden, der sehr gut anhand der Form klassifizieren kann und einen weiteren anhand der Farbe. Ein Nachteil von Ensemble Learning ist jedoch, dass der Trainingsaufwand mit der Anzahl der Klassifikatoren steigt. Da bei Entscheidungsbäumen das Training verglichen mit anderen Klassifikatoren jedoch relativ effizient ist, bieten sich Entscheidungsbäume besonders als Klassifikatoren für Ensemble Learning an. Im Folgenden werden daher zwei verschiedene Ansätze des Ensemble Learning vorgestellt.
 
 
 \subsection*{Bagging}
-Eine einfache Methode, um mehrere Klassifikatoren miteinander zu kombinieren, wird als Bagging bezeichnet, eine Abkürzung für Bootstrap Aggregating. Der Name steht im Zusammenhang mit der Ziehung von Stichproben aus einer Menge in der Statistik, wo ein \glqq bootstrap sample\grqq\ eine Bezeichnung dafür ist, ein Testdatensatz \glqq mit Zurücklegen\grqq\ aus der Testmenge zu ziehen. Somit können manche Testdaten mehrfach, andere gar nicht in der Trainingsmenge vorhanden sein. Durch die daraus resultierenden unterschiedlichen Trainingsdaten entstehen Klassifikatoren, die verschiedene Klassen unterschiedlich gut unterscheiden können. Die Klassifikation erfolgt dann aufgrund einer Mehrheitsentscheidung.
+Eine einfache Methode, um mehrere Klassifikatoren miteinander zu kombinieren, wird als Bagging bezeichnet, eine Abkürzung für Bootstrap Aggregating. Der Name steht im Zusammenhang mit der Ziehung von Stichproben aus einer Menge, wo ein \glqq bootstrap sample\grqq\ eine Bezeichnung dafür ist, ein Testdatensatz \glqq mit Zurücklegen\grqq\ aus der Testmenge zu ziehen. Somit können manche Testdaten mehrfach, andere gar nicht in der Trainingsmenge vorhanden sein. Durch die daraus resultierenden unterschiedlichen Trainingsdaten entstehen Klassifikatoren, die verschiedene Klassen unterschiedlich gut unterscheiden können. Die Klassifikation erfolgt dann aufgrund einer Mehrheitsentscheidung.
 
 \subsection*{Boosting}
-Das bekannteste Boosting-Verfahren heißt AdaBoost und existiert seit Mitte der 90er Jahre. Die grundsätzliche Idee bei dem Verfahren ist es jeden Datensatz um ein zusätzliches Gewicht als Maß dafür zu erweitern, wie fehlerbehaftet dieser Datensatz in den vergangenen Trainingsrunden klassifiziert worden ist. AdaBoost ist ein iterativer Algorithmus, der für jede neue Iteration die Fehlklassifikationen der vergangenen Trainings mit einbezieht und somit die \glqq schwierig\grqq\ zu klassifizierenden Daten stärker berücksichtigt.  Ziel ist es mit jedem weiteren Training einen neuen Klassifikator zu erhalten, der ein niedrigeren Fehler hat als in den vorangegangenen Iterationen.
-
-\subsection*{Random Forests}
-
-Die Besonderheit von Ensemble Learning ist, dass mit Hilfe von vielen schwachen Klassifikatoren 
-gute Klassifikationsergebnisse erzielt werden können. 
-Die Entscheidungen, die die verschiedenen Klassifikatoren treffen, sind dabei verschieden, 
-was jedoch auch die Stärke dieser Methode ist, denn sie ergänzen sich gegenseitig
+Boosting unterscheidet sich zu Bagging dahingehend, dass während des Trainings immer mit den gleichen Trainings- und Testdaten gearbeitet wird und nicht eine zufällige Auswahl verwendet wird.
+Das bekannteste Boosting-Verfahren heißt AdaBoost und existiert seit Mitte der 90er Jahre. Die grundsätzliche Idee bei dem Verfahren ist es, jeden Datensatz um ein zusätzliches Gewicht als Maß dafür zu erweitern, wie fehlerbehaftet dieser Datensatz in den vorigen Trainingsrunden klassifiziert worden ist. Durch dieses Gewicht, welches im Laufe der Klassifikation immer wieder angepasst wird, werden nicht richtig klassifizierte Daten hervorgehoben und stärker fokussiert. AdaBoost ist ein iterativer Algorithmus, der für jede neue Iteration die Fehlklassifikationen des vorherigen Trainings mit einbezieht mit dem Ziel, im besten Fall am Ende alle Testdaten richtig zuzuordnen. Das Gewicht berechnet sich anhand des jeweiligen Fehlers $\epsilon$, der sich aus der Summe der Gewichte der falsch klassifizierten Datenpunkte zusammensetzt. Das Gewicht dieser Datenpunkte wird mit
+$ \alpha = \frac{\epsilon}{(1-\epsilon)} $ 
+multipliziert, sodass die \glqq schwierig\grqq\ zu klassifizierenden Daten stärker berücksichtigt werden. Ziel ist es mit jedem weiteren Training einen neuen Klassifikator zu erhalten, der ein niedrigeren Fehler hat als in den vorangegangenen Iterationen. Die Trainingsphase kann dadurch beendet werden, dass eine feste Anzahl an auszuführenden Iterationen vorgegeben wird oder wenn das Optimum, dass alle Datenpunkte richtig klassifiziert wurden, erreicht wurde.
 
 \subsection{Datenaufbereitung}
-
+\label{sect:Trees_Datenaufbereitung}
 Die zu klassifizierenden Gesten unterscheiden sich dahingehend, dass sie die Bandbreite 
 des Frequenzspektrums um den Referenzton in unterschiedlicher Weise verschieben bzw. vergrößern. 
 Um eine Geste zu erkennen, werden daher die Amplituden der aufgezeichneten Frequenzen 
@@ -66,52 +69,59 @@ Eine Geste setzt sich zunächst aus 32 Einzelaufnahmen (Samples) zusammen, welch
 Da wie einführend beschrieben die Amplituden der Frequenzanteile einer Geste durch ein lokales Minimum vom Referenzton 
 getrennt sein können, werden die Amplituden der einzelnen Samples zunächst mit einem Gauß-Filter geglättet, 
 so dass größere Schwankungen aus dem Signal entfernt werden. 
-Die folgende Abbildung zeigt die Amplituden des Frequenzspektrums von einem Sample 
+Abbildung~\ref{fig:gauss} zeigt die Amplituden des Frequenzspektrums von einem Sample 
 vor dem Glätten mit einem Gauß-Filter (rot) und danach (blau).
 
-\begin{center}
-  \includegraphics[height=60mm]{trees/gesture4-gauss1.jpg}
-\end{center}
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/gesture4-gauss1.jpg}
+\caption{Rot: Ungefilterte Amplitudenwerte, Blau: Durch Gauß-Filter geglättete Amplitudenwerte}
+\label{fig:gauss}
+\end{figure}
 
 Für die effiziente und robuste Klassifizierung der Gesten bietet es sich weiterhin an, 
 die Komplexität der generierten Eingabedaten zu reduzieren. Dazu wird in jedem Sample einer Geste 
 auf der linken und rechten Seite des Referenztons die Anzahl der Amplituden des geglätteten Signals ermittelt, 
 deren Wert größer als 10\% ist. Der daraus resultierende Graph zeigt dann für eine Geste die zeitliche 
-Änderung der Amplitudenanteile um den Referenzton auf der linken und rechten Seite an. Dieser Graph ist in der folgenden 
-Abbildung dargestellt, wobei die Anzahl der zum Referenzton gehörenden Amplituden aller Frequenzen unterhalb des
-Referenztons in rot dargestellt sind, die Frequenzanteile oberhalb des Referenztons in blau:
+Änderung der Amplitudenanteile um den Referenzton auf der linken und rechten Seite an. Dieser Graph ist in Abbildung~\ref{fig:sum_of_bins} dargestellt, wobei die Anzahl der zum Referenzton gehörenden Amplituden aller Frequenzen unterhalb des
+Referenztons in rot dargestellt sind, die Frequenzanteile oberhalb des Referenztons in blau.
 
-\begin{center}
-  \includegraphics[height=60mm]{trees/gesture4-peaksize.jpg}
-\end{center}
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/gesture4-peaksize.jpg}
+\caption{Frequenzanteile links (rot) und rechts (blau) von dem Referenzton}
+\label{fig:sum_of_bins}
+\end{figure}
 
-Bei der in der Grafik dargestellten Geste handelt es sich um einen \glqq Double-Tap\grqq\ , also eine Geste, bei der die Hand zwei mal 
+Bei der in der Grafik dargestellten Geste handelt es sich um einen \glqq Double-Push\grqq , also eine Geste, bei der die Hand zwei mal 
 hintereinander schnell auf den Monitor bzw. das Mikrofon zubewegt wird. Diese Geste äußert sich in jeweils zwei aufeinander folgenden 
 Verschiebungen der Frequenzen nach rechts (auf den Monitor zu bewegen) und links (vom Monitor weg bewegen). 
-Diese Charakteristik lässt sich in der Grafik erkennen, da die Anzahl der zum Referenzton gehörenden Frequenzanteile zunächst nach rechts (erster Peak blau) und dann nach links (zweiter Peak rot) ansteigt. Aufgrund des \glqq Double-Tap\grqq\  erfolgt diese 
+Diese Charakteristik lässt sich in der Grafik erkennen, da die Anzahl der zum Referenzton gehörenden Frequenzanteile zunächst nach rechts (erster Peak blau) und dann nach links (zweiter Peak rot) ansteigt. Aufgrund des \glqq Double-Push\grqq\  erfolgt diese 
 Verschiebung zwei mal hintereinander, so dass insgesamt vier Ausschläge (zwei nach rechts und zwei nach links) zu erkennen sind. 
-Somit kann in einem Schritt die Anzahl der Daten pro zu klassifizierender Geste von 32*64=2048 Amplitudenwerten 
-auf 2*32=64 reduziert werden, wobei diese Werte keinen Rückschluss auf die genauen Frequenzanteile zulassen sondern 
+Somit kann in einem Schritt die Anzahl der Daten pro zu klassifizierender Geste von 32\cdot 64=2048 Amplitudenwerten 
+auf 2\cdot 32=64 reduziert werden, wobei diese Werte keinen Rückschluss auf die genauen Frequenzanteile zulassen sondern 
 ein Maß dafür sind, wie sich die Frequenzanteile ober- und unterhalb des Referenztons verändern.
 
 Die daraus entstehenden Daten können in einem weiteren Schritt geglättet werden, da nur Amplitudenschwankungen ab einer gewissen 
 Größe auf eine ausgeführte Bewegung schließen lassen. Dazu werden alle Schwankungen auf der rechten oder linken Seite entfernt, 
 die unterhalb eines definierten Grenzwertes liegen. 
-Die folgende Abbildung zeigt ein gefilterten Graph, in dem alle Ausschläge entfernt werden, die kleiner als 2 sind:
+Abbildung~\ref{fig:filtered} zeigt ein gefilterten Graph, in dem alle Ausschläge entfernt werden, die kleiner als 2 sind:
 
-\begin{center}
-  \includegraphics[height=60mm]{trees/gesture4-peaksize-smoothed.jpg}
-\end{center}
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/gesture4-peaksize-smoothed.jpg}
+\caption{Geglättete Frequenzanteile}
+\label{fig:filtered}
+\end{figure}
 
 In einen dritten Schritt werden die Amplitudenwechsel dahingehend weiter geglättet, indem zunächst die Anzahl der am häufigsten 
 auftretenden Frequenzanteile auf der linken und rechten Seite vom Referenzton ermittelt werden. Anschließend werden alle Werte,
 die in einem vorher definierten Bereich ober- oder unterhalb dieses Wertes liegen auf den am häufigsten vorkommenden Wert gesetzt.
-Dieser Schritt ist in der folgenden Abbildung zu sehen, wobei alle Werte die +1 oder -1 um den häufigsten Wert verteilt sind 
+Dieser Schritt ist in Abbildung~\ref{fig:frequent_value} zu sehen, wobei alle Werte die +1 oder -1 um den häufigsten Wert verteilt sind 
 auf den häufigsten Wert gesetzt wurden:
 
-\begin{center}
-  \includegraphics[height=60mm]{trees/gesture4-peaksize-smoothed2.jpg}
-\end{center}
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/gesture4-peaksize-smoothed2.jpg}
+\caption{Geglätteter Graph anhand des am häufigsten vorkommenden Wertes}
+\label{fig:frequent_value}
+\end{figure}
 
 
 Stark vereinfacht unterscheiden sich die Gesten dahingehend, ob und auf welcher Seite 
@@ -119,12 +129,13 @@ eine Veränderung der Anzahl aller zum Referenzton gehörenden Frequenzanteile s
 Weiterhin muss unterschieden werden, in welche Richtung sich diese Verschiebung ausbreitet. 
 Sie kann beispielsweise von der rechten zur linken oder von der linken zur rechten Seite 
 um den Referenzton wandern, sowie gleichzeitig auf beiden Seiten stattfinden. 
-Ein Beispiel dafür zeigt die folgende Abbildung:
+Ein Beispiel dafür zeigt Abbildung~\ref{fig:left_right_same_time}
 
-\begin{center} 
-\label{fig:contrary}
-  \includegraphics[height=60mm]{trees/gesture2-peaksize-smoothed2.jpg}
-\end{center}
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/gesture2-peaksize-smoothed2.jpg}
+\caption{Gleichzeitige Verschiebung zur rechten und linken Seite des Referenztons}
+\label{fig:left_right_same_time}
+\end{figure}
 
 Bei der in der Grafik abgebildeten Geste handelt es sich um ein mit der rechten und linken Hand entgegengesetztes zu und 
 wegbewegen von dem Monitor, so dass gleichzeitig auf der rechten und linken Seite eine Vergrößerung der 
@@ -141,7 +152,7 @@ Durch die Vorverarbeitung der Daten entstehen für die einzelnen Gesten Charakte
 %\paragraph*{Top-to-bottom}
 
 \paragraph*{Two-hands-contrary}
-Die Geste \glqq Two-hands-contrary\grqq , dargestellt in Abbildung~\ref{fig:contrary}, zeigt üblicherweise je zwei gleichzeitige, also übereinanderliegende, Frequenzverschiebungen. Dies ist dadurch zu erklären, dass zur selben Zeit eine Bewegung auf das Aufnahmegerät zu und von diesem weg durchgeführt wird.
+Die in Abbildung~\ref{fig:contrary} dargestellten aufbereiteten Daten der Frequenzverschiebungen, die die Geste \glqq Two-hands-contrary\grqq\ erzeugt, zeigt üblicherweise je zwei gleichzeitige, also übereinander liegende, Frequenzverschiebungen. Dies ist dadurch zu erklären, dass zur selben Zeit eine Bewegung auf das Aufnahmegerät zu und von diesem weg durchgeführt wird.
 
 \begin{figure}[htbp] \centering
 \includegraphics[height=60mm]{trees/contrary.png}
@@ -151,7 +162,7 @@ Die Geste \glqq Two-hands-contrary\grqq , dargestellt in Abbildung~\ref{fig:cont
 
 
 \paragraph*{Single-Push}
-Der \glqq Single-Push\grqq ist eine einfache Bewegung auf das Aufnahmegerät zu, sodass eine Frequenzverschiebung auf der rechten Seite des Frequenzspektrums festgestellt werden kann. Dies ist in Abbildung~\ref{fig:single_push} dargestellt.
+Der \glqq Single-Push\grqq\ ist eine einfache Bewegung auf das Aufnahmegerät zu, sodass eine Frequenzverschiebung auf der rechten Seite des Frequenzspektrums festgestellt werden kann. Dies ist in Abbildung~\ref{fig:single_push} dargestellt.
 
 \begin{figure}[htbp] \centering
 \includegraphics[height=60mm]{trees/single_push.png}
@@ -160,7 +171,7 @@ Der \glqq Single-Push\grqq ist eine einfache Bewegung auf das Aufnahmegerät zu,
 \end{figure}
 
 \paragraph*{Double-Push}
-Die Geste \glqq Double-Push\grqq ist in Abbildung~\ref{fig:double_push} abgebildet. Sie zeichnet sich aus durch in der Regel je zwei Verschiebungen auf der rechten und auf der linken Seite. Die Rechts-Links-Verschiebungen treten dabei kurz hintereinander auf und können sich auch teilweise überlappen. 
+Die charakteristischen Daten der Geste \glqq Double-Push\grqq\ ist in Abbildung~\ref{fig:double_push} abgebildet. Sie zeichnet sich durch je zwei Verschiebungen auf der rechten und auf der linken Seite aus. Die Rechts-Links-Verschiebungen treten dabei kurz hintereinander auf und können sich auch teilweise überlappen. 
 
 \begin{figure}[htbp] \centering
 \includegraphics[height=60mm]{trees/double_push.png}
@@ -187,22 +198,22 @@ Durch die Filterung und Glättung können nun die einzelnen Frequenzverschiebung
 \end{itemize}
 
 \subsubsection*{Anzahl der Frequenzverschiebungen}
-Die Anzahl der Frequenzverschiebung sagt bereits einiges über die Geste aus, wobei auch wichtig ist, ob die Frequenzverschiebungen im höheren oder niedrigeren Frequenzbereich liegen. Wie bereits in Abschnitt~\ref{} erwähnt, erzeugt eine Bewegung auf das Aufnahmegerät zu eine Frequenzverschiebung auf der rechten Seite, also eine Ausdehnung in Richtung der höheren Frequenzen. Durch das Bewegen vom Aufnahmegerät weg, erfolgt eine Frequenzverschiebung zur linken Seite, bzw. in Richtung der niedrigeren Frequenzen. 
+Die Anzahl der Frequenzverschiebung sagt bereits einiges über die Geste aus, wobei auch wichtig ist, ob die Frequenzverschiebungen im höheren oder niedrigeren Frequenzbereich liegen. Wie bereits in Abschnitt~\ref{sect:Trees_Datenaufbereitung} erwähnt, erzeugt eine Bewegung auf das Aufnahmegerät zu eine Frequenzverschiebung auf der rechten Seite, also eine Ausdehnung in Richtung der höheren Frequenzen. Durch das Bewegen vom Aufnahmegerät weg, erfolgt eine Frequenzverschiebung zur linken Seite, bzw. in Richtung der niedrigeren Frequenzen. 
 
 Ein einfacher \glqq Single-Push\grqq\ erzeugt deshalb im optimalen Fall eine Frequenzverschiebung auf der rechten Seite des Peaks. Wird die Hand wieder zurückgezogen, tritt auch eine Frequenzverschiebung auf der linken Seite auf. Klar davon abgegrenzt werden kann beispielsweise die Geste \glqq Double-Push\grqq. Diese erzeugt mit dem Zurückziehen der Hand nach dem zweiten Push zwei Frequenzverschiebungen auf der linken und zwei auf der rechten Seite.
 
 \subsubsection*{Zeitliche Abfolge der Frequenzverschiebungen}
-Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq Single-Push\grqq erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die Geste \glqq Two-hands-contrary\grqq , dargestellt in Abbildung~\ref{fig:contrary}, dagegen beschreibt die gleichzeitige gegensätzliche Bewegungen in Richtung des Aufnahmegeräts und von diesem weg. Somit tritt in diesem Fall gleichzeitig je eine Verschiebung nach rechts und links auf. 
+Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq Single-Push\grqq\ erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die in Abbildung~\ref{fig:contrary} dargestellte Geste \glqq Two-hands-contrary\grqq beschreibt dagegen die gleichzeitige gegensätzliche Bewegungen in Richtung des Aufnahmegeräts und von diesem weg. Somit tritt in diesem Fall gleichzeitig je eine Verschiebung nach rechts und links auf. 
 
 
 \subsubsection*{Amplitudenunterschiede zwischen den Frequenzverschiebungen}
-Die Gesten \glqq Single-Push\grqq und \glqq Right-to-Left-One-Hand\grqq unterscheiden sich in der zeitlichen Abfolge der Verschiebungen nicht. In beiden Fällen tritt erst eine Verschiebung rechts, dann links auf. Jedoch unterscheiden sich die Verschiebungen an sich. Bei \glqq Single-Push\grqq unterscheiden sich die beiden Verschiebungen im optimalen Fall nur dadurch, dass die eine Verschiebung links und die andere rechts vom Peak auftritt. Bei \glqq Right-to-Left-One-Hand\grqq dagegen ist die Amplitude der zweiten Verschiebung, links vom Peak, schwächer als die andere.
+Die Gesten \glqq Single-Push\grqq\ und \glqq Right-to-Left-One-Hand\grqq\ unterscheiden sich in der zeitlichen Abfolge der Verschiebungen nicht. In beiden Fällen tritt erst eine Verschiebung rechts, dann links auf. Jedoch unterscheiden sich die Verschiebungen an sich. Bei \glqq Single-Push\grqq\ unterscheiden sich die beiden Verschiebungen im optimalen Fall nur dadurch, dass die eine Verschiebung links und die andere rechts vom Peak auftritt. Bei \glqq Right-to-Left-One-Hand\grqq\ dagegen ist die Amplitude der zweiten Verschiebung, links vom Peak, schwächer als die andere.
 
 \subsection{Anpassung des Klassifikators}
 
 \subsection{Implementierung}
 
-Die Bibliothek \textit{sklearn}~\cite{sklearn} stellt mit dem Modul \textit{sklearn.ensemble}~\cite{sklearn.ensemble} einige hilfreiche Klassen und Methoden zur Klassifikation bereit.
+%Die Bibliothek \textit{sklearn}~\cite{sklearn} stellt mit dem Modul \textit{sklearn.ensemble}~\cite{sklearn.ensemble} einige hilfreiche Klassen und Methoden zur Klassifikation bereit.
 
 \subsection{Training}
 

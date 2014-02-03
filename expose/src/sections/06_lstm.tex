@@ -1,130 +1,429 @@
 \section{\acl{LSTM}}
 \textit{Daniel Andrés López, Frank Reichwein}
 
-\ac{LSTM} ist ein \ac{RNN}, welches die Eigenschaft hat Zustände über einen
-bestimmten Zeitraum zu behalten und danach wieder zu vergessen. \acp{LSTM} sind
-somit eine spezielle Form von \acp{MLP}. Ein \ac{LSTM} definiert rekurrente
-Verbindungen (Verbindungen von Neuronen zu vorhergehenden bzw. denselben
-Neuronen) in der Art und Weise, dass die Eingabe Daten bzw.
-die Ausgabe Daten gespeichert über mehrere Aufrufe des Netzwerkes hinaus
-gespeichert werden. Diese gespeicherten Daten werden bei bestimmten
-Eingangsdaten ausgegeben, bei anderen \textit{vergessen} bzw. überschrieben oder
-nicht verwendet. 
-  
-\acp{RNN} und vielmehr noch \acp{LSTM} sind Modelle für das menschliche Gehirn.
-Im Gehirn sind viele Neuronen untereinander, also mit sich selbst, nachfolgenden
-und vorhergehenden Neuronen vernetzt, sogenannten Feedback Verbindungen. Jedes
-Neueron ist dabei ein speziell aufgebaut um Informationen zu speichern.
-\acp{RNN} haben keine bzw. einfache Erinnerungsneuronen und sind aus diesem
-Grund nicht für länger Erinnerungen geeignet. Bei \acp{LSTM} hingegen sind
-komplexe Erinnerungsneuronen (\ac{LSTM}-Neuronen) miteinander verknüpft. Jedes
-einzelne Neuron kann Informationen über einen längeren Zeitraum, d.h. auch bei
-häufiger Nutzung des Netzes, Daten speichern. Dadurch dass \acp{LSTM} Daten auch
-nach dem Training speichern können, also verschiedene Zustände haben,
-unterscheiden sie sich von vielen anderen Machine Learning Verfahren, wie z.B.
-\ac{HMM} oder \acp{SVM}. Sie sind besonders für komplexe Aufgaben mit unscharfen
-Beobachtungen geeignet und werden bevorzugt in Handschrift- und Spracherkennung,
-Proteinanalyse und weiteren dynamischen Feldern verwendet. Durch die Analogie
-zum Gehirn können \acp{LSTM} biologisch motiviert werden.
- 
-\subsection{Architektur von \aclp{LSTM}}
-Ein \ac{RNN} mit \ac{LSTM} Einheiten hat ein Hiddenlayer in dem die
-verschiedenen \ac{LSTM} Knoten enthalten sind. Das Outputlayer ist dann ein
-einfaches lineares oder sigmoidales Layer. 
- 
+Eine weitere Art eine Klassifizierung vorzunehmen ist es ein neuronales Netz zu
+verwenden. Dieser Ansatz ist durch die Biologie motiviert und lehnt sich an die
+Arbeitsweise eines Gehirns an. Im Gehirn sind Neuronen über Synapsen iteinander
+verbunden. Nervenbahnen aus dem gesamten Körper erreichen die Neuronen und
+stimulieren sie in unterschiedlicher Intensität. Wird dabei ein Schwellwert
+überschritten ist dieses Neuron aktiviert und sendet ebenfalls einen Impuls an
+die mit ihm über die Synapsen verbundenen Neuronen. Dies geschieht fortlaufend.
+Die Synapsen sind jedoch unterschiedlich stark ausgeprägt, um auch eine
+unterschiedliche Stimulierungsintensität weiterzugeben. Dies kommt einer
+Gewichtung der Neuronen gleich, da die Eingangssignale einen unterschiedlich
+starken Einfluss auf das stimulierte Neuron haben. Die Synapsen sind jedoch
+nicht fest und von vornerein vorgegeben. Sie werden kontinuerlich auf- und
+abgebaut bzw. verändert. Dieser Vorgang wird im Allgemeinen Lernen bezeichnet.
+Die erlebten Erfahrungen werden in dem Netz von Neuronen und Synapsen
+verarbeitet und dadurch gespeichert. Erreichen das Gehirn nun neue
+Sinneseindrücke werden die Neuronen erneut stimuliert und je nach Ergebnis
+werden bestimmte Erinnerungen, Gefühle, Aktionen oder anderes erlebt und
+ausgeführt. Jedoch sind sie nicht direkt an ein bestimmtes Ereignis geknüpft,
+sondern wurden durch verschiedene Erfahrungen verallgemeinert, um so
+verschiedenen Situationen gut verarbeiten zu können. 
+
+\paragraph{Modelle von Neuronen und Synapsen}
+Im Bereich des maschinellen Lernen wird versucht die Funktionsweise eines
+Gehirns bzw. Netzes aus Neuronen und Synapsen nachzubilden. Dies wird durch
+vereinfachte Modelle von Neuronen und Synapsen erreicht. Ein einfaches Modell
+wird hier als Grundlage verwendet. Es ist das Modell von McCulloch und Pitts von
+1943 (vgl. \cite{Mcc43}) und modelliert ein Neuron mit $n$-vielen Eingabewerten
+($x_1,\ldots,x_n$) und einem Ausgabewert $y$. Die Eingabewerte entsprechen der
+Aktivierung eines Vorgängerneurons und der Ausgabewert der Aktivierung des
+betrachteten Neurons.
+\textbf{TODO Picture McCulloch and Pitts Neuron} Die \autoref{} zeigt den Aufbau
+eines solchen Neurons. Die Eingaben weren dabei zuerst im \textit{Addierer}
+summiert, eine Schwellwertfunktion (bzw. allgemeiner eine Aktivierungsfunktion)
+bestimmt dann mit der Summe den Ausgabewert (die Aktivierung) des Neurons. Des
+Weiteren werden auch die Synapsen nachgebildet in dem jeder Eingabewert bei der
+Summierung individuell gewichtet wird. Die Gewichte entsprechen den
+unterschiedlich stark ausgeprägten Synapsen. Das klassische Modell erlaubt nur
+binäre Ein- und Ausgaben, dies kann jedoch auf reelle Zahlen erweitert werden,
+um unterschiedlich starke Stimulierungen bzw. auch negative Werte (Hemmungen)
+zuzulassen.
+
+\paragraph{Neuronale Netzwerke}
+Einzelne Neuronen können allerdings kein Gehrin nachbilden. Aus diesem Grund ist
+die Kombination mehrerer Neuronen zu einem neuronalen Netz nötig. Im einfachsten
+Fall entsteht dabei ein \textit{Perzeptron}. Es werden $n$-viele Neuronen
+verwendet. Alle Eingaben werden von allen Neuronen verarbeitet und jedes Neuron
+hat eine eigene Aktivierung. Die Gewichte (Synapsen) sind individuell für jedes
+Neuron. Die Ausgaben ergeben den Ausgabevektor $\bf{y}$ des Netzwerkes. Um
+komplexere Sachverhalte darstellen zu können, ist es nötig Neuronen in
+Abhängigkeit voneinander zu betrachten. Dies wird in \acp{MLP} vorgenommen.
+Mehrere Perzeptrons werden hintereinandergeschaltet, sodass die Ausgabe des
+einen Perzeptrons (ein Layer) die Eingabe des nächsten Perzeptrons ist.
+Lediglich die Ausgabe des letzten Perzeptrons ist die Ausgabe des Netzwerks. 
+Ein Netzwerk kann als gerichteter Graph dargestellt werden. Die Richtung
+entspricht dem Datenfluss. Perzeptrons und \acp{MLP} sind azyklische Graphen,
+d.h. die Verbindungen von Neuronen gehen nur in Vorwärtsrichtung und bilden
+somit keinen Kreis. Daher werden diese Netzwerke \textit{Feedforward}-Netzwerke
+genannt. Um besser die Funktionsweise von Gehirnen nachzubilden ist es
+notwendig auch Verbidnungen von Neuronen auf sich selbst zuzulassen. Somit
+entsteht ein zyklischer Graph und das Netzwerk wird zu einem Rekurrenten
+Neuronalen Netz (\acsu{RNN}). 
+\textbf{TODO Bilder von Neuronalen Netzen zur Verdeutlichung}
+
+Im Rahmen dieses Kpaitel wird erläutert, wie \acsp{LSTM}, eine spezielle Form
+von \acp{RNN}, zur Klassifikation von Gesten des schallbasierten Dopplereffekts
+genutzt werden können. Dazu wird zuerst darauf eingegangen wie ein \ac{LSTM} im
+Allgemeinen funktioniert und wie ein solches Netzwerk trainiert werden kann.
+Darauf aufbauend wird das Verfahren auf das Projekt angepasst. Es werden die
+Datenaufbereitung, die Anpassung des Klassifikators, die Implementierung in
+Python, das Training und eine Evaluierung besprochen.
+
+
+\subsection{Funktionsweise des Klassifikators (Allgemein)}
+
+Ein \acl{LSTM} ist ein spezielles \ac{RNN}. Es wurde 1997
+vorgestellt\cite{Hochreiter:1997}. Wie allgemein Neuronale Netze und
+insbesondere \ac{RNN} können auch \ac{LSTM}-Netze biologisch motiviert werden.
+Neuronen im Gehirn verhalten sich nicht mit der gleichen Eingabe gleich.
+Vielmehr reagieren sie abhängig von verschiedenen Situationen anders. Beinflusst
+wird dies durch vorangegangene Ereignisse. Eindrücke (Eingaben) werden so in
+einen zeitlichen Bezug gestellt und dadurch entsteht eine zusammenhängende
+Erinnerung. Diese wird wie eine einzelne Eingabe ebenfalls generalisiert in den
+Synapsen und Neuronen gespeichert. Mit Hilfe der \ac{LSTM} Architektur wird
+versucht dieses Verhalten nachzuahmen. 
+
+In einem Netz mit \ac{LSTM}-Einheiten sind diese keine einzelnen
+Neuronen sondern Blöcke aus mehreren Neuronen und Toren. Die Blöcke werden im
+Netz wie ein Neuron behandelt. Sie erhalten alle Eingaben und geben einen Wert
+aus. Aufgrund ihrer verallgemeinerten Erinnerungsfähigkeiten ist es sinnvoll die
+Daten nicht direkt ihre Klassenzugehörigkeit über \ac{LSTM}-Blöcke zu speichern,
+sondern ein weiters Layer hintendran zu schalten, welches die Ausgaben
+verschiedener Blöcke konsolidiert und eine Klasse ausgibt. Damit ist ein
+\ac{LSTM}-Layer ein Hidden-Layer in einer \ac{MLP}-Architektur. Es ist jedoch
+kein weiteres Hidden-Layer nötig. Für das Ausgabe-Layer werden je nach
+Problemstellung unterschiedliche Arten verwendet, z.B. lineare, sigmoidale oder
+Softmax-Layer.
+
+\paragraph{\ac{LSTM}-Block}
+In einem \ac{LSTM}-Block sind ein oder mehrere Erinnerungszellen enthalten. Jede
+dieser Zelle ist mit den gleichen Eingabewerten verbunden. Eine Erinnerungszelle
+behält ihren Zustand indem sie eine rekurrente Verbindung mit dem Gewicht 1 auf
+sich selbst hat (nach der Bedeutung in Trainingsphase \ac{CEC} genannt).
+Dieses Gewicht hat eine zentrale Bedeutung in der globalen Verllgemeinerungsfähigkeit der Zelle, da es nicht die bekannte Zieldaten in
+vorherige Zustände zurückpropagiert wie es klassische \ac{RNN} Netzwerken beim
+Training machen (vgl. \ac{RNN} und Backpropagation \textbf{TODO Zitat von
+Schmidhuber}). Die Eingaben der Zelle werden mit dem vorherigen Wert addiert und
+das Ergebnis wird ausgegeben. Der Wert der Zelle ist somit linear bestimmt. 
+Zusätzlich zur Zelle werden noch verschiedene weitere Bestandteile benötigt. Dies sind die Tore (engl. gate).
+\textbf{Erweiterung mit forgot gate Zitat} In der erweiterten Form von
+\ac{LSTM}-Blöcken gibt es drei verschiedene Gates.
+Diese haben eine eindeutige Funktion und bestimmen so den Zustand des Blocks.
+Jedes Gate erhält anhand einer sigmoidalen Funktion der Eingabewerte einen Wert,
+den es zusammen mit einem weiteren Wert verarbeitet und eine entsprechende
+Ausgabe liefert.
+
 \begin{figure}[htfp]
 	\begin{center}
-	\includegraphics[width=0.3\textwidth]{lstm_block}
-	\caption{Schema eines \acs{LSTM} Blocks}
-	Quelle: \cite{WIKI2013}
+	\includegraphics[width=0.7\columnwidth]{lstm/lstm_block}
+	\caption[\acs{LSTM} Block]{\acs{LSTM} Block mit einer Memoryzelle ohne
+	Peepholes} \tiny Quelle: \cite{WIKI2013}
 	\label{fig:lstm_block}
 	\end{center}
+\end{figure} 
+
+\autoref{fig:lstm_block} zeigt den Aufbau eines \ac{LSTM}-Blocks. Dort werden
+drei unterschiedliche Knotentypen genutzt. Der $\bf\Sigma$-Knoten ist die oben
+beschriebene lineare Memoryzelle. Die vier Knoten in der unteren Zeile sind
+sigmoidale Squashingknoten, um die Eingaben auf für den \ac{LSTM}-Block
+verwertbare Werte zu reduzieren. Die $\Pi$-Knoten sind drei verschiedene Gates,
+die das Verhalten bestimmen. Diese werden nachfolgend näher erläutert.
+\begin{itemize}
+	\item Eingabegate (3. Zeile links)
+	\item Forgotgate (3. Zeile rechts)
+	\item Ausgabegate (1. Zeile)
+\end{itemize}
+Jedes Gate hat zwei Eingaben, welche miteinader multipliziert werden. Da ein
+Wert sigmoidal reduziert wurde, ist das Ergebnis entweder nahe 0 oder nahe 1.
+% Stimmen 1 und 0 Zitat
+Die Gates \textit{öffnen} wenn ihr Ergebnis nahe 1 oder größer ist. Wird das
+Eingabegate geöffnet kann ein neuer Wert zur Erinnerungszelle hinzuaddiert
+werden. Das Eingabegate hat als Eingaben eine Repräsentation der Eingabewerte
+und den sigmoidalen Wert der Eingabewerte. Das Forgotgate schaltet sich zwischen die
+rekurrente Verbindung der Memoryzelle, so sind die Eingaben der Wert der
+Memoryzelle am Zeitpunkt $t-1$ und der sigmoidale Wert der Eingabewerte. Ist es
+geschlossen (also nahe 0) löscht sich der Wert der Zelle.\textbf{TODO} Das 
+Ausgabegate bestimmt wann der Wert der Erinnerungszelle ausgegeben wird. Dabei
+nimmt es den aktuellen Wert der Memoryzelle und den sigmoidalen Wert der
+Eingabewerte aus Eingabe. 
+
+Jede Gateeingaben und die Eingaben werden zu Beginn durch eine sigmoidale
+Squashing Funktion reduziert. Dabei hat jede Eingabe bei jder Funktion ein
+eigenes Gewicht. Somit gibt es $4\cdot Inputdimension$ viele Gewichte für ein
+\ac{LSTM}-Block. 
+
+Eine Erweiterung zu dem vorgestellten \ac{LSTM}-Block sind zusätzlich weitere
+rekurrente Verbindungen (/vgl. cite{Gers2002b}). Diese weiteren rekurrenten
+Verbindungen werden \textit{Peepholes} genannt und verbinden die 
+
+\textbf{TODO Formeln zur Berechnung der Werte}
+
+\subsection{Anwendnug auf Projekt}
+Für das Projekt wurde ein LSTM-Netz erstellt welches konfiguriert wurde:
+
+\begin{itemize}
+\item \textbf{Input Layer} Das Netzwerk hat 64 Inputs.
+\item \textbf{Hidden Layer} Für das Hidden Layer werden 18 LSTM-Neuronen verwendet.
+\item \textbf{Output Layer} Das Output Layer besteht aus 7 Neuronen, die die 
+Softmax Funktion als Aktivierungsfunktion verwenden.
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+   \includegraphics[height=50mm]{lstm/lstm_netz}
+\caption{LSTM-Netz}
+\label{fig:lstm_netz}
 \end{figure}
 
-In \autoref{fig:lstm_block} ist das Schema eines \ac{LSTM} dargestellt. sind die
-verschiedenen Knoten in der unteren Zeile folgendes: Input, Input Gate, Forgot
-Gate, Output Gate. Die drei Gates bestimmen ihrem Namen entsprechend, ob der
-Input in den Block hineingelassen wird, ob der vorhandene Datensatz vergessen
-werden soll oder ob das Datum ausgegeben werden soll. Der erste Knoten dient zur
-Verarbeitung der Inputwerte. Die $\Pi$ Knoten sind zur Berechnung der
-entsprechenden Werte:
 
-links in der zweiten Zeile ist zur Weitergabe des verarbeiteten Inputwertes
-(bei Aktivierung durch das Input Gate wird dieser weitergereicht); der rechte
-$\Pi$ Knoten reicht entweder den gespeicherten Wert des $\Sigma$ Knotens weiter
-oder einen Initialwert bei Aktivierung des Forgot Gates; Der $\Pi$ Knoten in der
-obersten Zeile dient der Weitergabe des gespeicherten Wertes, falls das Output
-Gate aktiviert ist, andernfalls erfolgt keine Aktivierung dieses Knotens. Im
-$\Sigma$ Knoten wird der Wert gespeichert und durch eine Rückverbindung über
-mehrere Schritte erhalten. Wird das Input Gate aktiv, wird $\Sigma$ durch den
-verarbeiteten Input ersetzt, mit einem aktiven Forgot Gate \textit{gelöscht}. 
-
-
-\subsection{Funktionsweise von der \acs{PyBrain} \acs{LSTM} Implementierung}
-\ac{PyBrain}\cite{schaul2010} ist eine Bibliothek für Python und stellt
-verschiedene Module aus dem Bereich des maschinellen Lernes bereit. Dabei
-spielen neuronale Netzwerke eine zentrale Rolle, diese werden in verschiedenen
-Lernmethoden angewendet wie z.B. im Reinforcement, unüberwachten oder
-evolutionären Lernen.
-
-\begin{lstlisting}[caption={Aufbau eines LSTM Netzes},label={lst:lstm_example}]{lst:lstm_example} 
-net = buildNetwork(INPUTS, HIDDEN, OUTPUTS, hiddenclass=LSTMLayer,
-outclass=SigmoidLayer, recurrent=True, bias=True) 
-ds = DATASET 
-trainer = BackpropTrainer(net, ds)
-for _ in range(1000):
-    trainer.train()
-\end{lstlisting}
-
-In \autoref{lst:lstm_example} ist ein Beispiel aufgezeigt wie \ac{PyBrain}
-verwendet werden kann. Es gibt dabei verschiedene Möglichkeiten im Aufbau des
-Netzes (v.a. Anzahl der Neuronen und \ac{LSTM}-Blocks), in der Datenhaltung
-(\ref{sec:lstm_data}) sowie in der Trainingsmethode (z.B. Backpropagation).
-Die \ac{PyBrain} Implmenetierung bringt bereits die Umsetzung der
-\ac{LSTM}-Blocks mit, sodass die konkrete Umsetzung der Blöcke nicht
-durchgeführt werden muss.
-
-\subsection{Verwendetes Datenmodell}
+\subsubsection{Datenaufbereitung}
 \label{sec:lstm_data}
 
-Im \autoref{sec:gestures_dataformat} wird beschrieben wie Gesten aufgenommen und
-abgespeichert werden. Dabei wird ein Trainingsdatenset erzeugt, dass für
-jeden Datensatz eine bestimmte Anzahl an Frames mit je 64 Datenpunkte im
-gewünschten Frequenzbereich enthält. 
+In Kapitel \ref{Kapitel 1 TODO} wird beschrieben wie die Daten aufgenommen und
+im Allgemeinen verarbeitet werden, bevor sie den Klassifikatoren zur
+Verfügung gestellt werden. Diese erhalten jeweils einzelne Frames mit je 64
+Daten. Die Daten entprechen dem Frequenzspektrum im Umfeld der
+Referenzfrequenz von $18500\text{kHz}$. Eine Geste wurde mit 32 Frames
+aufgenommen. Für \ac{LSTM}-Netzwerke sind diese rohen Daten eher ungeignet. Die
+Netzwerke können zwar im Allgemeinen mit unverarbeiteteten Daten umgehen,
+trotzdem ist ein Vorverarbeitung sinnvoll, da sich dadurch die Verallgemeinerung
+des Problems verbessert, die Trainingszeit verkürzt und die benötigten Beispiele
+verringern \textbf{Cite}. Aus diesen Gründen wird eine Vorverarbeitung der Daten
+vorgenommen. 
 
-Für das \ac{LSTM} Netz wird jeder Datensatz als linear aus den einzelnen Frames
-aufgebaut. Dadurch entsteht ein einzelner Eingabevektor inkl. der
-Klassifizierung. Zur Vereinheitlichung und Vergleichbarkeit werden die Daten
-noch normalisiert.
-Dies ist notwendig, da Datensätze unter verschiedenen Bedingungen erzeugt werden
-können, z.B. im lauten Umfeld, andere Anordnung von Mikrofon und Lautsprecher,
-unterschiedlicher Größe der Hände, unterschiedliche Lautstärke, etc. Um
-vergleichbare Daten zu erhalten wird daher die Amplitude der Referenzfrequenz
-als Normailisrungsfaktor verwendet, diese ist i.d.R. am größten. Durch diese
-Normalisierung der Referenzfrequenz auf 1 werden alle weiteren Datenpunkte im
-Intervall zwischen 0 und 1 liegen. Eine weitere Möglichkeit die es zu
-untersuchen gilt, ist die Betrachtung der Abweichung der Amplituden im Verlauf
-der Geste im Vergleich zu einem Frame ohne Geste. Diese Änderungen pro Frame
-können dann anstatt der Originaldaten gelernt werden. Alternativ kann zur
-Unterscheidung von Gesten vom Hintegrundrauschen noch ein Datenset mit
-Hintergrundrauschen genutzt werden. Hier muss sich noch zeigen wie gut das
-\ac{LSTM} Netz ohne diese Daten klassifiziert, je nach Ergebnis wird es noch
-hinzugezogen. 
+Die Beispieldaten sind auf verschiedenen Hardwareplattformen mit
+unterschiedlichen Lautstärke und Aufnahmelautstärke Konfigurationen erzeugt
+worden. Der Wertebereich dieser Daten ist somit groß und unterschiedlich bei
+gleichen Gesten. Das Problem dass durch diese Varianz der Wertemenge entseht
+ist, dass \acp{LSTM} Netze (bzw. jede Form von neuronalen Netzen) die Gewichte
+entsprechend groß kalibirieren muss, um Unterschiede ausgleichen zu können und
+eine verallgemeinertes Ergebnis zu liefern. Da jedoch das (später beschriebene)
+Trainigsverfahren iterativ die Gewichte in kleinen Schritten anpasst, führen
+große Gewichte zu einem hohen Trainingsaufwand. Um dies zu vermeiden werden die
+Daten normalisiert. Konkret wird dabei der Maximalwert eines Frames als
+Normierungsfaktor gewählt. Dadurch liegen alle Werte im Intervall $[0,1]$.
+Eine Transformation \textbf{richtiges Wort?} des Spektrums hin zu den
+Veränderungen der Spektrums im Vergleich zum Ruhespektrum wird ebenfalls
+vorgenommen. Dies wird aufgrund durchgeführter Tests vorgenommen, die eine
+bessere Klassifizierungen für die transformierten Daten bescheinigen
+(\textbf{Tests einbinden}). Der allgemeine Ruhezustand wird aus den Beispielen
+des Ruhzustands (Geste 6 und 7) durch das normalisierte Mittel gewonnen. Der
+Ruhezustand wird dann von jedem Beispiel abgezogen. Es werden hierbei lediglich
+die Beispiele verwendet, denkbar ist jedoch auch die Aufnahme des Ruhezustands
+auf dem Zielgerät, um spezifischere Daten zu erhalten. 
 
-Durch die Erinnerungsmöglichkeit des \ac{LSTM} Netzes ist es möglich die die
-Frames in einer einzeln (d.h. lediglich die 64 Datenpunkte an einem Zeitpunkt)
-in das Netzwerk gegeben werden. Die \ac{LSTM}-Blöcke merken sich dann jeweils
-die verschiedenen vorherigen Eingabedaten und werden daran dann die
-entsprechende Klasse bei neuen Eingaben erkennen. Dazu ist es dann auch nicht
-mehr notwendig, dass die Gestenaufnahme diskret abläuft (je 0,5 Sekunden dem
-Klassifikator zur Verfügung stellen), sie kann auch kontinuierlich ablaufen,
-d.h. jedes neu aufgenommene Frame kann sofort weitergegeben werden und wird vom
-Netz verarbeitet. Mit dem richitgen Erinnerungszeitraum, erkennt das Netz dann
-die Gesten direkt hintereinander bzw. ineinander übergehend. Diese Idee gilt es
-noch zu überprüfen, insbesondere auf die technische Umsetzung (PyBrain
-Parameter korrekt setzen).
+Bei der Betrachtung der Daten fällt auf, dass der Doppler-Effekt in einem
+kleinen Intervall um die Referenzfrequenz auftritt und die Daten außerhalb
+dieses Intervalls keine große Bedeutung spielen. Aus diesem Grund ist eine
+Verkleinerung der Frame Größe in Betracht zu ziehen. Da jedoch eine manuelle
+Betrachtung aller Daten nicht möglich ist, lässt sich diese Beobachtung nicht
+manuell verifzieren. Daher werden mehrere \ac{LSTM}-Netze mit unterschiedlichen
+Inputframelängen trainiert und die Ergebnisse verglichen. \textbf{TODO Tabelle
+mit Ergebnissen} Erstaunlicherweise ist die aufgestellte Vermutung falsch und die
+Netzwerke ohne zugeschnittenen Trainingsdaten klassifizieren besser. 
+\begin{table*}
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+ Fold 		& Cut & Peephole & Neurons & 250 & 500 & 750 & 1000 \\
+ \multirow{12}{*}{1}&\multirow{4}{*}{0}&\multirow{2}{*}{true}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  & &\multirow{2}{*}{false}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  &\multirow{4}{*}{16}&\multirow{2}{*}{true}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  & &\multirow{2}{*}{false}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  &\multirow{4}{*}{24}&\multirow{2}{*}{true}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  & &\multirow{2}{*}{false}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  \multirow{12}{*}{2}&\multirow{4}{*}{0}&\multirow{2}{*}{true}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  & &\multirow{2}{*}{false}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  &\multirow{4}{*}{16}&\multirow{2}{*}{true}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  & &\multirow{2}{*}{false}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  &\multirow{4}{*}{24}&\multirow{2}{*}{true}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  & &\multirow{2}{*}{false}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+\hline
+\end{tabular}
+\caption{Datentests LSTM-Netz}
+\label{tab:inputtests}
+\end{table*}
+Eine weitere Beobachtung die gemacht werden kann ist, dass benachbarte
+Datenpunkte sich nicht wesentlich unterscheiden. Dies kann genutzt werden um die
+Eingabedimension zu verringern, indem z.B. jeweils zwei benachbarte Datenpunkte
+miteinander addiert werden. Dies kann auch mit dem verkleinern der Frames
+kombiniert werden. Um den Einfluss auf das Klassifierzungsverhalten von
+\ac{LSTM}-Netzen zu zeigen sind auch hier Tests durchgeführt worden.
+\textbf{TODO Tabelle mit Ergebnissen} Das Ergebnis zeigt, dass die Netze ohne
+die Summe benachbarter Werte besser klassifizieren als mit der Summe. 
+
+Weitere Methoden der Datenvorverarbeitung wurden ebenfalls untersucht, jedoch
+hat dies die Ergebnisse ebenfalls negativ beeinflusst, weshalb sie nicht näher
+betrachtet wurden. Darunter fällt u.a. die statische Eliminierung von Rauschen.
+Diese Methode setzt jeden Wert der unter einem bestimmten Schwellwert ist zu 0,
+da dies kein signifikanter Beitrag zur Geste ist sondern ein Rauschen. Das
+Ergebnis dieser Untersuchung ist jedoch unbefridigend, sodass die Idee nicht
+genutzt wird. \textbf{TODO Messwerte?}
+ 
 
 
+\subsubsection{Anpassung des Klassifikators}
+\subsubsection{Implementierung}
+Da es zum Ende des Projektes ein Programm geben soll, indem alle Klassifikatoren 
+eingebunden sind, haben sich alle Teilnehmer auf ein Interface geeingtt, was 
+jeder Klassifikator implementieren muss. Dies ist die abstrakte Klasse \textit{IClassifier}.
 
+\textbf{TODO Klassendiagramm}
 
-\nocite{GERS2001,WIKI2013,Schmidhuber2013,LSTM1,Nerbonne1}
+Die Implementation des \ac{LSTM}-Klassifikators ist in der Klasse LSTM zu finden.
+Für diese wurde \cite{PyBrain} verwendet. Diese Bibliothek stellt verschiedene
+Machine Learning Algorithmen bereit, unter anderem Neuronale Netzwerke mit 
+\ac{LSTM}-Neuronen.
+Außerdem wurden in der Datei \texttt{util.py} verschiedene Hilfsfunktionen
+erstellt.
+Des weiteren werden Konfigurationseinstellungen in einer Datei gespeichert und zur 
+initialisierung der geladen. 
+Da beabsichtigt ist mit dem Programm den PC zu steuern, wurde die Python Bibliothek 
+\cite{Python-uinput} eingebunden. Mit dieser können Keycodes an den Kernel geschickt werden.
+Die Bibliothek funktioniert nur unter Linux und erfordert Root-Rechte.
+Im folgenden wird auf die Implementation der einzelnen MEthoden der 
+\textit{IClassifier}-Klasse eingegangen.
+
+\subsubsection*{Live Klassifikation}
+Für die Live Klassifikation wurde zwei verschiedene Ideen implementiert. 
+Bei beiden wird zuerst die \textit{classify} Methode der LSTM-Klasse 
+aufgerufen. Diese bekommt den Datensatz der aktuellen Aufnahme übergeben. 
+Der Datensatz enthält ein Array mit 64-Datenpunkten. Die übergebenen Daten werden 
+Normalisiert und anschließend wird der Durchschnitt abgezogen, wie in Kapitel 
+\autoref{sec:lstm_data} beschrieben. Nachdem die Daten vorbearbeitet wurden, 
+werden diese einer \textit{classify1}-Methode übergeben. 
+\begin{lstlisting}[language=Python,caption={Classify
+Variante 1},label={lst:lstm_classify1}]{lst:lstm_classify1}
+def __classify1(self,data):
+	self.datalist.append(data)
+	self.datanum += 1
+	if(self.datanum % 32 == 0):
+		self.net.reset()
+		out = self._activateSequence(self.datalist)
+		print(str(out))
+		self.datalist = []
+		self.datanum = 0
+		return out
+	return -1
+\end{lstlisting}
+
+Die Methode \textit{classify1} speichert so lange die übergebenen Datenwerte, 
+bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz 
+übergeben und eine Klassifikation gestartet. Da es bei diesem Ansatz passieren kann, 
+dass eine Geste nicht komplett in diesen 32-Werte enthalten ist, wurde ein zweite 
+Idee umgesetzt, welche in der Methode \textit{classify2} umgesetzt ist.
+
+\begin{lstlisting}[language=Python,caption={Classify
+Variante 2},label={lst:lstm_classify2}]{lst:lstm_classify2}
+def __classify2(self, data):
+	self.datanum += 1
+	self.datalist.append(data)
+	if(self.datanum % 32 == 0):
+		self.has32 = True
+	if(self.has32):
+		self.net.reset()
+		Y_pred = self._activateSequence(self.datalist)
+		del self.datalist[0]
+		self.predHistory[0] = Y_pred
+		self.predHistory = np.roll(self.predHistory, -1)
+		expected = stats.mode(self.predHistory, 0)
+		if(expected[1][0] >= self.predHistHalfUpper):
+			if(int(expected[0][0]) != self.previouspredict):
+				oldPrevious, oldPredCounter = self.previouspredict, self.previouspredict
+				self.previouspredict = int(expected[0][0])
+				self.predcounter = 1
+				return oldPrevious, oldPredCounter
+			else:
+				self.predcounter += 1
+				if(self.predcounter == 4):
+					print(str(self.previouspredict))
+					self.outkeys.outForClass(self.previouspredict)
+				return self.previouspredict, self.predcounter
+	return -1, -1
+\end{lstlisting}
+
+Die Methode \textit{classify2} speichert so lange die übergebenen Datenwerte, 
+bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz 
+übergeben und eine Klassifikation gestartet. Die erkannte Geste wird in einer 
+Liste gespeichert. Von dieser Liste wird, mittels der Python-Funktion mode, 
+der Wert ermittelt der am häufigsten vorkommt. Ist dieser Wert größer als eine 
+definierte Schranke wird er in \textit{previouspredict} gespeichert. Wenn vier 
+mal hinter einander die gleiche Geste erkannt wurde, wird diese ausgegeben.
+
+\subsubsection{Training}
+Für das Trainieren von Neuronalen Netzen bietet PyBrain verschiedene 
+Trainer an:
+\begin{itemize}
+\item BackpropTrainer
+\item RPropMinusTrainer
+\end{itemize}
+Da der RPropMinusTrainer eine Erweiterung des BackpropTrainer ist, wurde mit 
+diesem trainiert. Für die verwendung der zu verfügung gestellten Trainer 
+muss ein PyBrain Dataset erstellt werden. Um dieses zu erstellen wurde eine 
+Methode geschrieben. Diese erstellt aus den Aufnahmen ein Dataset. Dazu wird 
+aus den Aufnahmen ein Array generiert. Nach der generierung werden die Daten 
+normalisiert. Anschließend werden noch weitere Schritte durchgeführt, diese 
+sind in Kapitel \autoref{sec:lstm_data} beschrieben und können mit den folgenden 
+Parametern konfiguriert werden:
+\begin{itemize}
+\item \textbf{merge67} Dieser Parameter gibt an, ob die Gesten 6 und 7 
+zusammengefasst werden sollen.
+\item \textbf{average} Definiert ob nach der Normalisierung der Datensätze der 
+Durchschnitt abgezogen wird. 
+\item \textbf{cut} Gibt an um wieviel jeder Datensatz beschnitten wird.
+\item \textbf{fold} Konfiguriert ob jeder der Datensätze verwendet wird oder
+wieviele übersprungen werden.
+\end{itemize} 
+Nach der Erstelung des Datasets wird es gespaltet. Für das Training werden 
+80\% und für die Validierung 20\% verwendet.
+
+Für die Validierung des Netzes wurde eine Methode implementiert, die anahnd 
+des Testsets validiert wie gut das Neuronale Netzwerk die Gesten erkennt. Nach 
+diesem Test wird eine Matrix erstellt, die die Anzahl der richtig erkannten Gesten 
+sowie die Anzahl der falsch erkannten Gesten anzeigt. 
+
+\textbf{TODO MAtrix anzeigen}
+
+\subsubsection{Evaluation}
+Für die Evaluation der Netzwerke ein Testparcour entwickelt. In diesem wird 
+jede der 6 Gesten 10 mal durchgeführt und die Anzahl der Erfolge protokolliert. 
+Dies wurde wurde für jede Klassifikations-Idee durchlaufen. In Tabelle 
+\cite{tab:eval} sind die Ergebnisse festgehalten.
+\begin{table}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+ Geste 		& 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+ \hline
+ classify1  &	&	&	&	&	&	&	\\
+ \hline
+ classify2  &	&	&	&	&	&	&	\\
+\hline
+\end{tabular}
+\caption{Evaluation LSTM-Netz}
+\label{tab:eval}
+\end{table}
+
+Nach den Tests fällt auf das Geste 1, .. sehr gut erkannt werden. Geste .. ..
+jedoch nciht so gut.
+\subsection{Fazit}
+- LSTM (NN) können Eingaben nur synchron verarbeiten und nicht asynchron wie ein
+Gehrin
+- zusätzliche Einflüsse wie Botenstoffe die sich auf die Neuronenaktivität
+auswirken werden ebenfalls nicht nachgebildet. 
+
+\nocite{schaul2010,GERS2001,WIKI2013,Schmidhuber2013,LSTM1,Nerbonne1}

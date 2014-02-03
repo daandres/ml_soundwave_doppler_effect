@@ -48,6 +48,8 @@ def load_dataset(filename=""):
     return ds, testds
 
 def parseNetworkFilename(filename):
+    filename = filename.split('/')
+    filename = filename[-1]
     components = filename.split("_")
     netValues = {}
     for comp in components:
@@ -67,7 +69,7 @@ def parseNetworkFilename(filename):
             netValues['trainer'] = comp[1:]
         elif(comp[0] == "e"):
             netValues['epochs'] = comp[1:]
-        return netValues
+    return netValues
 
 
 

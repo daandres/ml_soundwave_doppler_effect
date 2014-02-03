@@ -1,4 +1,4 @@
-import ui_plot
+import view.ui_plot
 import sys
 from PyQt4 import QtCore, QtGui
 import PyQt4.Qwt5 as Qwt
@@ -91,8 +91,8 @@ class View:
         # application
         self.app = QtGui.QApplication(sys.argv)
 
-        self.win_plot = ui_plot.QtGui.QMainWindow()
-        self.uiplot = ui_plot.Ui_win_plot()
+        self.win_plot = view.ui_plot.QtGui.QMainWindow()
+        self.uiplot = view.ui_plot.Ui_win_plot()
         self.uiplot.setupUi(self.win_plot)
 
         self.curve = Qwt.QwtPlotCurve()
