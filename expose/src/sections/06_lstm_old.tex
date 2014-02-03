@@ -59,6 +59,54 @@ $\Sigma$ Knoten wird der Wert gespeichert und durch eine Rückverbindung über
 mehrere Schritte erhalten. Wird das Input Gate aktiv, wird $\Sigma$ durch den
 verarbeiteten Input ersetzt, mit einem aktiven Forgot Gate \textit{gelöscht}. 
 
+%% not used:
+In einem \ac{LSTM}-Block sind ein oder mehrere Erinnerungszellen (Memoryzellen)
+enthalten. Jede dieser Zelle ist mit den gleichen Eingabewerten verbunden. Eine Erinnerungszelle
+behält ihren Zustand indem sie eine rekurrente Verbindung mit dem Gewicht 1 auf
+sich selbst hat (nach der Bedeutung in Trainingsphase \ac{CEC} genannt).
+Dieses Gewicht hat eine zentrale Bedeutung in der globalen Verllgemeinerungsfähigkeit der Zelle, da es nicht die bekannte Zieldaten in
+vorherige Zustände zurückpropagiert wie es klassische \ac{RNN} Netzwerken beim
+Training machen (vgl. \ac{RNN} und Backpropagation \textbf{TODO Zitat von
+Schmidhuber}). Die Eingaben der Zelle werden mit dem vorherigen Wert addiert und
+das Ergebnis wird ausgegeben. Der Wert der Zelle ist somit linear bestimmt. 
+Zusätzlich zur Zelle werden noch verschiedene weitere Bestandteile benötigt. Dies sind die Tore (engl. gate).
+\textbf{Erweiterung mit forgot gate Zitat} In der erweiterten Form von
+\ac{LSTM}-Blöcken gibt es drei verschiedene Gates.
+Diese haben eine eindeutige Funktion und bestimmen so den Zustand des Blocks.
+Jedes Gate erhält anhand einer sigmoidalen Funktion der Eingabewerte einen Wert,
+den es zusammen mit einem weiteren Wert verarbeitet und eine entsprechende
+Ausgabe liefert.
+
+
+
+ Dort werden
+drei unterschiedliche Knotentypen genutzt. Der $\bf\Sigma$-Knoten ist die oben
+beschriebene lineare Memoryzelle. Die vier Knoten in der unteren Zeile sind
+sigmoidale Squashingknoten, um die Eingaben auf für den \ac{LSTM}-Block
+verwertbare Werte zu reduzieren. Die $\Pi$-Knoten sind drei verschiedene Gates,
+die das Verhalten bestimmen. Diese werden nachfolgend näher erläutert.
+\begin{itemize}
+	\item Eingabegate (3. Zeile links)
+	\item Forgotgate (3. Zeile rechts)
+	\item Ausgabegate (1. Zeile)
+\end{itemize}
+Jedes Gate hat zwei Eingaben, welche miteinader multipliziert werden. Da ein
+Wert sigmoidal reduziert wurde, ist das Ergebnis entweder nahe 0 oder nahe 1.
+Die Gates \textit{öffnen} wenn ihr Ergebnis nahe 1 oder größer ist. Wird das
+Eingabegate geöffnet kann ein neuer Wert zur Erinnerungszelle hinzuaddiert
+werden. Das Eingabegate hat als Eingaben eine Repräsentation der Eingabewerte
+und den sigmoidalen Wert der Eingabewerte. Das Forgotgate schaltet sich zwischen die
+rekurrente Verbindung der Memoryzelle, so sind die Eingaben der Wert der
+Memoryzelle am Zeitpunkt $t-1$ und der sigmoidale Wert der Eingabewerte. Ist es
+geschlossen (also nahe 0) löscht sich der Wert der Zelle.\textbf{TODO} Das 
+Ausgabegate bestimmt wann der Wert der Erinnerungszelle ausgegeben wird. Dabei
+nimmt es den aktuellen Wert der Memoryzelle und den sigmoidalen Wert der
+Eingabewerte aus Eingabe. 
+
+Jede Gateeingaben und die Eingaben werden zu Beginn durch eine sigmoidale
+Squashing Funktion reduziert. Dabei hat jede Eingabe bei jder Funktion ein
+eigenes Gewicht. Somit gibt es $4\cdot Inputdimension$ viele Gewichte für ein
+\ac{LSTM}-Block. 
 
 \subsection{Funktionsweise von der \acs{PyBrain} \acs{LSTM} Implementierung}
 \ac{PyBrain}\cite{schaul2010} ist eine Bibliothek für Python und stellt
