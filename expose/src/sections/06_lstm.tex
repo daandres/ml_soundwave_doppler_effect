@@ -108,7 +108,9 @@ Arten verwendet, z.B. lineare, sigmoidale oder Softmax-Layer.
 \end{figure*}  
 
 \autoref{fig:lstm_block} zeigt den schematischen Aufbau eines \ac{LSTM}-Blocks
-nach \cite{Gers2002b}. Der Block besteht dabei aus mehreren Komponenten: 
+nach \cite{Gers2002b}. Der Block besteht dabei aus mehreren Komponenten. Dese
+werden anhand ihrer Berechnung bei einem \textit{vorwärts} Durchlauf der Daten
+erläutert.
 \begin{itemize}
 	\item Eingabewerte $y_m(t-1)$
 	\item Zelleingang $z_c$ berechnet durch \autoref{eq_lstm_in}
@@ -161,7 +163,11 @@ $y\approx1$). Somit kontrolliert das Inputgate (\autoref{eq_lstm_cs} zweiter
 Teil, zweiter Summand), ob neue Werte die Memoryzelle erreichen, das Forgetgate
 (\autoref{eq_lstm_cs} zweiter Teil vorne), ob der vorherige Zustand erhalten
 bleibt oder nicht berücksichtigt wird und das Outputgate (\autoref{eq_lstm_out})
-wann ein Zustand der Memoryzelle ausgegeben wird.
+wann ein Zustand der Memoryzelle ausgegeben wird. Grundsätzlich hat jeder
+Eingang in den \ac{LSTM}-Block inklusive der Eingänge der Gates ein eigenes
+Gewicht. Diese sind mit $w_{i,m}$ benannt, wobei $i$ der Eingang oder das Gate
+repräsentiert und $m$ der index über die Eingabeimension ist. Daher hat ein
+\ac{LSTM}-Block $4\cdot Eingabedimension$ viele Gewichte. 
 
 \acp{LSTM} werden durch ihre autorekurrente Verbindung der Memoryzelle zu
 \acp{RNN}. Diese rekurrente Verbindung ist besonders, da sie beim Training
@@ -173,11 +179,32 @@ Gewicht auf $\approx0$ andernfalls behält es den aktuellen Wert des gewichts mi
 $\approx1$ bei. 
 
 Eine Erweiterung zu dem vorgestellten \ac{LSTM}-Block sind zusätzlich weitere
-rekurrente Verbindungen (/vgl. cite{Gers2002b}). Diese weiteren rekurrenten
-Verbindungen werden \textit{Peepholes} genannt und verbinden die 
+rekurrente Verbindungen (vgl. \cite{Gers2002b}). Diese weiteren rekurrenten
+Verbindungen werden \textit{Peepholes} genannt und verbinden die die Memoryzelle
+zusätzlich zu den Gates, sodass sich die \autoref{eq_lstm_gate} für die Gateaktivierung
+wie folgt ändert:
+% Gate Allgemein
+\begin{equation}
+\label{eq_lstm_gate_peephole}
+\begin{split}
+z_{gate}(t) &= \sum \limits_{m} w_{gate,m}y_m(t-1) \\
+			&+ w_{gate,c} s_c(t-1)
+\end{split}
+\end{equation}
 
-\textbf{tODO Peepholes, Gewichte der Gates, Anzahl Memoryzellen pro Block,
-FOrward Pass, Trainingalgo}
+$w_{gate,c}$ ist dabei das Gewicht der rekurrenten Verbindung von der
+Memoryzelle zum Gate. Peepholeverbinsung machen auf diese Art die Information
+der Memoryzelle den Gates verfügbar und können so das Netzwerk verbessern
+\cite{Gers2002b}. 
+
+Der beschriebene \ac{LSTM}-Block enthält eine einzelne Memoryzelle. Denkbar sind
+jedoch Blöcke mit mehreren Memoryzellen, die sich dann die die drei Gates
+teilen. Auch sind hier Peepholeverbinsungen möglich, die Gates berücksichtigen
+dann alle Werte der Memoryzellen. Dieser Ansatz wird in der Ausarbeitung nicht
+weiter betrachtet. 
+
+\paragraph{Training eines \ac{LSTM} Netzes}\\
+\textbf{TODO}
 
 \subsection{Anwendnug auf Projekt}
 Für das Projekt wurde ein LSTM-Netz erstellt welches konfiguriert wurde:
