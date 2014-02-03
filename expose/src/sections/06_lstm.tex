@@ -136,7 +136,40 @@ verifzieren. Daher werden mehrere \ac{LSTM}-Netze mit unterschiedlichen
 Inputframelängen trainiert und die Ergebnisse verglichen. \textbf{TODO Tabelle
 mit Ergebnissen} Erstaunlicherweise ist die aufgestellte Vermutung falsch und die
 Netzwerke ohne zugeschnittenen Trainingsdaten klassifizieren besser. 
-
+\begin{table*}
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+ Fold 		& Cut & Peephole & Neurons & 250 & 500 & 750 & 1000 \\
+ \multirow{12}{*}{1}&\multirow{4}{*}{0}&\multirow{2}{*}{true}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  & &\multirow{2}{*}{false}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  &\multirow{4}{*}{16}&\multirow{2}{*}{true}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  & &\multirow{2}{*}{false}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  &\multirow{4}{*}{24}&\multirow{2}{*}{true}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  & &\multirow{2}{*}{false}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  \multirow{12}{*}{2}&\multirow{4}{*}{0}&\multirow{2}{*}{true}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  & &\multirow{2}{*}{false}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  &\multirow{4}{*}{16}&\multirow{2}{*}{true}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  & &\multirow{2}{*}{false}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  &\multirow{4}{*}{24}&\multirow{2}{*}{true}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+  & &\multirow{2}{*}{false}&16&	&	&	&	\\
+  & & &18&	&	&	&	\\
+\hline
+\end{tabular}
+\caption{Datentests LSTM-Netz}
+\label{tab:inputtests}
+\end{table*}
 Eine weitere Beobachtung die gemacht werden kann ist, dass benachbarte
 Datenpunkte sich nicht wesentlich unterscheiden. Dies kann genutzt werden um die
 Eingabedimension zu verringern, indem z.B. jeweils zwei benachbarte Datenpunkte
@@ -278,7 +311,26 @@ sowie die Anzahl der falsch erkannten Gesten anzeigt.
 \textbf{TODO MAtrix anzeigen}
 
 \subsubsection{Evaluation}
+Für die Evaluation der Netzwerke ein Testparcour entwickelt. In diesem wird 
+jede der 6 Gesten 10 mal durchgeführt und die Anzahl der Erfolge protokolliert. 
+Dies wurde wurde für jede Klassifikations-Idee durchlaufen. In Tabelle 
+\cite{tab:eval} sind die Ergebnisse festgehalten.
+\begin{table}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+ Geste 		& 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+ \hline
+ classify1  &	&	&	&	&	&	&	\\
+ \hline
+ classify2  &	&	&	&	&	&	&	\\
+\hline
+\end{tabular}
+\caption{Evaluation LSTM-Netz}
+\label{tab:eval}
+\end{table}
 
+Nach den Tests fällt auf das Geste 1, .. sehr gut erkannt werden. Geste .. ..
+jedoch nciht so gut.
 \subsection{Fazit}
 
 
