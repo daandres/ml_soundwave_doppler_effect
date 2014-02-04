@@ -3,12 +3,6 @@ from threading import Thread, Event
 from visualizer import View
 import properties.config as c
 
-# bob
-import ntpath
-from ui_bob_visualizer import ViewUIBob
-# bob end
-
-
 class Console:
     def __init__(self, recorder=None, soundplayer=None, applicationClose=None, setFileName=None, getFileName=None):
         if recorder == None:
@@ -43,7 +37,7 @@ class Console:
 
     def getClassificator(self, name):
         if(name == ""):
-            raise Exception("No classificator specified")
+            raise Exception("No classificator specified, see usage 'h'")
         elif(name == "lstm"):
             if(name not in self.classificators):
                 from classifier.lstm.lstm import LSTM
@@ -63,6 +57,19 @@ class Console:
                 from classifier.trees.Trees import Trees
                 treeConfig = c.getInstance().getConfig("trees")
                 cl = Trees(self.recorder, treeConfig)
+                self.classificators[name] = cl
+            cl = self.classificators[name]
+        elif(name == "hmm"):
+            if(name not in self.classificators):
+                from classifier.hmm.gestureApplication import HMM
+                #hmmConfig = c.getInstance().getConfig("hmm")
+                cl = HMM(self.recorder)
+                self.classificators[name] = cl
+            cl = self.classificators[name]
+        elif(name == "kmeans"):
+            if(name not in self.classificators):
+                from classifier.k_means.kMeans import KMeans
+                cl = KMeans(self.recorder)
                 self.classificators[name] = cl
             cl = self.classificators[name]
         else:
@@ -96,9 +103,6 @@ class Console:
         self.key_bindings['e'] = self.exit
         self.key_bindings['h'] = self.printHelp
         self.key_bindings['g'] = self.view
-        # bob so you can see bob GUI
-        self.key_bindings["gg"] = self.viewBob
-        # bob end
         self.key_bindings['u'] = self.selectClassifier
         self.key_bindings['c'] = self.classifyStart
         self.key_bindings['t'] = self.trainingStart
@@ -175,12 +179,6 @@ class Console:
     def view(self, command):
         self.view = View(self.recorder, self.viewCallback)
         self.view.startNewThread()
-    # bob
-    def viewBob(self, command):
-        self.viewUiBOB = ViewUIBob(self.recorder, self.viewCallback)
-        # self.viewUiBOB = ViewUIBob(self.viewCallback)
-        self.viewUiBOB.startNewThread()
-    # bob end
 
     def viewCallback(self, code):
         print("View closed with code " + str(code))
@@ -199,11 +197,11 @@ class Console:
         pass
 
     def selectClassifier(self, args):
-#         try:
-        self.classificator = self.getClassificator(args[1])
-        print("Using now classificator " + self.classificator.getName())
-#         except Exception as e:
-#             print("Classifier not known: " + args[1] + "; " + str(e))
+        try:
+            self.classificator = self.getClassificator(args[1])
+            print("Using now classificator " + self.classificator.getName())
+        except Exception as e:
+            print("" + args[1] + " " + str(e))
 #             raise e
         self.inputEvent.set()
 

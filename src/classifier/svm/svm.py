@@ -33,11 +33,15 @@ class SVM(IClassifier):
     NUM_SAMPLES_PER_FRAME = 64  #config.leftBorder + config.rightBorder
 
     def __init__(self, recorder=None, config=None, relative=""):
-        self.classifier = self.load("classifier/svm/svm_trained.pkl")
+        self.path = "classifier/svm/svm_trained.pkl"
+        self.classifier = self.load(self.path)
         self.datalist = []
         self.datanum = 0
         self.num_gestures = 7
         self.nClasses = 7
+        self.new = False
+        self.framerange = 20
+        self.threshold = 0.04
         self.data, self.targets, self.avg = self.loadData() #, self.avg
         self.kernel = "poly"
         self.c = 1
@@ -46,7 +50,6 @@ class SVM(IClassifier):
         self.coef0 = 1
 
         self.predicted = False
-        self.predHistory = []
 
         self.found = False
         self.index = 0
@@ -154,11 +157,10 @@ class SVM(IClassifier):
         normalized_data = normalized_data_with_noise[left_border:right_border] - self.noise_frame[
                                                                                  left_border:right_border]
 
-        frame = normalized_data ** 2
-        irrelevant_samples = np.where(frame <= 0.025)
+        frame = normalized_data
+        irrelevant_samples = np.where(frame <= self.threshold)
         frame[irrelevant_samples] = 0.0
 
-        rr = 20  # whats that?!?
         self.datalist.append(frame)
         self.datanum += 1
 
@@ -166,21 +168,26 @@ class SVM(IClassifier):
             self.index = self.datanum
             self.found = True
 
-        if self.index + rr == self.datanum and self.found == True:
+        if self.index + self.framerange == self.datanum and self.found == True:
             self.index = 0
             self.found = False
 
-            current_frameset = np.asarray(self.datalist[-rr:])
-            tmp_relevant_frameset = []
-            for frame_nr in range(len(current_frameset)):
-                if np.amax(current_frameset[frame_nr]) > 0.0:
-                    tmp_relevant_frameset.append(current_frameset[frame_nr])
-
-            relevant_frameset = np.asarray(tmp_relevant_frameset, dtype=np.float64)
-
-            gesture_frame = np.zeros(sliced_num_samples_per_frame)
-            for frame in relevant_frameset:
-                gesture_frame += frame
+            current_frameset = np.asarray(self.datalist[-self.framerange:])
+#===============================================================================
+#             tmp_relevant_frameset = []
+#             for frame_nr in range(len(current_frameset)):
+#                 if np.amax(current_frameset[frame_nr]) > 0.0:
+#                     tmp_relevant_frameset.append(current_frameset[frame_nr])
+# 
+#             relevant_frameset = np.asarray(tmp_relevant_frameset, dtype=np.float64)
+# 
+#             gesture_frame = np.zeros(sliced_num_samples_per_frame)
+#             for frame in relevant_frameset:
+#                 gesture_frame += frame
+#===============================================================================
+                
+                
+            gesture_frame = current_frameset.sum(axis=0)
 
             try:
                 normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
@@ -193,12 +200,6 @@ class SVM(IClassifier):
         if self.datanum > sliced_num_samples_per_frame:
             del self.datalist[0]
 
-
-    def createArraySix(self, dim):
-        array = np.zeros((dim,))
-        for i in range(dim):
-            array[i] = 6
-        return array
 
     def getAverage(self):
         g = GestureFileIO()
@@ -249,43 +250,15 @@ class SVM(IClassifier):
 
         print ""
 
-
-    def classify3(self, data):
-        normalizedData = data / np.amax(data)
-        diffAvgData = normalizedData - self.avg
-
-        self.datanum += 1
-        self.datalist.append(diffAvgData)
-        if (self.datanum % 32 == 0):
-            self.has32 = True
-        if (self.has32):
-            b = np.asarray(self.datalist[0:32]).reshape(2048, )
-            Y_pred = self.classifier.predict(b)[0]
-            self.predHistory[0] = Y_pred
-            self.predHistory = np.roll(self.predHistory, -1)
-            expected = stats.mode(self.predHistory, 0)
-            if (expected[1][0] >= self.predHistHalfUpper):
-            #             if(not (np.shape(expected[0])[0] >= 2)):
-                if (int(expected[0][0]) != self.previouspredict):
-                    self.previouspredict = int(expected[0][0])
-                    print self.previouspredict
-                    #                 self.datanum = 0
-                    #                 self.datalist = []
-                    #                 self.has32 = False
-                    #             else:
-            del self.datalist[0]
-
-
     def getName(self):
         return "SVM"
 
-    def startClassify(self):
-        pass
 
     def startTraining(self, args=[]):
         classifier = svm.SVC(kernel=self.kernel, C=self.c, gamma=self.gamma, degree=self.degree, coef0=self.coef0)
         classifier.fit(self.data, self.targets)
-        joblib.dump(classifier, 'classifier/svm/svm_trained.pkl', compress=9)
+        joblib.dump(classifier, self.path, compress=9)
+        self.classifier = classifier
 
 
     def startValidation(self):
@@ -423,4 +396,4 @@ class SVM(IClassifier):
         pass
 
     def printClassifier(self):
-        return
+        print self.path

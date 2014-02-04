@@ -6,9 +6,6 @@ import pyaudio
 from threading import Timer, Thread
 import time
 
-#bob
-import classifier.k_means.kMeans_Helper as kmHelper
-#bob end
 
 class SwhRecorder:
     """Simple, cross-platform class to record from the microphone."""
@@ -39,13 +36,6 @@ class SwhRecorder:
         self.classifyFlag = False
         self.classifier = None
 
-
-        #bob
-        self.kmH = kmHelper.kMeansHepler()
-        self.kmeans = None
-        self.checkOnline = False
-        self.startBuffern = False
-        #bob end
 
     def setup(self):
         """initialize sound card."""
@@ -186,76 +176,8 @@ class SwhRecorder:
         """ frequency to index-> frequency * buffersize / framerate """
         self.transformedData = xs, ys
 
-        #bob
-        if self.startBuffern:  
-            data = self.transformedData[1]
-            self.bufferArray = np.roll(self.bufferArray, 1, axis=0)
-            self.bufferArray[0] = self.transformedData[1]#self.kmH.normalizeSignalLevel(data, 800, 10)
-            if self.checkOnline:
-                maxV = np.amax(self.bufferArray[0])
-                if True:#(np.sum(self.bufferArray[0] > maxV * 0.15)) - 1 > 6:
-                    #print self.bufferArray.reshape(32*(self.idxRight -self.idxLeft),).shape
-                    result = []
-                    '''
-                    outBoolArray =  self.kmH.segmentInputData(self.bufferArray, 16, .15, 6, normalize=True)
-                    if outBoolArray is not None:
-                        #print outBoolArray.shape
-                        result = self.kmH.reduceDimensionality(outBoolArray, 16, twice=True, thrice=True)
-                        if result is not None:
-                            #print result.shape
-                            result = np.asarray(result)
-                            result = result.reshape(result.shape[0]*result.shape[1])
-                            result = np.asarray(result)
-                            #self.learnArray.append(result)
-                            #self.learnArrayKMeans.append(result)
-                    else:
-                        print 'array empty !!!'                    
-                    '''
-                    #tmp = self.bufferArray[0:16]
-                    #print 'tmp.shape ', tmp.shape
-                    result = self.kmH.reduceDimensionality(self.bufferArray)
-                    #print 'result : \n', self.bufferArray[0] 
-                    if result is not None:
-                            #print result.shape
-                            result = np.asarray(result)
-                            result = result.reshape(result.shape[0]*result.shape[1])
-                            #result = np.asarray(result)
-                    
-                    if len(result) == 32:
-                        #print result, ' , '
-                        self.kMeansOnline(result)
-                    else:
-                        print 'len(result) : ', len(result)
-        #bob end
-        
+
     def getTransformedData(self):
         # print("get " + str(time.time()))
         return self.transformedData
 
-    #bob
-    def fillBuffer(self, bufferSize, callback):
-        self.idx = 0
-        self.progress = 0.0
-        self.bufferSize = bufferSize
-        #self.bufferArray = np.zeros((self.bufferSize, self.idxRight -self.idxLeft))
-        self.bufferArray = np.zeros((self.bufferSize, 64))
-        self.startBuffern = True
-        self.callback = callback
-        print 'fillBuffer'
-        print self.bufferArray.shape
-        
-    def getBuffer(self):
-        return self.bufferArray
-    
-    def setKMeans(self, kMeans, binaryVal, perCent):
-        self.kmeans = kMeans
-        
-    def kMeansOnline(self, checkArray):
-        twice = [checkArray]
-        class_  = self.kmeans.predict(checkArray)
-        print class_
-        
-    def checkKMeansOnline(self):
-        self.checkOnline = not self.checkOnline
-        
-    #bob end
