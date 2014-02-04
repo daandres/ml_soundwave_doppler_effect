@@ -9,13 +9,40 @@ beschäftigte er sich als erster mit einer statistischen Beschreibung von Zustan
 Er führte eine statistische Analyse der Buchstabenfolge des Textes ``Eugen Onegin'' von Alexander 
 Pushkin.
 
-Der amerikanischen Mathematiker Leonard E. Baum (* 1931) und andere autoren beschäftigten sich Ende der 
-sechziger Jahre erstmals mit \acl{HMM}. Erste Programme wurden zur Spracherkennung und später auch in der Bioinformatik  
+Der amerikanischen Mathematiker Leonard E. Baum (* 1931) und andere Autoren erweiterten dieses Konzept Ende der 
+sechziger Jahre und nannten es \acl{HMM}. Erste \acl{HMM}-Applikationen wurden zur Spracherkennung und später auch in der Bioinformatik 
+zur Analyse von Nukleotid- und Proteinsequenzen eingesetzt. 
  
+\subsection{Markov-Ketten}
+Markov-Ketten funktionieren so \ldots kling komisch, ist aber so
 
-\subsection{Funktionsweise}
+
+\subsection{\acl{HMM} und \acl{GMM}}
 \acl{HMM} erweitern das Konzept der Markov-Ketten um eine zustandsspezifische Ausgabe und eine statistisch 
 modellierte Zustandsfolge.
 
+    dp = d.DataUtil()
+    data= dp.loadRaw3dGesture(gesture)
+    data = dp.reduceBins(data)
+    data = dp.normalize(data)
+    data = dp.normalizeBound(data)
+    data = dp.cutRelevantAction(data)
+    data = dp.round(data)
+    data = dp.cutBad(data)
+\subsection{Datenvorbereitung}
+Ziel war es zuallererst die Datenmenge zu reduzieren, um das Trainingergebnis zu verbessern bzw. schneller zu machen.
+\textbf{reduceBins} Da sich Änderungen durch eine Bewegung sehr Nahe am gesendeten werden die Frames  
+Dazu wird jede Geste auf einem Intervall von 0 bis 1 normalisiert (Geteilt durch den jeweiligen Maximalwert) 
+und alle Werte unterhalb einer Grenze (0.1) abgeschnitten, um das Rauschen zu vermindern. 
+So wird im Idealfall nur das gesendete Signal und Frequenzänderungen durch eine Geste dargestellt.
+Wichtig ist nun den Beginn und das Ende einer Geste zu finden, hierzu werden pro Frame die Werte addiert 
+und das Maximum wird als Mittelpunkt der Geste genutzt, sodass  
+Wir haben normiert, sequenziert und zusammegedampft
 
-\ubsection
+
+\subsection{Implementierung}
+Wir haben uns für die scipy HMM implementierung entschieden. 
+Genutzt wird ein \acl{HMM} mit \acl{GMM} entschieden.
+
+
+\subsection{Evaluation und Fazit}
