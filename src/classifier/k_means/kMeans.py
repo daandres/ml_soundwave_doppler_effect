@@ -1,7 +1,7 @@
 from classifier.classifier import IClassifier
 
 import numpy as np
-import classifier.k_means.kMeansHelper as kmHelper
+import kMeansHelper as kmHelper
 
 
 
@@ -30,7 +30,6 @@ class KMeans(IClassifier):
 
  
     def startTraining(self, args=[]):
-        import ntpath
         from view.ui_kmeans_visualizer import ViewUIKMeans
         self.viewUiKmeans_ = ViewUIKMeans(self, self.getName)
         self.viewUiKmeans_.startNewThread()
@@ -39,50 +38,25 @@ class KMeans(IClassifier):
 
  
     def classify(self, data):
-        self.currentRecordFrame = data
-        #bob
+
         if self.startBuffern:  
-            data = self.currentRecordFrame
             self.bufferArray = np.roll(self.bufferArray, -1, axis=0)
             self.bufferArray[15] = self.kmH.normalizeSignalLevelSecond(data)
             if self.checkOnline:
-                #maxV = np.amax(self.bufferArray[0])
-                if True:#(np.sum(self.bufferArray[0] > maxV * 0.15)) - 1 > 6:
-                    #print self.bufferArray.reshape(32*(self.idxRight -self.idxLeft),).shape
-                    result = []
-                    '''
-                    outBoolArray =  self.kmH.segmentInputData(self.bufferArray, 16, .15, 6, normalize=True)
-                    if outBoolArray is not None:
-                        #print outBoolArray.shape
-                        result = self.kmH.reduceDimensionality(outBoolArray, 16, twice=True, thrice=True)
-                        if result is not None:
-                            #print result.shape
-                            result = np.asarray(result)
-                            result = result.reshape(result.shape[0]*result.shape[1])
-                            result = np.asarray(result)
-                            #self.learnArray.append(result)
-                            #self.learnArrayKMeans.append(result)
-                    else:
-                        print 'array empty !!!'                    
-                    '''
-                    #tmp = self.bufferArray[0:16]
-                    #print 'tmp.shape ', tmp.shape
-                    result = self.kmH.reduceDimensionality(self.bufferArray)
-                    #print 'result : \n', self.bufferArray[0] 
-                    if result is not None:
-                            #print result.shape
-                            result = np.asarray(result)
-                            result = result.reshape(result.shape[0]*result.shape[1])
-                            #result = np.asarray(result)
-                    
-                    if len(result) == self.kmeans.cluster_centers_.shape[1]:
-                        #print result, ' , '
-                        self.kMeansOnline(result)
-                    else:
-                        print 'len(result) : ', len(result)
-        #bob end
+                result = self.kmH.reduceDimensionality(self.bufferArray)
+                #print 'result : \n', self.bufferArray[0] 
+                if result is not None:
+                        #print result.shape
+                        result = np.asarray(result)
+                        result = result.reshape(result.shape[0]*result.shape[1])
+                        #result = np.asarray(result)
+                
+                if len(result) == self.kmeans.cluster_centers_.shape[1]:
+                    #print result, ' , '
+                    self.kMeansOnline(result)
+                else:
+                    print 'len(result) : ', len(result)
         
-
  
     def startValidation(self):
         pass
