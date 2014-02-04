@@ -46,7 +46,6 @@ class SVM(IClassifier):
         self.coef0 = 1
 
         self.predicted = False
-        self.predHistory = []
 
         self.found = False
         self.index = 0
@@ -194,12 +193,6 @@ class SVM(IClassifier):
             del self.datalist[0]
 
 
-    def createArraySix(self, dim):
-        array = np.zeros((dim,))
-        for i in range(dim):
-            array[i] = 6
-        return array
-
     def getAverage(self):
         g = GestureFileIO()
         avg = g.getAvgFrequency()
@@ -249,33 +242,6 @@ class SVM(IClassifier):
 
         print ""
 
-
-    def classify3(self, data):
-        normalizedData = data / np.amax(data)
-        diffAvgData = normalizedData - self.avg
-
-        self.datanum += 1
-        self.datalist.append(diffAvgData)
-        if (self.datanum % 32 == 0):
-            self.has32 = True
-        if (self.has32):
-            b = np.asarray(self.datalist[0:32]).reshape(2048, )
-            Y_pred = self.classifier.predict(b)[0]
-            self.predHistory[0] = Y_pred
-            self.predHistory = np.roll(self.predHistory, -1)
-            expected = stats.mode(self.predHistory, 0)
-            if (expected[1][0] >= self.predHistHalfUpper):
-            #             if(not (np.shape(expected[0])[0] >= 2)):
-                if (int(expected[0][0]) != self.previouspredict):
-                    self.previouspredict = int(expected[0][0])
-                    print self.previouspredict
-                    #                 self.datanum = 0
-                    #                 self.datalist = []
-                    #                 self.has32 = False
-                    #             else:
-            del self.datalist[0]
-
-
     def getName(self):
         return "SVM"
 
@@ -286,6 +252,7 @@ class SVM(IClassifier):
         classifier = svm.SVC(kernel=self.kernel, C=self.c, gamma=self.gamma, degree=self.degree, coef0=self.coef0)
         classifier.fit(self.data, self.targets)
         joblib.dump(classifier, 'classifier/svm/svm_trained.pkl', compress=9)
+        self.classifier = classifier
 
 
     def startValidation(self):
