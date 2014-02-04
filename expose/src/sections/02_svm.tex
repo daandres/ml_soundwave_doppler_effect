@@ -1,9 +1,7 @@
 \section{Support Vector Machine}
 \textit{Manuel Dudda, Benjamin Weißer}
 
-\subsection{Optimale Trennung}
-
-Im Jahr 1958 veröffentlichte der Psycholge und Informatiker Frank Rosenblatt sein entwickeltes Konzept des Perzeptrons \cite{Rosenblatt}. 
+Im Jahr 1958 veröffentlichte der Psycholge und Informatiker Frank Rosenblatt sein entwickeltes Konzept des Perzeptrons \cite{rosenblatt58a}. 
 Die Idee entstammt der Neurobiologie und simuliert die Funktionsweise eines menschlichen Gehirns. 
 Perzeptronen sind vereinfachte künstliche neuronale Netze, bestehend aus mehreren künstlichen Neuronen, die ein formales Modell einer Nervenzelle beschreiben. 
 In der Grundversion besteht ein Perzeptron aus einem einzigen Neuron. 
@@ -11,27 +9,28 @@ Es verarbeitet einen Eingabevektor zu einer Ausgabe.
 Anhand eines Schwellwertes wird entschieden, ob das Neuron "{}feuert"{} oder nicht. 
 Bei der Verarbeitung des Eingabevektors wird für jede Komponente eine Gewichtung berücksichtigt, sodass die Ausgabe auf gewisse Eingaben eingestellt werden kann. 
 Mehrlagige Perzeptronen (MLP) sind in der Lage, Eingabevektoren in Ausgabevektoren umzuwandeln. 
-Die jeweiligen Gewichtungen können so eingestellt werden, dass der Eingabevektor in einen bestimmten Ausgabevektor umgewandelt wird. 
-Abbildung XX zeigt, wie ein einfaches Perzeptron die UND-Funktion realisiert und visualisiert die Klassifizierungsentscheidung in einem Koordinatensystem. 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[height=50mm]{svm/svm_1.png}
+    \includegraphics[height=40mm]{svm/svm_1.png}
     \caption{AND-Perzeptron und Raum (Platzhalterbild)}
-    \label{fig:svm1}
+    \label{fig:perceptron_and}
 \end{figure}
 
-Einlagige Perzeptronen sind beschränkt auf die Lösung linear separierbarer Probleme. 
-Ein einfaches XOR kann also nicht realisiert werden.  
+Die jeweiligen Gewichtungen können so eingestellt werden, dass der Eingabevektor in einen bestimmten Ausgabevektor umgewandelt wird. 
+Abbildung \ref{fig:perceptron_and} zeigt, wie ein einfaches Perzeptron die UND-Funktion realisiert und visualisiert die Klassifizierungsentscheidung in einem Koordinatensystem. 
 
-Mit einem Trick, der Erhöhung der Dimension, können mehrlagige Perzeptronen auch nichtlinear separierbare Probleme lösen. 
-So lässt sich bspw. das XOR-Problem in einem 3-dimensionalen Raum durch eine Hyperebene trennen.
+Einlagige Perzeptronen sind beschränkt auf die Lösung linear separierbarer Probleme. 
+Ein einfaches XOR kann also nicht realisiert werden (Abb. \ref{fig:perceptron_xor}). 
 
 \begin{figure}[htbp] \centering
     \includegraphics[height=50mm]{svm/svm_1.png}
     \caption{XOR-Perzeptron-Raum, nichtlinear separierbar (Platzhalterbild)}
-    \label{fig:svm1}
+    \label{fig:perceptron_xor}
 \end{figure}
 
+
+Mit einem Trick, der Erhöhung der Dimension, können mehrlagige Perzeptronen auch nichtlinear separierbare Probleme lösen. 
+So lässt sich bspw. das XOR-Problem in einem 3-dimensionalen Raum durch eine Hyperebene trennen.
 
 Die Wahl der richtigen Gewichte ist dabei nicht einfach, für komplexere Problemstellungen schier unmöglich. 
 Um dennoch eine Problemlösung zu modellieren, die Eingaben richtig klassifiziert, gibt es einen Algorithmus, der die Gewichte automatisch anpasst.
@@ -56,14 +55,14 @@ die in einem Koordinatensystem betrachtet die Daten räumlich in zwei Klassen tr
 
 
 Die Gerade (Hyperebene im mehrdimensionalen Raum) trennt die Merkmalsräume bestmöglich und dient als Entscheidungsfunktion für die Klassifikation. Sie ist gegeben durch den Normalenvektor $w$ und dem sogenannten Bias $b$, dem Abstand der Ebene zum Ursprung. Diese Form erweist sich also besonders praktisch, da durch Einsetzen von $x$ der direkte Abstand zur Hyperbene resultiert.
-Intuitiv ist klar, dass alle Punkte auf der Hyperebene selbst keinen Abstand haben, die Formel der Hyperebene lautet demnach: 
+Intuitiv ist klar, dass alle Punkte auf der Hyperebene selbst keinen Abstand haben, die Formel der Hyperebene (\ref{eq:svm_hyperplane}) lautet demnach: 
  
 \begin{equation}
 \label{eq:svm_hyperplane}
     \mathcal{H}: \{ x \,|\, \langle w,x \rangle + b = 0 \}
 \end{equation}
  
-Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die SVM die Eingabe einer Klasse zu. 
+Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die SVM die Eingabe einr Klasse zu. Dabei können nur zwei Klassen  prognostiziert werden. Die Klasse gehört also entweder zur Klassenmenge \ref{eq:svm_decision0} oder zu \ref{eq:svm_decision1}.
 
 \begin{equation}
 \label{eq:svm_decision0}
@@ -75,7 +74,14 @@ Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die SVM die Eingabe
     \mathcal{C}_1: \{ c \,|\, sign(\langle w,x \rangle + b) = 1 \}
 \end{equation}
 
-Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. XX). 
+Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. \ref{fig:svm_separator}). 
+
+\begin{figure}[htbp] \centering
+    \includegraphics[height=50mm]{svm/svm_1.png}
+    \caption{XOR-Perzeptron-Raum, nichtlinear separierbar (Platzhalterbild)}
+    \label{fig:svm_separator}
+\end{figure}
+
 Die Stützvektoren bilden das tragende Konstrukt der Entscheidungsfunktion. 
 Alle andere Merkmalsvektoren haben keinen Einfluss auf die Trennung, was die Namensgebung der Stützvektoren begründet. 
 Das macht die SVM zu einem sehr transparenten und performantent Klassifikator. 
@@ -85,12 +91,12 @@ Das macht die SVM zu einem sehr transparenten und performantent Klassifikator.
 Es ergeben sich Unregelmäßigkeiten bei der Lösung von nichtlinear separierbaren Probleme und der Klassifikation von mehr als 2 Klassen.
 Im Gegensatz zu den MLPs kann man mit der Erhöhung der Dimension diesen Umstand nicht umgehen. 
 Die SVMs setzen in diesem Falle auf die Transformation der Datenrepräsentation. 
-Mit Hilfe von Kernfunktionen lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren, in dem sie linear separierbar erscheinen (Abb. XX). 
+Mit Hilfe von Kernfunktionen lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren (\ref{eq:svm_kernel_function}, in dem sie linear separierbar erscheinen (Abb. \ref{fig:svm_kernel}). 
 
 \begin{figure}[htbp] \centering
     \includegraphics[height=50mm]{svm/svm_1.png}
     \caption{Die Kernel-Funktion repräsentiert die Daten in einem höherdimensionalen Raum, in dem sie linear separierbar erscheinen (Platzhalterbild)}
-    \label{fig:svm1}
+    \label{fig:svm_kernel}
 \end{figure}
 
 \begin{equation}
@@ -111,7 +117,7 @@ In der neuen Form müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rang
 \end{equation}
 
 Dadurch, dass die Trainingspunkte $x$ nur in Skalarprodukten auftauchen, können wir uns des Kernel-Tricks bedienen.
-Kernel-Funktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle Eigenschaft aus, da sie sich verhalten wie ein Skalarprodukt in $\mathbb{R}^h$. 
+Kernel-Funktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle Eigenschaft aus, da sie sich verhalten wie ein Skalarprodukt in $\mathbb{R}^h$ (\ref{eq:svm_kern_trick}). 
 
 \begin{equation}
 \label{eq:svm_kern_trick}
@@ -119,7 +125,7 @@ Kernel-Funktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine speziel
 \end{equation}
 
 Es kann also das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ in $\mathbb{R}^h$ ausgerechnet werden, ohne die Daten mittles $\phi$ zu transformieren. 
-Das Beispiel XX verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion:
+Das Beispiel \ref{eq:svm_kernel_example} verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion:
 
 
 
@@ -162,7 +168,7 @@ Das Beispiel XX verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polyn
 \end{split}
 \end{equation}
 
-Nicht jede beliebige Funktion ist eine Kernelfunktion. Kernelfunktionen müssen die Bedingungen nach Satz von Mercer (MLBUCH94, S.127) erfüllen.
+Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach Satz von Mercer \cite[S. 127]{Marsland} erfüllen.
 
 \begin{figure}[htbp] \centering
     \includegraphics[height=50mm]{svm/svm_1.png}
