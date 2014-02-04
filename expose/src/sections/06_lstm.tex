@@ -65,6 +65,13 @@ zyklischer Graph und das Netzwerk wird zu einem Rekurrenten Neuronalen Netz
 (\acsu{RNN}).
 \textbf{TODO Bilder von Neuronalen Netzen zur Verdeutlichung}
 
+\begin{figure}[htbp]
+    \centering
+   \includegraphics[height=50mm]{lstm/mlp}
+\caption{MLP-Netz}
+\label{fig:mlp}
+\end{figure}
+
 Im Rahmen dieses Kpaitel wird erläutert, wie \acsp{LSTM}, eine spezielle Form
 von \acp{RNN}, zur Klassifikation von Gesten des schallbasierten Dopplereffekts
 genutzt werden können. Dazu wird zuerst darauf eingegangen wie ein \ac{LSTM} im
@@ -207,12 +214,12 @@ weiter betrachtet.
 \textbf{TODO}
 \cite{RainerSchmoll2006}
 \subsection{Anwendnug auf Projekt}
-Für das Projekt wurde ein LSTM-Netz erstellt welches konfiguriert wurde:
- 
+Für das Projekt wird ein LSTM-Netz erstellt welches aud folgenden Schichten besteht:
+
 \begin{itemize}
-\item \textbf{Input Layer} Das Netzwerk hat 64 Inputs.
-\item \textbf{Hidden Layer} Für das Hidden Layer werden 18 LSTM-Neuronen verwendet.
-\item \textbf{Output Layer} Das Output Layer besteht aus 7 Neuronen, die die 
+\item \textbf{Input Layer} Für die Annahme der Daten.
+\item \textbf{Hidden Layer} Besteht aus LSTM-Neuronen.
+\item \textbf{Output Layer} Das Output Layer besteht aus Neuronen, die die 
 Softmax Funktion als Aktivierungsfunktion verwenden.
 \end{itemize}
 
@@ -222,7 +229,8 @@ Softmax Funktion als Aktivierungsfunktion verwenden.
 \caption{LSTM-Netz}
 \label{fig:lstm_netz}
 \end{figure}
-
+Die genaue Anzahl der Neuronen stand zu Beginn des Projektes nicht fest. 
+Sie wurde durch Tests, die in Kapitel \autoref{sec:lstm_data} beschrieben sind, ermittelt.
 
 \subsubsection{Datenaufbereitung}
 \label{sec:lstm_data}

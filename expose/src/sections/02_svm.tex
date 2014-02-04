@@ -1,43 +1,182 @@
 \section{Support Vector Machine}
 \textit{Manuel Dudda, Benjamin Weißer}
 
-Die Support Vector Machine (SVM) ist eine Methode des überwachten Lernens zum Erstellen eines linearen Klassifikators. 
-Ein Klassifikator bestimmt für einen gegebenes Datum eine zugehörige Zuteilung (Klasse). Mit einem Satz von Daten (Merkmalsvektoren) inklusive dessen Klassenzugehörigkeiten wird eine mathematische Trenngerade generiert, die die Daten räumlich in zwei Klassen trennt. 
+\subsection{Optimale Trennung}
+
+Im Jahr 1958 veröffentlichte der Psycholge und Informatiker Frank Rosenblatt sein entwickeltes Konzept des Perzeptrons \cite{Rosenblatt}. 
+Die Idee entstammt der Neurobiologie und simuliert die Funktionsweise eines menschlichen Gehirns. 
+Perzeptronen sind vereinfachte künstliche neuronale Netze, bestehend aus mehreren künstlichen Neuronen, die ein formales Modell einer Nervenzelle beschreiben. 
+In der Grundversion besteht ein Perzeptron aus einem einzigen Neuron. 
+Es verarbeitet einen Eingabevektor zu einer Ausgabe. 
+Anhand eines Schwellwertes wird entschieden, ob das Neuron "{}feuert"{} oder nicht. 
+Bei der Verarbeitung des Eingabevektors wird für jede Komponente eine Gewichtung berücksichtigt, sodass die Ausgabe auf gewisse Eingaben eingestellt werden kann. 
+Mehrlagige Perzeptronen (MLP) sind in der Lage, Eingabevektoren in Ausgabevektoren umzuwandeln. 
+Die jeweiligen Gewichtungen können so eingestellt werden, dass der Eingabevektor in einen bestimmten Ausgabevektor umgewandelt wird. 
+Abbildung XX zeigt, wie ein einfaches Perzeptron die UND-Funktion realisiert und visualisiert die Klassifizierungsentscheidung in einem Koordinatensystem. 
+
+\begin{figure}[hb]
+	\begin{center}
+		 \includegraphics[width=0.5\textwidth]{svm_1.png}
+	\end{center}
+	\caption{AND-Perzeptron (Platzhalterbild)}
+	\label{fig:svm1}
+\end{figure}
+
+\begin{figure}[hb]
+	\begin{center}
+		 \includegraphics[width=0.5\textwidth]{svm_1.png}
+	\end{center}
+	\caption{AND-Raum (Platzhalterbild)}
+	\label{fig:svm1}
+\end{figure}
+
+Einlagige Perzeptronen sind beschränkt auf die Lösung linear separierbarer Probleme. 
+Ein einfaches XOR kann also nicht realisiert werden.  
+
+Mit einem Trick, der Erhöhung der Dimension, können mehrlagige Perzeptronen auch nichtlinear separierbare Probleme lösen. 
+So lässt sich bspw. das XOR-Problem in einem 3-dimensionalen Raum durch eine Hyperebene trennen.
+
+\begin{figure}[h]
+	\begin{center}
+		 \includegraphics[width=0.25\textwidth]{svm_1.png}
+	\end{center}
+	\caption{XOR-MLP (Platzhalterbild)}
+	\label{fig:svm1}
+\end{figure}
+
+\begin{figure}[hb]
+	\begin{center}
+		 \includegraphics[width=0.25\textwidth]{svm_1.png}
+	\end{center}
+	\caption{XOR-Raum (Platzhalterbild)}
+	\label{fig:svm1}
+\end{figure}
+
+Die Wahl der richtigen Gewichte ist dabei nicht einfach, für komplexere Problemstellungen schier unmöglich. 
+Um dennoch eine Problemlösung zu modellieren, die Eingaben richtig klassifiziert, gibt es einen Algorithmus, der die Gewichte automatisch anpasst.
+Dieser Algorithmus setzt eine Trainingsmenge voraus, für dessen Eingabevektoren die zugehörigen Klassen bekannt sind. 
+Durch Fehlerrückführung kann ein MLP trainiert werden und das Netz kann die gewünschten Muster nach einer kontrollierten Trainingsphase klassifizieren.
+
+Knapp 40 Jahre Jahre später veröffentliche der sowjetisch-amerikanische Mathematiker Wladimir Wapnik \cite{Vapnik} das Prinzip der Support-Vector-Machines (SVM).
+
 Im Gegensatz zu MLPs wird die Anpassung der Trennung nicht empirisch durch Trainingsmethoden, sondern durch die Datengrundlage mathematisch optimal ermittelt. 
-Dabei wird der Abstand zu den nächstliegenden Daten, den sogennanten Stützvektoren der Klassenräume, maximiert.
+Eine Erhöhung der Dimension ist nicht möglich, dennoch können SVMs auch nichtlinear separierbare Probleme lösen. 
+Die Hauptidee dabei ist die Repräsentation der Daten zu verändern. 
+Mit Hilfe des sogenannten Kernel-Tricks werden die Daten in einen höherdimensionalen Raum transformiert. 
+
+Support Vector Machines erfreuen sich großer Beliebtheit, da sie in der Regel wesentlich performanter vernünftige Vorhersagen treffen können. Lediglich durch die Lokalisierung des Objekts im Koordinatensystem wird klassifiziert. Dadurch, dass eine trainierte SVM eine Trenngerade generiert, kann durch einfache Hilfsmittel aus der linearen Algebra die Position bestimmt werden. Es wird also entschieden, ob das zu klassifizierende Objekt "{}oberhalb"{} oder "{}unterhalb"{} der Trenngeraden liegt. Allerdings ist zu beachten, dass für sehr große Datenmengen die SVM eine sehr lange Trainingsphase benötigt, da der Algorithmus die Inversion der Eingabematrix benutzt. Das Bilden der inversen Matrix hat eine Laufzeit zwischen $\mathcal O(n^2)$ und $\mathcal O(n^3)$ und ist damit sehr aufwändig.
 
 
-\begin{wrapfigure}{r}{0.48\textwidth}
-	\vspace{-30pt}
+\subsection{Funktionsweise der SVM}
+
+Mit einem Satz von Merkmalsvektoren (Merkmalsraum) und dessen Klassenzugehörigkeiten $\{ (x_1, y_1), ..., (x_m, y_m) | x_i \in \mathcal{X}, y_i \in \{-1, 1\}, m \in \mathbb{N} \}$ wird eine mathematische Gerade errechnet,
+die in einem Koordinatensystem betrachtet die Daten räumlich in zwei Klassen trennt. 
+
+
+
+Die Gerade (Hyperebene im mehrdimensionalen Raum) trennt die Merkmalsräume bestmöglich und dient als Entscheidungsfunktion für die Klassifikation. Sie ist gegeben durch den Normalenvektor $w$ und dem sogenannten Bias $b$, dem Abstand der Ebene zum Ursprung. Diese Form erweist sich also besonders praktisch, da durch Einsetzen von $x$ der direkte Abstand zur Hyperbene resultiert.
+Intuitiv ist klar, dass alle Punkte auf der Hyperebene selbst keinen Abstand haben, die Formel der Hyperebene lautet demnach: 
+ 
+\begin{equation}
+\label{eq:svm_hyperplane}
+    \mathcal{H}: \{ x \,|\, \langle w,x \rangle + b = 0 \}
+\end{equation}
+ 
+Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die SVM die Eingabe einer Klasse zu. 
+
+\begin{equation}
+\label{eq:svm_decision0}
+    \mathcal{C}_{-1}: \{ c \,|\, sign(\langle w,x \rangle + b) = -1 \}
+\end{equation}
+
+\begin{equation}
+\label{eq:svm_decision1}
+    \mathcal{C}_1: \{ c \,|\, sign(\langle w,x \rangle + b) = 1 \}
+\end{equation}
+
+Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin bezeichnet (Abb. XX). 
+Die Stützvektoren bilden das tragende Konstrukt der Entscheidungsfunktion. 
+Alle andere Merkmalsvektoren haben keinen Einfluss auf die Trennung, was die Namensgebung der Stützvektoren begründet. 
+Das macht die SVM zu einem sehr transparenten und performantent Klassifikator. 
+
+
+\subsubsection{Kernel-Trick}
+Probleme ergeben sich bei der Lösung von nichtlinear separierbaren Probleme und der Klassifikation von mehr als 2 Klassen.
+Im Gegensatz zu den MLPs kann man mit der Erhöhung der Dimension diesen Umstand nicht umgehen. 
+Die SVMs setzen in diesem Falle auf die Transformation der Datenrepräsentation. 
+Mit Hilfe von Kernfunktionen lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren, in dem sie linear separierbar erscheinen (Abb. XX). 
+
+\begin{eqnarray}
+\label{eq:svm_kern_function}
+    \phi : & \mathbb{R}^n \to \mathbb{R}^h \\
+    & x \mapsto \phi(x)
+\end{eqnarray}
+
+Als Bedingung des Raums $\mathbb{R}^h$ gilt, dass das Skalarprodukt erklärt ist. 
+Wir haben nach der Transformation also die neue Form \ref{eq:svm_kern_tranformation}. 
+In der neuen Form müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ ausrechnen, was sehr schwierig (bzw. unmöglich) ist, wenn die Dimension von $\mathbb{R}^h$ zu groß wird.
+
+\begin{equation}
+\label{eq:svm_kern_tranformation}
+    \mathcal{C}: \{ c_i \,|\, sign(\langle \phi(w),\phi(x) \rangle + b) = i \}
+\end{equation}
+
+Dadurch, dass die Trainingspunkte $x$ nur in Skalarprodukten auftauchen, können wir uns des Kernel-Tricks bedienen.
+Kernel-Funktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle Eigenschaft aus, da sie sich verhalten wie ein Skalarprodukt in $\mathbb{R}^h$. 
+
+\begin{equation}
+\label{eq:svm_kern_trick}
+    \mathcal{K}(w,x) = \langle\phi(w),\phi(x)\rangle
+\end{equation}
+
+Es kann also das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ in $\mathbb{R}^h$ ausgerechnet werden, ohne die Daten mittles $\phi$ zu transformieren. 
+Das folgende Beispiel verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion:
+
+
+Seien $w,x\in \mathbb{R}^2$ und
+
+\begin{eqnarray*}
+& \phi : & \mathbb{R}^2 \to \mathbb{R}^3 \\
+& & \begin{pmatrix}
+x_1 \\
+x_2
+\end{pmatrix}
+\mapsto
+\begin{pmatrix}
+x_1^2 \\
+\sqrt{x_1x_2} \\
+x_2^2
+\end{pmatrix}
+\end{eqnarray*}
+
+dann ist:
+
+\begin{eqnarray*}
+\langle \phi(w),\phi(x) \rangle & = & \langle \begin{pmatrix}
+w_1^2 \\
+\sqrt{w_1w_2} \\
+w_2^2
+\end{pmatrix},
+\begin{pmatrix}
+x_1^2 \\
+\sqrt{x_1x_2} \\
+x_2^2
+\end{pmatrix} \rangle \\
+& = & w_1^2x_1^2 + 2 w_1x_1w_2x_2 + w_2^2x_2^2 \\
+& = & (w_1x_1 + w_2x_2)^2 \\
+& = & \langle w,x \rangle^2 \overset{\text{(def)}}= \mathcal{K}(w,x)
+\end{eqnarray*}
+
+Nicht jede beliebige Funktion ist eine Kernelfunktion. Kernelfunktionen müssen die Bedingungen nach Satz von Mercer (MLBUCH94, S.127) erfüllen.
+
+
+\begin{figure}[hb]
 	\begin{center}
-		 \includegraphics[width=0.48\textwidth]{svm_1.png}
+		 \includegraphics[width=0.25\textwidth]{svm_1.png}
 	\end{center}
-	\vspace{-15pt}
-	\caption{linear separierte Merkmalsvektoren}
-	\vspace{-15pt} 
-\end{wrapfigure}
-
-Durch dieses Optimierungskriterium ist die Trennlinie eindeutig. 
-Ist die Entscheidungsgrenze gefunden, lassen sich neue Daten durch die Zuordnung eines Merkmalsvektors in den jeweiligen Klassenraum schnell klassifizieren, d. h. ob der Punkt oberhalb oder unterhalb der Trennlinie ist.
-
-Die Support Vector Machine ist somit ein binärer Klassifikator, der die Daten lediglich in 2 Klassen unterteilen kann. 
-Für eine Klassifikation von mehreren Klassen wurden Strategien entwickelt, die das Prinzip der SVM erweitern. 
-Eine dieser Strategien ist die Kombination von mehreren SVMs von “Einer gegen den Rest-Klassifikatoren”. 
-Als Klassifikation wird die SVM mit dem höchsten Ergebnis gewählt (“winner takes it all”).
-
-Ein Problem entsteht, wenn die gegebenen Merkmalsdaten nicht durch eine Trennline (Hyperbene) trennbar sind, sondern die Trennung der Daten nur durch eine Kurve o. Ä. beschrieben werden kann. 
-Für die Lösung nichtlinear separierbarer Probleme bedient sich die SVM des Kernel-Tricks aus der RKHS-Theorie (Reproducing Kernel Hilbert Spaces). 
-\begin{wrapfigure}{l}{0.45\textwidth}
-	\vspace{-30pt}
-	\begin{center}
-	    \includegraphics[width=0.45\textwidth]{svm_2.png}
-	\end{center}
-	\vspace{-15pt}
-	\caption{transformierte Merkmalsvektoren}
-		\vspace{-65pt}
-\end{wrapfigure}
-Eine Kernel-Funktion transformiert die Merkmalsvektoren in einen höherdimensionalen (Hilbert-)Raum, in dem die evaluierten Daten sodann linear separierbar sind.
-
+	\caption{SVM-Räume, wx+b, M (Platzhalterbild)}
+	\label{fig:svm1}
+\end{figure}
 
 \newpage
 
@@ -103,3 +242,5 @@ Sie ist als grüner Graph in den Bildern zu sehen.
   \caption{Ausgabe der (transformierten) Merkmalsvektoren}
 \end{figure}
 
+
+% \include{svm-function.tex}
