@@ -175,7 +175,7 @@ class ViewUIBob:
     def openFile(self):
         print QtCore.QDir.currentPath()
         self.fileName = QtGui.QFileDialog.getOpenFileNames(self.win_plot, "Open ",
-                self.openFileDirectory, "*.txt")
+                self.openFileDirectory, "*.kmeans")
         if len(self.fileName) == 0:
             self.addLogText('no file was chosen !')
             return
@@ -432,7 +432,7 @@ class ViewUIBob:
 
     def loadCentroids(self):
         self.fileName = QtGui.QFileDialog.getOpenFileNames(self.win_plot, "Load centroids",
-                self.centroidsFileDirectory, "*.txt")
+                self.centroidsFileDirectory, "*.kmeans")
         if len(self.fileName) == 0:
             self.addLogText('no file was chosen !', textColor='red')
             return
@@ -446,7 +446,7 @@ class ViewUIBob:
          
         
     def saveCentroids(self):
-        fileName = QtGui.QFileDialog.getSaveFileName(self.win_plot, "Save centroids", self.centroidsFileDirectory, "*.txt")
+        fileName = QtGui.QFileDialog.getSaveFileName(self.win_plot, "Save centroids", self.centroidsFileDirectory, "*.kmeans")
         if len(fileName) == 0:
             self.addLogText('no name was given => no data is being saved !', textColor='red')
             return      
@@ -504,7 +504,7 @@ class ViewUIBob:
     def loadNoiseFile(self):
 
         print QtCore.QDir.currentPath()
-        self.fileName = QtGui.QFileDialog.getOpenFileNames(self.win_plot, "Load Noise File", "C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert/gesture_7", "*.txt")
+        self.fileName = QtGui.QFileDialog.getOpenFileNames(self.win_plot, "Load Noise File", "C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert/gesture_7", "*.kmeans")
 
         paths = self.fileName
         if len(paths) == 0:
@@ -555,18 +555,18 @@ class ViewUIBob:
 
         
     def saveSegmentedData(self):
-        fileName = QtGui.QFileDialog.getSaveFileName(self.win_plot, "Save reduced data", self.openFileDirectory, "*.txt")
+        fileName = QtGui.QFileDialog.getSaveFileName(self.win_plot, "Save reduced data", self.openFileDirectory, "*.kmeans")
         if len(fileName) == 0:
             self.addLogText('no name was given => no data is being saved !')
             return
-        fNameSegNorm = fileName.replace(".txt","_seg_norm.txt")            
+        fNameSegNorm = fileName.replace(".kmeans","_seg_norm.kmeans")            
         oid = open(fNameSegNorm, "a")
         # flatten all inputs to 1 vector
         segNormArray = self.kmH.reshapeArray3DTo2D64(self.segNormArray)
         data = np.array(segNormArray)        
         np.savetxt(oid, data, delimiter=",")
         oid.close()
-        fNameSegNormPlusSeg2K = fileName.replace(".txt","_seg_norm_2k.txt")            
+        fNameSegNormPlusSeg2K = fileName.replace(".kmeans","_seg_norm_2k.kmeans")            
         oid = open(fNameSegNormPlusSeg2K, "a")
         # flatten all inputs to 1 vector
         segNormArrayPlusSeg2K = self.kmH.reshapeArray3DTo2D64(self.preselectedByKMeansArray)
