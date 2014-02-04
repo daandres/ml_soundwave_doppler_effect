@@ -213,7 +213,7 @@ class Gesture():
 if __name__ == "__main__":
     print "#### START ####"
 
-    classList = [0, 2, 7]
+    classList = [0, 1, 2, 3, 4, 5, 6, 7]
     ga = GestureApplication()
     ga.createGestures(classList)
     cp = classList[:]
