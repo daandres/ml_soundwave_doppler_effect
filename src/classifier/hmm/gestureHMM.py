@@ -7,6 +7,7 @@ import util.util as u
 
 import numpy as np
 from sklearn.mixture import GMM
+from numpy.random import RandomState
 
 
 
@@ -17,6 +18,11 @@ class GestureHMM(GMMHMM):
                  covars_prior=1e-2, random_state=None, n_iter=10, thresh=1e-2,
                  params=string.ascii_letters,
                  init_params=string.ascii_letters):
+
+        
+#         if random_state == None:
+#             random_state = random_state = RandomState([1, 3, 5, 7, 11, 13])
+            
 
         GMMHMM.__init__(self, n_components, n_mix, startprob, transmat,
                  startprob_prior, transmat_prior,

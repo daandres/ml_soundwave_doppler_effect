@@ -3,16 +3,13 @@ import dataUtil as d
 from numpy.testing.decorators import deprecated
 
 
-@deprecated
-def loadRaw(path = ["../data/gesture_0.txt"]):
-    if type(path) == str:
-        path = [path]
+def loadRaw(gesture):
     dp = d.DataUtil()
-    return dp.loadRaw3DArray(path)
+    return dp.loadRaw3dGesture(gesture)
 
-def loadData(gesture):
+def preprocessData(data):
     dp = d.DataUtil()
-    data= dp.loadRaw3dGesture(gesture)
+
     data = dp.reduceBins(data)
     data = dp.normalize(data)
     data = dp.normalizeBound(data)
@@ -20,6 +17,13 @@ def loadData(gesture):
     data = dp.round(data)
     data = dp.cutBad(data)
     #data = dp.cutPeak(data)
+    return data
+
+def loadData(gesture):
+    dp = d.DataUtil()
+
+    data= dp.loadRaw3dGesture(gesture)
+    data = preprocessData(data)
     return data
 
 def splitData(data):
