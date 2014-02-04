@@ -1,12 +1,12 @@
 \documentclass[12pt,twocolumn]{scrartcl}
 
-\usepackage[utf8]{inputenc} %Zeichenkodierung
+\usepackage[utf8]{inputenc}
 \input{setup}
 
 \usepackage{lipsum}
-\usepackage{fancyhdr} %für Kopf- und Fußzeilen
+\usepackage{fancyhdr} 
 %\usepackage{scrpage2}
-\usepackage{caption}
+\usepackage[font=small]{caption}
 \usepackage{calc}
 \usepackage{xcolor}
 \usepackage{setspace}
@@ -19,7 +19,7 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \usepackage[]{acronym}
 \usepackage{graphicx}
 \usepackage{wrapfig}
-
+ 
 \usepackage{hhline} %% extended line features for tables with \hhline{}
 \usepackage{multirow} %% merges several cells over rows: \multirow{Zeilen}{Breite}{Inhalt}; over columns: \multicolumn{Spalten}{Ausrichtung}{Inhalt}
 \usepackage{colortbl} %% use defined colors in tables
@@ -27,8 +27,65 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \usepackage{supertabular}
 \usepackage{longtable}
 
+\usepackage{chngcntr}
+\usepackage{float}
+\newfloat{listing}{htbp}{scl}
+\floatname{listing}{Listing}
 \usepackage{listings} 
-\listingssetup
+	\definecolor{grey1}{rgb}{0.95,0.95,0.95}
+	\DeclareCaptionFont{white}{\color{white}}
+	\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\columnwidth}{#1#2#3}}}
+	\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+	\renewcommand\lstlistingname{Quelltext}
+	\renewcommand\lstlistlistingname{Quelltexte}  
+	\lstset{
+		language=Python,
+		basicstyle=\ttfamily\footnotesize,
+		numbers=left,
+		% numberstyle=\tiny\color{gray}, 
+		stepnumber=1,
+		numbersep=3pt,
+		backgroundcolor=\color{grey1},
+		showspaces=false,
+		showstringspaces=false,
+		showtabs=false,
+		frame=tb,
+		rulecolor=\color{black},
+		tabsize=1,
+		captionpos=t,
+		breaklines=true,
+		breakatwhitespace=false,
+		title=\lstname,
+		keywordstyle=\color{blue},
+		commentstyle=\color{darkgreen},
+		stringstyle=\color{gray},
+		escapeinside={\%*}{*)},
+		morekeywords={*,...},
+		xleftmargin=20pt,
+		framexleftmargin=20pt,
+		framexrightmargin=6pt
+	}
+	\lstset{literate=
+		{Ö}{{\"O}}1
+		{Ä}{{\"A}}1
+		{Ü}{{\"U}}1
+		{ß}{{\ss}}2
+		{ü}{{\"u}}1
+		{ä}{{\"a}}1
+		{ö}{{\"o}}1
+	}
+ \AtBeginDocument{
+	\renewcommand{\subsectionautorefname}{\sectionautorefname}
+	\renewcommand{\subsubsectionautorefname}{\sectionautorefname}
+	\renewcommand{\figureautorefname}{Abbildung}
+	\renewcommand{\tableautorefname}{Tabelle}
+	\renewcommand{\equationautorefname}{Formel}
+	\counterwithin{equation}{section}
+	\counterwithin{lstlisting}{section}
+	\counterwithin{figure}{section}
+	\counterwithin{table}{section}
+	\renewcommand{\thelstlisting}{\thesection.\arabic{lstlisting}}
+ }	
 
 \hypersetup{
 	pdftitle=\reporttitle\ - \students ,
@@ -54,9 +111,10 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 	\addcontentsline{toc}{section}{#1}
 }
 
-\newcommand{\headAndTocENDE}[2] {
-	\headAndToc{#2}
-}
+\definecolor{darkblue}{rgb}{0, 0, .5}
+\definecolor{darkgreen}{rgb}{0, .5, 0}
+\definecolor{lightgray}{rgb}{.7, .7, .7}
+\definecolor{darkgray}{rgb}{.4, .4, .4}
 
 %% math
 \usepackage{amsmath,amssymb,amsfonts}
@@ -65,17 +123,15 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \newcommand{\IV}{\mathrm{IV}}
 \newcommand{\tmod}{\!\!\mod}
 
-
-
- \renewcommand\sectionmark[1]{%
-  \def\sectionname{#1}%
-  \markright{\thesection #1}%oder was aus immer 
-  } 
+\renewcommand\sectionmark[1]{
+  \def\sectionname{#1}
+  \markright{\thesection #1}
+} 
   
-  \renewcommand\subsectionmark[1]{%
-  \def\subsectionname{#1}% 
-  \markright{\thesubsection #1}%oder was aus immer 
-  } 
+\renewcommand\subsectionmark[1]{
+  \def\subsectionname{#1}
+  \markright{\thesubsection #1}
+} 
 	
 \graphicspath{{./ref/images/}}
 
@@ -107,8 +163,6 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
  
 \lfoot{\ifthispageodd{}{\thepage}}	
 \rfoot{\ifthispageodd{\thepage}{}}
-% 	\lfoot{}	
-% 	\rfoot{\thepage}
 
 \pagenumbering{Roman}
 
@@ -118,36 +172,21 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \end{titlepage} 
  
 \clearpage
-% \shipout\null
-% \addtocounter{page}{1}
 
-% \phantomsection
-% \headAndToc{Abstract}
-% \section*{Abstract}
-% 	\paragraph{English} 
-% 	\input{sections/abstractEN}
-% 	\paragraph{German} 
-% 	\input{sections/abstractDE}
-% \clearpage
 
 \phantomsection
-\headAndTocENDE{Contents}{Inhaltsverzeichnis}
+\headAndToc{Inhaltsverzeichnis}
 \begin{spacing}{1}
 \tableofcontents
 \end{spacing}
 \clearpage
-
-\onehalfspacing 
-%\shipout\null
-
+\singlespacing
+ 
 \setcounter{table}{0}
 \setcounter{figure}{0}
 \pagenumbering{arabic}
-% \head{\nouppercase{\leftmark}}
-  	\lhead{\ifthispageodd{}{\nouppercase{\leftmark}}}
-  	\rhead{\ifthispageodd{\rightmark}{}}
-%\fancyhead[LE]{\sffamily \nouppercase{\leftmark}  }
-% \fancyhead[RO]{\sffamily \nouppercase{\rightmark}  } 
+\lhead{\ifthispageodd{}{\nouppercase{\leftmark}}}
+\rhead{\ifthispageodd{\rightmark}{}}
 \include{sections/content}
 \pagenumbering{roman}
 
@@ -155,38 +194,27 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \newpage 
 
 \singlespacing
-
+\small
 \phantomsection
-\headAndTocENDE{References}{Literatur}
+\headAndToc{Literatur}
 \bibliography{ref/bib}{} 
 %\bibliographystyle{phcpcDE}
-\bibliographystyle{alphadin}
+\bibliographystyle{alpha}
 \clearpage
-\phantomsection
-\headAndTocENDE{List of abbreviations}{Abk{\"u}rzungsverzeichnis}
+\phantomsection 
+\headAndToc{Verzeichnisse}
 \section*{Abk{\"u}rzungsverzeichnis}
 \begin{acronym}[Internship]
 \input{acronym}
 \end{acronym} 
-% \clearpage
-\phantomsection
-\headAndTocENDE{List of Figures}{Abbildungsverzeichnis}
 \listoffigures
-% \clearpage
-
-% \phantomsection
-% \headAndTocENDE{List of Tables}{Tabellenverzeichnis}
-% \listoftables 
-% \clearpage
-
-\phantomsection
-\headAndTocENDE{Listings}{Quellcodeverzeichnis}
+\listoftables 
 \lstlistoflistings
 \clearpage
  
-% \appendix
-% \head{\nouppercase{\leftmark}}
-% \pdfbookmark[0]{Anhang}{appendix}
-% \include{sections/appendix}
+\appendix
+\head{\nouppercase{\leftmark}}
+\pdfbookmark[0]{Anhang}{appendix}
+\include{sections/appendix}
 
 \end{document}
