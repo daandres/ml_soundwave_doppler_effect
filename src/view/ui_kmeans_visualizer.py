@@ -1,4 +1,4 @@
-import ui_bob_ as ui_bob
+import ui_kmeans as ui_kmeans_
 import numpy as np
 
 import sys, os
@@ -18,7 +18,7 @@ from properties.config import ConfigProvider
 from PyQt4.Qt import QColor
 
 
-class ViewUIBob:
+class ViewUIKMeans:
     def __init__(self, kMeansClassifier=None, applicationClose=None):
 
         self.kmH = None 
@@ -593,11 +593,11 @@ class ViewUIBob:
         # application
         self.app = QtGui.QApplication(sys.argv)
 
-        self.win_plot = ui_bob.QtGui.QMainWindow()
+        self.win_plot = ui_kmeans_.QtGui.QMainWindow()
         
         self.win_plot.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         #
-        self.uiplot = ui_bob.Ui_MainWindow()
+        self.uiplot = ui_kmeans_.Ui_MainWindow()
         self.uiplot.setupUi(self.win_plot)
         
         self.curve_tab1 = Qwt.QwtPlotCurve()

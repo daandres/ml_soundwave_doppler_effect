@@ -31,9 +31,9 @@ class KMeans(IClassifier):
  
     def startTraining(self, args=[]):
         import ntpath
-        from view.ui_bob_visualizer import ViewUIBob
-        self.viewUiBOB = ViewUIBob(self, self.getName)
-        self.viewUiBOB.startNewThread()
+        from view.ui_kmeans_visualizer import ViewUIKMeans
+        self.viewUiKmeans_ = ViewUIKMeans(self, self.getName)
+        self.viewUiKmeans_.startNewThread()
         self.recorder.classifyStart(self)
   
 
