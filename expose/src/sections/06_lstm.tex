@@ -45,23 +45,24 @@ zuzulassen.
 \paragraph{Neuronale Netzwerke}
 Einzelne Neuronen können allerdings kein Gehrin nachbilden. Aus diesem Grund ist
 die Kombination mehrerer Neuronen zu einem neuronalen Netz nötig. Im einfachsten
-Fall entsteht dabei ein \textit{Perzeptron}. Es werden $n$-viele Neuronen
+Fall entsteht dabei ein \textit{Perzeptron} (vgl.
+\cite{rosenblatt58a,1165576}). Es werden $n$-viele Neuronen
 verwendet. Alle Eingaben werden von allen Neuronen verarbeitet und jedes Neuron
 hat eine eigene Aktivierung. Die Gewichte (Synapsen) sind individuell für jedes
 Neuron. Die Ausgaben ergeben den Ausgabevektor $\bf{y}$ des Netzwerkes. Um
-komplexere Sachverhalte darstellen zu können, ist es nötig Neuronen in
-Abhängigkeit voneinander zu betrachten. Dies wird in \acp{MLP} vorgenommen.
+komplexere Sachverhalte darstellen zu können, ist es nötig Neuronen in Abhängigkeit
+voneinander zu betrachten. Dies wird in \acp{MLP} vorgenommen \cite{1165576}.
 Mehrere Perzeptrons werden hintereinandergeschaltet, sodass die Ausgabe des
 einen Perzeptrons (ein Layer) die Eingabe des nächsten Perzeptrons ist.
-Lediglich die Ausgabe des letzten Perzeptrons ist die Ausgabe des Netzwerks. 
+Lediglich die Ausgabe des letzten Perzeptrons ist die Ausgabe des Netzwerks.
 Ein Netzwerk kann als gerichteter Graph dargestellt werden. Die Richtung
 entspricht dem Datenfluss. Perzeptrons und \acp{MLP} sind azyklische Graphen,
 d.h. die Verbindungen von Neuronen gehen nur in Vorwärtsrichtung und bilden
 somit keinen Kreis. Daher werden diese Netzwerke \textit{Feedforward}-Netzwerke
-genannt. Um besser die Funktionsweise von Gehirnen nachzubilden ist es
-notwendig auch Verbidnungen von Neuronen auf sich selbst zuzulassen. Somit
-entsteht ein zyklischer Graph und das Netzwerk wird zu einem Rekurrenten
-Neuronalen Netz (\acsu{RNN}). 
+genannt. Um besser die Funktionsweise von Gehirnen nachzubilden ist es notwendig
+auch Verbidnungen von Neuronen auf sich selbst zuzulassen. Somit entsteht ein
+zyklischer Graph und das Netzwerk wird zu einem Rekurrenten Neuronalen Netz
+(\acsu{RNN}).
 \textbf{TODO Bilder von Neuronalen Netzen zur Verdeutlichung}
 
 Im Rahmen dieses Kpaitel wird erläutert, wie \acsp{LSTM}, eine spezielle Form
@@ -86,80 +87,124 @@ Erinnerung. Diese wird wie eine einzelne Eingabe ebenfalls generalisiert in den
 Synapsen und Neuronen gespeichert. Mit Hilfe der \ac{LSTM} Architektur wird
 versucht dieses Verhalten nachzuahmen. 
 
-In einem Netz mit \ac{LSTM}-Einheiten sind diese keine einzelnen
-Neuronen sondern Blöcke aus mehreren Neuronen und Toren. Die Blöcke werden im
-Netz wie ein Neuron behandelt. Sie erhalten alle Eingaben und geben einen Wert
-aus. Aufgrund ihrer verallgemeinerten Erinnerungsfähigkeiten ist es sinnvoll die
-Daten nicht direkt ihre Klassenzugehörigkeit über \ac{LSTM}-Blöcke zu speichern,
-sondern ein weiters Layer hintendran zu schalten, welches die Ausgaben
-verschiedener Blöcke konsolidiert und eine Klasse ausgibt. Damit ist ein
-\ac{LSTM}-Layer ein Hidden-Layer in einer \ac{MLP}-Architektur. Es ist jedoch
-kein weiteres Hidden-Layer nötig. Für das Ausgabe-Layer werden je nach
-Problemstellung unterschiedliche Arten verwendet, z.B. lineare, sigmoidale oder
-Softmax-Layer.
+In einem Netz mit \ac{LSTM}-Einheiten sind diese keine einzelnen Neuronen
+sondern Blöcke aus mehreren Neuronen und Toren (ein Tor bzw. engl.
+Gate bestimmt ob ein anliegender Wert weitergegeben wird oder nicht).
+Die Blöcke werden im Netz wie ein Neuron behandelt. Sie erhalten alle Eingaben
+und geben einen Wert aus. \ac{LSTM}-Layer werden in der Regel als Hidden-Layer
+in einer \ac{MLP}-Architektur eingesetzt, jedoch ist kein weiteres Hidden-Layer
+nötig. Für das Ausgabe-Layer werden je nach Problemstellung unterschiedliche
+Arten verwendet, z.B. lineare, sigmoidale oder Softmax-Layer.
 
 \paragraph{\ac{LSTM}-Block}
-In einem \ac{LSTM}-Block sind ein oder mehrere Erinnerungszellen enthalten. Jede
-dieser Zelle ist mit den gleichen Eingabewerten verbunden. Eine Erinnerungszelle
-behält ihren Zustand indem sie eine rekurrente Verbindung mit dem Gewicht 1 auf
-sich selbst hat (nach der Bedeutung in Trainingsphase \ac{CEC} genannt).
-Dieses Gewicht hat eine zentrale Bedeutung in der globalen Verllgemeinerungsfähigkeit der Zelle, da es nicht die bekannte Zieldaten in
-vorherige Zustände zurückpropagiert wie es klassische \ac{RNN} Netzwerken beim
-Training machen (vgl. \ac{RNN} und Backpropagation \textbf{TODO Zitat von
-Schmidhuber}). Die Eingaben der Zelle werden mit dem vorherigen Wert addiert und
-das Ergebnis wird ausgegeben. Der Wert der Zelle ist somit linear bestimmt. 
-Zusätzlich zur Zelle werden noch verschiedene weitere Bestandteile benötigt. Dies sind die Tore (engl. gate).
-\textbf{Erweiterung mit forgot gate Zitat} In der erweiterten Form von
-\ac{LSTM}-Blöcken gibt es drei verschiedene Gates.
-Diese haben eine eindeutige Funktion und bestimmen so den Zustand des Blocks.
-Jedes Gate erhält anhand einer sigmoidalen Funktion der Eingabewerte einen Wert,
-den es zusammen mit einem weiteren Wert verarbeitet und eine entsprechende
-Ausgabe liefert.
 
-\begin{figure}[htfp]
+\begin{figure*}[htfp]
 	\begin{center}
-	\includegraphics[width=0.7\columnwidth]{lstm/lstm_block}
+	\includegraphics[width=0.8\textwidth]{lstm/lstm_block_formulas}
 	\caption[\acs{LSTM} Block]{\acs{LSTM} Block mit einer Memoryzelle ohne
-	Peepholes} \tiny Quelle: \cite{WIKI2013}
+	Peepholes} \tiny Quelle: \cite{Gers2002b}
 	\label{fig:lstm_block}
 	\end{center}
-\end{figure} 
+\end{figure*}  
 
-\autoref{fig:lstm_block} zeigt den Aufbau eines \ac{LSTM}-Blocks. Dort werden
-drei unterschiedliche Knotentypen genutzt. Der $\bf\Sigma$-Knoten ist die oben
-beschriebene lineare Memoryzelle. Die vier Knoten in der unteren Zeile sind
-sigmoidale Squashingknoten, um die Eingaben auf für den \ac{LSTM}-Block
-verwertbare Werte zu reduzieren. Die $\Pi$-Knoten sind drei verschiedene Gates,
-die das Verhalten bestimmen. Diese werden nachfolgend näher erläutert.
+\autoref{fig:lstm_block} zeigt den schematischen Aufbau eines \ac{LSTM}-Blocks
+nach \cite{Gers2002b}. Der Block besteht dabei aus mehreren Komponenten. Dese
+werden anhand ihrer Berechnung bei einem \textit{vorwärts} Durchlauf der Daten
+erläutert.
 \begin{itemize}
-	\item Eingabegate (3. Zeile links)
-	\item Forgotgate (3. Zeile rechts)
-	\item Ausgabegate (1. Zeile)
+	\item Eingabewerte $y_m(t-1)$
+	\item Zelleingang $z_c$ berechnet durch \autoref{eq_lstm_in}
+	\item Inputgate $z_{in}$ berechnet nach \autoref{eq_lstm_gate}
+	\item Forgetgate $z_\varphi$ berechnet durch \autoref{eq_lstm_gate}
+	\item Memoryzelle mit dem aktuellen Wert $s_c$ berechnet durch
+	\autoref{eq_lstm_cs}
+	\item Outputgate $z_{out}$ berechnet nach \autoref{eq_lstm_gate}
+	\item Ausgabewert $y_m(t)$ berechnet durch \autoref{eq_lstm_out}
 \end{itemize}
-Jedes Gate hat zwei Eingaben, welche miteinader multipliziert werden. Da ein
-Wert sigmoidal reduziert wurde, ist das Ergebnis entweder nahe 0 oder nahe 1.
-% Stimmen 1 und 0 Zitat
-Die Gates \textit{öffnen} wenn ihr Ergebnis nahe 1 oder größer ist. Wird das
-Eingabegate geöffnet kann ein neuer Wert zur Erinnerungszelle hinzuaddiert
-werden. Das Eingabegate hat als Eingaben eine Repräsentation der Eingabewerte
-und den sigmoidalen Wert der Eingabewerte. Das Forgotgate schaltet sich zwischen die
-rekurrente Verbindung der Memoryzelle, so sind die Eingaben der Wert der
-Memoryzelle am Zeitpunkt $t-1$ und der sigmoidale Wert der Eingabewerte. Ist es
-geschlossen (also nahe 0) löscht sich der Wert der Zelle.\textbf{TODO} Das 
-Ausgabegate bestimmt wann der Wert der Erinnerungszelle ausgegeben wird. Dabei
-nimmt es den aktuellen Wert der Memoryzelle und den sigmoidalen Wert der
-Eingabewerte aus Eingabe. 
 
-Jede Gateeingaben und die Eingaben werden zu Beginn durch eine sigmoidale
-Squashing Funktion reduziert. Dabei hat jede Eingabe bei jder Funktion ein
-eigenes Gewicht. Somit gibt es $4\cdot Inputdimension$ viele Gewichte für ein
-\ac{LSTM}-Block. 
+% Inputs
+\begin{equation}
+\label{eq_lstm_in}
+z_{c}(t) = \sum \limits_{m} w_{c,m}y_m(t-1)
+\end{equation}
+
+% Gate Allgemein
+\begin{equation}
+\label{eq_lstm_gate}
+\begin{split}
+y_{gate}(t) &= f_{gate}(z_{gate}(t))\\
+z_{gate}(t) &= \sum \limits_{m} w_{gate,m}y_m(t-1)
+\end{split}
+\end{equation}
+
+% Cell State
+\begin{equation}
+\label{eq_lstm_cs}
+\begin{split}
+s_{c}(0) &= 0\\
+s_{c}(t) &= y_{\varphi}(t)s_{c}(t-1) +
+y_{in}(t)g(z_{c}(t))
+\end{split}
+\end{equation}
+
+% Output
+\begin{equation}
+\label{eq_lstm_out}
+\begin{split}
+y_{c}(t) &= y_{out}(t)s_{c}(t)\\
+\end{split}
+\end{equation}
+
+Die Funktionen $f_{in}$, $f_{\varphi}$ und $f_{out}$ sind sigmoidale Squashing
+Funktionen, die Eingabewerte an den Gates auf $y\approx1$ oder $y\approx0$
+zusammenfassen. Dies hat zur Folge, dass an den \textit{gating} Stellen Werte
+gelöscht (bei $y\approx0$) oder unverändert durchgelassen werden (bei
+$y\approx1$). Somit kontrolliert das Inputgate (\autoref{eq_lstm_cs} zweiter
+Teil, zweiter Summand), ob neue Werte die Memoryzelle erreichen, das Forgetgate
+(\autoref{eq_lstm_cs} zweiter Teil vorne), ob der vorherige Zustand erhalten
+bleibt oder nicht berücksichtigt wird und das Outputgate (\autoref{eq_lstm_out})
+wann ein Zustand der Memoryzelle ausgegeben wird. Grundsätzlich hat jeder
+Eingang in den \ac{LSTM}-Block inklusive der Eingänge der Gates ein eigenes
+Gewicht. Diese sind mit $w_{i,m}$ benannt, wobei $i$ der Eingang oder das Gate
+repräsentiert und $m$ der index über die Eingabeimension ist. Daher hat ein
+\ac{LSTM}-Block $4\cdot Eingabedimension$ viele Gewichte. 
+
+\acp{LSTM} werden durch ihre autorekurrente Verbindung der Memoryzelle zu
+\acp{RNN}. Diese rekurrente Verbindung ist besonders, da sie beim Training
+Fehler nicht vor in die komplette Vergangenheit zurückpropagiert. Erreicht wird
+das durch ein Gewicht der Verbindung von $1.0$ (\autoref{eq_lstm_sc}). Das zuvor
+beschriebene Forgetgate nimmt Einfluss auf dieses Gewicht. Soll der Wert
+$s_c(t-1)$ in der Brechnung nicht berücksichtigt werden, setzt das Gate das
+Gewicht auf $\approx0$ andernfalls behält es den aktuellen Wert des gewichts mit
+$\approx1$ bei. 
 
 Eine Erweiterung zu dem vorgestellten \ac{LSTM}-Block sind zusätzlich weitere
-rekurrente Verbindungen (/vgl. cite{Gers2002b}). Diese weiteren rekurrenten
-Verbindungen werden \textit{Peepholes} genannt und verbinden die 
+rekurrente Verbindungen (vgl. \cite{Gers2002b}). Diese weiteren rekurrenten
+Verbindungen werden \textit{Peepholes} genannt und verbinden die die Memoryzelle
+zusätzlich zu den Gates, sodass sich die \autoref{eq_lstm_gate} für die Gateaktivierung
+wie folgt ändert:
+% Gate Allgemein
+\begin{equation}
+\label{eq_lstm_gate_peephole}
+\begin{split}
+z_{gate}(t) &= \sum \limits_{m} w_{gate,m}y_m(t-1) \\
+			&+ w_{gate,c} s_c(t-1)
+\end{split}
+\end{equation}
 
-\textbf{TODO Formeln zur Berechnung der Werte}
+$w_{gate,c}$ ist dabei das Gewicht der rekurrenten Verbindung von der
+Memoryzelle zum Gate. Peepholeverbinsung machen auf diese Art die Information
+der Memoryzelle den Gates verfügbar und können so das Netzwerk verbessern
+\cite{Gers2002b}. 
+
+Der beschriebene \ac{LSTM}-Block enthält eine einzelne Memoryzelle. Denkbar sind
+jedoch Blöcke mit mehreren Memoryzellen, die sich dann die die drei Gates
+teilen. Auch sind hier Peepholeverbinsungen möglich, die Gates berücksichtigen
+dann alle Werte der Memoryzellen. Dieser Ansatz wird in der Ausarbeitung nicht
+weiter betrachtet. 
+
+\paragraph{Training eines \ac{LSTM} Netzes}
+\textbf{TODO}
 
 \subsection{Anwendnug auf Projekt}
 Für das Projekt wurde ein LSTM-Netz erstellt welches konfiguriert wurde:
@@ -229,30 +274,30 @@ Netzwerke ohne zugeschnittenen Trainingsdaten klassifizieren besser.
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
 \hline
  Fold 		& Cut & Peephole & Neurons & 250 & 500 & 750 & 1000 \\
- \multirow{12}{*}{1}&\multirow{4}{*}{0}&\multirow{2}{*}{true}&16&	&	&	&	\\
-  & & &18&	&	&	&	\\
-  & &\multirow{2}{*}{false}&16&	&	&	&	\\
-  & & &18&	&	&	&	\\
-  &\multirow{4}{*}{16}&\multirow{2}{*}{true}&16&	&	&	&	\\
-  & & &18&	&	&	&	\\
-  & &\multirow{2}{*}{false}&16&	&	&	&	\\
-  & & &18&	&	&	&	\\
-  &\multirow{4}{*}{24}&\multirow{2}{*}{true}&16&	&	&	&	\\
-  & & &18&	&	&	&	\\
-  & &\multirow{2}{*}{false}&16&	&	&	&	\\
-  & & &18&	&	&	&	\\
-  \multirow{12}{*}{2}&\multirow{4}{*}{0}&\multirow{2}{*}{true}&16&	&	&	&	\\
-  & & &18&	&	&	&	\\
-  & &\multirow{2}{*}{false}&16&	&	&	&	\\
-  & & &18&	&	&	&	\\
-  &\multirow{4}{*}{16}&\multirow{2}{*}{true}&16&	&	&	&	\\
-  & & &18&	&	&	&	\\
-  & &\multirow{2}{*}{false}&16&	&	&	&	\\
-  & & &18&	&	&	&	\\
-  &\multirow{4}{*}{24}&\multirow{2}{*}{true}&16&	&	&	&	\\
-  & & &18&	&	&	&	\\
-  & &\multirow{2}{*}{false}&16&	&	&	&	\\
-  & & &18&	&	&	&	\\
+ \multirow{12}{*}{1}&\multirow{4}{*}{0}&\multirow{2}{*}{true}&16&28,39\%&27,30\%&26,54\%&27,19\%\\
+  & & &18&29,14\%&28,06\%&26,00\%&26,89\%\\
+  & &\multirow{2}{*}{false}&16&30,55\%&29,58\%&26,44\%&26,76\%\\
+  & & &18&26,65\%&26,22\%&25,35\%&24,81\%\\
+  &\multirow{4}{*}{16}&\multirow{2}{*}{true}&16&36,73\%&35,21\%&33,37\%&32,61\%\\
+  & & &18&33,69\%&31,20\%&29,90\%&29,47\%\\
+  & &\multirow{2}{*}{false}&16&30,44\%&30,44\%&29,36\%&29,79\%\\
+  & & &18&30,34\%&27,95\%&27,95\%&28,17\%\\
+  &\multirow{4}{*}{24}&\multirow{2}{*}{true}&16&33,59\%&32,07\%&31,53\%&32,07\%\\
+  & & &18&35,75\%&33,69\%&29,04\%&27,74\%\\
+  & &\multirow{2}{*}{false}&16&33,15\%&33,15\%&32,39\%&32,18\%\\
+  & & &18&32,50\%&31,20\%&30,01\%&29,79\%\\
+  \multirow{12}{*}{2}&\multirow{4}{*}{0}&\multirow{2}{*}{true}&16&35,54\%&31,96\%&31,74\%&31,64\%\\
+  & & &18&33,59\%&31,64\%&29,36\%&29,58\%\\
+  & &\multirow{2}{*}{false}&16&34,99\%&32,07\%&30,34\%&29,58\%\\
+  & & &18&36,94\%&33,91\%&31,96\%&32,18\%\\
+  &\multirow{4}{*}{16}&\multirow{2}{*}{true}&16&33,69\%&32,74\%&30,01\%&29,98\%\\
+  & & &18&33,26\%&31,74\%&30,01\%&29,69\%\\
+  & &\multirow{2}{*}{false}&16&32,50\%&30,66\%&28,49\%&27,63\%\\
+  & & &18&35,64\%&35,10\%&31,85\%&31,09\%\\
+  &\multirow{4}{*}{24}&\multirow{2}{*}{true}&16&35,97\%&34,56\%&34,45\%&33,48\%\\
+  & & &18&33,26\%&32,72\%&29,58\%&33,48\%\\
+  & &\multirow{2}{*}{false}&16&35,32\%&34,74\%&32,61\%&32,29\%\\
+  & & &18&31,85\%&30,99\%&30,34\%&28,71\%\\
 \hline
 \end{tabular}
 \caption{Datentests LSTM-Netz}
