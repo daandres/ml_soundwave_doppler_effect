@@ -13,6 +13,7 @@ from src.gestureFileIO import GestureFileIO
 
 
 NAME = "HiddenMarkovModel"
+GESTURE_PREFIX="gesture "
 
 class HMM(IClassifier):
 
@@ -76,18 +77,21 @@ class GestureApplication():
         self.gestures = []
         self.fileIO = GestureFileIO()
                
-    def createGesture(self, className, dataPath=[], gesture=-1):
-        obs, test = u.loadSplitData(path=dataPath, gesture=gesture)
+    def createGesture(self, gesture, className):
+        obs, test = u.loadSplitData(gesture)
             
         gesture = Gesture(className)
+        print "### building " + str(className) + " ###"
+        print " training " + str(len(obs)) + ", testing " + str(len(test)) 
         hmm, logprob = self.mu.buildModel(obs, test)
         gesture.setHMM(hmm)
         self.gestures.append(gesture)
         
     def createGestures(self, classList):
-        ''' classList = [(className, dataPath), (className, dataPath)] '''
-        for className, dataPath in classList:
-            self.createGesture(className, dataPath)
+        ''' classList = [1, 2, 3] '''
+        for gesture in classList:
+            className = GESTURE_PREFIX + str(gesture)
+            self.createGesture(gesture, className)
 
     def scoreData(self, data):
         
@@ -162,13 +166,15 @@ class Gesture():
 if __name__ == "__main__":
     print "#### START ####"
 
-    classList = [("gesture 0", "data/gesture_0.txt"), ("gesture 3", "data/gesture_3.txt"), ("gesture 5", "data/gesture_5.txt"), ("clean", "data/clean.txt")]
+    classList = [0, 1, 3, 5, 7]
     ga = GestureApplication()
     ga.createGestures(classList)
 
-    for className, dataPath in classList:
-        obs, test = u.loadSplitData(dataPath)
+    for classNum in classList:
+        className = GESTURE_PREFIX + str(classNum)
+        obs, test = u.loadSplitData(classNum)
         print ga.scoreClassData(obs, className)
+        print ga.scoreClassData(test, className)
     
 
     print "#### END ####"

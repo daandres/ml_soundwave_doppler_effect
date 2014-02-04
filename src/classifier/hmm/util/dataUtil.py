@@ -7,11 +7,11 @@ class DataUtil:
     
     def __init__(self, lowerBound=0.15):
         self.lowerBound=lowerBound
-        self.fileIO = GestureFileIO(relative="../../../")
+        self.fileIO = GestureFileIO(relative="../../")
 
     def loadRaw3dGesture(self, recordClass, recordNames=None):
         if recordNames is None:
-            return self.fileIO.getGesture3D(recordClass, ["ppasler", "Daniel"])
+            return self.fileIO.getGesture3D(recordClass)
         else:
             return self.fileIO.getGesture3D(recordClass, recordNames)
 
