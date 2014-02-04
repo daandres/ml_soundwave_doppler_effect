@@ -19,7 +19,7 @@ from PyQt4.Qt import QColor
 
 
 class ViewUIBob:
-    def __init__(self, recorder=None, applicationClose=None):
+    def __init__(self, kMeansClassifier=None, applicationClose=None):
 
         self.kmH = None 
         self.kmeans = None
@@ -69,9 +69,10 @@ class ViewUIBob:
         self.openFileDirectory = "C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert"
         self.centroidsFileDirectory = "C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert/Centroids"
         self.app = None
-        if recorder == None:
-            raise Exception("No Recorder, so go home")
-        self.recorder = recorder
+        if kMeansClassifier == None:
+            raise Exception("No kMeansClassifier, so go home")
+        self.kMeansClassifier = kMeansClassifier
+        self.recorder = kMeansClassifier.recorder
         
         if applicationClose == None:
             raise Exception("No close callback")
@@ -163,7 +164,8 @@ class ViewUIBob:
  
     def recordByRecorder(self):
         self.recordFramesCount = self.uiplot.frames_sb.value()
-        self.recorder.fillBuffer(self.recordFramesCount, self.callback)
+        self.kMeansClassifier.fillBuffer(self.recordFramesCount, self.callback)
+        #self.recorder.fillBuffer(self.recordFramesCount, self.callback)
         self.uiplot.record_bt.setStyleSheet('QPushButton {color: green}')
         
 
@@ -386,7 +388,7 @@ class ViewUIBob:
         cluster_ = self.kmeans.fit_predict(per)
         #cluster_ = self.kmeans.kmeanstrain(self.learnArrayKMeans,maxIterations)
         #print self.learnArrayKMeans
-        self.recorder.setKMeans(self.kmeans)
+        self.kMeansClassifier.setKMeans(self.kmeans)
         print 'learnKMeans : ', len(cluster_), '\n', cluster_
         #print 'cluster_.shape ', cluster_.shape
         self.kmeansClusterCenters =   self.kmeans.cluster_centers_
@@ -398,7 +400,7 @@ class ViewUIBob:
         
     def checkKMeans(self):
         self.checkOnline = not self.checkOnline
-        self.recorder.checkKMeansOnline()
+        self.kMeansClassifier.checkKMeansOnline()
 
         
     def testKMeans(self):
@@ -499,7 +501,7 @@ class ViewUIBob:
         
     
     def setPercentRatio(self, value):
-        self.recorder.setPercentRatio(value)
+        self.kMeansClassifier.setPercentRatio(value)
         
     def loadNoiseFile(self):
 

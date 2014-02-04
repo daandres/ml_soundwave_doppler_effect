@@ -66,6 +66,12 @@ class Console:
                 cl = HMM(self.recorder)
                 self.classificators[name] = cl
             cl = self.classificators[name]
+        elif(name == "kmeans"):
+            if(name not in self.classificators):
+                from classifier.k_means.kMeans import KMeans
+                cl = KMeans(self.recorder)
+                self.classificators[name] = cl
+            cl = self.classificators[name]
         else:
             raise Exception("Classificator not existing")
 
@@ -97,9 +103,6 @@ class Console:
         self.key_bindings['e'] = self.exit
         self.key_bindings['h'] = self.printHelp
         self.key_bindings['g'] = self.view
-        # bob so you can see bob GUI
-        self.key_bindings["gg"] = self.viewBob
-        # bob end
         self.key_bindings['u'] = self.selectClassifier
         self.key_bindings['c'] = self.classifyStart
         self.key_bindings['t'] = self.trainingStart
@@ -176,15 +179,6 @@ class Console:
     def view(self, command):
         self.view = View(self.recorder, self.viewCallback)
         self.view.startNewThread()
-
-    # bob
-    def viewBob(self, command):
-        import ntpath
-        from ui_bob_visualizer import ViewUIBob
-        self.viewUiBOB = ViewUIBob(self.recorder, self.viewCallback)
-        # self.viewUiBOB = ViewUIBob(self.viewCallback)
-        self.viewUiBOB.startNewThread()
-    # bob end
 
     def viewCallback(self, code):
         print("View closed with code " + str(code))
