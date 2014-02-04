@@ -58,7 +58,7 @@ class Trees(IClassifier):
             featureVector.append(shifts_left)
             featureVector.append(shifts_right)
             
-            featureVector.append(Feature().featureOrderOfShifts(gestures[i], 2))
+            featureVector.extend(Feature().featureOrderOfShifts(gestures[i], 2))
             featureVector.append(Feature().featureAmplitudes(gestures[i]))
             
             distance_contrary, distance_equal = Feature().shiftDistance(gestures[i])
@@ -73,8 +73,8 @@ class Trees(IClassifier):
         for class_ in [2,2,3,3,4,4,0,0,6,6]:
             for frameIndex in range(50):
                 targets.append(class_)
-        print numpy.shape(data)
-        print numpy.shape(targets)
+        #print numpy.shape(data)
+        #print numpy.shape(targets)
         #X_train, X_test, y_train, y_test = cross_validation.train_test_split(data2, targets, test_size=0.4, random_state=0)
         X_train, X_test, y_train, y_test = cross_validation.train_test_split(data, targets, test_size=0.4, random_state=0)
         self.clf.fit(X_train, y_train)
