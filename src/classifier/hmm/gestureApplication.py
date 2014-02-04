@@ -25,6 +25,9 @@ class HMM(IClassifier):
         self.gestureApp = GestureApplication()
         self.classList = [1, 2, 3]
         self.fileIO = GestureFileIO()
+        self.gestureWindow1=[]
+        self.gestureWindow2=[]
+        self.isFirstRun = True
 
     def getName(self):
         return NAME
@@ -37,13 +40,22 @@ class HMM(IClassifier):
 
 
     def classify(self, data):
-        dim = len(np.shape(data))
-        #several obs
-        if dim == 3:
-            return self.gestureApp.scoreData(data)
-        # only one obs
-        elif dim == 2:
-            return self.gestureApp.scoreSeq(data) 
+        if(len(self.gestureWindow1)==32):
+            seq = np.array([self.gestureWindow1])
+            seq = u.preprocessData(seq)
+            print self.gestureApp.scoreSeq(seq[0])
+            self.gestureWindow1[:] = []
+        if self.isFirstRun:
+            if(len(self.gestureWindow1)==16):
+                self.gestureWindow2[:] = []
+                self.isFirstRun = False
+        if (len(self.gestureWindow2)==32):
+                seq = np.array([self.gestureWindow2])
+                seq = u.preprocessData(seq)
+                print self.gestureApp.scoreSeq(seq[0])
+                self.gestureWindow2[:] = []
+        self.gestureWindow1.append(data)
+        self.gestureWindow2.append(data)
 
 
     def startValidation(self):
@@ -77,6 +89,20 @@ class GestureApplication():
         self.mu = h.HMM_Util()
         self.gestures = {}
         self.fileIO = GestureFileIO()
+        
+        # self.loadModels('classifier/hmm/data/config.cfg')
+        
+        '''
+        classList = [0, 3]
+        self.createGestures(classList)
+        for classNum in classList:
+            className = GESTURE_PREFIX + str(classNum)
+            obs, test = u.loadSplitData(classNum)
+            print self.scoreClassData(obs, className)
+            print self.scoreClassData(test, className)
+        self.saveModels('classifier/hmm/data/config.cfg')
+        '''
+
                
     def createGesture(self, gesture, className):
         obs, test = u.loadSplitData(gesture)
@@ -137,7 +163,7 @@ class GestureApplication():
         config.set('General','Configuration Name', configurationName)
         config.set('General','Number of gestures', len(self.gestures))
         i = 0
-        for ges in self.gestures:
+        for ges in self.gestures.values():
             config.add_section('Gesture'+str(i))
             config.set('Gesture'+str(i),'hmm',pickle.dumps(ges))
             i += 1
@@ -150,9 +176,9 @@ class GestureApplication():
         numberOfGestures = config.getint('General', 'number of gestures')
         for i in range(numberOfGestures):
             gestureConfig = str(config.get('Gesture'+str(i),'hmm'))
-            print gestureConfig
-            hmm = pickle.loads(gestureConfig)
-            self.gestures.append(hmm)
+            #print gestureConfig
+            gesture = pickle.loads(gestureConfig)
+            self.gestures[i] = (gesture)
 
 
 class Gesture():

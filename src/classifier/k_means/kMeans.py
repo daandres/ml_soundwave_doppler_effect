@@ -1,68 +1,191 @@
+from classifier.classifier import IClassifier
 
-# Code from Chapter 9 of Machine Learning: An Algorithmic Perspective
-# by Stephen Marsland (http://seat.massey.ac.nz/personal/s.r.marsland/MLBook.html)
+import numpy as np
+import kMeansHelper as kmHelper
 
-# You are free to use, change, or redistribute the code in any way you wish for
-# non-commercial purposes, but please maintain the name of the original author.
-# This code comes with no warranty of any kind.
+from src.view.ui_kmeans_visualizer import ViewUIKMeans
 
-# Stephen Marsland, 2008
-
-from numpy import *
-
-class kmeans:
-    """ The k-Means algorithm"""
-    def __init__(self,k,data):
-
-        self.nData = shape(data)[0]
-        self.nDim = shape(data)[1]
-        self.k = k
+class KMeans(IClassifier):
+    
+    def __init__(self, recorder=None):
+        self.name = 'kmeans'
+        self.currentRecordFrame = None
         
-    def kmeanstrain(self,data,maxIterations=10):
+        self.recorder = recorder
+        #bob
+        self.kmH = kmHelper.kMeansHepler()
+        self.kmeans = None
+        self.checkOnline = False
+        self.startBuffern = False
         
-        # Find the minimum and maximum values for each feature
-        minima = data.min(axis=0)
-        maxima = data.max(axis=0)
-    
-        # Pick the centre locations randomly
-        self.centres = random.rand(self.k,self.nDim)*(maxima-minima)+minima
-        oldCentres = random.rand(self.k,self.nDim)*(maxima-minima)+minima
-    
-        count = 0
-        #print centres
-        while sum(sum(oldCentres-self.centres))!= 0 and count<maxIterations:
-    
-            oldCentres = self.centres.copy()
-            count += 1
-    
-            # Compute distances
-            distances = ones((1,self.nData))*sum((data-self.centres[0,:])**2,axis=1)
-            for j in range(self.k-1):
-                distances = append(distances,ones((1,self.nData))*sum((data-self.centres[j+1,:])**2,axis=1),axis=0)
-    
-            # Identify the closest cluster
-            cluster = distances.argmin(axis=0)
-            cluster = transpose(cluster*ones((1,self.nData)))
-    
-            # Update the cluster centres    
-            for j in range(self.k):
-                thisCluster = where(cluster==j,1,0)
-                if sum(thisCluster)>0:
-                    self.centres[j,:] = sum(data*thisCluster,axis=0)/sum(thisCluster)
-            #plot(data[:,0],data[:,1],'kx')
-            #plot(centres[:,0],centres[:,1],'ro')
-        return self.centres
-    
-    def kmeansfwd(self,data):
+        #new
         
-        nData = shape(data)[0]
-        # Compute distances
-        distances = ones((1,nData))*sum((data-self.centres[0,:])**2,axis=1)
-        for j in range(self.k-1):
-            distances = append(distances,ones((1,nData))*sum((data-self.centres[j+1,:])**2,axis=1),axis=0)
+        self.percentRatio = 0.0
+        self.gestureIdx = 0
+        self.gestureArray = []
+        #bob end
+ 
+    def getName(self):
+        return self.name
+
+ 
+    def startTraining(self, args=[]):
+
+        
+        self.viewUiKmeans_ = ViewUIKMeans(self, self.getName)
+        self.viewUiKmeans_.startNewThread()
+        self.recorder.classifyStart(self)
+  
+
+ 
+    def classify(self, data):
+        self.currentRecordFrame = data
+        #bob
+        if self.startBuffern:  
+            data = self.currentRecordFrame
+            self.bufferArray = np.roll(self.bufferArray, -1, axis=0)
+            self.bufferArray[15] = self.kmH.normalizeSignalLevelSecond(data)
+            if self.checkOnline:
+                #maxV = np.amax(self.bufferArray[0])
+                if True:#(np.sum(self.bufferArray[0] > maxV * 0.15)) - 1 > 6:
+                    #print self.bufferArray.reshape(32*(self.idxRight -self.idxLeft),).shape
+                    result = []
+                    '''
+                    outBoolArray =  self.kmH.segmentInputData(self.bufferArray, 16, .15, 6, normalize=True)
+                    if outBoolArray is not None:
+                        #print outBoolArray.shape
+                        result = self.kmH.reduceDimensionality(outBoolArray, 16, twice=True, thrice=True)
+                        if result is not None:
+                            #print result.shape
+                            result = np.asarray(result)
+                            result = result.reshape(result.shape[0]*result.shape[1])
+                            result = np.asarray(result)
+                            #self.learnArray.append(result)
+                            #self.learnArrayKMeans.append(result)
+                    else:
+                        print 'array empty !!!'                    
+                    '''
+                    #tmp = self.bufferArray[0:16]
+                    #print 'tmp.shape ', tmp.shape
+                    result = self.kmH.reduceDimensionality(self.bufferArray)
+                    #print 'result : \n', self.bufferArray[0] 
+                    if result is not None:
+                            #print result.shape
+                            result = np.asarray(result)
+                            result = result.reshape(result.shape[0]*result.shape[1])
+                            #result = np.asarray(result)
+                    
+                    if len(result) == self.kmeans.cluster_centers_.shape[1]:
+                        #print result, ' , '
+                        self.kMeansOnline(result)
+                    else:
+                        print 'len(result) : ', len(result)
+        #bob end
+        
+
+ 
+    def startValidation(self):
+        pass
+
+ 
+    def load(self, filename=""):
+        pass
+
+ 
+    def save(self, filename=""):
+        pass
+
+ 
+    def loadData(self, filename=""):
+        pass
+
+ 
+    def saveData(self, filename=""):
+        pass
+
+ 
+    def printClassifier(self):
+        pass
+
+    #bob
+    def fillBuffer(self, bufferSize, callback):
+        self.idx = 0
+        self.progress = 0.0
+        self.bufferSize = bufferSize
+        #self.bufferArray = np.zeros((self.bufferSize, self.idxRight -self.idxLeft))
+        self.bufferArray = np.zeros((self.bufferSize, 64))
+        self.startBuffern = True
+        self.callback = callback
+        print 'fillBuffer'
+        print self.bufferArray.shape
+        
+    def getBuffer(self):
+        return self.bufferArray
+    # changed scope
+    def setKMeans(self, kMeans):
+        self.kmeans = kMeans
+        self.gestureArray = np.array(['bob\n', 'bob\n', 'bob\n', 'bob\n', 'bob\n', 'bob\n', 'bob\n', 'bob\n', 'bob\n', 'bob\n'])
+        
+        
+        
+    def kMeansOnline(self, checkArray):
+        class_  = self.kmeans.transform(checkArray)
+        cluster =  self.kmH.checkClusterDistance(class_, self.percentRatio)
+        self.setGestureArray(cluster)
+       
+        if cluster == -1:
+            print '-1'
+        elif cluster == 0:
+            print '    0'
+        elif cluster == 1:
+            print '        1'
+        elif cluster == 2:
+            print '            2'
+        elif cluster == 3:
+            print '                3'
+        elif cluster == 4:
+            print '                    4'
+        elif cluster == 5:
+            print '                        5'
+        elif cluster == 6:
+            print '                            6'
+        elif cluster == 7:
+            print '                                7'                                                
+        
+    def setGestureArray(self, cluster):
+        self.gestureIdx = self.gestureIdx+1 
+        class_ = "-"
+        if cluster == -1:
+            class_ = '\t-1\n'
+        elif cluster == 0:
+            class_ = '\t\t0\n'
+        elif cluster == 1:
+            class_ = '\t\t\t1\n'
+        elif cluster == 2:
+            class_ = '\t\t\t\t2\n'
+        elif cluster == 3:
+            class_ = '\t\t\t\t\t3\n'
+        elif cluster == 4:
+            class_ = '\t\t\t\t\t\t4\n'
+        elif cluster == 5:
+            class_ = '\t\t\t\t\t\t\t5\n'
+        elif cluster == 6:
+            class_ = '\t\t\t\t\t\t\t\t6\n'
+        elif cluster == 7:
+            class_ = '\t\t\t\t\t\t\t\t7\n'
+   
+        
+        self.gestureArray[self.gestureIdx] = class_
+        self.gestureIdx = (self.gestureIdx+1)%9                                           
     
-        # Identify the closest cluster
-        cluster = distances.argmin(axis=0)
-        cluster = transpose(cluster*ones((1,nData)))
     
-        return cluster
+    def getGestureArray(self):
+        return np.asarray(self.gestureArray)
+    
+        
+    def checkKMeansOnline(self):
+        self.checkOnline = not self.checkOnline
+    #new
+    def setPercentRatio(self, pRatio):
+        self.percentRatio = pRatio    
+    #bob end
