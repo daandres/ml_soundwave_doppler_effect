@@ -1,4 +1,4 @@
-n_tries = 5
+n_tries = 10
 
 covariance_type=['tied'] #String describing the type of covariance parameters used by the model. Must be one of 'spherical', 'tied', 'diag', 'full'. 
 algorithm=['viterbi']#, 'map']
