@@ -3,10 +3,10 @@ import sys
 from threading import Thread
 import time
 
-import config.config as c
-import util.dataUtil as d
-import util.hmmUtil as h
-import util.util as u
+import classifier.hmm.config.config as c
+import classifier.hmm.util.dataUtil as d
+import classifier.hmm.util.hmmUtil as h
+import classifier.hmm.util.util as u
 import ConfigParser
 import pickle
 from classifier.classifier import IClassifier
@@ -77,6 +77,17 @@ class GestureApplication():
         self.mu = h.HMM_Util()
         self.gestures = []
         self.fileIO = GestureFileIO()
+        #self.loadModels('classifier/hmm/data/config1.cfg')
+        classList = [0, 3]
+        #ga = GestureApplication()
+        self.createGestures(classList)
+    
+        for classNum in classList:
+            className = GESTURE_PREFIX + str(classNum)
+            obs, test = u.loadSplitData(classNum)
+            print self.scoreClassData(obs, className)
+            print self.scoreClassData(test, className)
+        self.saveModels('classifier/hmm/data/config.cfg')
                
     def createGesture(self, gesture, className):
         obs, test = u.loadSplitData(gesture)
@@ -140,11 +151,13 @@ class GestureApplication():
             config.write(configfile)
     
     def loadModels(self, filePath):
-        config = ConfigParser.RawConfigParser()
+        config = ConfigParser.ConfigParser()
         config.read(filePath)
-        numberOfGestures = config.getint('General', 'Number of gestures')
+        numberOfGestures = config.getint('General', 'number of gestures')
         for i in range(numberOfGestures):
-            hmm = pickle.loads(config.get('Gesture'+str(i),'hmm'))
+            gestureConfig = str(config.get('Gesture'+str(i),'hmm'))
+            print gestureConfig
+            hmm = pickle.loads(gestureConfig)
             self.gestures.append(hmm)
 
 

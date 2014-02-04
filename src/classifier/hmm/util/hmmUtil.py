@@ -1,8 +1,8 @@
 import numpy as np
 
-from gestureHMM import GestureHMM
+from classifier.hmm.gestureHMM import GestureHMM
 from gmmUtil import GMM_Util
-import config.config as c
+import classifier.hmm.config.config as c
 import sys
 
 

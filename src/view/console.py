@@ -65,6 +65,13 @@ class Console:
                 cl = Trees(self.recorder, treeConfig)
                 self.classificators[name] = cl
             cl = self.classificators[name]
+        elif(name == "hmm"):
+            if(name not in self.classificators):
+                from classifier.hmm.gestureApplication import HMM
+                #hmmConfig = c.getInstance().getConfig("hmm")
+                cl = HMM(self.recorder)
+                self.classificators[name] = cl
+            cl = self.classificators[name]
         else:
             raise Exception("Classificator not existing")
 
