@@ -25,6 +25,9 @@ class HMM(IClassifier):
         self.gestureApp = GestureApplication()
         self.classList = [("gesture 0", "data/gesture_0.txt"), ("gesture 3", "data/gesture_3.txt"), ("gesture 5", "data/gesture_5.txt"), ("clean", "data/clean.txt")]
         self.fileIO = GestureFileIO()
+        self.gestureWindow1=[]
+        self.gestureWindow2=[]
+        self.isFirstRun = True
 
     def getName(self):
         return NAME
@@ -37,13 +40,20 @@ class HMM(IClassifier):
 
 
     def classify(self, data):
-        dim = len(np.shape(data))
-        #several obs
-        if dim == 3:
-            return self.gestureApp.scoreData(data)
-        # only one obs
-        elif dim == 2:
-            return self.gestureApp.scoreSeq(data) 
+        if(len(self.gestureWindow1)==32):
+            seq = np.array([self.gestureWindow1])
+            self.gestureApp.scoreSeq(seq)
+            self.gestureWindow1[:] = []
+        if self.isFirstRun:
+            if(len(self.gestureWindow1)==16):
+                self.gestureWindow2[:] = []
+                self.isFirstRun = False
+        if (len(self.gestureWindow2)==32):
+                seq = np.array([self.gestureWindow2])
+                self.gestureApp.scoreSeq(seq)
+                self.gestureWindow2[:] = []
+        self.gestureWindow1.append(data)
+        self.gestureWindow2.append(data)
 
 
     def startValidation(self):
@@ -77,17 +87,17 @@ class GestureApplication():
         self.mu = h.HMM_Util()
         self.gestures = []
         self.fileIO = GestureFileIO()
-        #self.loadModels('classifier/hmm/data/config1.cfg')
+        self.loadModels('classifier/hmm/data/config.cfg')
+        '''
         classList = [0, 3]
-        #ga = GestureApplication()
         self.createGestures(classList)
-    
         for classNum in classList:
             className = GESTURE_PREFIX + str(classNum)
             obs, test = u.loadSplitData(classNum)
             print self.scoreClassData(obs, className)
             print self.scoreClassData(test, className)
         self.saveModels('classifier/hmm/data/config.cfg')
+        '''
                
     def createGesture(self, gesture, className):
         obs, test = u.loadSplitData(gesture)
@@ -128,14 +138,21 @@ class GestureApplication():
         
         ''' find most likely class '''
         logprob = -sys.maxint - 1
+        data = self.dp.reduceBins(seq)
+        data = self.dp.normalize(data)
+        data = self.dp.normalizeBound(data)
+        data = self.dp.cutRelevantAction(data)
+        data = self.dp.round(data)
+        data = self.dp.cutBad(data)
+
         gesture = None
         for g in self.gestures:
-            l = g.score(seq)
+            l = g.score(data[0])
             
             if 0 > l > logprob:
                 logprob = l
                 gesture = g 
-        return gesture, logprob
+        print gesture, logprob
     
     def saveModels(self, filePath, configurationName='Default'):
         config = ConfigParser.RawConfigParser()
@@ -156,7 +173,7 @@ class GestureApplication():
         numberOfGestures = config.getint('General', 'number of gestures')
         for i in range(numberOfGestures):
             gestureConfig = str(config.get('Gesture'+str(i),'hmm'))
-            print gestureConfig
+            #print gestureConfig
             hmm = pickle.loads(gestureConfig)
             self.gestures.append(hmm)
 
