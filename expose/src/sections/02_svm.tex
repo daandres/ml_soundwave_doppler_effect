@@ -142,6 +142,23 @@ Das Beispiel XX verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polyn
     \end{pmatrix}\\
     \\
     & \text{dann ist:}\\
+    \\
+    \langle \phi(w),\phi(x) \rangle = & \:\langle \begin{pmatrix}
+    w_1^2 \\
+    \sqrt{w_1w_2} \\
+    w_2^2
+    \end{pmatrix},
+    \begin{pmatrix}
+    x_1^2 \\
+    \sqrt{x_1x_2} \\
+    x_2^2
+    \end{pmatrix} \rangle \\
+    \\
+    = & \:w_1^2x_1^2 + 2 w_1x_1w_2x_2 + w_2^2x_2^2 \\
+    \\
+    = & \:(w_1x_1 + w_2x_2)^2 \\
+    \\
+    = & \:\langle w,x \rangle^2 \overset{\text{(def)}}= \mathcal{K}(w,x)
 \end{split}
 \end{equation}
 
