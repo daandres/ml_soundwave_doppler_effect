@@ -92,46 +92,90 @@ def main():
 #===============================================================================
     
     g = 5
-    for gesture in range(7): #0+g,1+g):
+    for gesture in range(4,5): #0+g,1+g):
         ''' get preprocessed data '''
         nn_avg, gn = preprocess(gesture)
         
         print "Gesture",gesture
         gesture_avg = []
         for i in range(len(gn)):
-            #print i
+            #i = 5
             temp = []
             for rf in range(len(gn[i])):
                 gn[i][rf] = (gn[i][rf]-nn_avg)**2
                 cond = numpy.where(gn[i][rf] <= 0.025)
                 gn[i][rf][cond] = 0
-                if numpy.amax(gn[i][rf]) > 0:
-                    temp.append(gn[i][rf])
+                
+                #if numpy.amax(gn[i][rf]) > 0:
+                #    temp.append(gn[i][rf])
+                    
+                #print gn[i][rf].shape
+                '''
+                ax = pylab.subplot(5,8,rf)
+                ax.set_ylim([-0.1,1])
+                scaling = numpy.arange(40)
+                pylab.plot(scaling,gn[i][rf],"g")
+                '''
+                
+            '''
+            print i,"=>",len(temp),
+            if len(temp) > 8:
+                offset = (len(temp) - 8)/2
+                g = numpy.asarray(temp[offset:offset+8])
+                for dd in range(len(g)):
+                    g[dd] = g[dd]/numpy.amax(g[dd])
+                    
+            elif len(temp) == 8:
+                g = numpy.asarray(temp)
+                for dd in range(len(g)):
+                    g[dd] = g[dd]/numpy.amax(g[dd])
+            elif len(temp) < 8:
+                print "\t not enough relevant recordingframes",
+            print ""
             
-            print len(temp)
+            trainingset = g.reshape(320,)[::2]
+            print trainingset.shape
+            
+            ax = pylab.subplot(1,1,0)
+            ax.set_ylim([-0.1,1])
+            scaling = numpy.arange(160)
+            pylab.plot(scaling,trainingset,"g")
+            
+            #return
+            
+            
             allg = numpy.asarray(temp)
             muh = numpy.zeros(40)
             for t in allg:
                 muh += t
+            '''    
+                
+            muh = gn[i].sum(axis=0)
+                            
             kuh = muh[::2]
             try:
                 kuh = kuh/numpy.amax(kuh)
+                #kuh = (kuh/len(temp))/numpy.amax(kuh/len(temp))
             except RuntimeWarning:
                 #print "division error"
                 kuh = numpy.zeros(20)
             gesture_avg.append(kuh)
             
-            '''
+    
+            
             ax = pylab.subplot(5,8,i)
             ax.set_ylim([-0.1,1])
             scaling = numpy.arange(20)
             pylab.plot(scaling,kuh,"g")
-            '''
-        average = numpy.mean(numpy.asarray(gesture_avg), axis=0)
-        ax = pylab.subplot(2,4,gesture)
-        ax.set_ylim([-0.1,1])
-        scaling = numpy.arange(20)
-        pylab.plot(scaling,average,"g")
+            
+        
+        #=======================================================================
+        # average = numpy.mean(numpy.asarray(gesture_avg), axis=0)
+        # ax = pylab.subplot(2,4,gesture)
+        # ax.set_ylim([-0.1,1])
+        # scaling = numpy.arange(20)
+        # pylab.plot(scaling,average,"g")
+        #=======================================================================
         
 
 
