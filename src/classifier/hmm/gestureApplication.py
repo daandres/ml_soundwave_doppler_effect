@@ -23,7 +23,7 @@ class HMM(IClassifier):
         self.config = config
         self.relative = relative
         self.gestureApp = GestureApplication()
-        self.classList = [("gesture 0", "data/gesture_0.txt"), ("gesture 3", "data/gesture_3.txt"), ("gesture 5", "data/gesture_5.txt"), ("clean", "data/clean.txt")]
+        self.classList = [1, 2, 3]
         self.fileIO = GestureFileIO()
 
     def getName(self):
@@ -75,19 +75,8 @@ class GestureApplication():
     def __init__(self):
         self.dp = d.DataUtil()
         self.mu = h.HMM_Util()
-        self.gestures = []
+        self.gestures = {}
         self.fileIO = GestureFileIO()
-        #self.loadModels('classifier/hmm/data/config1.cfg')
-        classList = [0, 3]
-        #ga = GestureApplication()
-        self.createGestures(classList)
-    
-        for classNum in classList:
-            className = GESTURE_PREFIX + str(classNum)
-            obs, test = u.loadSplitData(classNum)
-            print self.scoreClassData(obs, className)
-            print self.scoreClassData(test, className)
-        self.saveModels('classifier/hmm/data/config.cfg')
                
     def createGesture(self, gesture, className):
         obs, test = u.loadSplitData(gesture)
@@ -97,13 +86,16 @@ class GestureApplication():
         print " training " + str(len(obs)) + ", testing " + str(len(test)) 
         hmm, logprob = self.mu.buildModel(obs, test)
         gesture.setHMM(hmm)
-        self.gestures.append(gesture)
+        
+        return gesture
         
     def createGestures(self, classList):
         ''' classList = [1, 2, 3] '''
-        for gesture in classList:
-            className = GESTURE_PREFIX + str(gesture)
-            self.createGesture(gesture, className)
+
+        for g in classList:
+            className = GESTURE_PREFIX + str(g)
+            gesture = self.createGesture(g, className)
+            self.gestures[g] = gesture
 
     def scoreData(self, data):
         
@@ -117,10 +109,12 @@ class GestureApplication():
         
         ''' find most likely class '''
         scores = {}
+        probs = []
         for seq in data:
-            gesture, _ = self.scoreSeq(seq)
+            gesture, prob = self.scoreSeq(seq)
             if gesture is not None:
                 scores[gesture.className] = scores.get(gesture.className, 0) + 1
+                probs.append(prob)
         accuracy = 100.0 * scores.get(className, 0) / len(data)*1.0
         return scores, round(accuracy, 2), className
             
@@ -129,7 +123,7 @@ class GestureApplication():
         ''' find most likely class '''
         logprob = -sys.maxint - 1
         gesture = None
-        for g in self.gestures:
+        for g in self.gestures.values():
             l = g.score(seq)
             
             if 0 > l > logprob:
@@ -193,15 +187,28 @@ class Gesture():
 if __name__ == "__main__":
     print "#### START ####"
 
-    classList = [0, 1, 3, 5, 7]
+    classList = [0, 2, 7]
     ga = GestureApplication()
     ga.createGestures(classList)
-
-    for classNum in classList:
-        className = GESTURE_PREFIX + str(classNum)
-        obs, test = u.loadSplitData(classNum)
-        print ga.scoreClassData(obs, className)
-        print ga.scoreClassData(test, className)
-    
+    cp = classList[:]
+    i = 0
+    while cp != []:
+        for classNum in cp:
+            # score it
+            className = GESTURE_PREFIX + str(classNum)
+            obs, test = u.loadSplitData(classNum)
+            scores, accuracy, className = ga.scoreClassData(test, className)
+            
+            #recreate it
+            if accuracy < 50:
+                ga.createGesture(classNum, className)
+            else:
+                cp.remove(classNum)
+                print className, accuracy, scores
+        i += 1
+        print i
+        if i > 25:
+            print "\n SHIAT \n"
+            break
 
     print "#### END ####"

@@ -38,3 +38,4 @@ tmp/*
 *.tdo
 /tmp
 /out
+/.externalToolBuilders

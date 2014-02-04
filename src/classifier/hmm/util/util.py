@@ -3,12 +3,9 @@ import dataUtil as d
 from numpy.testing.decorators import deprecated
 
 
-@deprecated
-def loadRaw(path = ["../data/gesture_0.txt"]):
-    if type(path) == str:
-        path = [path]
+def loadRaw(gesture):
     dp = d.DataUtil()
-    return dp.loadRaw3DArray(path)
+    return dp.loadRaw3dGesture(gesture)
 
 def loadData(gesture):
     dp = d.DataUtil()
