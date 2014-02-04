@@ -1,7 +1,7 @@
 from classifier.classifier import IClassifier
 
 import numpy as np
-import classifier.k_means.kMeans_Helper as kmHelper
+import classifier.k_means.kMeansHelper as kmHelper
 
 
 
