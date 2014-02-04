@@ -37,7 +37,7 @@ class Console:
 
     def getClassificator(self, name):
         if(name == ""):
-            raise Exception("No classificator specified")
+            raise Exception("No classificator specified, see usage 'h'")
         elif(name == "lstm"):
             if(name not in self.classificators):
                 from classifier.lstm.lstm import LSTM
@@ -196,11 +196,11 @@ class Console:
         pass
 
     def selectClassifier(self, args):
-#         try:
-        self.classificator = self.getClassificator(args[1])
-        print("Using now classificator " + self.classificator.getName())
-#         except Exception as e:
-#             print("Classifier not known: " + args[1] + "; " + str(e))
+        try:
+            self.classificator = self.getClassificator(args[1])
+            print("Using now classificator " + self.classificator.getName())
+        except Exception as e:
+            print("" + args[1] + " " + str(e))
 #             raise e
         self.inputEvent.set()
 
