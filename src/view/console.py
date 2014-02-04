@@ -36,7 +36,7 @@ class Console:
         self.userConfig = c.getInstance().getConfig("user")
         print("Hello " + self.userConfig['name'])
         print("Use command 'h' for usage help!")
-        self.selectClassifier(["u", self.userConfig['classifier']])
+        #self.selectClassifier(["u", self.userConfig['classifier']])
         self.sound = not bool(self.userConfig['autostart_sound'])
         self.soundFirstTime = True
         self.toggleSound("")
