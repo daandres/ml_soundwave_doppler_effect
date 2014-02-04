@@ -140,7 +140,8 @@ z_{c}(t) = \sum \limits_{m} w_{c,m}y_m(t-1)
 \label{eq_lstm_gate}
 \begin{split}
 y_{gate}(t) &= f_{gate}(z_{gate}(t))\\
-z_{gate}(t) &= \sum \limits_{m} w_{gate,m}y_m(t-1)
+z_{gate}(t) &= \sum \limits_{m} w_{gate,m}y_m(t-1)\\
+gate &\in \{in,\varphi,out\}
 \end{split}
 \end{equation}
 

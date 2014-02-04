@@ -3,12 +3,6 @@ from threading import Thread, Event
 from visualizer import View
 import properties.config as c
 
-# bob
-import ntpath
-from ui_bob_visualizer import ViewUIBob
-# bob end
-
-
 class Console:
     def __init__(self, recorder=None, soundplayer=None, applicationClose=None, setFileName=None, getFileName=None):
         if recorder == None:
@@ -175,8 +169,11 @@ class Console:
     def view(self, command):
         self.view = View(self.recorder, self.viewCallback)
         self.view.startNewThread()
+
     # bob
     def viewBob(self, command):
+        import ntpath
+        from ui_bob_visualizer import ViewUIBob
         self.viewUiBOB = ViewUIBob(self.recorder, self.viewCallback)
         # self.viewUiBOB = ViewUIBob(self.viewCallback)
         self.viewUiBOB.startNewThread()
