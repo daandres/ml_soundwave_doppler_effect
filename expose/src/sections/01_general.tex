@@ -1,18 +1,37 @@
 \section{Einleitung}
-Ziel des Projektes ist es ein Programm zu entwickeln, was Gesten erkennt. Dazu
-wurde von Microsoft ein Verfahren entwickelt, welches anhand der Doppler
-Verschiebung, eines Soundsignals, Gesten erkennt. Dieses Verfahren wird in
-\cite{Gupta2012} beschrieben. Um die Gesten zu erkennen sollen verschiedene
-Machine Learning Verfahren verwendet werden.
+Eine Alternative zu den Standardeingabegeräten wie Maus und Tastatur zur Interaktion mit Computern sind Gesten. 
+Von besonderem Interesse ist dabei das Erkennen von sogenannten \glqq In-Air\grqq -Gesten, die mit den Händen in der Luft ausgeführt werden. Der Unterschied zu Gesten, wie sie beispielsweise auf Touch-Displays von Smartphones für das Rotieren oder Skalieren von Bildern verwendet werden, besteht darin, dass die Interaktion kontaktfrei ist und durch die Bewegung der Hände im Raum wesentlich komplexere Gesten realisiert werden können.
 
-Das Prgramm sollte folgende Gesten erkennen:
+Zwei bekannte Geräte zur In-Air-Gestenerkennung sind Leap Motion~\cite{LeapMotion} und Microsoft Kinect~\cite{Kinect}. Diese Geräte verwenden optische Verfahren zur Erkennung der Hände oder Finger. Ein Nachteil beider Verfahren ist jedoch, dass sie wegen der optischen Erkennung sehr abhängig von der Beleuchtung sind. Weiterhin ist die Gesten-Erkennung erst durch die Verwendung zusätzlicher Hardware möglich.
+
+Ein alternativer Ansatz ist die Verwendung von Mikrofon und Lautsprecher zur akustischen Erkennung von Gesten. Ein Vorteil dieses Ansatzes gegenüber Leap Motion oder Microsoft Kinect ist, dass die meisten Computer und Laptops mit dieser Hardware bereits ausgestattet sind.
+Das in \cite{Gupta2012} beschriebene Verfahren nutzt dazu den Doppler-Effekt, also die Frequenzverschiebungen eines konstanten Tons bei zeitlicher Veränderung der Entfernung zwischen der Schallquelle (Sender) und dem Empfänger. 
+Über die Lautsprecher (Sender) wird ein konstanter, hochfrequenter Ton ausgegeben, der von dem Mikrofon (Empfänger) aufgenommen wird. 
+Da sowohl Sender als auch Empfänger eine feste Position haben, kommt es durch das Bewegen der Hände zu Frequenzverschiebungen, die sich auf den Doppler-Effekt zurückführen lassen. 
+Diese Frequenzverschiebungen können analysiert und Rückschlüsse auf die Richtung und die Geschwindigkeit von der Bewegung gezogen werden. 
+
+%Ziel des Projektes ist es ein Programm zu entwickeln, was Gesten erkennt. Dazu
+%wurde von Microsoft ein Verfahren entwickelt, welches anhand der Doppler
+%Verschiebung, eines Soundsignals, Gesten erkennt. Dieses Verfahren wird in
+%\cite{Gupta2012} beschrieben. Um die Gesten zu erkennen sollen verschiedene
+%Machine Learning Verfahren verwendet werden.
+
+Im Rahmen der Lehrveranstaltung Machine Learning an der Hochschule RheinMain im Studiengang Master Informatik soll eine Anwendung mit dem Ziel entwickelt werden, die akustische Erkennung und Klassifikation von Gesten auf Grundlage des Doppler-Effekts durch verschiedene Machine Learning Verfahren zu realisieren. 
+
+Die Anwendung soll folgende Gesten unterscheiden können:
 \begin{itemize}
-	\item Left-to-Right-One-Hand
-	\item Right-to-Left-One-Hand
-	\item Top-to-Bottom-One-Hand
-	\item Bottom-to-Top-One-Hand
-	\item Push-Two-Hands
-	\item Pull-Two-Hands
+	\item Right-To-Left-One-Hand\\
+	Das Bewegen der Hand von rechts nach links vor dem Bildschirm
+	\item Top-To-Bottom-One-Hand\\
+	Das Bewegen der Hand von oben nach unten vor dem Bildschirm
+	\item Opposed-With-Two-Hands\\
+	Beide Hände entgegengesetzt auf den Bildschirm hin und weg bewegen
+	\item Single-Push-One-Hand\\
+	Mit einer Hand eine kurze Bewegung in Richtung des Monitors und zurück
+	\item Double-Push-One-Hand\\
+	Mit einer Hand zwei kurze aufeinander folgende Bewegungen in Richtung des Monitors und zurück
+	\item Rotate-One-Hand\\
+	Rotation mit einer Hand
 \end{itemize}
 
 \subsection{Aufnahmeprogramm}

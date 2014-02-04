@@ -13,7 +13,7 @@ import ntpath
 from functools import partial
 
 from sklearn import cluster
-import classifier.k_means.kMeansHelper as kmHelper
+import src.classifier.k_means.kMeansHelper as kmHelper
 from properties.config import ConfigProvider
 from PyQt4.Qt import QColor
 

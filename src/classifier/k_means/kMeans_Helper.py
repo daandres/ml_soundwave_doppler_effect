@@ -1,4 +1,4 @@
-import view.ui_bob
+
 import numpy as np
 
 import sys, os
