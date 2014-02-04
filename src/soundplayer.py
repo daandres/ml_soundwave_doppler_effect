@@ -1,5 +1,4 @@
 import pyaudio
-# # To use wavebender checkout this repo: https://github.com/zacharydenton/wavebender.git and install it with python setup.py
 import wavebender as wb
 from myStream import MyStream
 from threading import Thread

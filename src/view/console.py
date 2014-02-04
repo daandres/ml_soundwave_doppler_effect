@@ -3,6 +3,11 @@ from threading import Thread, Event
 from visualizer import View
 import properties.config as c
 
+# bob
+import ntpath
+from ui_bob_visualizer import ViewUIBob
+# bob end
+
 
 class Console:
     def __init__(self, recorder=None, soundplayer=None, applicationClose=None, setFileName=None, getFileName=None):
@@ -46,7 +51,6 @@ class Console:
                 cl = LSTM(self.recorder, lstmConfig)
                 self.classificators[name] = cl
             cl = self.classificators[name]
-            return cl
         elif(name == "svm"):
             if(name not in self.classificators):
                 from classifier.svm.svm import SVM
@@ -54,7 +58,18 @@ class Console:
                 cl = SVM(self.recorder, svmConfig)
                 self.classificators[name] = cl
             cl = self.classificators[name]
-            return cl
+        elif(name == "trees"):
+            if(name not in self.classificators):
+                from classifier.trees.Trees import Trees
+                treeConfig = c.getInstance().getConfig("trees")
+                cl = Trees(self.recorder, treeConfig)
+                self.classificators[name] = cl
+            cl = self.classificators[name]
+        else:
+            raise Exception("Classificator not existing")
+
+        return cl
+
 
     def recordStart(self, args):
         fileName = self.getFileName(args[0])
@@ -81,6 +96,9 @@ class Console:
         self.key_bindings['e'] = self.exit
         self.key_bindings['h'] = self.printHelp
         self.key_bindings['g'] = self.view
+        # bob so you can see bob GUI
+        self.key_bindings["gg"] = self.viewBob
+        # bob end
         self.key_bindings['u'] = self.selectClassifier
         self.key_bindings['c'] = self.classifyStart
         self.key_bindings['t'] = self.trainingStart
@@ -132,14 +150,21 @@ class Console:
     def start(self):
         self.alive = True
         while self.alive:
-            txtin = raw_input('> ')
-            args = txtin.split(" ")
-            if args[0] not in self.key_bindings:
-                print("No command for " + args[0])
-                continue
-            self.inputEvent.clear()
-            self.key_bindings[args[0]](args)
-            self.inputEvent.wait()
+            try:
+                txtin = raw_input('> ')
+                args = txtin.split(" ")
+                if args[0] not in self.key_bindings:
+                    print("No command for " + args[0])
+                    continue
+                self.inputEvent.clear()
+                self.key_bindings[args[0]](args)
+                self.inputEvent.wait()
+            except EOFError:
+                print("End of File Exception")
+                self.alive = False
+            except KeyboardInterrupt:
+                print("KeyboardInterrupt. Stopping current task (no guarantees for failures), if possible...")
+                self.interrupt()
         return
 
     def exit(self, txtin):
@@ -150,6 +175,12 @@ class Console:
     def view(self, command):
         self.view = View(self.recorder, self.viewCallback)
         self.view.startNewThread()
+    # bob
+    def viewBob(self, command):
+        self.viewUiBOB = ViewUIBob(self.recorder, self.viewCallback)
+        # self.viewUiBOB = ViewUIBob(self.viewCallback)
+        self.viewUiBOB.startNewThread()
+    # bob end
 
     def viewCallback(self, code):
         print("View closed with code " + str(code))
@@ -160,22 +191,20 @@ class Console:
             print("No classifier specified")
             self.inputEvent.set()
             return
-        try:
-            self.recorder.classifyStart(self.classificator)
-        except KeyboardInterrupt:
-            self.recorder.classifyStop()
-            self.inputEvent.set()
+        self.recorder.classifyStart(self.classificator)
+        # no input event set because this done in recorder in another thread
+
+    def classifyCallback(self):
+        # only for checking for new Interrupts
+        pass
 
     def selectClassifier(self, args):
-        # TODO do it better... switch case, exception handling, ...
-        if(args[1] == 'lstm'):
-            self.classificator = self.getClassificator(args[1])
-            print("Using now classificator " + self.classificator.getName())
-        elif(args[1] == 'svm'):
-            self.classificator = self.getClassificator(args[1])
-            print("Using now classificator " + self.classificator.getName())
-        else:
-            print("No classifier specified")
+#         try:
+        self.classificator = self.getClassificator(args[1])
+        print("Using now classificator " + self.classificator.getName())
+#         except Exception as e:
+#             print("Classifier not known: " + args[1] + "; " + str(e))
+#             raise e
         self.inputEvent.set()
 
     def trainingStart(self, args):
@@ -237,7 +266,7 @@ class Console:
         self.inputEvent.set()
 
     def printHelp(self, args=None):
-        printHelp()
+        printHelp(args)
         self.inputEvent.set()
 
     def changeFilename(self, args):
@@ -249,21 +278,74 @@ class Console:
         self.setFileName(newName)
         self.inputEvent.set()
 
+    def interrupt(self):
+        self.recorder.classifyStop()
+        self.inputEvent.set()
+
 def printHelp(args=None):
-    print("Gesture Recognition based on the Soundwave doppler effect")
-    print("Usage: <command> [<option>]")
-    print("<num> [<num>]\t0-7 record a gesture and associate with class number [repeat <digit> times]")
-    print("u <classifier> \tconfigure classifier to use. Supported classifiers: [svm, trees, hmm, k-means, lstm]")
-    print("c \t\tstart real time classifying with the configured classifier")
-    print("t \t\tstart training for the configured classifier with the saved data")
-    print("l <filename> \tload configured classifier and dataset from file")
-    print("s [<filename>] \tsave configured classifier and dataset to file with filename or timestamp")
-    print("v \t\tstart validation for the configured classifier with the saved data")
-    print("e \t\texit application")
-    print("g \t\tstart view [BUG: works only one time per runime]")
-    print("f [<string>] \tchange filename for recording. if empty use current time ")
-    print("r \t\tstart/stop sound playing and recording")
-    print("h \t\tprint(this help")
-    print("")
-    print("0 Right-To-Left-One-Hand\n1 Top-to-Bottom-One-Hand\n2 Entgegengesetzt with two hands\n3 Single-push with one hand\n4 Double-push with one hand\n5 Rotate one hand\n6 Background noise (no gesture, but in silent room)\n7 No gesture with background sound (in a Pub, at office, in the kitchen, etc.)")
-    print("")
+    def printAbout(args=None):
+        print("Gesture Recognition based on the Soundwave doppler effect")
+
+
+    def printUsage(args=None):
+        print("Usage: <command> [<option>]")
+        print("")
+
+        print("Record example gestures")
+        print("  r \t\tstart/stop sound playing and recording")
+        print("  <num> [<num>]\t0-7 record a gesture and associate with class number [repeat <digit> times]")
+        print("  f [<string>] \tchange filename for recording. if empty use current time ")
+        print("")
+
+        print("Gui [BUG: works only one time per runtime]")
+        print("  g \t\tstart view (can record single gestures)")
+        print("  gg \t\tstart bob view")
+        print("")
+
+        print("Classifier commands")
+        print("  u <classifier> \tconfigure classifier to use. Supported classifiers: [svm, trees, hmm, k-means, lstm]")
+        print("  c \t\t\tstart real time classifying with the configured classifier (requires active sound, see 'r' command)")
+        print("  t [<num>] \t\tstart training for the configured classifier with the saved data, <num> Number of epochs, if applicable")
+        print("  l <filename> \t\tload configured classifier from file")
+        print("  l ds <filename> \tload configured dataset from file")
+        print("  s [<filename>] \tsave configured classifier to file with filename or timestamp")
+        print("  s ds [<filename>] \tsave configured dataset to file with filename or timestamp")
+        print("  v \t\t\tstart validation for the configured classifier with the saved data")
+        print("  p \t\t\tprint the classifier options")
+        print("")
+
+        print("General")
+        print("  h \t\tprint all help")
+        print("  h u \t\tprint usage help")
+        print("  h g \t\tprint gesture table")
+        print("  e \t\texit application")
+
+    def printGestures(args=None):
+        print("Class number\tGesture Shortcode\tGesture description")
+        print("  0 RLO\tRight-To-Left-One-Hand or Left-To-Right-One-hand")
+        print("  1 TBO\tTop-To-Bottom-One-Hand")
+        print("  2 OT\tOpposed-With-Two-hands")
+        print("  3 SPO\tSingle-Push-One-Hand")
+        print("  4 DPO\tDouble-Push-One-Hand")
+        print("  5 RO\tRotate-One-Hand")
+        print("  6 BNS\tBackground-Noise-Silent (no gesture, but in silent room)")
+        print("  7 BNN\tBackground-Noise-Noisy (no gesture, but in a noisy room like a Pub, an office, a kitchen, etc.)")
+
+
+    if(args != None and len(args) > 1):
+        if(args[1][0] == "g"):
+            printGestures()
+        elif(args[1][0] == "u"):
+            printUsage()
+        else:
+            printAbout()
+            print("")
+            printUsage()
+            print("")
+            printGestures()
+    else:
+        printAbout()
+        print("")
+        printUsage()
+        print("")
+        printGestures()
