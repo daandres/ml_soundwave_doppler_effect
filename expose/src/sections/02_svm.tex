@@ -14,20 +14,10 @@ Mehrlagige Perzeptronen (MLP) sind in der Lage, Eingabevektoren in Ausgabevektor
 Die jeweiligen Gewichtungen können so eingestellt werden, dass der Eingabevektor in einen bestimmten Ausgabevektor umgewandelt wird. 
 Abbildung XX zeigt, wie ein einfaches Perzeptron die UND-Funktion realisiert und visualisiert die Klassifizierungsentscheidung in einem Koordinatensystem. 
 
-\begin{figure}[hb]
-	\begin{center}
-		 \includegraphics[width=0.5\textwidth]{svm_1.png}
-	\end{center}
-	\caption{AND-Perzeptron (Platzhalterbild)}
-	\label{fig:svm1}
-\end{figure}
-
-\begin{figure}[hb]
-	\begin{center}
-		 \includegraphics[width=0.5\textwidth]{svm_1.png}
-	\end{center}
-	\caption{AND-Raum (Platzhalterbild)}
-	\label{fig:svm1}
+\begin{figure}[htbp] \centering
+    \includegraphics[height=50mm]{svm/svm_1.png}
+    \caption{AND-Perzeptron und Raum (Platzhalterbild)}
+    \label{fig:svm1}
 \end{figure}
 
 Einlagige Perzeptronen sind beschränkt auf die Lösung linear separierbarer Probleme. 
@@ -36,21 +26,12 @@ Ein einfaches XOR kann also nicht realisiert werden.
 Mit einem Trick, der Erhöhung der Dimension, können mehrlagige Perzeptronen auch nichtlinear separierbare Probleme lösen. 
 So lässt sich bspw. das XOR-Problem in einem 3-dimensionalen Raum durch eine Hyperebene trennen.
 
-\begin{figure}[h]
-	\begin{center}
-		 \includegraphics[width=0.25\textwidth]{svm_1.png}
-	\end{center}
-	\caption{XOR-MLP (Platzhalterbild)}
-	\label{fig:svm1}
+\begin{figure}[htbp] \centering
+    \includegraphics[height=50mm]{svm/svm_1.png}
+    \caption{XOR-Perzeptron-Raum, nichtlinear separierbar (Platzhalterbild)}
+    \label{fig:svm1}
 \end{figure}
 
-\begin{figure}[hb]
-	\begin{center}
-		 \includegraphics[width=0.25\textwidth]{svm_1.png}
-	\end{center}
-	\caption{XOR-Raum (Platzhalterbild)}
-	\label{fig:svm1}
-\end{figure}
 
 Die Wahl der richtigen Gewichte ist dabei nicht einfach, für komplexere Problemstellungen schier unmöglich. 
 Um dennoch eine Problemlösung zu modellieren, die Eingaben richtig klassifiziert, gibt es einen Algorithmus, der die Gewichte automatisch anpasst.
@@ -94,17 +75,23 @@ Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die SVM die Eingabe
     \mathcal{C}_1: \{ c \,|\, sign(\langle w,x \rangle + b) = 1 \}
 \end{equation}
 
-Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin bezeichnet (Abb. XX). 
+Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. XX). 
 Die Stützvektoren bilden das tragende Konstrukt der Entscheidungsfunktion. 
 Alle andere Merkmalsvektoren haben keinen Einfluss auf die Trennung, was die Namensgebung der Stützvektoren begründet. 
 Das macht die SVM zu einem sehr transparenten und performantent Klassifikator. 
 
 
 \subsubsection{Kernel-Trick}
-Probleme ergeben sich bei der Lösung von nichtlinear separierbaren Probleme und der Klassifikation von mehr als 2 Klassen.
+Es ergeben sich Unregelmäßigkeiten bei der Lösung von nichtlinear separierbaren Probleme und der Klassifikation von mehr als 2 Klassen.
 Im Gegensatz zu den MLPs kann man mit der Erhöhung der Dimension diesen Umstand nicht umgehen. 
 Die SVMs setzen in diesem Falle auf die Transformation der Datenrepräsentation. 
 Mit Hilfe von Kernfunktionen lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren, in dem sie linear separierbar erscheinen (Abb. XX). 
+
+\begin{figure}[htbp] \centering
+    \includegraphics[height=50mm]{svm/svm_1.png}
+    \caption{Die Kernel-Funktion repräsentiert die Daten in einem höherdimensionalen Raum, in dem sie linear separierbar erscheinen (Platzhalterbild)}
+    \label{fig:svm1}
+\end{figure}
 
 \begin{eqnarray}
 \label{eq:svm_kern_function}
@@ -169,13 +156,10 @@ x_2^2
 
 Nicht jede beliebige Funktion ist eine Kernelfunktion. Kernelfunktionen müssen die Bedingungen nach Satz von Mercer (MLBUCH94, S.127) erfüllen.
 
-
-\begin{figure}[hb]
-	\begin{center}
-		 \includegraphics[width=0.25\textwidth]{svm_1.png}
-	\end{center}
-	\caption{SVM-Räume, wx+b, M (Platzhalterbild)}
-	\label{fig:svm1}
+\begin{figure}[htbp] \centering
+    \includegraphics[height=50mm]{svm/svm_1.png}
+    \caption{SVM-Räume, wx+b, M (Platzhalterbild)}
+    \label{fig:svm1}
 \end{figure}
 
 \newpage
@@ -238,9 +222,144 @@ Sie ist als grüner Graph in den Bildern zu sehen.
 
 \begin{figure}[h!]
   \centering
-    \includegraphics[width=0.8\textwidth]{svm_data_1.png}
+    \includegraphics[width=0.8\textwidth]{svm/svm_data_1.png}
   \caption{Ausgabe der (transformierten) Merkmalsvektoren}
 \end{figure}
 
 
-% \include{svm-function.tex}
+\newpage 
+\subsection{Anwendung auf das Projekt}
+\begin{itemize}
+\item{normierung}
+\item{quantisierung}
+\item{transformation}
+\end{itemize}
+
+% UND-Perzeptron
+
+\subsubsection{Datenaufbereitung}
+In Kapitel \ref{Kapitel 1 TODO} wurde die Aufnahme und die generelle Vorverarbeitung der Daten bereits erläutert, bevor diese an die entsprechenden Klassifikatoren weitergeleitet werden.
+Die Klassifikatoren erhalten dabei jeweils einzelne Frames mit bereits normalisierten 64 Werten, die sich innerhab des Frequenzbereichs um die Referenzfrequenz von $18500\text{kHz}$ befinden  \{Bild einfügen\}. 
+Da jeder Klassifikator aufgrund seiner Funktionsweise unterschiedlich mit den Eingabedaten arbeitet, ist eine entsprechende und auf den jeweiligen Klassifikator angepasste Datenaufbereitung notwendig.
+
+Dieser Abschnitt befasst sich mit der spezifischen Datenaufbereitung für den Support Vector Machine Klassifikator.
+
+[..]
+Bei der Betrachtung der Trainingsdaten beziehungsweise -Gesten fällt auf, dass die durch den Dopper-Effekt verursachten Frequenzverschiebungen in einem relativ kleinen Bereich um die Referenzfrequenz herum sattfinden.
+Zudem wird offensichtlich, dass nur ein Bruchteil der ursprünglich veranschlagten 32 Frames pro Geste relevante Informationen enthalten, da eine ausgeführte Geste meist zwischen 8 und 16 Frames lang ist beziehungsweise nur innerhalb dieser Frame-Anzahl Frequenzverschiebungen verursacht.
+Um diesen Overhead an nicht nutzbaren Daten zu beseitigen, wird die zu betrachtende Frame-Anzahl bei der Live-Klassifikation auf 20 festgelegt.
+Der verwendete Wertebereich eines Frames wird sowohl in der Trainingsphase, als auch in der Live-Klassifikation, von 64 auf 40 verkleinert \{Bild einfügen\}. 
+
+Da nach der Vorverarbeitung der Daten (\ref{Kapitel 1 TODO} trotz Subtraktion der Referenzfrequenz teilweise noch sehr feines Rauschen in den Daten vorhanden sein kann, werden Werte unterhalb eines festgelegten Schwellenwerts (Threshold) auf 0 gesetzt.
+Ein Aufsummieren aller Frames mit anschließender Normalisierung liefert ein ''Gesamtergebnis'' einer Geste, in der sich alle relevanten Merkmale befinden.
+
+Durch die Reduzierung des Wertebereichs auf 40 Werte pro Frame und durch das Aufsummieren zu einer Einheitsgeste wird eine Problemdimensionsreduzierung beim Training einer SVM um den Faktor ~51 erzielt.
+Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite Wert der Einheitsgeste für das Training verwendet wird.
+
+
+\subsubsection{Anpassung des Klassifikators}
+- Ergebnisorientoiert
+
+\subsubsection{Implementierung}
+Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Interface für alle Klassifikatoren vorhanden, welches von jedem Klassifikator -- allerdings unterschiedlich -- implementiert ist. 
+Dabei handelt es sich um die abstrakte Klasse \textit{IClassifier}.
+
+Für die Implementierung des \ac{SVM}-Klassifikators innerhalb der Klasse SVM wird die Python-Bibliothek \cite{scikit-learn} verwendet. 
+Die Bibliothek stellt neben einer Vielzahl von weiteren Modulen und Klassen unter anderem auch eine Implementierung einer SVM zur Verfügung.
+Für grundlegende Matrizenberechnungen wird die Python-Bibliothekt \cite{NumPy} verwendet. \cite{NumPy} zeichnet sich vor allem durch effiziente Berechnungsoperationen und eine Vielzahl an nützlicher Funktionen aus.
+Zusätzlich findet das in der Python-Installation enthaltene \cite{subprocess}-Modul Einsatz, um mittels erkannter Gesten verschiedene Programme starten und beenden zu können.
+
+Die Methode \textit{classify} führt die entsprechenden Vorverarbeitungsschritte pro übergebenem Frame aus und speichert diesen in einer globalen Liste \textit{self.datalist}. 
+Mittels einer Abfrage, ob der Frame überhaupt relevante Informationen besitzt, wird der Gestenanfang erkannt und der entsprechende Index der Liste \textit{self.datalist} gespeichert.
+Sobald 20 weitere Frames in dieser Liste abgespeichert worden sind, startet zunächst ein weiterer Vorverarbeitungsschritt, in dem alle Frames zu einer Einheitsgeste aufsummiert werden.
+Die normalisierte Einheitsgeste ist das finale Ergebnis der Vorverarbeitung der Live-Klassifikation und dient dem SVM-Klassifikator als Eingabedatum.
+Als Rückgabewert liefert der Klassifikator die entsprechende Gestennummer, die er dem Eingabedatum zugeordnet hat.
+Mittels dieser Nummer wird eine Methode aufgerufen, in der jeder Nummer eine entsprechende Funktion zugeordnet ist.
+
+\begin{lstlisting}[language=Python,caption={Classify},label={lst:svm_classify}]{lst:svm_classify}
+def classify(self, data):
+	# init num samples per frame and borders
+	sliced_num_samples_per_frame = SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT - SVM.SLICE_RIGHT
+	left_border = SVM.SLICE_LEFT
+	right_border = SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT
+
+	normalized_data_with_noise = data / np.amax(data)
+	normalized_data = normalized_data_with_noise[left_border:right_border] - self.noise_frame[
+																			 left_border:right_border]
+
+	frame = normalized_data
+	irrelevant_samples = np.where(frame <= 0.025)
+	frame[irrelevant_samples] = 0.0
+
+	rr = 20  # whats that?!?
+	self.datalist.append(frame)
+	self.datanum += 1
+
+	if np.amax(frame) > 0.0 and self.found == False:
+		self.index = self.datanum
+		self.found = True
+
+	if self.index + rr == self.datanum and self.found == True:
+		self.index = 0
+		self.found = False
+
+		current_frameset = np.asarray(self.datalist[-rr:])
+	
+		gesture_frame = current_frameset.sum(axis=0)
+
+		try:
+			normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
+			if not np.isnan(np.sum(normalised_gesture_frame)):
+				target_prediction = self.classifier.predict(normalised_gesture_frame[::2])[0]  # only each second?!?
+				self.executeCommand(target_prediction)
+		except:
+			print "error =("
+
+	if self.datanum > sliced_num_samples_per_frame:
+		del self.datalist[0]
+\end{lstlisting}
+
+
+\begin{lstlisting}[language=Python,caption={Start Programms},label={lst:svm_startprogramms}]{lst:svm_startprogramms}
+def executeCommand(self, number):
+	print number,
+
+	if number == 0 and self.executed["notepad"] == False:
+		print "starting notepad"
+		proc = sp.Popen("notepad")
+		self.executed["notepad"] = proc.pid
+
+	elif number == 1 and self.executed["notepad"] != False:
+		sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["notepad"]))
+		print "terminating notepad"
+		self.executed["notepad"] = False
+
+	elif number == 2 and self.executed["taskmgr"] == False:
+		print "starting taskmanager"
+		proc = sp.Popen("taskmgr")
+		self.executed["taskmgr"] = proc.pid
+
+	elif number == 3 and self.executed["taskmgr"] != False:
+		sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["taskmgr"]))
+		print "terminating taskmanager"
+		self.executed["taskmgr"] = False
+
+	elif number == 4 and self.executed["calc"] == False:
+		print "starting calculator"
+		proc = sp.Popen("calc")
+		self.executed["calc"] = proc.pid
+
+	elif number == 5 and self.executed["calc"] != False:
+		sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["calc"]))
+		print "terminating calculator"
+		self.executed["calc"] = False
+
+	elif number == 6:
+		print "noise, do nothing ..."
+
+	print ""
+\end{lstlisting}
+
+
+\subsubsection{Training}
+- Trainingsmethode
