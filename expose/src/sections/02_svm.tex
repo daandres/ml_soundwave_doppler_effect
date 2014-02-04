@@ -93,11 +93,13 @@ Mit Hilfe von Kernfunktionen lassen sich Daten von $\mathbb{R}^n$ in einen höhe
     \label{fig:svm1}
 \end{figure}
 
-\begin{eqnarray}
-\label{eq:svm_kern_function}
+\begin{equation}
+\label{eq:svm_kernel_function}
+\begin{split}
     \phi : & \mathbb{R}^n \to \mathbb{R}^h \\
     & x \mapsto \phi(x)
-\end{eqnarray}
+\end{split} 
+\end{equation}
 
 Als Bedingung des Raums $\mathbb{R}^h$ gilt, dass das Skalarprodukt erklärt ist. 
 Wir haben nach der Transformation also die neue Form \ref{eq:svm_kern_tranformation}. 
@@ -117,42 +119,31 @@ Kernel-Funktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine speziel
 \end{equation}
 
 Es kann also das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ in $\mathbb{R}^h$ ausgerechnet werden, ohne die Daten mittles $\phi$ zu transformieren. 
-Das folgende Beispiel verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion:
+Das Beispiel XX verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion:
 
 
-Seien $w,x\in \mathbb{R}^2$ und
 
-\begin{eqnarray*}
-& \phi : & \mathbb{R}^2 \to \mathbb{R}^3 \\
-& & \begin{pmatrix}
-x_1 \\
-x_2
-\end{pmatrix}
-\mapsto
-\begin{pmatrix}
-x_1^2 \\
-\sqrt{x_1x_2} \\
-x_2^2
-\end{pmatrix}
-\end{eqnarray*}
 
-dann ist:
-
-\begin{eqnarray*}
-\langle \phi(w),\phi(x) \rangle & = & \langle \begin{pmatrix}
-w_1^2 \\
-\sqrt{w_1w_2} \\
-w_2^2
-\end{pmatrix},
-\begin{pmatrix}
-x_1^2 \\
-\sqrt{x_1x_2} \\
-x_2^2
-\end{pmatrix} \rangle \\
-& = & w_1^2x_1^2 + 2 w_1x_1w_2x_2 + w_2^2x_2^2 \\
-& = & (w_1x_1 + w_2x_2)^2 \\
-& = & \langle w,x \rangle^2 \overset{\text{(def)}}= \mathcal{K}(w,x)
-\end{eqnarray*}
+\begin{equation}
+\label{eq:svm_kernel_example}
+\begin{split}
+    & \text{Seien } w,x \in \mathbb{R}^2 \text{ und}\\
+    \\
+    \phi : & \mathbb{R}^2 \to \mathbb{R}^3\\
+    & \begin{pmatrix}
+    x_1 \\
+    x_2
+    \end{pmatrix}
+    \mapsto
+    \begin{pmatrix}
+    x_1^2 \\
+    \sqrt{x_1x_2} \\
+    x_2^2
+    \end{pmatrix}\\
+    \\
+    & \text{dann ist:}\\
+\end{split}
+\end{equation}
 
 Nicht jede beliebige Funktion ist eine Kernelfunktion. Kernelfunktionen müssen die Bedingungen nach Satz von Mercer (MLBUCH94, S.127) erfüllen.
 
