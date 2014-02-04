@@ -1,4 +1,4 @@
-import view.ui_bob
+
 import numpy as np
 
 import sys, os
@@ -12,7 +12,7 @@ import time
 import ntpath
 
 from functools import partial
-from classifier.k_means.kMeans import kmeans
+
 
 
 
