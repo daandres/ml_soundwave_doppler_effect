@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_bob_.ui'
+# Form implementation generated from reading ui file 'ui_kmeans.ui'
 #
-# Created: Tue Feb 04 11:38:38 2014
+# Created: Tue Feb 04 17:51:16 2014
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -34,7 +34,7 @@ class Ui_MainWindow(object):
         self.qwtPlot_1.setGeometry(QtCore.QRect(0, 0, 171, 150))
         self.qwtPlot_1.setObjectName(_fromUtf8("qwtPlot_1"))
         self.class3_bt = QtGui.QPushButton(self.centralwidget)
-        self.class3_bt.setGeometry(QtCore.QRect(1120, 700, 61, 23))
+        self.class3_bt.setGeometry(QtCore.QRect(1130, 700, 61, 23))
         self.class3_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -51,7 +51,7 @@ class Ui_MainWindow(object):
         self.openFile_bt.setGeometry(QtCore.QRect(640, 600, 121, 21))
         self.openFile_bt.setObjectName(_fromUtf8("openFile_bt"))
         self.class4_bt = QtGui.QPushButton(self.centralwidget)
-        self.class4_bt.setGeometry(QtCore.QRect(1190, 610, 61, 23))
+        self.class4_bt.setGeometry(QtCore.QRect(1200, 610, 61, 23))
         self.class4_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -59,7 +59,7 @@ class Ui_MainWindow(object):
 "}"))
         self.class4_bt.setObjectName(_fromUtf8("class4_bt"))
         self.class0_bt = QtGui.QPushButton(self.centralwidget)
-        self.class0_bt.setGeometry(QtCore.QRect(1120, 610, 61, 23))
+        self.class0_bt.setGeometry(QtCore.QRect(1130, 610, 61, 23))
         self.class0_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -178,7 +178,7 @@ class Ui_MainWindow(object):
         self.maxIteration_sb.setProperty("value", 10)
         self.maxIteration_sb.setObjectName(_fromUtf8("maxIteration_sb"))
         self.class1_bt = QtGui.QPushButton(self.centralwidget)
-        self.class1_bt.setGeometry(QtCore.QRect(1120, 640, 61, 23))
+        self.class1_bt.setGeometry(QtCore.QRect(1130, 640, 61, 23))
         self.class1_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -257,7 +257,7 @@ class Ui_MainWindow(object):
         self.qwtPlot_26.setGeometry(QtCore.QRect(170, 450, 171, 150))
         self.qwtPlot_26.setObjectName(_fromUtf8("qwtPlot_26"))
         self.class2_bt = QtGui.QPushButton(self.centralwidget)
-        self.class2_bt.setGeometry(QtCore.QRect(1120, 670, 61, 23))
+        self.class2_bt.setGeometry(QtCore.QRect(1130, 670, 61, 23))
         self.class2_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -318,7 +318,7 @@ class Ui_MainWindow(object):
         self.record_bt.setObjectName(_fromUtf8("record_bt"))
         self.verticalLayout_3.addWidget(self.record_bt)
         self.class5_bt = QtGui.QPushButton(self.centralwidget)
-        self.class5_bt.setGeometry(QtCore.QRect(1190, 640, 61, 23))
+        self.class5_bt.setGeometry(QtCore.QRect(1200, 640, 61, 23))
         self.class5_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -326,7 +326,7 @@ class Ui_MainWindow(object):
 "}"))
         self.class5_bt.setObjectName(_fromUtf8("class5_bt"))
         self.class6_bt = QtGui.QPushButton(self.centralwidget)
-        self.class6_bt.setGeometry(QtCore.QRect(1190, 670, 61, 23))
+        self.class6_bt.setGeometry(QtCore.QRect(1200, 670, 61, 23))
         self.class6_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -334,7 +334,7 @@ class Ui_MainWindow(object):
 "}"))
         self.class6_bt.setObjectName(_fromUtf8("class6_bt"))
         self.class7_bt = QtGui.QPushButton(self.centralwidget)
-        self.class7_bt.setGeometry(QtCore.QRect(1190, 700, 61, 23))
+        self.class7_bt.setGeometry(QtCore.QRect(1200, 700, 61, 23))
         self.class7_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -345,12 +345,12 @@ class Ui_MainWindow(object):
         self.testKMeans_bt.setGeometry(QtCore.QRect(1270, 690, 91, 23))
         self.testKMeans_bt.setObjectName(_fromUtf8("testKMeans_bt"))
         self.cutSides_sb = QtGui.QSpinBox(self.centralwidget)
-        self.cutSides_sb.setGeometry(QtCore.QRect(570, 650, 61, 20))
+        self.cutSides_sb.setGeometry(QtCore.QRect(570, 660, 61, 20))
         self.cutSides_sb.setMaximum(64)
         self.cutSides_sb.setProperty("value", 20)
         self.cutSides_sb.setObjectName(_fromUtf8("cutSides_sb"))
         self.cutSides_lb = QtGui.QLabel(self.centralwidget)
-        self.cutSides_lb.setGeometry(QtCore.QRect(570, 630, 54, 13))
+        self.cutSides_lb.setGeometry(QtCore.QRect(570, 640, 54, 13))
         self.cutSides_lb.setObjectName(_fromUtf8("cutSides_lb"))
         self.showLearnArray_bt = QtGui.QPushButton(self.centralwidget)
         self.showLearnArray_bt.setGeometry(QtCore.QRect(640, 700, 121, 21))
@@ -417,13 +417,19 @@ class Ui_MainWindow(object):
         self.useInitCentroids_cb.setGeometry(QtCore.QRect(960, 680, 81, 20))
         self.useInitCentroids_cb.setObjectName(_fromUtf8("useInitCentroids_cb"))
         self.segMargin_sb = QtGui.QSpinBox(self.centralwidget)
-        self.segMargin_sb.setGeometry(QtCore.QRect(1050, 630, 61, 20))
+        self.segMargin_sb.setGeometry(QtCore.QRect(1050, 620, 71, 20))
         self.segMargin_sb.setMaximum(99)
         self.segMargin_sb.setProperty("value", 1)
         self.segMargin_sb.setObjectName(_fromUtf8("segMargin_sb"))
         self.segMargin_lb = QtGui.QLabel(self.centralwidget)
-        self.segMargin_lb.setGeometry(QtCore.QRect(1050, 610, 54, 13))
+        self.segMargin_lb.setGeometry(QtCore.QRect(1050, 609, 54, 10))
         self.segMargin_lb.setObjectName(_fromUtf8("segMargin_lb"))
+        self.saveRedData_bt = QtGui.QPushButton(self.centralwidget)
+        self.saveRedData_bt.setGeometry(QtCore.QRect(1050, 640, 71, 41))
+        self.saveRedData_bt.setObjectName(_fromUtf8("saveRedData_bt"))
+        self.loadRedData_bt = QtGui.QPushButton(self.centralwidget)
+        self.loadRedData_bt.setGeometry(QtCore.QRect(1050, 682, 71, 41))
+        self.loadRedData_bt.setObjectName(_fromUtf8("loadRedData_bt"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1378, 21))
@@ -485,5 +491,9 @@ class Ui_MainWindow(object):
         self.loadCentorids_bt.setText(_translate("MainWindow", "load centroids", None))
         self.useInitCentroids_cb.setText(_translate("MainWindow", "use init cen", None))
         self.segMargin_lb.setText(_translate("MainWindow", "seg margin", None))
+        self.saveRedData_bt.setText(_translate("MainWindow", "save\n"
+"red data", None))
+        self.loadRedData_bt.setText(_translate("MainWindow", "load\n"
+"red data", None))
 
 from PyQt4 import Qwt5
