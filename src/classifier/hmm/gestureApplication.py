@@ -7,7 +7,8 @@ import config.config as c
 import util.dataUtil as d
 import util.hmmUtil as h
 import util.util as u
-
+import ConfigParser
+import pickle
 from classifier.classifier import IClassifier
 from src.gestureFileIO import GestureFileIO
 
@@ -125,13 +126,26 @@ class GestureApplication():
                 gesture = g 
         return gesture, logprob
     
-    def saveModels(self):
-        ''' TODO '''
-        return
+    def saveModels(self, filePath, configurationName='Default'):
+        config = ConfigParser.RawConfigParser()
+        config.add_section('General')
+        config.set('General','Configuration Name', configurationName)
+        config.set('General','Number of gestures', len(self.gestures))
+        i = 0
+        for ges in self.gestures:
+            config.add_section('Gesture'+str(i))
+            config.set('Gesture'+str(i),'hmm',pickle.dumps(ges))
+            i += 1
+        with open(filePath, 'wb') as configfile:
+            config.write(configfile)
     
-    def loadModels(self):
-        ''' TODO '''
-        return
+    def loadModels(self, filePath):
+        config = ConfigParser.RawConfigParser()
+        config.read(filePath)
+        numberOfGestures = config.getint('General', 'Number of gestures')
+        for i in range(numberOfGestures):
+            hmm = pickle.loads(config.get('Gesture'+str(i),'hmm'))
+            self.gestures.append(hmm)
 
 
 class Gesture():

@@ -33,11 +33,15 @@ class SVM(IClassifier):
     NUM_SAMPLES_PER_FRAME = 64  #config.leftBorder + config.rightBorder
 
     def __init__(self, recorder=None, config=None, relative=""):
-        self.classifier = self.load("classifier/svm/svm_trained.pkl")
+        self.path = "classifier/svm/svm_trained.pkl"
+        self.classifier = self.load(self.path)
         self.datalist = []
         self.datanum = 0
         self.num_gestures = 7
         self.nClasses = 7
+        self.new = False
+        self.framerange = 20
+        self.threshold = 0.04
         self.data, self.targets, self.avg = self.loadData() #, self.avg
         self.kernel = "poly"
         self.c = 1
@@ -153,11 +157,10 @@ class SVM(IClassifier):
         normalized_data = normalized_data_with_noise[left_border:right_border] - self.noise_frame[
                                                                                  left_border:right_border]
 
-        frame = normalized_data ** 2
-        irrelevant_samples = np.where(frame <= 0.025)
+        frame = normalized_data
+        irrelevant_samples = np.where(frame <= self.threshold)
         frame[irrelevant_samples] = 0.0
 
-        rr = 20  # whats that?!?
         self.datalist.append(frame)
         self.datanum += 1
 
@@ -165,21 +168,26 @@ class SVM(IClassifier):
             self.index = self.datanum
             self.found = True
 
-        if self.index + rr == self.datanum and self.found == True:
+        if self.index + self.framerange == self.datanum and self.found == True:
             self.index = 0
             self.found = False
 
-            current_frameset = np.asarray(self.datalist[-rr:])
-            tmp_relevant_frameset = []
-            for frame_nr in range(len(current_frameset)):
-                if np.amax(current_frameset[frame_nr]) > 0.0:
-                    tmp_relevant_frameset.append(current_frameset[frame_nr])
-
-            relevant_frameset = np.asarray(tmp_relevant_frameset, dtype=np.float64)
-
-            gesture_frame = np.zeros(sliced_num_samples_per_frame)
-            for frame in relevant_frameset:
-                gesture_frame += frame
+            current_frameset = np.asarray(self.datalist[-self.framerange:])
+#===============================================================================
+#             tmp_relevant_frameset = []
+#             for frame_nr in range(len(current_frameset)):
+#                 if np.amax(current_frameset[frame_nr]) > 0.0:
+#                     tmp_relevant_frameset.append(current_frameset[frame_nr])
+# 
+#             relevant_frameset = np.asarray(tmp_relevant_frameset, dtype=np.float64)
+# 
+#             gesture_frame = np.zeros(sliced_num_samples_per_frame)
+#             for frame in relevant_frameset:
+#                 gesture_frame += frame
+#===============================================================================
+                
+                
+            gesture_frame = current_frameset.sum(axis=0)
 
             try:
                 normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
@@ -245,13 +253,11 @@ class SVM(IClassifier):
     def getName(self):
         return "SVM"
 
-    def startClassify(self):
-        pass
 
     def startTraining(self, args=[]):
         classifier = svm.SVC(kernel=self.kernel, C=self.c, gamma=self.gamma, degree=self.degree, coef0=self.coef0)
         classifier.fit(self.data, self.targets)
-        joblib.dump(classifier, 'classifier/svm/svm_trained.pkl', compress=9)
+        joblib.dump(classifier, self.path, compress=9)
         self.classifier = classifier
 
 
@@ -390,4 +396,4 @@ class SVM(IClassifier):
         pass
 
     def printClassifier(self):
-        return
+        print self.path

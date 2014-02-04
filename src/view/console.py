@@ -3,12 +3,6 @@ from threading import Thread, Event
 from visualizer import View
 import properties.config as c
 
-# bob
-import ntpath
-from ui_bob_visualizer import ViewUIBob
-# bob end
-
-
 class Console:
     def __init__(self, recorder=None, soundplayer=None, applicationClose=None, setFileName=None, getFileName=None):
         if recorder == None:
@@ -43,7 +37,7 @@ class Console:
 
     def getClassificator(self, name):
         if(name == ""):
-            raise Exception("No classificator specified")
+            raise Exception("No classificator specified, see usage 'h'")
         elif(name == "lstm"):
             if(name not in self.classificators):
                 from classifier.lstm.lstm import LSTM
@@ -175,8 +169,11 @@ class Console:
     def view(self, command):
         self.view = View(self.recorder, self.viewCallback)
         self.view.startNewThread()
+
     # bob
     def viewBob(self, command):
+        import ntpath
+        from ui_bob_visualizer import ViewUIBob
         self.viewUiBOB = ViewUIBob(self.recorder, self.viewCallback)
         # self.viewUiBOB = ViewUIBob(self.viewCallback)
         self.viewUiBOB.startNewThread()
@@ -199,11 +196,11 @@ class Console:
         pass
 
     def selectClassifier(self, args):
-#         try:
-        self.classificator = self.getClassificator(args[1])
-        print("Using now classificator " + self.classificator.getName())
-#         except Exception as e:
-#             print("Classifier not known: " + args[1] + "; " + str(e))
+        try:
+            self.classificator = self.getClassificator(args[1])
+            print("Using now classificator " + self.classificator.getName())
+        except Exception as e:
+            print("" + args[1] + " " + str(e))
 #             raise e
         self.inputEvent.set()
 
