@@ -1,6 +1,7 @@
 import numpy as np
-from gestureGMM import GestureGMM
 import config.config as c
+
+from gestureGMM import GestureGMM
 
 import util as u
 

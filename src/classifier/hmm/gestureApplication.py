@@ -1,10 +1,72 @@
 import numpy as np
 import sys
+from threading import Thread
+import time
 
 import config.config as c
 import util.dataUtil as d
 import util.hmmUtil as h
 import util.util as u
+
+from classifier.classifier import IClassifier
+from src.gestureFileIO import GestureFileIO
+
+
+NAME = "HiddenMarkovModel"
+
+class HMM(IClassifier):
+
+    def __init__(self, recorder=None, config=None, relative=""):
+        self.recorder = recorder
+        self.config = config
+        self.relative = relative
+        self.gestureApp = GestureApplication()
+        self.classList = [("gesture 0", "data/gesture_0.txt"), ("gesture 3", "data/gesture_3.txt"), ("gesture 5", "data/gesture_5.txt"), ("clean", "data/clean.txt")]
+        self.fileIO = GestureFileIO()
+
+    def getName(self):
+        return NAME
+
+    def printClassifier(self):
+        return NAME
+
+    def startTraining(self, args=[]):
+        return self.gestureApp.createGestures(self.classList)
+
+
+    def classify(self, data):
+        dim = len(np.shape(data))
+        #several obs
+        if dim == 3:
+            return self.gestureApp.scoreData(data)
+        # only one obs
+        elif dim == 2:
+            return self.gestureApp.scoreSeq(data) 
+
+
+    def startValidation(self):
+        ret = []
+        for className, dataPath in classList:
+            obs, test = u.loadSplitData(dataPath)
+            ret.append(GestureApplication.scoreClassData(test, className))
+        return ret
+
+    def load(self, filename=""):
+        pass
+
+
+    def save(self, filename=""):
+        pass
+
+
+    def loadData(self, filename=""):
+        pass
+
+
+    def saveData(self, filename=""):
+        pass
+
+
 
 class GestureApplication():
     
@@ -12,10 +74,12 @@ class GestureApplication():
         self.dp = d.DataUtil()
         self.mu = h.HMM_Util()
         self.gestures = []
+        self.fileIO = GestureFileIO()
                
-    def createGesture(self, className, dataPath):
+    def createGesture(self, className, dataPath=[], gesture=-1):
+        obs, test = u.loadSplitData(path=dataPath, gesture=gesture)
+            
         gesture = Gesture(className)
-        obs, test = u.loadSplitData(dataPath)
         hmm, logprob = self.mu.buildModel(obs, test)
         gesture.setHMM(hmm)
         self.gestures.append(gesture)

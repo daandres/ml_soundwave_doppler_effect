@@ -1,11 +1,19 @@
 import numpy as np
-
+from gestureFileIO import GestureFileIO
+#import config.config as c
 np.set_printoptions(precision=2, linewidth=1000, threshold=5000)
 
 class DataUtil:
     
     def __init__(self, lowerBound=0.15):
         self.lowerBound=lowerBound
+        self.fileIO = GestureFileIO(relative="../../../")
+
+    def loadRaw3dGesture(self, recordClass, recordNames=None):
+        if recordNames is None:
+            return self.fileIO.getGesture3D(recordClass, ["ppasler", "Daniel"])
+        else:
+            return self.fileIO.getGesture3D(recordClass, recordNames)
 
     def _loadRaw2DArray(self, path="data/gesture_0.txt"):
         ''' get gesture as numpy 2D array '''
@@ -189,8 +197,6 @@ class DataUtil:
         for gesture in data:
             if np.count_nonzero(gesture) > avg-(0.05 * avg):
                 result.append(gesture)
-        print np.shape(data)
-        print np.shape(np.array(result))
         return np.array(result)
         
 
@@ -199,13 +205,12 @@ if __name__ == "__main__":
     dp = DataUtil()
     path=["../data/clean.txt"]
     
-    data = dp.loadRaw3DArray(path)
+    data = dp.loadRaw3dGesture(0)
     data = dp.reduceBins(data)
     data = dp.normalize(data)
     data = dp.normalizeBound(data)
     data = dp.cutRelevantAction(data)
     dp.cutBad(data)
-    print np.shape(data)
     
 #     y = dp.fillArray(data)
 #     y = dp.normalizeBounds(y)
