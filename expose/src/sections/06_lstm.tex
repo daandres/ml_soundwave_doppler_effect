@@ -53,7 +53,8 @@ Neuron. Die Ausgaben ergeben den Ausgabevektor $\bf{y}$ des Netzwerkes. Um
 komplexere Sachverhalte darstellen zu können, ist es nötig Neuronen in Abhängigkeit
 voneinander zu betrachten. Dies wird in \acp{MLP} vorgenommen \cite{1165576}.
 Mehrere Perzeptrons werden hintereinandergeschaltet, sodass die Ausgabe des
-einen Perzeptrons (ein Layer) die Eingabe des nächsten Perzeptrons ist.
+einen Perzeptrons (ein Layer) die Eingabe des nächsten Perzeptrons ist (vgl.
+\autoref{fig:mlp}).
 Lediglich die Ausgabe des letzten Perzeptrons ist die Ausgabe des Netzwerks.
 Ein Netzwerk kann als gerichteter Graph dargestellt werden. Die Richtung
 entspricht dem Datenfluss. Perzeptrons und \acp{MLP} sind azyklische Graphen,
@@ -63,7 +64,7 @@ genannt. Um besser die Funktionsweise von Gehirnen nachzubilden ist es notwendig
 auch Verbidnungen von Neuronen auf sich selbst zuzulassen. Somit entsteht ein
 zyklischer Graph und das Netzwerk wird zu einem Rekurrenten Neuronalen Netz
 (\acsu{RNN}).
-\textbf{TODO Bilder von Neuronalen Netzen zur Verdeutlichung}
+\textbf{TODO Zitat azyklischer Graph}
 
 \begin{figure}[htbp]
     \centering
@@ -212,8 +213,52 @@ dann alle Werte der Memoryzellen. Dieser Ansatz wird in der Ausarbeitung nicht
 weiter betrachtet. 
 
 \paragraph{Training eines \ac{LSTM} Netzes}
+Damit neuronale Netze (damit auch \ac{LSTM}-Netze) ein gutes
+Ergebnis liefern müssen ihre Gewichte auf das Problem angepasst sein. Es ist
+jedoch nicht einfach berechenbar wie die korrekten problembezoigenen Gewichte
+sind. Daher müssen sie iterativ verbessert werden. Dieser Vorgang wird Training
+genannt. Dabei werden einem zufällig initialisierten Netzwerk Datensätze zum
+Klassifizieren gezeigt. Das Netzwerk liefert daraufhin ein Ergebnis. Das
+gewonnene Ergebnis wird mit dem Zielergebnis verglichen. So lässt sich eine
+Fehlerquote berechnen. Es gibt verschiedene Verfahren wie die Fehlerquote die
+Gewichte bzw. das Netz beeinflusst, um in der nächsten Iteration eine geringere
+Fehlerquote zu erhalten. Nachfolgend werden die Grundideen zweier Basisverfahren
+erläutert:
+\begin{itemize}
+	\item Backpropagation
+	\item Evolution based Training
+\end{itemize}
+
+\subparagraph{Backpropagation}
+Das Verfahren \textit{Fehlerrückführung (Backpropagation)} ist ein
+Gradientenabstiegsverfahren. Das bedeutet, es versucht die Fehlerquote als
+Ergebnis einer Funktion des Netzes aufzufassen und diesen Wert daran zu
+minimieren. Dabei werden in Richtung des Gradienten der Funktion die Gewichte in
+kleinen Schritten angepasst. Die Anpassung der Gewichte erfolgt im sog.
+\textit{Backward-Pass} des Netzes. Der Fehler wird durch das Netz rückwarts
+gereicht und dabei sukzessive die Gewichte angepasst. Das Problem, das jedoch
+auftritt, ist, dass dieses Verfahren nicht gegen 0 konvergieren muss, denn es
+wird entlang eines Gradienten optimiert, der auch zu einem lokalen Minima führen
+kann. Außerdem ist es möglich über Minima hinwegzuoptimieren und das Ergebnis so
+wieder zu verschlechtern. Um dies zu verhindern gibt es verschiedene Methoden,
+welche hier nicht weiter erläutert werden. Für \ac{LSTM}-Netze ist eine
+Erweiterung des Backpropagation Algorithmus sinnvoll:
+\acl{RProp} (elastische Fortplanzung, \acsu{RProp}). Für die erweiterte Form
+kann sogar eine globale Konvergenz bewiesen werden. Des Weiteren liefert er im
+Allgemeinen Konvergenz schneller als Backpropagation. Jedoch besteht auch hier
+die Gefahr, dass ein lokales Minima übersprungen wird. Dies ist von Bedeutung,
+da ein globales Minima evtl. eine zu hohe Trainingszeit erfordert und deshalb
+lokale Minima gesucht werden. Der wesentliche Unterschied von \ac{RProp} zu
+backpropagation besteht darin, dass \ac{RProp} die vorherige Gewichtsänderung
+mit in die aktuelle Änderung mit einfließen lässt. Bei Backpropagation ist dies
+nicht der Fall. Weitere Informationen zu diesen Verfahren sind in
+\cite{RainerSchmoll2006} \textbf{TODO Cite} zu finden. 
+
+\subparagraph{Evolution based Training}
+
 \textbf{TODO}
-\cite{RainerSchmoll2006}
+
+
 \subsection{Anwendnug auf Projekt}
 Für das Projekt wird ein LSTM-Netz erstellt welches aud folgenden Schichten besteht:
 
