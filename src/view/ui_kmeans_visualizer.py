@@ -55,6 +55,7 @@ class ViewUIKMeans:
         self.preselectedByKMeansArray = []
         
         self.textEdit = None
+        self.rightPage = None
         self.globalLabelText = 'Init!\n'
         self.segNormArray = []
         
@@ -334,28 +335,33 @@ class ViewUIKMeans:
         arr = self.kmH.normalize3DArray(arr)
         endSegArray = []
         margin = self.uiplot.segMargin_sb.value()
+        outLength = self.uiplot.frames_sb.value()
         for gesture in arr:
             segGesture = None
             if classNumber == 0:
                 #right-To-Left-One-Hand
                 #segGesture = self.kmH.segmentOneHandGesture(gesture, leftMargin=4, oneSecPeak=False)
-                segGesture = self.kmH.segmentOneHandGesture(gesture, leftMargin=margin, oneSecPeak=False)
+                segGesture = self.kmH.segmentOneHandGesture(gesture, outArrayLength=outLength, leftMargin=margin, oneSecPeak=False)
             elif classNumber == 1:
                 #top-to-Bottom-One-Hand
                 #segGesture = self.kmH.segmentOneHandGesture(gesture, leftMargin=4, oneSecPeak=True)
-                segGesture = self.kmH.segmentOneHandGesture(gesture, leftMargin=margin, oneSecPeak=True)
+                segGesture = self.kmH.segmentOneHandGesture(gesture, outArrayLength=outLength, leftMargin=margin, oneSecPeak=True)
             elif classNumber == 2:
                 #opposed with two hands
                 #segGesture = self.kmH.segmnetTwoHandsGesture(gesture, leftMargin=3)7
-                segGesture = self.kmH.segmnetTwoHandsGesture(gesture, leftMargin=3)                            
+                segGesture = self.kmH.segmnetTwoHandsGesture(gesture, outArrayLength=outLength,  leftMargin=3)                            
             elif classNumber == 3:
                 #single-push with one hand
                 #segGesture = self.kmH.segmentOneHandGesture(gesture, leftMargin=4, oneSecPeak=False)
-                segGesture = self.kmH.segmentOneHandGesture(gesture, leftMargin=margin, oneSecPeak=False)
+                segGesture = self.kmH.segmentOneHandGesture(gesture, outArrayLength=outLength, leftMargin=margin, oneSecPeak=False)
             elif classNumber == 4:
                 #double-push with one hand #long period gesture so small left margin 
                 #segGesture = self.kmH.segmentOneHandGesture(gesture, leftMargin=1, oneSecPeak=False)                
-                segGesture = self.kmH.segmentOneHandGesture(gesture, leftMargin=margin, oneSecPeak=False)
+                segGesture = self.kmH.segmentOneHandGesture(gesture, outArrayLength=outLength, leftMargin=margin, oneSecPeak=False)
+            elif classNumber == 6:
+                #Bottom-to-top-One-Hand // changed for kmeans
+                #segGesture = self.kmH.segmentOneHandGesture(gesture, leftMargin=4, oneSecPeak=True)
+                segGesture = self.kmH.segmentOneHandGesture(gesture, outArrayLength=outLength, leftMargin=margin, oneSecPeak=True)                
             if segGesture is not None:
                 endSegArray.append(segGesture)
             else:
@@ -379,6 +385,8 @@ class ViewUIKMeans:
         k = self.uiplot.kNumber_sb.value()
         if self.uiplot.useInitCentroids_cb.isChecked() and self.kmeansClusterCenters is not None:
             self.kmeans = cluster.KMeans(k,  max_iter=maxIterations, n_init=nInit, init=self.kmeansClusterCenters)
+            # test halber
+            self.learnArrayKMeans = self.kmeansClusterCenters
         else:
             self.kmeans = cluster.KMeans(k,  max_iter=maxIterations, n_init=nInit)
 
@@ -459,9 +467,32 @@ class ViewUIKMeans:
         data = np.array(self.kmeansClusterCenters)        
         np.savetxt(oid, data, delimiter=",")
         oid.close()        
-      
+    
+    def initializeKMeans(self):
+        self.loadCentroids()
+        text=open("C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert/Centroids/shakespeare.kmeans").read()
+        self.rightPage.setPlainText(text)
+        
+    
+    def startRecognition(self):
+        if self.kmeansClusterCenters is None:
+            #default
+            self.kmeansClusterCenters = np.asarray(np.loadtxt(str(self.fixpath("C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert/Centroids/cen_12N.kmeans")), delimiter=","))        
+            self.kmeansClusterCenters = np.asarray(self.noiseArray)
+        print self.kmeansClusterCenters.shape     
+        self.kmeans = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters)
+        cluster_ = self.kmeans.fit_predict(self.kmeansClusterCenters)
+        self.kMeansClassifier.setKMeans(self.kmeans)
+        self.recordByRecorder()
+        self.checkOnline = not self.checkOnline
+        self.kMeansClassifier.checkKMeansOnline()    
       
     def bindButtons(self):
+        ''' tab 1 '''
+        self.uiplot.openLoadCentroids_bt.clicked.connect(self.initializeKMeans)
+        self.uiplot.startRecognition_bt.clicked.connect(self.startRecognition)
+        
+        ''' tab 2 '''
         self.uiplot.showPlot_bt.clicked.connect(self.showPlot)    
         self.uiplot.record_bt.clicked.connect(self.recordByRecorder)
         self.uiplot.openFile_bt.clicked.connect(self.openFile)
@@ -520,8 +551,13 @@ class ViewUIKMeans:
                 self.noiseArray = np.concatenate((self.noiseArray, np.asarray(np.loadtxt(str(self.fixpath(path)), delimiter=","))), axis=0)
         self.noiseArray = np.asarray(self.noiseArray)
         self.addLogText('noise array shape', self.noiseArray.shape)
-
     
+    
+    def loadDefaultNoiseFile(self):
+        self.noiseArray = np.asarray(np.loadtxt(str(self.fixpath("C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert/gesture_7/1391535140.kmeans")), delimiter=","))        
+        self.noiseArray = np.asarray(self.noiseArray)
+       
+       
     def reduceDimension(self):
         if len(self.arrayFromFile) == 0:
             self.addLogText('please add learn array at first !', textColor='red')
@@ -607,7 +643,7 @@ class ViewUIKMeans:
         res =  desktop.availableGeometry(desktop.primaryScreen());
         koor =  res.getCoords()
         print koor, (koor[2]/2-1378/2)/13, (koor[3]/2-740/2)/5
-        self.win_plot.setGeometry(18, 33, 1378, 742)
+        self.win_plot.setGeometry(18, 33, 1366, 780)
         plot = self.uiplot
         print 'geo : ', self.win_plot.geometry()
         for i in range(1,33):
@@ -647,9 +683,14 @@ class ViewUIKMeans:
 
         
         self.bindButtons()
-        self.kmH = kmHelper.kMeansHepler()   
+        self.kmH = kmHelper.kMeansHepler()
+        self.loadDefaultNoiseFile()
         self.textEdit = QtGui.QTextEdit()
         self.uiplot.scrollArea.setWidget(self.textEdit)
+        
+        self.rightPage = QtGui.QTextEdit()
+        self.uiplot.rightPage_sa.setWidget(self.rightPage)
+        
         
         # ## DISPLAY WINDOWS
         self.win_plot.show()
