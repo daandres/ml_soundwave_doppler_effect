@@ -22,6 +22,8 @@ class Trees(IClassifier):
         self.queue = deque()
         self.temp = deque()
         self.startTraining()
+        self.flag = False
+        self.liste = []
 
     def getName(self):
         return self.name
@@ -43,8 +45,8 @@ class Trees(IClassifier):
         gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_3/1391439281.txt")
         gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_4/1391439536.txt")
         gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_4/1391439659.txt")
-        gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_0/1391435081.txt")
-        gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_0/1391435669.txt")
+        #gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_0/1391435081.txt")
+        #gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_0/1391435669.txt")
         gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_1/1391436572.txt")
         gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_1/1391436738.txt")
         gestures += classifier.trees.ProcessData.getTestData("../gestures/Daniel/gesture_6/gesture_6_zimmer_1.txt")
@@ -69,16 +71,11 @@ class Trees(IClassifier):
         
             
             gestures[i].featureVector = featureVector
-            #l = []
-            #l.extend(gestures[i].bins_left_filtered)
-            #l.extend(gestures[i].bins_right_filtered)
-            #l.extend(gestures[i].featureVector)
-            #data.append(l)
             
             data.append(featureVector)
  
         targets = []
-        for class_ in [2,2,3,3,4,4,0,0,1,1,6,6]:
+        for class_ in [2,2,3,3,4,4,1,1,6,6]:
             for frameIndex in range(50):
                 targets.append(class_)
         #print numpy.shape(data)
@@ -92,6 +89,56 @@ class Trees(IClassifier):
         print 100. / len(result) * rightPredicts
         print "trained"
 
+
+    def classify2(self, data):
+        if(len(self.queue) == self.maxlen):
+            gestures = []
+            gesture = classifier.trees.ProcessData.makeGesture(list(self.queue))
+            gestures.append(gesture)
+            processedData = self.__preProcess(gestures)
+            
+            prediction = self.clf.predict(processedData)
+            self.temp.append(prediction)
+            
+            if(len(self.temp) == 32 ):
+                li = []
+                for x in self.temp:
+                    li.extend(x)
+                #print li
+                result = numpy.argmax(numpy.bincount(li))
+                
+                bincount = numpy.bincount(li)
+                maxValue = 0
+                maxIndex = 0
+                for i in range(len(bincount)):
+                    if (bincount[i] > maxValue):
+                        maxValue = bincount[i]
+                        maxIndex = i
+                        
+                second = 0
+                secondIndex = 0
+                for i in range(len(bincount)):
+                    if (bincount[i] > second and bincount[i] < maxValue):
+                        second = bincount[i]
+                        secondIndex = i
+                
+                #print (maxValue, maxIndex), (second, secondIndex), (maxValue - second)/float(maxValue)
+                
+                if((maxValue - second)/float(maxValue) > 0.6 and maxIndex != 6):
+                    #print "Prediction", maxIndex, numpy.bincount(li)
+                    self.liste.append(maxIndex)
+                    if len(self.liste) > 5:
+                        print numpy.argmax(numpy.bincount(self.liste))
+                        self.liste = []
+                        
+                elif(maxIndex == 6 and len(self.liste) > 0):
+                    print numpy.argmax(numpy.bincount(self.liste))
+                    self.liste = []
+                
+                
+                self.temp.popleft()
+            self.queue.popleft()
+        self.queue.append(data)
 
     def classify(self, data):
         if(len(self.queue) == self.maxlen):
@@ -113,6 +160,27 @@ class Trees(IClassifier):
             self.queue.popleft()
         self.queue.append(data)
         
+    def classify3(self, data):
+        if(len(self.queue) == self.maxlen):
+            gestures = []
+            gesture = classifier.trees.ProcessData.makeGesture(list(self.queue))
+            gestures.append(gesture)
+            processedData = self.__preProcess(gestures)
+            prediction = self.clf.predict(processedData)
+            #self.temp.append(prediction)
+            
+            if(prediction != 6):
+                self.liste.extend(prediction)
+                
+            else:
+                if(len(self.liste) > 0):
+                    result = numpy.argmax(numpy.bincount(self.liste))
+                    print result
+                    self.liste = []
+            
+            self.queue.popleft()
+        self.queue.append(data)
+
 
     def startValidation(self):
         pass
@@ -156,12 +224,6 @@ class Trees(IClassifier):
             featureVector.append(distance_equal)
  
             gestures[i].featureVector = featureVector
-            
-            #l = []
-            #l.extend(gestures[i].bins_left_filtered)
-            #l.extend(gestures[i].bins_right_filtered)
-            #l.extend(gestures[i].featureVector)
-            #data.append(l)
             
             data.append(featureVector)
         return data
