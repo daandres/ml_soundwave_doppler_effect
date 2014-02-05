@@ -1,6 +1,9 @@
 import numpy as np
 import classifier.lstm.util as util
 
+'''
+LSTMData class provides data related methods for LSTM module. 
+'''
 class LSTMData:
 
     def __init__(self, config, net):
@@ -10,6 +13,9 @@ class LSTMData:
         self.loadData()
         self.init = False
 
+    '''
+    Validates the LSTMNet by testing against the testset. Addiditional creates a confmat
+    '''
     def validate(self):
         if(self.testds == None):
             print("Can't validate without loaded data")
@@ -17,11 +23,20 @@ class LSTMData:
         print(self.testds.evaluateModuleMSE(self.net.net))
         self.__confmat()
 
+    '''
+    saves dataset to file
+    '''
     def saveData(self, filename=""):
         if filename == "":
             filename = self.config['dataset']
         util.save_dataset(self.ds, self.testds, self.config['path'] + "data/" + filename)
 
+    '''
+    Interface method for data loading. Based on configuration and startup state, data is not 
+    loaded, data is loaded from dataset files or created from sample files and splitted into the trainings and testset. 
+    At the end the dataset targets are converted to the one of many representation, which encodes a class number by a 1 
+    in nClasses of 0, eg. nCLasses = 7; class 3 = [0 0 0 1 0 0 0]. This is better for LSTMNets
+    '''
     def loadData(self, filename=""):
         if(self.init):
             if(self.config['autoload_data'] == "true"):
@@ -49,7 +64,11 @@ class LSTMData:
         self.ds._convertToOneOfMany(bounds=[0, 1])
         self.testds._convertToOneOfMany(bounds=[0, 1])
 
-
+    '''
+    Loads Dataset from file. If no filename is provided a generated file is searched by using 
+    data relevant information (o (nClasses), if the data was cutted (c) and if the data was folded (f)
+    Data is loaded under the configured path + /data 
+    '''
     def __loadDataset(self, filename=""):
         if filename == "":
             filename = self.config['dataset']

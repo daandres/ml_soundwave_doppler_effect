@@ -4,6 +4,9 @@ from pybrain.tools.shortcuts import buildNetwork
 import classifier.lstm.util as util
 import time
 
+'''
+LSTMNet holds the LSTM network and provides related methods. Also it holds parameters defined in config or parsed by network name. 
+'''
 class LSTMNet:
 
     def __init__(self, config):
@@ -30,6 +33,9 @@ class LSTMNet:
             self._createNetwork()
         pass
 
+    '''
+    Creates a new LSTM Network with configured parameters and initialze its weights randomly. 
+    '''
     def _createNetwork(self):
         if(self.layer == "linear"): layer = LinearLayer
         elif(self.layer == "sigmoid"): layer = SigmoidLayer
@@ -50,9 +56,15 @@ class LSTMNet:
             out += self.net.activate(data)
         return np.argmax(out)
 
+    '''
+    Interface method to reset the internal state of the network
+    '''
     def reset(self):
         self.net.reset()
 
+    '''
+    Loads a network from file and sets the parameter from the filename. 
+    '''
     def load(self, filename=""):
         if filename == "":
             filename = self.config['network']
@@ -81,6 +93,9 @@ class LSTMNet:
             elif(key == 'epochs'):
                 self.trainedEpochs = int(value)
 
+    '''
+    saves a network to file
+    '''
     def save(self, filename="", overwrite=True):
         if filename == "":
             if overwrite:
@@ -89,7 +104,9 @@ class LSTMNet:
                 filename = self.config['network'] + str(time.time())
         util.save_network(self.net, self.config['path'] + "networks/" + filename)
 
-
+    '''
+    returns the name of the network by specifing all relevant data to reconstruct the network except the weights
+    '''
     def getName(self):
         parms = []
         if(self.customName != ""):
@@ -103,3 +120,10 @@ class LSTMNet:
         parms.append("t" + self.trainingType)
         parms.append("e" + str(self.trainedEpochs))
         return "_".join(parms)
+
+    '''
+    Print network modules and weights
+    '''
+    def printNetwork(self):
+        print(self.getName())
+        util.printNetwork(self.net)

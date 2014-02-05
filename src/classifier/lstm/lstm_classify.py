@@ -3,7 +3,10 @@ import numpy as np
 from scipy import stats as stats
 from systemkeys import SystemKeys
 
-
+'''
+LSTMCLassify class provides different methods for live/online classification with the LSTM Module. 
+It also calls the Systemkeys class to bind keys to classes and execute the bindings
+'''
 class LSTMClassify():
 
     def __init__(self, config, net):
@@ -25,6 +28,10 @@ class LSTMClassify():
 
         self.outkeys = SystemKeys()
 
+    '''
+    Interface method for classifcation. WIll be called by LSTM interface and calls different implementations. 
+    Preprocess data. 
+    '''
     def classify(self, data):
         preprocessedData = data / np.amax(data)
         preprocessedData = util.preprocessFrame(preprocessedData, self.net.datacut, self.net.datafold)
