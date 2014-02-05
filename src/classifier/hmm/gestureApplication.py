@@ -10,7 +10,7 @@ import classifier.hmm.util.util as u
 import ConfigParser
 import pickle
 from classifier.classifier import IClassifier
-from src.gestureFileIO import GestureFileIO
+from gestureFileIO import GestureFileIO
 
 
 NAME = "HiddenMarkovModel"
@@ -89,7 +89,7 @@ class GestureApplication():
         self.mu = h.HMM_Util()
         self.gestures = {}
         self.fileIO = GestureFileIO()
-        
+        self.test()
         # self.loadModels('classifier/hmm/data/config.cfg')
         
         '''
@@ -179,6 +179,37 @@ class GestureApplication():
             #print gestureConfig
             gesture = pickle.loads(gestureConfig)
             self.gestures[i] = (gesture)
+
+    def test(self):
+        print "#### START ####"
+        classList = [0, 1, 2, 3, 4, 5, 6, 7]
+        
+        self.createGestures(classList)
+        cp = classList[:]
+        i = 0
+        while cp != []:
+            for classNum in cp:
+                # score it
+                className = GESTURE_PREFIX + str(classNum)
+                obs, test = u.loadSplitData(classNum)
+                scores, accuracy, className = self.scoreClassData(test, className)
+                
+                #recreate it
+                if accuracy < 90:
+                    print className, accuracy, scores
+                    self.createGesture(classNum, className)
+                else:
+                    self.saveModels('classifier/hmm/data/config_night'+str(className)+'.cfg', 'over 90s')
+                    cp.remove(classNum)
+                    print className, accuracy, scores
+            i += 1
+            print i
+            if i > 100:
+                print "\n SHIAT \n"
+                break
+        self.saveModels('classifier/hmm/data/config_night.cfg', 'over 90s')
+        print "#### END ####"
+
 
 
 class Gesture():
