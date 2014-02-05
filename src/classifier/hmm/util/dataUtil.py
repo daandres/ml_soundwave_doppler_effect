@@ -110,6 +110,8 @@ class DataUtil:
         frameRange = framesBefore + framesAfter +1
         if frameRange > np.shape(data)[1]:
             return data
+        # Old Version. Fills not completed Actions with zeros
+        '''
         result = np.zeros((np.shape(data)[0], frameRange, np.shape(data)[2]))
         i=0
         for d in data:
@@ -128,6 +130,7 @@ class DataUtil:
             else:
                 indexEnd =  pos + framesAfter+1
             if fittingBefore > 0:
+                break
                 zeros = np.ones((fittingBefore, np.shape(data)[2]))
                 zeros = zeros*0.001
                 resultTmp = resultTmp = np.append(zeros,d[indexBegin:indexEnd])
@@ -135,6 +138,7 @@ class DataUtil:
             else:
                 resultTmp = d[indexBegin:indexEnd]
             if fittingAfter > 0:
+                break
                 zeros = np.ones((fittingAfter, np.shape(data)[2]))
                 zeros = zeros*0.001
                 resultTmp = np.append(resultTmp,zeros)
@@ -142,7 +146,22 @@ class DataUtil:
             result[i] = resultTmp
             i+=1
         return result
-        
+        '''
+        # New Version - Revert none completed actions
+        result = np.zeros((np.shape(data)[0], frameRange, np.shape(data)[2]))
+        i = 0
+        for d in data:
+            pos = self._getHighestSum(d)
+            if((pos-framesBefore)<0) | ((pos + framesAfter) > (np.shape(d)[0]-1)):
+                continue
+            indexBegin = pos-framesBefore
+            indexEnd =  pos + framesAfter+1
+            result[i] = d[indexBegin:indexEnd]
+            i += 1
+        return result[0:i]
+
+            
+       
     def _getHighestSum(self, gesture):
         highestValue = 0
         position = 0
