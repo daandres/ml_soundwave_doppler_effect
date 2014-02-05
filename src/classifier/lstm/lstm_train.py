@@ -2,6 +2,9 @@ from pybrain.tools.validation import ModuleValidator, CrossValidator
 import classifier.lstm.util as util
 import time
 
+'''
+Training class for LSTMNet. This class provides the training functionality to train a LSTMNet. 
+'''
 class LSTMTrain:
 
     def __init__(self, config, net, data):
@@ -10,19 +13,28 @@ class LSTMTrain:
         self.data = data
         self.trainer, self.returnsNet = None, False
 
-
+    '''
+    instantiates and returns a gradient based training algorithm
+    '''
     def __getGradientTrainer(self):
         print("LSTM Gradient " + self.config['trainingalgo'] + " Training started")
         trainAlgo = util.getGradientTrainAlgo(self.config['trainingalgo'])
         trainer = trainAlgo(self.net.net, dataset=self.data.ds, verbose=True)
         return trainer, False
 
+    '''
+    instantiates and returns a optimization based training algorithm
+    '''
     def __getOptimizationTrainer(self):
         print("LSTM Optimization " + self.config['trainingalgo'] + " Training started")
         trainAlgo = util.getOptimizationTrainAlgo(self.config['trainingalgo'])
         l = trainAlgo(self.data.ds.evaluateModuleMSE, self.net.net, verbose=True)
         return l, True
 
+    '''
+    Run the training itself, by calling the train (or learn) method from the trainier. Also provide some statistics. 
+    Validate at the end against the test set
+    '''
     def __train(self, training, returnsNet):
         start = time.time()
         print("start training of " + str(self.net.epochs) + " epochs: " + str(start / 3600))
@@ -52,6 +64,12 @@ class LSTMTrain:
         self.data.validate()
         return
 
+
+    '''
+    Interface method to start training for a LSTMNet. 
+    Instantiates new trainer if no one exists or use existing one. 
+    Call __train method to train. 
+    '''
     def train(self, args):
         if(self.data.ds == None):
             print("Can't train without loaded data")
