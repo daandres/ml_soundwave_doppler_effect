@@ -3,28 +3,33 @@ Created on 14/01/2014
 
 @author: Benny, Manuel
 '''
-from classifier.classifier import IClassifier
 
-import numpy as np
 import os
-from sklearn.externals import joblib
-from gestureFileIO import GestureFileIO
-from sklearn import svm
-from scipy import stats as stats
+import numpy as np
 import subprocess as sp
-#import properties.config as config
-
-
-np.set_printoptions(precision=4, suppress=True, threshold='nan')
-np.seterr(all='warn')
+import pylab as pl
 import warnings
 
+from sklearn.externals import joblib
+from sklearn import svm
+from sklearn.cross_validation import train_test_split
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+
+from gestureFileIO import GestureFileIO
+from classifier.classifier import IClassifier
+#import properties.config as config
+
+''' catch warnings as error '''
+np.set_printoptions(precision=4, suppress=True, threshold='nan')
+np.seterr(all='warn')
 warnings.simplefilter("error", RuntimeWarning)
 
 ''' Usage:
 > t
 > l classifier/svm/svm_trained.pkl
-> c '''
+> c 
+'''
 
 
 class SVM(IClassifier):
@@ -33,41 +38,79 @@ class SVM(IClassifier):
     NUM_SAMPLES_PER_FRAME = 64  #config.leftBorder + config.rightBorder
 
     def __init__(self, recorder=None, config=None, relative=""):
-        self.path = "classifier/svm/svm_trained.pkl"
+        self.gestures_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'gestures')
+        self.path = os.path.join(os.path.dirname(__file__), 'svm_trained.pkl')
         self.classifier = self.load(self.path)
+        self.subdirs = ["Benjamin","Alex","Daniel"]
+        
         self.datalist = []
         self.datanum = 0
         self.num_gestures = 7
         self.nClasses = 7
         self.new = False
         self.framerange = 20
-        self.threshold = 0.04
-        self.data, self.targets, self.avg = self.loadData() #, self.avg
+        self.threshold = 0.1
+        #self.data, self.targets, self.avg = self.loadData() #, self.avg
+        self.noise_frame = self.load_noise_frame()
+        self.X_train, self.X_test, self.Y_train, self.Y_test = self.loadData()
+        #self.data, self.targets = self.loadData()
+        
+        # SVM parameters
+        #,"Daniel"]
         self.kernel = "poly"
-        self.c = 1
-        self.gamma = 1
+        self.c = 1.0
+        self.gamma = 1.0
         self.degree = 3
-        self.coef0 = 1
+        self.coef0 = 10.0
+        
+        #=======================================================================
+        # for c in range(1,1000,100):
+        #     self.c = c
+        #     for gamma in range(10):
+        #         self.gamma = gamma
+        #         print c, gamma
+        #         self.startTraining(None)
+        #         self.startValidation()
+        #=======================================================================
+        
+
 
         self.predicted = False
-
-        self.found = False
-        self.index = 0
-
+        self.gesturefound = False
+        self.gestureindex = 0
         self.executed = {"notepad": False, "taskmgr": False, "calc": False}
 
     @staticmethod
     def normalise_framesets(framesets, noise_frame):
-        ''' normalise each frame '''
+        ''' normalise framesets and substract noiseframe '''
         for frameset_nr in range(len(framesets)):
             for frame_nr in range(len(framesets[frameset_nr])):
                 current_frameset = framesets[frameset_nr][frame_nr]
                 framesets[frameset_nr][frame_nr] = (current_frameset / np.amax(current_frameset)) - noise_frame
         return framesets
+    
+    def preprocess_frame(self, dataframe, noise):
+        try:
+            ''' normalise and slice dataframe '''
+            normalized_data_with_noise = dataframe / np.amax(dataframe)
+            normalized_data = normalized_data_with_noise - noise
+            
+            ''' set small noisy data to 0 '''
+            frame = normalized_data
+            irrelevant_samples = np.where(frame <= self.threshold)
+            frame[irrelevant_samples] = 0.0
+        except:
+            frame = np.zeros(dataframe.shape[0])
 
+        return frame
+    
     @staticmethod
-    def slice_framesets(framesets, slice_left=SLICE_LEFT, slice_right=SLICE_RIGHT):
-        return framesets[:, :, slice_left:(SVM.NUM_SAMPLES_PER_FRAME - slice_right)]
+    def slice_frame(frame):
+        return frame[SVM.SLICE_LEFT:(SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT)]
+    
+    @staticmethod
+    def slice_framesets(framesets):
+        return framesets[:, :, SVM.SLICE_LEFT:(SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT)]
 
     @staticmethod
     def load_gesture_framesets(txt_file):
@@ -80,137 +123,111 @@ class SVM(IClassifier):
                                                         SVM.NUM_SAMPLES_PER_FRAME)  # split the array to a frameset
         return gesture_framesets_plain
 
-    def loadData(self, filename=""):
-        # init num samples per frame and borders
-        sliced_num_samples_per_frame = SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT - SVM.SLICE_RIGHT
-
-        subdirs = ["Benjamin"]
-        path = "../gestures/"
-        noise_txt_file = path + "Benjamin/gesture_6/1389637026.txt"
+    def load_noise_frame(self):
+        noise_txt_file = os.path.join(self.gestures_path, 'Benjamin', 'gesture_6', '1389637026.txt')
 
         ''' load and reshape textfile with 18.5khz no gesture frequency data '''
         noise_framesets_plain = self.load_gesture_framesets(noise_txt_file)
+        noise_framesets = self.normalise_framesets(noise_framesets_plain, 0) # max amplitude = 1, dont subtract noise
+        noise_avg_frameset = np.mean(noise_framesets, axis=1) # reduce to 1 frame per frameset
+        noise_frame = self.slice_frame(np.mean(noise_avg_frameset, axis=0))
+        return noise_frame
 
-        noise_framesets = self.normalise_framesets(noise_framesets_plain, 0)  # max amplitude = 1, dont subtract noise
-
-        noise_avg_frameset = np.mean(noise_framesets, axis=1)  # reduce to 1 frame per frameset
-
-        self.noise_frame = np.mean(noise_avg_frameset, axis=0)  # reduce to 1 frame, dont sliced
+    def loadData(self, filename=""):
+        
 
         gestures = []
         targets = []
         for gesture_nr in range(self.num_gestures):
-            print "Gesture", gesture_nr
-            for subdir in subdirs:
-                dirf = os.listdir(path + subdir + "/gesture_" + str(gesture_nr))
+            print "load gesture", gesture_nr
+            for subdir in self.subdirs:
+                dirf = os.listdir(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))
 
-                for txtfile in dirf:
+                for textfile in dirf:
                     ''' load and reshape textfile with gesture data '''
-                    gesture_framesets_plain = self.load_gesture_framesets(
-                        path + subdir + "/gesture_" + str(gesture_nr) + "/" + txtfile)
-                    gesture_framesets = self.slice_framesets(
-                        self.normalise_framesets(gesture_framesets_plain, self.noise_frame))
-                    print gesture_framesets.shape
-
-                    num_framesets = gesture_framesets.shape[0]
+                    gesture_framesets_plain = self.load_gesture_framesets(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr), textfile))
+                    gesture_framesets = self.slice_framesets(gesture_framesets_plain)
+                    
                     ''' create one gesture frame from relevant frames '''
-                    for frameset_nr in range(num_framesets):
-                        current_frameset = gesture_framesets[frameset_nr]
-                        tmp_relevant_frameset = []
-                        for frame_nr in range(len(current_frameset)):
-                            frame = current_frameset[frame_nr] ** 2  # why square?!?
-                            irrelevant_samples = np.where(frame <= 0.025)
-                            frame[irrelevant_samples] = 0
-                            if np.amax(frame) > 0:
-                                tmp_relevant_frameset.append(frame)
+                    for frameset_nr in range(gesture_framesets.shape[0]):
 
-                        #print ""
-                        relevant_frameset = np.asarray(tmp_relevant_frameset)
-
-                        gesture_frame = np.zeros(sliced_num_samples_per_frame)
-                        for frame in relevant_frameset:
-                            gesture_frame += frame
-
-                        ''' normalise summed gesture frame '''
-                        try:
-                            normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
-                        except RuntimeWarning:
-                            normalised_gesture_frame = np.zeros(sliced_num_samples_per_frame)
-
-                        gestures.append(normalised_gesture_frame[::2])  # only each second?!?
-                        targets.append(gesture_nr)
+                        if self.new:
+                            current_frameset = [self.preprocess_frame(frame, self.noise_frame) for frame in gesture_framesets[frameset_nr] if np.amax(self.preprocess_frame(frame, self.noise_frame)) > 0]
+                            print subdir, np.asarray(current_frameset).shape
+                            
+                        else:
+                            current_frameset = [self.preprocess_frame(frame, self.noise_frame) for frame in gesture_framesets[frameset_nr]]
+                            gesture_frame = np.asarray(current_frameset).sum(axis=0)
+    
+                            ''' normalise summed gesture frame '''
+                            try:
+                                normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
+                            except RuntimeWarning:
+                                normalised_gesture_frame = np.zeros(gesture_frame.shape[0])
+                        
+                            gestures.append(normalised_gesture_frame)
+                            targets.append(gesture_nr)
 
         data = np.array(gestures)
         targets = np.array(targets)
-
         print data.shape, targets.shape
-
-        return data, targets, self.noise_frame
+        
+        return train_test_split(data, targets, random_state=0)
+    
+        return data, targets
+    
 
     def classify(self, data):
-        # init num samples per frame and borders
-        sliced_num_samples_per_frame = SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT - SVM.SLICE_RIGHT
-        left_border = SVM.SLICE_LEFT
-        right_border = SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT
-
-        normalized_data_with_noise = data / np.amax(data)
-        normalized_data = normalized_data_with_noise[left_border:right_border] - self.noise_frame[
-                                                                                 left_border:right_border]
-
-        frame = normalized_data
-        irrelevant_samples = np.where(frame <= self.threshold)
-        frame[irrelevant_samples] = 0.0
-
+        ''' start preprocessing of framedata '''
+        frame = self.preprocess_frame(self.slice_frame(data),self.noise_frame)
+        
+        ''' store frame in datalist and increment running index '''
         self.datalist.append(frame)
         self.datanum += 1
-
-        if np.amax(frame) > 0.0 and self.found == False:
-            self.index = self.datanum
-            self.found = True
-
-        if self.index + self.framerange == self.datanum and self.found == True:
-            self.index = 0
-            self.found = False
-
-            current_frameset = np.asarray(self.datalist[-self.framerange:])
-#===============================================================================
-#             tmp_relevant_frameset = []
-#             for frame_nr in range(len(current_frameset)):
-#                 if np.amax(current_frameset[frame_nr]) > 0.0:
-#                     tmp_relevant_frameset.append(current_frameset[frame_nr])
-# 
-#             relevant_frameset = np.asarray(tmp_relevant_frameset, dtype=np.float64)
-# 
-#             gesture_frame = np.zeros(sliced_num_samples_per_frame)
-#             for frame in relevant_frameset:
-#                 gesture_frame += frame
-#===============================================================================
+        
+        ''' check if frame has some relevant information and store this running index '''
+        if np.amax(frame) > 0.0 and self.gesturefound == False:
+            self.gestureindex = self.datanum
+            self.gesturefound = True
+            
+        ''' check if framerange is reached and gesturefound is true '''
+        if self.gestureindex + self.framerange == self.datanum and self.gesturefound == True:
+            self.gestureindex = 0
+            self.gesturefound = False
+            
+            
+            if self.new:
+                current_frameset = [frame for frame in self.datalist[-self.framerange:] if np.amax(frame) > 0]
+                print len(current_frameset)
                 
                 
-            gesture_frame = current_frameset.sum(axis=0)
+            else:
+                ''' add all frames to one gestureframe '''
+                current_frameset = np.asarray(self.datalist[-self.framerange:])
+                gesture_frame = current_frameset.sum(axis=0)
+    
+                try:
+                    ''' normalise gestureframe '''
+                    normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
+                    if not np.isnan(np.sum(normalised_gesture_frame)):
+                        
+                        ''' start actual classification '''
+                        target_prediction = self.classifier.predict(normalised_gesture_frame[::2])[0]  # only each second?!?
+                        self.executeCommand(target_prediction)
+                except:
+                    print "error =("
 
-            try:
-                normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
-                if not np.isnan(np.sum(normalised_gesture_frame)):
-                    target_prediction = self.classifier.predict(normalised_gesture_frame[::2])[0]  # only each second?!?
-                    self.executeCommand(target_prediction)
-            except:
-                print "error =("
-
-        if self.datanum > sliced_num_samples_per_frame:
+        ''' delete unneeded frames from datalist '''
+        if self.datanum > self.framerange:
             del self.datalist[0]
 
-
-    def getAverage(self):
-        g = GestureFileIO()
-        avg = g.getAvgFrequency()
-        return avg
 
     def load(self, filename=""):
         try:
             return joblib.load(filename)
         except:
             print "file does not exist"
+
 
     def executeCommand(self, number):
         print number,
@@ -222,7 +239,7 @@ class SVM(IClassifier):
 
         elif number == 1 and self.executed["notepad"] != False:
             sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["notepad"]))
-            print "terminating notepad"
+            #print "terminating notepad"
             self.executed["notepad"] = False
 
         elif number == 2 and self.executed["taskmgr"] == False:
@@ -232,7 +249,7 @@ class SVM(IClassifier):
 
         elif number == 3 and self.executed["taskmgr"] != False:
             sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["taskmgr"]))
-            print "terminating taskmanager"
+            #print "terminating taskmanager"
             self.executed["taskmgr"] = False
 
         elif number == 4 and self.executed["calc"] == False:
@@ -242,35 +259,38 @@ class SVM(IClassifier):
 
         elif number == 5 and self.executed["calc"] != False:
             sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["calc"]))
-            print "terminating calculator"
+            #print "terminating calculator"
             self.executed["calc"] = False
 
-        elif number == 6:
-            print "noise, do nothing ..."
+        #elif number == 6:
+        #    print "noise, do nothing ..."
 
         print ""
 
+    
     def getName(self):
         return "SVM"
 
 
     def startTraining(self, args=[]):
         classifier = svm.SVC(kernel=self.kernel, C=self.c, gamma=self.gamma, degree=self.degree, coef0=self.coef0)
-        classifier.fit(self.data, self.targets)
+        #classifier.fit(self.data, self.targets)
+        classifier.fit(self.X_train, self.Y_train)
+
         joblib.dump(classifier, self.path, compress=9)
         self.classifier = classifier
 
 
     def startValidation(self):
-        l = len(self.targets) / 10
+        l = len(self.Y_train) / 10
         p = 0
         confmat = np.zeros((self.nClasses, self.nClasses))
-        for i in range(len(self.targets)):
+        for i in range(len(self.Y_train)):
             if (i + 1) % l == 0:
                 p += 10
                 print p, "%"
-            realclass = self.targets[i]
-            predictedclass = self.classifier.predict(self.data[i])[0]
+            realclass = self.Y_train[i]
+            predictedclass = self.classifier.predict(self.X_train[i])[0]
             confmat[realclass][predictedclass] += 1
 
         sumWrong = 0
@@ -397,3 +417,34 @@ class SVM(IClassifier):
 
     def printClassifier(self):
         print self.path
+        
+    def show_confusion_matrix(self):
+        # Compute confusion matrix
+        target_names = ["gesture 0","gesture 1","gesture 2","gesture 3","gesture 4","gesture 5","gesture 6"]
+        self.Y_pred = self.classifier.predict(self.X_test)
+        cm = confusion_matrix(self.Y_test, self.Y_pred)
+        print(cm)
+        print(classification_report(self.Y_test, self.Y_pred, target_names=target_names))
+        definition = '''
+        The precision is the ratio tp / (tp + fp) where tp is the number of true positives and fp the number of false positives.
+        The precision is intuitively the ability of the classifier not to label as positive a sample that is negative.
+
+        The recall is the ratio tp / (tp + fn) where tp is the number of true positives and fn the number of false negatives.
+        The recall is intuitively the ability of the classifier to find all the positive samples.
+        
+        The F-beta score can be interpreted as a weighted harmonic mean of the precision and recall, 
+        where an F-beta score reaches its best value at 1 and worst score at 0.
+        
+        The F-beta score weights recall more than precision by a factor of beta.
+        beta == 1.0 means recall and precision are equally important.
+        
+        The support is the number of occurrences of each class in y_true.
+        '''
+        print definition
+        # Show confusion matrix in a separate window
+        pl.matshow(cm)
+        pl.title('Confusion matrix')
+        pl.colorbar()
+        pl.ylabel('Actual gestures')
+        pl.xlabel('Predicted gestures')
+        pl.show()
