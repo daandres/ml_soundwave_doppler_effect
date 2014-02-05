@@ -71,8 +71,11 @@ Jeder Lautstärkewert entspricht dabei der Intensität des Tonsignals in dem jew
 %2048-dimensionalen 
 Eingabedaten lieferten eine korrekte Erkennungsrate von etwa 25 bis 30 Prozent bei 7 Klassen (6 Gesten sowie Grundrauschen ohne Geste). Lediglich das Grundrauschen kann so einigermaßen zuverlässig erkannt werden, eine korrekte Unterscheidung der einzelnen Gesten ist jedoch nicht möglich. Dies zeigt deutlich die Notwendigkeit einer Datenaufbereitung.
 
-%Die Datenaufbereitung erfolgt in folgenden Schritten, die hintereinander wie in Abbildung XX dargestellt ablaufen.
 %TODO Bild Schritte bei der Vorverarbeitung
+
+
+%TODO Bilder Frames Gesten + Gesten bzw Besonderheiten beschreiben (vor eigentlicher Vorverarbeitung, ggf. nach normalisierung??)
+
 
 %Norm. -> Segmentierung -> Reduzieren der Datenmenge
 Die Datenaufbereitung erfolgt in der in Abbildung XX dargestellten Reihenfolge. 
@@ -93,42 +96,39 @@ Dazu wird neben dem gefundenen Frame eine als Margin bezeichnete Anzahl von $m$ 
 
 Nach Abschluss der Segmentierung hat sich die Datenmenge durch die Beschränkung auf 24 Frames bereits von 3072 auf 1536 Dimensionen halbiert. Um das Ergebnis der Klassifikation zu optimieren, erfolgt eine weitere Reduzierung der Dimensionen. Dazu werden die ersten und letzten 16 Lautstärkewerte jedes Frames entfernt, da die zur Gestenerkennung relevanten Frequenzverschiebungen nur in den 16 Frequenzbereichen unterhalb und oberhalb der Referenzfrequenz von 18500 Hz stattfinden. Somit verringert sich die Anzahl der Dimensionen auf 768. Zuletzt werden die nun vorhandenen Daten weiter reduziert, indem die Abtastrate innerhalb der einzelnen Frames mehrmals halbiert wird. Dazu werden je zwei aufeinanderfolgende Lautstärkewerte des Frames zu einem neuen Lautstärkewert zusammengefasst, der dem arithmetischen Mittel der beiden ursprünglichen Werte entspricht. Diese Halbierung wird pro Frame viermal durchgeführt.
 Insgesamt reduziert sich somit die Anzahl der Dimensionen pro Geste nach dem vollständigen Durchlaufen der Vorverarbeitung von ursprünglich 3072 auf 96 Dimensionen. 
+
 %TODO wie oft, welche Dimension am Schluss?
-
-
-
 %TODO Wert Margin?
 
 %TODO Bild? 
-%An der Stelle 18500 Hz befindet sich immer das größte lokale Maximum. 
 
 
-
-
-%TODO Bilder Frames Gesten
-
-
-%Breite in beide Richtungen von der Amplitude, bis Lautstärkewert 10 % der Amplitude erreicht etc siehe Original Paper
-
-%TODO Datenaufbereitung beschreiben 
 
 \subsubsection{Anpassung des Klassifikators}
-%TODO "-1" wenn Cluster nicht eindeutig bestimmt, d.h. wenn der Abstand zum zweitnächsten Cluster-Zentrum nicht mindestens um einen bestimmten %satzgrößer p größer ist als der Abstand zum nächsten Zentrum. Es hat sich gezeigt, dass ein Wert von 10 für p geeignet ist
-%TODO ggf Bild wie 3.1 nur mit dicker Trennlinie
-% wurde Mit dem Wert ?? (10) % für p
-
 Der Klassifikator wurde nur geringfügig angepasst.
 In der Initialisierungsphase werden die Startpunkte der Cluster-Zentren wurden nicht wie im ursprünglichen Algorithmus zufällig gewählt, sondern mithilfe des in \autoref{subsec:kMeansFunktionsweise} vorgestellten k-Means++ Algorithmus bestimmt. Die Trainingsphase läuft hingegen unverändert ab.
 Dadurch ergeben sich in der Regel eine schnellere Laufzeit in der Trainingsphase sowie bessere Ergebnisse bei der Klassifikation.
 Weiterhin gilt eine Geste als nicht eindeutig bestimmt, wenn der Abstand zum zweitnächsten Cluster-Zentrum nicht mindestens um einen bestimmten Prozentsatz $p$ größer ist als der Abstand zum nächsten Zentrum. Es hat sich dabei herausgestellt, dass 10\% ein geeigneter Wert für $p$ ist. %TODO Prozentsatz??
 
 Ansonsten wurden keine Veränderungen am Algorithmus vorgenommen.
-Für die Qualität der Klassifikation ist weiterhin jedoch die Wahl eines geeigneten Werts für \emph{k} von Bedeutung. Dabei muss \emph{k} mindestens um eins größer sein als die Anzahl der Gesten (da mindestens eine Klasse für das Grundrauschen benötigt wird),
+Für die Qualität der Klassifikation ist weiterhin jedoch die Wahl eines geeigneten Werts für \emph{k} von Bedeutung.
+
+\begin{figure*}[htbp]
+    \centering
+   \includegraphics[width=.85\textwidth]{kmeans/kMeansWertK.pdf}
+\caption{Klassifizierung mit zwei und vier Cluster-Zentren}
+\label{fig:kMeansWertK}
+\end{figure*}
+
+\autoref{fig:kMeansWertK} zeigt ein Beispiel, bei dem der k-Means Algorithmus bei zwei Gruppen von Daten mit einem Wert von k = 2 ein sehr ungenaues Ergebnis liefert. Für k=4 funktioniert das Clustering sehr gut, da pro Gruppe zwei Cluster-Zentren existieren. %TODO Satz
+Zur Gestenerkennung muss \emph{k} mindestens um eins größer sein als die Anzahl der Gesten (da mindestens eine Klasse für das Grundrauschen benötigt wird),
 damit der Algorithmus in der Lage ist, die einzelnen Aufnahmen voneinander zu unterscheiden.  
+
 
 Grundsätzlich gibt es zur Ermittlung der Anzahl an Clustern in einem Datensatz viele verschiedene Ansätze, etwa die Faustregel $k \approx \sqrt{n/2}$ \cite{WikipediaKMeansKValue}, wobei \emph{n} der Anzahl der Datenpunkte entspricht. In Fall der hier beschriebenen Gestenerkennung kann der Wert für \emph{k} jedoch bereits grob abgeschätzt werden. 
 Die untere Grenze ist wie bereits erwähnt um eins größer als die Anzahl der Gesten.
 Als obere Grenze lässt sich grob der fünffache Wert der unteren Grenze abschätzen, da davon auszugehen ist, dass es nur wenige Variationsmöglichkeiten beim Ausführen einer Geste gibt.
+%TODO fünffach??
 
 Nach der Lernphase ist es noch notwendig, dass den einzelnen Cluster-Zentren je eine Geste zugeordnet wird. Dazu wird ermittelt, welche Geste wie oft in die einzelnen Cluster-Zentren eingeordnet wird. Falls \emph{k} gleich dem oben genannten Minimalwert ist, ist es ausreichend, dem ersten Cluster die am häufigsten dort vorkommende Geste zuzuordnen, dem zweiten Cluster die häufigste vorkommende Geste der übrigen Gesten etc. 
 Somit ergibt sich der in 
