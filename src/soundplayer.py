@@ -41,7 +41,7 @@ class Sound:
         else:
             self.isWindows = False
 
-    def startPlaying(self, frequency=440.0, amplitude=0.5, framerate=48100, duration=30, bufsize=1024):
+    def startPlaying(self, frequency=440.0, amplitude=0.5, framerate=48000, duration=60, bufsize=1024):
         if self.isWindows:
             while True:
                 try:

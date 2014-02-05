@@ -41,14 +41,15 @@ class SVM(IClassifier):
         self.gestures_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'gestures')
         self.path = os.path.join(os.path.dirname(__file__), 'svm_trained.pkl')
         self.classifier = self.load(self.path)
-        self.subdirs = ["Benjamin","Alex","Daniel"]
+        self.subdirs = ["Benjamin","Alex"]#,"Alex","Daniel"]
         
         self.datalist = []
         self.datanum = 0
         self.num_gestures = 7
         self.nClasses = 7
-        self.new = False
+        self.new = True
         self.framerange = 20
+        self.timeout = 10
         self.threshold = 0.1
         #self.data, self.targets, self.avg = self.loadData() #, self.avg
         self.noise_frame = self.load_noise_frame()
@@ -56,12 +57,11 @@ class SVM(IClassifier):
         #self.data, self.targets = self.loadData()
         
         # SVM parameters
-        #,"Daniel"]
-        self.kernel = "poly"
+        self.kernel = "rbf"
         self.c = 1.0
-        self.gamma = 1.0
+        self.gamma = 0.1
         self.degree = 3
-        self.coef0 = 10.0
+        self.coef0 = 0.0
         
         #=======================================================================
         # for c in range(1,1000,100):
@@ -141,9 +141,9 @@ class SVM(IClassifier):
         for gesture_nr in range(self.num_gestures):
             print "load gesture", gesture_nr
             for subdir in self.subdirs:
-                dirf = os.listdir(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))
-
-                for textfile in dirf:
+                #dirf = os.listdir(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))
+                files = [c for a,b,c in os.walk(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))][0]
+                for textfile in files:
                     ''' load and reshape textfile with gesture data '''
                     gesture_framesets_plain = self.load_gesture_framesets(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr), textfile))
                     gesture_framesets = self.slice_framesets(gesture_framesets_plain)
@@ -153,7 +153,13 @@ class SVM(IClassifier):
 
                         if self.new:
                             current_frameset = [self.preprocess_frame(frame, self.noise_frame) for frame in gesture_framesets[frameset_nr] if np.amax(self.preprocess_frame(frame, self.noise_frame)) > 0]
-                            print subdir, np.asarray(current_frameset).shape
+                            while len(current_frameset) < 16:
+                                current_frameset.append(np.zeros(40))
+                            
+                            even = current_frameset[:16:2] 
+                            odd = current_frameset[1:16:2]
+                            test = np.asarray(list(np.asarray(even) + np.asarray(odd)))
+                            normalised_gesture_frame = test.reshape(40*8,)
                             
                         else:
                             current_frameset = [self.preprocess_frame(frame, self.noise_frame) for frame in gesture_framesets[frameset_nr]]
@@ -165,8 +171,8 @@ class SVM(IClassifier):
                             except RuntimeWarning:
                                 normalised_gesture_frame = np.zeros(gesture_frame.shape[0])
                         
-                            gestures.append(normalised_gesture_frame)
-                            targets.append(gesture_nr)
+                        gestures.append(normalised_gesture_frame)
+                        targets.append(gesture_nr)
 
         data = np.array(gestures)
         targets = np.array(targets)
@@ -185,8 +191,13 @@ class SVM(IClassifier):
         self.datalist.append(frame)
         self.datanum += 1
         
+        if self.timeout < self.framerange/2:
+            self.timeout += 1
+            if self.timeout == self.framerange/2:
+                print "..."
+        
         ''' check if frame has some relevant information and store this running index '''
-        if np.amax(frame) > 0.0 and self.gesturefound == False:
+        if np.amax(frame) > 0.0 and self.gesturefound == False and self.timeout == self.framerange/2:
             self.gestureindex = self.datanum
             self.gesturefound = True
             
@@ -194,25 +205,34 @@ class SVM(IClassifier):
         if self.gestureindex + self.framerange == self.datanum and self.gesturefound == True:
             self.gestureindex = 0
             self.gesturefound = False
+            self.timeout = 0
             
             
             if self.new:
                 current_frameset = [frame for frame in self.datalist[-self.framerange:] if np.amax(frame) > 0]
-                print len(current_frameset)
+                while len(current_frameset) < 16:
+                    current_frameset.append(np.zeros(40))
                 
+                even = current_frameset[:16:2] 
+                odd = current_frameset[1:16:2]
+                test = np.asarray(list(np.asarray(even) + np.asarray(odd)))
+                normalised_gesture_frame = test.reshape(40*8,)
+
+                target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
+                self.executeCommand(target_prediction)
                 
             else:
                 ''' add all frames to one gestureframe '''
                 current_frameset = np.asarray(self.datalist[-self.framerange:])
                 gesture_frame = current_frameset.sum(axis=0)
-    
+                
                 try:
                     ''' normalise gestureframe '''
                     normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
                     if not np.isnan(np.sum(normalised_gesture_frame)):
                         
                         ''' start actual classification '''
-                        target_prediction = self.classifier.predict(normalised_gesture_frame[::2])[0]  # only each second?!?
+                        target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
                         self.executeCommand(target_prediction)
                 except:
                     print "error =("
@@ -230,42 +250,53 @@ class SVM(IClassifier):
 
 
     def executeCommand(self, number):
-        print number,
+        if number != 6:
 
-        if number == 0 and self.executed["notepad"] == False:
-            print "starting notepad"
-            proc = sp.Popen("notepad")
-            self.executed["notepad"] = proc.pid
+            if number == 0 and self.executed["notepad"] == False:
+                print "\t",str(number),"=>","starting notepad"
+                proc = sp.Popen("notepad")
+                self.executed["notepad"] = proc.pid
+    
+            elif number == 1 and self.executed["notepad"] != False:
+                print "\t",str(number),"=>","terminating notepad"
+                sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["notepad"]), shell=True, stdout=sp.PIPE)
+                self.executed["notepad"] = False
+    
+            elif number == 2 and self.executed["taskmgr"] == False:
+                print "\t",str(number),"=>","starting taskmanager"
+                proc = sp.Popen("taskmgr")
+                self.executed["taskmgr"] = proc.pid
+    
+            elif number == 3 and self.executed["taskmgr"] != False:
+                print "\t",str(number),"=>","terminating taskmanager"
+                sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["taskmgr"]), shell=True, stdout=sp.PIPE)
+                self.executed["taskmgr"] = False
+    
+            elif number == 4 and self.executed["calc"] == False:
+                print "\t",str(number),"=>","starting calculator"
+                proc = sp.Popen("calc")
+                self.executed["calc"] = proc.pid
+    
+            elif number == 5 and self.executed["calc"] != False:
+                print "\t",str(number),"=>","terminating calculator"
+                sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["calc"]), shell=True, stdout=sp.PIPE)
+                self.executed["calc"] = False
+    
+            
+            elif number == 1 and self.executed["notepad"] == False:
+                print "\t",str(number),"=>","notepad not started, nothing to terminate"
+            elif number == 3 and self.executed["taskmgr"] == False:
+                print "\t",str(number),"=>","taskmanager not started, nothing to terminate"
+            elif number == 5 and self.executed["calc"] == False:
+                print "\t",str(number),"=>","calculator not started, nothing to terminate"
+                
+            elif number == 0 and self.executed["notepad"] != False:
+                print "\t",str(number),"=>","notepad already started, only one instance allowed"
+            elif number == 2 and self.executed["taskmgr"] != False:
+                print "\t",str(number),"=>","taskmanager already started, only one instance allowed"
+            elif number == 4 and self.executed["calc"] != False:
+                print "\t",str(number),"=>","calculator already started, only one instance allowed"
 
-        elif number == 1 and self.executed["notepad"] != False:
-            sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["notepad"]))
-            #print "terminating notepad"
-            self.executed["notepad"] = False
-
-        elif number == 2 and self.executed["taskmgr"] == False:
-            print "starting taskmanager"
-            proc = sp.Popen("taskmgr")
-            self.executed["taskmgr"] = proc.pid
-
-        elif number == 3 and self.executed["taskmgr"] != False:
-            sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["taskmgr"]))
-            #print "terminating taskmanager"
-            self.executed["taskmgr"] = False
-
-        elif number == 4 and self.executed["calc"] == False:
-            print "starting calculator"
-            proc = sp.Popen("calc")
-            self.executed["calc"] = proc.pid
-
-        elif number == 5 and self.executed["calc"] != False:
-            sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["calc"]))
-            #print "terminating calculator"
-            self.executed["calc"] = False
-
-        #elif number == 6:
-        #    print "noise, do nothing ..."
-
-        print ""
 
     
     def getName(self):
