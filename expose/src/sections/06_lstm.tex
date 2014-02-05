@@ -20,7 +20,7 @@ Sinneseindrücke werden die Neuronen erneut stimuliert und je nach Ergebnis
 werden bestimmte Erinnerungen, Gefühle, Aktionen oder anderes erlebt und
 ausgeführt. Jedoch sind sie nicht direkt an ein bestimmtes Ereignis geknüpft,
 sondern wurden durch verschiedene Erfahrungen verallgemeinert, um so
-verschiedenen Situationen gut verarbeiten zu können. 
+verschiedenen Situationen gut verarbeiten zu können.
 
 \paragraph{Modelle von Neuronen und Synapsen}
 Im Bereich des maschinellen Lernen wird versucht die Funktionsweise eines
@@ -41,8 +41,9 @@ Die \autoref{fig:neuron} zeigt den Aufbau eines solchen Neurons. Die Eingaben
 weren dabei zuerst im \textit{Addierer} summiert, eine Schwellwertfunktion (bzw.
 allgemeiner eine Aktivierungsfunktion) bestimmt dann mit der Summe den
 Ausgabewert (die Aktivierung) des Neurons. Des Weiteren werden auch die Synapsen
-nachgebildet in dem jeder Eingabewert bei der Summierung individuell mit $w_i$ gewichtet
-wird. Die Gewichte entsprechen den unterschiedlich stark ausgeprägten Synapsen.
+nachgebildet in dem jeder Eingabewert bei der Summierung individuell mit $w_i$
+gewichtet wird. Die Gewichte entsprechen den unterschiedlich stark ausgeprägten
+Synapsen.
 Das klassische Modell erlaubt nur binäre Ein- und Ausgaben, dies kann jedoch auf
 reelle Zahlen erweitert werden, um unterschiedlich starke Stimulierungen bzw.
 auch negative Werte (Hemmungen) zuzulassen.
@@ -51,15 +52,21 @@ auch negative Werte (Hemmungen) zuzulassen.
 Einzelne Neuronen können allerdings kein Gehrin nachbilden. Aus diesem Grund ist
 die Kombination mehrerer Neuronen zu einem neuronalen Netz nötig. Im einfachsten
 Fall entsteht dabei ein \textit{Perzeptron} (vgl.
-\cite{rosenblatt58a,1165576}). Es werden $n$-viele Neuronen
-verwendet. Alle Eingaben werden von allen Neuronen verarbeitet und jedes Neuron
-hat eine eigene Aktivierung. Die Gewichte (Synapsen) sind individuell für jedes
-Neuron. Die Ausgaben ergeben den Ausgabevektor $\bf{y}$ des Netzwerkes. Um
-komplexere Sachverhalte darstellen zu können, ist es nötig Neuronen in Abhängigkeit
+\cite{rosenblatt58a,1165576}). Es werden $n$-viele Neuronen verwendet. Alle
+Eingaben werden von allen Neuronen verarbeitet und jedes Neuron hat eine eigene
+Aktivierung. Die Gewichte (Synapsen) sind individuell für jedes Neuron. Die
+Ausgaben ergeben den Ausgabevektor $\bf{y}$ des Netzwerkes. Um komplexere
+Sachverhalte darstellen zu können, ist es nötig Neuronen in Abhängigkeit
 voneinander zu betrachten. Dies wird in \acp{MLP} vorgenommen \cite{1165576}.
 Mehrere Perzeptrons werden hintereinandergeschaltet, sodass die Ausgabe des
 einen Perzeptrons (ein Layer) die Eingabe des nächsten Perzeptrons ist (vgl.
 \autoref{fig:mlp}).
+\begin{figure}[htbp]
+    \centering
+   \includegraphics[height=50mm]{lstm/mlp}
+\caption{MLP-Netz}
+\label{fig:mlp}
+\end{figure}
 Lediglich die Ausgabe des letzten Perzeptrons ist die Ausgabe des Netzwerks.
 Ein Netzwerk kann als gerichteter Graph dargestellt werden. Die Richtung
 entspricht dem Datenfluss. Perzeptrons und \acp{MLP} sind azyklische Graphen,
@@ -68,15 +75,7 @@ somit keinen Kreis. Daher werden diese Netzwerke \textit{Feedforward}-Netzwerke
 genannt. Um besser die Funktionsweise von Gehirnen nachzubilden ist es notwendig
 auch Verbidnungen von Neuronen auf sich selbst zuzulassen. Somit entsteht ein
 zyklischer Graph und das Netzwerk wird zu einem Rekurrenten Neuronalen Netz
-(\acsu{RNN}).
-\textbf{TODO Zitat azyklischer Graph}
-  
-\begin{figure}[htbp]
-    \centering
-   \includegraphics[height=50mm]{lstm/mlp}
-\caption{MLP-Netz}
-\label{fig:mlp}
-\end{figure}
+(\acsu{RNN}). \cite{RainerSchmoll2006}
 
 Im Rahmen dieses Kpaitel wird erläutert, wie \acsp{LSTM}, eine spezielle Form
 von \acp{RNN}, zur Klassifikation von Gesten des schallbasierten Dopplereffekts
@@ -88,7 +87,7 @@ Python, das Training und eine Evaluierung besprochen.
 
 
 \subsection{Funktionsweise des Klassifikators (Allgemein)}
-
+\label{sec:lstm_allg}
 Ein \acl{LSTM} ist ein spezielles \ac{RNN}. Es wurde 1997
 vorgestellt\cite{Hochreiter:1997}. Wie allgemein Neuronale Netze und
 insbesondere \ac{RNN} können auch \ac{LSTM}-Netze biologisch motiviert werden.
@@ -98,7 +97,7 @@ wird dies durch vorangegangene Ereignisse. Eindrücke (Eingaben) werden so in
 einen zeitlichen Bezug gestellt und dadurch entsteht eine zusammenhängende
 Erinnerung. Diese wird wie eine einzelne Eingabe ebenfalls generalisiert in den
 Synapsen und Neuronen gespeichert. Mit Hilfe der \ac{LSTM} Architektur wird
-versucht dieses Verhalten nachzuahmen. 
+versucht dieses Verhalten nachzuahmen.
 
 In einem Netz mit \ac{LSTM}-Einheiten sind diese keine einzelnen Neuronen
 sondern Blöcke aus mehreren Neuronen und Toren (ein Tor bzw. engl.
@@ -215,7 +214,8 @@ Der beschriebene \ac{LSTM}-Block enthält eine einzelne Memoryzelle. Denkbar sin
 jedoch Blöcke mit mehreren Memoryzellen, die sich dann die die drei Gates
 teilen. Auch sind hier Peepholeverbinsungen möglich, die Gates berücksichtigen
 dann alle Werte der Memoryzellen. Dieser Ansatz wird in der Ausarbeitung nicht
-weiter betrachtet. 
+weiter betrachtet. Weitere Informationen sind unter anderem in \cite{GERS2001}
+zu finden.
 
 \paragraph{Training eines \ac{LSTM} Netzes}
 Damit neuronale Netze (damit auch \ac{LSTM}-Netze) ein gutes
@@ -257,7 +257,7 @@ lokale Minima gesucht werden. Der wesentliche Unterschied von \ac{RProp} zu
 backpropagation besteht darin, dass \ac{RProp} die vorherige Gewichtsänderung
 mit in die aktuelle Änderung mit einfließen lässt. Bei Backpropagation ist dies
 nicht der Fall. Weitere Informationen zu diesen Verfahren sind in
-\cite{RainerSchmoll2006} \textbf{TODO Cite} zu finden. 
+\cite{RainerSchmoll2006,Gers2002b,GERS2001} zu finden. 
 
 \subparagraph{Evolution based Training}
 
@@ -280,15 +280,16 @@ Softmax Funktion als Aktivierungsfunktion verwenden.
 \caption{LSTM-Netz}
 \label{fig:lstm_netz}
 \end{figure}
-Die genaue Anzahl der Neuronen für das Input- und Hidden-Layer stand zu Beginn des Projektes nicht fest. 
-Sie wurde durch Tests, die in Kapitel \autoref{sec:lstm_data} beschrieben sind, ermittelt. 
-Die Anzahl der Neuronen in dem Output-Layer ergab sich aus der Anzahl der Gesten. Es ist 
-üblich für jedes Ergebnis ein eigenes Output-Neuron zu erstellen.
+Die genaue Anzahl der Neuronen für das Input- und Hidden-Layer stand zu Beginn
+des Projektes nicht fest. Sie wurde durch Tests, die in Kapitel
+\autoref{sec:lstm_data} beschrieben sind, ermittelt. Die Anzahl der Neuronen in
+dem Output-Layer ergab sich aus der Anzahl der Gesten. Es ist üblich für jedes
+Ergebnis ein eigenes Output-Neuron zu erstellen.
 
 \subsubsection{Datenaufbereitung}
 \label{sec:lstm_data}
 
-In Kapitel \ref{Kapitel 1 TODO} wird beschrieben wie die Daten aufgenommen und
+In \autoref{sec:intro} wird beschrieben wie die Daten aufgenommen und
 im Allgemeinen verarbeitet werden, bevor sie den Klassifikatoren zur
 Verfügung gestellt werden. Diese erhalten jeweils einzelne Frames mit je 64
 Daten. Die Daten entprechen dem Frequenzspektrum im Umfeld der
@@ -327,56 +328,17 @@ dieses Intervalls keine große Bedeutung spielen. Aus diesem Grund ist eine
 Verkleinerung der Frame Größe in Betracht zu ziehen. Da jedoch eine manuelle
 Betrachtung aller Daten nicht möglich ist, lässt sich diese Beobachtung nicht
 manuell verifzieren. Daher werden mehrere \ac{LSTM}-Netze mit unterschiedlichen
-Inputframelängen trainiert und die Ergebnisse verglichen. \textbf{TODO Tabelle
-mit Ergebnissen} Erstaunlicherweise ist die aufgestellte Vermutung falsch und die
-Netzwerke ohne zugeschnittenen Trainingsdaten klassifizieren besser. 
-\begin{table*}
-\centering
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
-\hline
- Fold 		& Cut & Peephole & Neurons & 250 & 500 & 750 & 1000 \\
- \hline
- \multirow{12}{*}{1}&\multirow{4}{*}{0}&\multirow{2}{*}{true}&16&28,39\%&27,30\%&26,54\%&27,19\%\\
-  & & &18&29,14\%&28,06\%&26,00\%&26,89\%\\
-  & &\multirow{2}{*}{false}&16&30,55\%&29,58\%&26,44\%&26,76\%\\
-  & & &18&26,65\%&26,22\%&25,35\%&24,81\%\\
-  \hline
-  &\multirow{4}{*}{16}&\multirow{2}{*}{true}&16&36,73\%&35,21\%&33,37\%&32,61\%\\
-  & & &18&33,69\%&31,20\%&29,90\%&29,47\%\\
-  & &\multirow{2}{*}{false}&16&30,44\%&30,44\%&29,36\%&29,79\%\\
-  & & &18&30,34\%&27,95\%&27,95\%&28,17\%\\
-  \hline
-  &\multirow{4}{*}{24}&\multirow{2}{*}{true}&16&33,59\%&32,07\%&31,53\%&32,07\%\\
-  & & &18&35,75\%&33,69\%&29,04\%&27,74\%\\
-  & &\multirow{2}{*}{false}&16&33,15\%&33,15\%&32,39\%&32,18\%\\
-  & & &18&32,50\%&31,20\%&30,01\%&29,79\%\\
-  \hline
-  \multirow{12}{*}{2}&\multirow{4}{*}{0}&\multirow{2}{*}{true}&16&35,54\%&31,96\%&31,74\%&31,64\%\\
-  & & &18&33,59\%&31,64\%&29,36\%&29,58\%\\
-  & &\multirow{2}{*}{false}&16&34,99\%&32,07\%&30,34\%&29,58\%\\
-  & & &18&36,94\%&33,91\%&31,96\%&32,18\%\\
-  \hline
-  &\multirow{4}{*}{16}&\multirow{2}{*}{true}&16&33,69\%&32,74\%&30,01\%&29,98\%\\
-  & & &18&33,26\%&31,74\%&30,01\%&29,69\%\\
-  & &\multirow{2}{*}{false}&16&32,50\%&30,66\%&28,49\%&27,63\%\\
-  & & &18&35,64\%&35,10\%&31,85\%&31,09\%\\
-  \hline
-  &\multirow{4}{*}{24}&\multirow{2}{*}{true}&16&35,97\%&34,56\%&34,45\%&33,48\%\\
-  & & &18&33,26\%&32,72\%&29,58\%&33,48\%\\
-  & &\multirow{2}{*}{false}&16&35,32\%&34,74\%&32,61\%&32,29\%\\
-  & & &18&31,85\%&30,99\%&30,34\%&28,71\%\\
-\hline
-\end{tabular}
-\caption{Datentests LSTM-Netz}
-\label{tab:inputtests}
-\end{table*}
+Inputframelängen trainiert und die Ergebnisse verglichen (vgl. Anhang
+\autoref{tab:inputtests}). Erstaunlicherweise ist die aufgestellte Vermutung falsch
+und die Netzwerke ohne zugeschnittenen Trainingsdaten klassifizieren besser.
+
 Eine weitere Beobachtung die gemacht werden kann ist, dass benachbarte
 Datenpunkte sich nicht wesentlich unterscheiden. Dies kann genutzt werden um die
 Eingabedimension zu verringern, indem z.B. jeweils zwei benachbarte Datenpunkte
 miteinander addiert werden. Dies kann auch mit dem verkleinern der Frames
 kombiniert werden. Um den Einfluss auf das Klassifierzungsverhalten von
-\ac{LSTM}-Netzen zu zeigen sind auch hier Tests durchgeführt worden.
-\textbf{TODO Tabelle mit Ergebnissen} Das Ergebnis zeigt, dass die Netze ohne
+\ac{LSTM}-Netzen zu zeigen sind auch hier Tests durchgeführt worden (vgl. Anhang
+\autoref{tab:inputtests}). Das Ergebnis zeigt, dass die Netze ohne
 die Summe benachbarter Werte besser klassifizieren als mit der Summe. 
 
 Weitere Methoden der Datenvorverarbeitung wurden ebenfalls untersucht, jedoch
@@ -393,22 +355,24 @@ genutzt wird. \textbf{TODO Messwerte?}
 \subsubsection{Implementierung}
 Da es zum Ende des Projektes ein Programm geben soll, indem alle Klassifikatoren 
 eingebunden sind, haben sich alle Teilnehmer auf ein Interface geeingtt, was 
-jeder Klassifikator implementieren muss. Dies ist die abstrakte Klasse \textit{IClassifier}.
+jeder Klassifikator implementieren muss. Dies ist die abstrakte Klasse \texttt{IClassifier}.
 
 \textbf{TODO Klassendiagramm}
 
-Die Implementation des \ac{LSTM}-Klassifikators ist in der Klasse LSTM zu finden.
-Für diese wurde \cite{PyBrain} verwendet. Diese Bibliothek stellt verschiedene
-Machine Learning Algorithmen bereit, unter anderem Neuronale Netzwerke mit 
-\ac{LSTM}-Neuronen.
+Die Implementation des \ac{LSTM}-Klassifikators ist in der Klasse LSTM zu
+finden.
+Für diese wurde \texttt{PyBrain} \cite{schaul2010} verwendet. Diese Bibliothek
+stellt verschiedene Machine Learning Algorithmen bereit, unter anderem Neuronale
+Netzwerke mit \ac{LSTM}-Neuronen.
 Außerdem wurden in der Datei \texttt{util.py} verschiedene Hilfsfunktionen
 erstellt.
-Des weiteren werden Konfigurationseinstellungen in einer Datei gespeichert und zur 
-initialisierung der geladen. 
-Da beabsichtigt ist mit dem Programm den PC zu steuern, wurde die Python Bibliothek 
-\cite{Python-uinput} eingebunden. Mit dieser können Keycodes an den Kernel geschickt werden.
+Des weiteren werden Konfigurationseinstellungen in einer Datei gespeichert und
+zur initialisierung der geladen.
+Da beabsichtigt ist mit dem Programm den PC zu steuern, wurde die Python
+Bibliothek \cite{Python-uinput}\textbf{TODO} eingebunden. Mit dieser können
+Keycodes an den Kernel geschickt werden.
 Die Bibliothek funktioniert nur unter Linux und erfordert Root-Rechte.
-Im folgenden wird auf die Implementation der einzelnen MEthoden der 
+Im folgenden wird auf die Implementation der einzelnen Methoden der
 \textit{IClassifier}-Klasse eingegangen.
 
 \subsubsection*{Live Klassifikation}
@@ -478,19 +442,29 @@ definierte Schranke wird er in \textit{previouspredict} gespeichert. Wenn vier
 mal hinter einander die gleiche Geste erkannt wurde, wird diese ausgegeben.
 
 \subsubsection{Training}
-Für das Trainieren von Neuronalen Netzen bietet PyBrain verschiedene 
-Trainer an:
-\begin{itemize}
-\item BackpropTrainer
-\item RPropMinusTrainer
-\end{itemize}
-Da der RPropMinusTrainer eine Erweiterung des BackpropTrainer ist, wurde mit 
-diesem trainiert. Für die verwendung der zu verfügung gestellten Trainer 
-muss ein PyBrain Dataset erstellt werden. Um dieses zu erstellen wurde eine 
-Methode geschrieben. Diese erstellt aus den Aufnahmen ein Dataset. Dazu wird 
-aus den Aufnahmen ein Array generiert. Nach der generierung werden die Daten 
-normalisiert. Anschließend werden noch weitere Schritte durchgeführt, diese 
-sind in Kapitel \autoref{sec:lstm_data} beschrieben und können mit den folgenden 
+Das Training des \ac{RNN} mit \ac{LSTM}-Blöcken erfolgt mit den in
+\autoref{sec:lstm_allg} erläuterten Verfahren in optimierten Version.
+\texttt{PyBrain} bietet dazu die Gradientenabstiegsverfahren
+\textit{Backpropagation} und \textit{\ac{RProp}}, diverse evolutionsbasierende
+Optimierungsverfahren wie \textit{Genetische Algorithmen} oder
+\textit{HillClimber} Verfahren und ein Modul zum gradientenbasierenden
+\textit{Cross-Validierungsverfahren} an. Mit Hilfe dieser Verfahren kann das
+Netzwerk iterativ trainert werden. Aufgrund von Inkompatibilitäten mit
+\ac{LSTM}-Netzwerken sind evolutinsbasierende und crossvalidiernede Verfahren
+nicht geeignet. Der Fokus des trainigs liegt deshalb auf den
+Gradientenabstiegsverfahren. Wie oben beschrieben ist \ac{RProp} eine
+Weiterentwicklung von Backpropagation, welche im Gegensatz zur Fehlerrückführung
+stabiles Konvergenzverhalten zeigt. Dies wurde mit einer kleinen testreihe
+bestätigt. Aus diesem Grund wird das Trainig nur mit \ac{RProp} durchgeführt.
+\textbf{TODO Tabelle mit Testergebnissen in Anhang}
+
+
+Für die verwendung der zu verfügung gestellten Trainer muss
+ein PyBrain Dataset erstellt werden. Um dieses zu erstellen wurde eine Methode
+geschrieben. Diese erstellt aus den Aufnahmen ein Dataset. Dazu wird aus den
+Aufnahmen ein Array generiert. Nach der generierung werden die Daten
+normalisiert. Anschließend werden noch weitere Schritte durchgeführt, diese sind
+in Kapitel \autoref{sec:lstm_data} beschrieben und können mit den folgenden
 Parametern konfiguriert werden:
 \begin{itemize}
 \item \textbf{merge67} Dieser Parameter gibt an, ob die Gesten 6 und 7 
@@ -509,7 +483,7 @@ des Testsets validiert wie gut das Neuronale Netzwerk die Gesten erkennt. Nach
 diesem Test wird eine Matrix erstellt, die die Anzahl der richtig erkannten Gesten 
 sowie die Anzahl der falsch erkannten Gesten anzeigt. 
 
-\textbf{TODO MAtrix anzeigen}
+\textbf{TODO Matrix anzeigen}
 
 \subsubsection{Evaluation}
 Für die Evaluation der Netzwerke ein Testparcour entwickelt. In diesem wird 
