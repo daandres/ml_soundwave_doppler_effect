@@ -169,6 +169,6 @@ class Plot():
 
 if __name__ == "__main__":
 
-    p = Plot(1)
+    p = Plot(2)
     p.initPlot()
     p.show()
