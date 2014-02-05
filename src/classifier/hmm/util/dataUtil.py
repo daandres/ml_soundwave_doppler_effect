@@ -151,6 +151,8 @@ class DataUtil:
         result = np.zeros((np.shape(data)[0], frameRange, np.shape(data)[2]))
         i = 0
         for d in data:
+            # subtract no gesture mean values from data
+            #d = d - np.array([2.52e-05,2.37e-05,1.06e-04,1.34e-03,2.13e-01,4.60e-01,9.83e-01,8.19e-01,2.57e-01,1.57e-01,1.98e-04,5.28e-05,2.47e-05])
             pos = self._getHighestSum(d)
             if((pos-framesBefore)<0) | ((pos + framesAfter) > (np.shape(d)[0]-1)):
                 continue
@@ -172,7 +174,15 @@ class DataUtil:
                 highestValue = highTmp
                 position = i
         return position
-    
+        '''
+        for i in range(len(gesture)):
+            ab = np.abs(gesture[i])
+            highTmp = np.sum(ab)
+            if highTmp > highestValue:
+                highestValue = highTmp
+                position = i
+        return position
+        '''
 
     def findAvg(self, data):
 
