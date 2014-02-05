@@ -26,7 +26,7 @@ class LSTMClassify():
         # Classify3 method
         self.predhistoryforclassify3 = []
 
-        #classify4
+        # classify4
         self.start = 0
 
         self.outkeys = SystemKeys()
@@ -39,7 +39,7 @@ class LSTMClassify():
         preprocessedData = data / np.amax(data)
         preprocessedData = util.preprocessFrame(preprocessedData, self.net.datacut, self.net.datafold)
         diffAvgData = preprocessedData - self.avg
-        self.__classify2(diffAvgData)
+        self.__classify4(diffAvgData)
 
     '''
     Gesten werden starr nach 32 frames erkannt
@@ -122,7 +122,7 @@ class LSTMClassify():
     '''
     def __classify4(self, data):
         # sequence maximum erkennen
-        #print data.max()
+        # print data.max()
         if data.max() > 0.32 and self.start == 0:
             print "starting ..."
             self.start = 1
@@ -133,7 +133,7 @@ class LSTMClassify():
             if(self.datanum % 32 == 0):
                 print "net ac"
                 self.net.reset()
-                out = self._activateSequence(self.datalist)
+                out = self.net._activateSequence(self.datalist)
                 print(str(out))
                 self.datalist = []
                 self.datanum = 0
