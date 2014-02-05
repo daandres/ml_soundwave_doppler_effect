@@ -72,7 +72,7 @@ Es gibt verschiedene Kriterien, nach denen die Reihenfolge der Merkmale so gewä
 \[E = - \sum \limits_{i=1}^n p_i \cdot \log (p_i)\] berechnen, wobei $n$ die Menge aller Merkmale ist und $p_i$ die relative Häufigkeit des Merkmals $i$.
 Um nun das Vorkommen der Merkmale in Relation zu den möglichen Klassifikationen zu setzen, wird die bedingte Wahrscheinlichkeit für die Merkmale bezogen auf die möglichen Klassen ermittelt, woraus sich der mittlere Informationsgewinn ermitteln lässt. Dieser ist definiert als 
 \[H = - \sum \limits_{i=1}^n p_i \cdot \left( \sum \limits_{j=1}^m \frac{x_{ij}}{x_i} \cdot \log (\frac{x_{ij}}{x_i})\right) \] wobei $n$ die Anzahl der Merkmale ist und $m$ die Anzahl der Klassen. Der Wert $x_i$ beschreibt die Anzahl der Vorkommen der Merkmalsausprägung $i$ und $x_{ij}$ die Anzahl der Vorkommen dieser Merkmalsausprägung unter der Bedingung, dass das Objekt zur Klasse $j$ gehört.
-Beim Erstellen eines Entscheidungsbaumes ist dann das Merkmal für die Teilung am interessantesten, was den größten mittleren Informationsgewinn H hat, also die innere Summe minimal ist.
+Beim Erstellen eines Entscheidungsbaumes ist dann das Merkmal für die Teilung der Datenmenge in Teilbäume auf der aktuellen Ebene am interessantesten, was den größten mittleren Informationsgewinn \textit{H} hat, also die innere Summe minimal ist.
 Da sich durch das Merkmal \glqq Farbe\grqq\ aus dem vorigen Beispiel direkt alle möglichen Klassen unterscheiden lassen, hat dieses Merkmal z.B. einen höheren Informationsgewinn als das Merkmal \glqq Form\grqq\ und bietet sich daher als erstes Entscheidungskriterium an.
 
 Ein anderes Maß zur Auswahl von geeigneten Entscheidungsmerkmalen ist die sogenannte \glqq Reinheit\grqq\ von Merkmalen. Die Reinheit eines Merkmales ergibt sich daraus, wie viele verschiedene Klassen die jeweiligen Merkmalsausprägungen beinhalten. Das Attribut \glqq Farbe\grqq\ aus dem vorigen Beispiel führt zu drei Blattknoten, bei denen durch jeden Knoten genau eine Klasse repräsentiert wird (nämlich jeweils die Klassen Tomate, Gurke und Möhre) während beim Merkmal \glqq Form\grqq\ sowohl Möhren als auch Gurken als mögliches Ergebnis in Frage kommen, falls das zu klassifizierende Objekt die Merkmalsausprägung \glqq länglich\grqq\ hat. Die Reinheit ist dementsprechend ein Maß dafür, wie groß das Risiko einer falschen Klassifikation ist. Ziel ist es anhand von Merkmalen Teilungen im Entscheidungsbaum vorzunehmen, die ein möglichst geringes Risiko für falsche Klassifikationen haben.
@@ -112,7 +112,7 @@ Eine Geste setzt sich zunächst aus 32 Einzelaufnahmen (Samples) zusammen, welch
 64 Amplitudenwerte beinhalten. Somit besteht eine Geste zunächst aus insgesamt 2048 Werten.
 Da wie einführend beschrieben die Amplituden der Frequenzanteile einer Geste durch ein lokales Minimum vom Referenzton 
 getrennt sein können, werden die Amplituden der einzelnen Samples zunächst mit einem Gauß-Filter geglättet, 
-so dass größere Schwankungen aus dem Signal entfernt werden. 
+so dass Schwankungen aus dem Signal entfernt werden. 
 Abbildung~\ref{fig:gauss} zeigt die Amplituden des Frequenzspektrums von einem Sample 
 vor dem Glätten mit einem Gauß-Filter (rot) und danach (blau).
 
@@ -135,11 +135,11 @@ Referenztons in rot dargestellt sind, die Frequenzanteile oberhalb des Referenzt
 \label{fig:sum_of_bins}
 \end{figure}
 
-Bei der in der Grafik dargestellten Geste handelt es sich um einen \glqq Double-Push\grqq , also eine Geste, bei der die Hand zwei mal 
+Bei der in der Grafik dargestellten Geste handelt es sich um einen \glqq Double-Push\grqq , also eine Geste, bei der die Hand zweimal 
 hintereinander schnell auf den Monitor bzw. das Mikrofon zubewegt wird. Diese Geste äußert sich in jeweils zwei aufeinander folgenden 
 Verschiebungen der Frequenzen nach rechts (auf den Monitor zu bewegen) und links (vom Monitor weg bewegen). 
 Diese Charakteristik lässt sich in der Grafik erkennen, da die Anzahl der zum Referenzton gehörenden Frequenzanteile zunächst nach rechts (erster Peak blau) und dann nach links (zweiter Peak rot) ansteigt. Aufgrund des \glqq Double-Push\grqq\  erfolgt diese 
-Verschiebung zwei mal hintereinander, so dass insgesamt vier Ausschläge (zwei nach rechts und zwei nach links) zu erkennen sind. 
+Verschiebung zweimal hintereinander, so dass insgesamt vier Ausschläge (zwei nach rechts und zwei nach links) zu erkennen sind. 
 Somit kann in einem Schritt die Anzahl der Daten pro zu klassifizierender Geste von 32$\cdot$64=2048 Amplitudenwerten 
 auf 2$\cdot$32=64 reduziert werden, wobei diese Werte keinen Rückschluss auf die genauen Frequenzanteile zulassen sondern 
 ein Maß dafür sind, wie sich die Frequenzanteile ober- und unterhalb des Referenztons verändern.
