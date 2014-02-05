@@ -1,8 +1,8 @@
 ﻿\section{\acl{HMM}}
 \textit{Paul Pasler, Sebastian Rieder}
 
-\acl{HMM} sind prädestiniert für diese Aufgabe \cite{mmmFink}, leider sind die APIS scheiße bzw wir zu blöd\ldots
-\cite{rabiner}
+Das \acl{HMM} ist ein stochastisches Modell für sequentielle Daten und wird vor allem in der Spracherkennung und in der Bioinformatik eingesetzt.
+
 Grundlage des \acl{HMM} waren die nach dem russischen Mathematiker Andrej Andrejewitsch Markov 
 (1856 - 1922, siehe \cite{wiki:markov}) benannten Markov-Modelle. Zu Beginn des 20. Jahrhunderts 
 beschäftigte er sich als erster mit einer statistischen Beschreibung von Zustands- und Symbolfolgen. 
@@ -44,9 +44,11 @@ Ein \acl{HMM} ist eindeutig definiert durch:\\
    
 
 \subsection{Datenvorbereitung}
-Eine Geste wird beschrieben durch ein zwei-dimensionales Array aus 32 Frames x 64 Bins
+Eine Aufnahme wird beschrieben durch ein zwei-dimensionales Array aus 32 Frames mit jeweils 64 Frequenzwerten.
+Im Ruhezustand bildet sich ein Signalpeak um die ausgesendete Frequenz (18.500hz).
+Ziel ist es die Daten zu normieren und die Datenmenge zu reduzieren, um das Trainingergebnis bzw. Performance zu verbessern.
+Weiterhin wird versucht die relevanten Werte einer Geste aus der Aufnahme zu extrahieren.
 
-Ziel war es zuallererst die Datenmenge zu reduzieren, um das Trainingergebnis zu verbessern bzw. schneller zu machen.
 Da sich Änderungen durch eine Bewegung sehr Nahe am gesendeten Signal liegen, werden die Daten im 
 Frequenzbereich von 18.000hz bis 19000hz betrachtet, die Daten vermindern sich von 64 auf 13 Werte. 
 Dazu wird jede Geste auf einem Intervall von 0 bis 1 normalisiert (Geteilt durch den jeweiligen Maximalwert) und 
