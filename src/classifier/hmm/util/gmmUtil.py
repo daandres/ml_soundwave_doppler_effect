@@ -1,7 +1,7 @@
 import numpy as np
-import config.config as c
+import classifier.hmm.config.config as c
 
-from gestureGMM import GestureGMM
+from classifier.hmm.gestureGMM import GestureGMM
 
 import util as u
 

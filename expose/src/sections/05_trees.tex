@@ -16,10 +16,54 @@ Ein Knoten kann entweder einen weiteren Knoten als Kind haben (also ein weiteres
 Um beispielsweise verschiedene Gemüsesorten zu klassifizieren, könnten im einfachsten Fall Farbe und Form als Unterscheidungsmerkmale dienen. Wenn jedes Objekt der Testmenge die Merkmale (Form, Farbe) hat, würde eine Tomate mit (rund, rot) beschrieben, eine Gurke mit (länglich, grün) und eine Möhre mit (länglich, orange).
 
 Ein Entscheidungsbaum zur Klassifikation könnte dann aus einem Wurzel-Knoten bestehen, der zunächst anhand der Form 
-des zu klassifizierenden Objektes eine erste Entscheidung vornimmt. Da eine Tomate rund ist und Gurken und Möhren länglich, 
-hätte der Wurzelknoten zur Unterscheidung der Form die beiden Kanten \glqq rund\grqq\ und \glqq länglich\grqq\ . Da in dem Beispiel nur Tomaten rund sind, hätte die Kante mit dem Attribut \glqq rund\grqq\ das Blatt bzw. die Klasse \glqq Tomate\grqq\ als Kind. Gurken und Möhren haben 
-jedoch beide eine längliche Form, so dass diese nicht alleine aufgrund der Form unterschieden werden können. Daher müsste die 
-Kante mit dem Merkmal \glqq länglich\grqq\ in einen weiteren Knoten münden, durch welchen die Testmenge in einem nächsten Schritt anhand der Farbe weiter unterteilt werden müsste. Dieser Entscheidungsknoten hätte die Kanten \glqq rot\grqq , \glqq grün\grqq\ und \glqq orange\grqq, die jeweils in einem Blattknoten mit den Klassen \glqq Tomate\grqq , \glqq Gurke\grqq\ und \glqq Möhre\grqq\ müden würden.
+des zu klassifizierenden Objektes eine erste Entscheidung vornimmt. Als zweites Entscheidungskriterium bliebe dann die Farbe des Objektes. In Abbildung~\ref{fig:tree} ist der resultierende Entscheidungsbaum abgebildet. Zur Unterscheidung, ob es sich bei dem Objekt um eine Tomate handelt, wird in dem Beispiel ausschließlich die Information über die Form benötigt. Um Gurke und Tomate zu unterscheiden, muss in der nächsten Ebene noch die Farbe des Objekts geprüft werden.
+
+%Da eine Tomate rund ist und Gurken und Möhren länglich, 
+%hätte der Wurzelknoten zur Unterscheidung der Form die beiden Kanten \glqq rund\grqq\ und \glqq länglich\grqq\ . Da in dem Beispiel nur Tomaten rund sind, hätte die Kante mit dem Attribut \glqq rund\grqq\ das Blatt bzw. die Klasse \glqq Tomate\grqq\ als Kind. Gurken und Möhren haben 
+%jedoch beide eine längliche Form, so dass diese nicht alleine aufgrund der Form unterschieden werden können. Daher müsste die 
+%Kante mit dem Merkmal \glqq länglich\grqq\ in einen weiteren Knoten münden, durch welchen die Testmenge in einem nächsten Schritt anhand der Farbe weiter unterteilt werden müsste. Dieser Entscheidungsknoten hätte die Kanten \glqq rot\grqq , \glqq grün\grqq\ und \glqq orange\grqq, die jeweils in einem Blattknoten mit den Klassen \glqq Tomate\grqq , \glqq Gurke\grqq\ und \glqq Möhre\grqq\ müden würden.
+
+% Set the overall layout of the tree
+\tikzstyle{level 1}=[level distance=3.5cm, sibling distance=3.5cm]
+\tikzstyle{level 2}=[level distance=3.5cm, sibling distance=2cm]
+
+% Define styles for bags and leafs
+\tikzstyle{bag} = [text width=4em, text centered]
+\tikzstyle{end} = [circle, minimum width=3pt,fill, inner sep=0pt]
+
+% The sloped option gives rotated edge labels. Personally
+% I find sloped labels a bit difficult to read. Remove the sloped options
+% to get horizontal labels. 
+\begin{figure}[htbp] \centering
+\begin{tikzpicture}[sloped]
+\node[bag] {Form}
+    child {
+        node[end, label=right: {Tomate}]{}        
+            edge from parent 
+            node[above] {rund}
+    }
+    child {
+        node[bag] {Farbe}        
+            child {
+                node[end, label=right:
+                    {Gurke}] {}
+                edge from parent
+                node[above] {grün}
+            }
+            child {
+                node[end, label=right:
+                    {Möhre}] {}
+                edge from parent
+                node[above] {orange}
+            }
+            edge from parent 
+            node[above] {länglich}
+    }
+    ;
+\end{tikzpicture}
+\label{fig:tree}
+\caption{Entscheidungsbaum}
+\end{figure}
 
 In dem Beispiel hätte als erstes Unterscheidungsmerkmal auch die Farbe dienen können, wodurch direkt in einem Schritt alle drei Gemüsesorten hätten klassifiziert werden können. Somit hat die Wahl der Reihenfolge der Merkmale einen wesentlichen Einfluss auf die Form des Entscheidungsbaumes sowie die Effizienz, mit der Testdaten klassifiziert werden können. Weiterhin können durch die ungünstige Wahl von Kriterien verschiedene Klassen mehrfach in dem Entscheidungsbaum vorkommen, was darauf schließen lässt, dass der Baum aufgrund der Redundanz mehr Knoten enthält, als für eine Klassifizierung notwendig wäre.
 
@@ -27,7 +71,7 @@ Es gibt verschiedene Kriterien, nach denen die Reihenfolge der Merkmale so gewä
 \[I = -log(p_i)\] wobei $p_i$ die relative Häufigkeit ist, mit der das Merkmal $i$ vorkommt. Ein sehr häufig vorkommendes Merkmal hat dementsprechend einen niedrigeren Informationsgehalt als ein seltenes Merkmal. Der Mittlere Informationsgehalt aller Merkmale wird auch als Entropie bezeichnet lässt sich dann mit Hilfe der Formel 
 \[E = - \sum \limits_{i=1}^n p_i \cdot \log (p_i)\] berechnen, wobei $n$ die Menge aller Merkmale ist und $p_i$ die relative Häufigkeit des Merkmals $i$.
 Um nun das Vorkommen der Merkmale in Relation zu den möglichen Klassifikationen zu setzen, wird die bedingte Wahrscheinlichkeit für die Merkmale bezogen auf die möglichen Klassen ermittelt, woraus sich der mittlere Informationsgewinn ermitteln lässt. Dieser ist definiert als 
-\[H = - \sum \limits_{i=1}^n p_i \cdot (\sum \limits_{j=1}^m \frac{x_{ij}}{x_i} \cdot \log (\frac{x_{ij}}{x_i}))\] wobei $n$ die Anzahl der Merkmale ist und $m$ die Anzahl der Klassen. Der Wert $x_i$ beschreibt die Anzahl der Vorkommen der Merkmalsausprägung $i$ und $x_{ij}$ die Anzahl der Vorkommen dieser Merkmalsausprägung unter der Bedingung, dass das Objekt zur Klasse $j$ gehört.
+\[H = - \sum \limits_{i=1}^n p_i \cdot \left( \sum \limits_{j=1}^m \frac{x_{ij}}{x_i} \cdot \log (\frac{x_{ij}}{x_i})\right) \] wobei $n$ die Anzahl der Merkmale ist und $m$ die Anzahl der Klassen. Der Wert $x_i$ beschreibt die Anzahl der Vorkommen der Merkmalsausprägung $i$ und $x_{ij}$ die Anzahl der Vorkommen dieser Merkmalsausprägung unter der Bedingung, dass das Objekt zur Klasse $j$ gehört.
 Beim Erstellen eines Entscheidungsbaumes ist dann das Merkmal für die Teilung am interessantesten, was den größten mittleren Informationsgewinn H hat, also die innere Summe minimal ist.
 Da sich durch das Merkmal \glqq Farbe\grqq\ aus dem vorigen Beispiel direkt alle möglichen Klassen unterscheiden lassen, hat dieses Merkmal z.B. einen höheren Informationsgewinn als das Merkmal \glqq Form\grqq\ und bietet sich daher als erstes Entscheidungskriterium an.
 

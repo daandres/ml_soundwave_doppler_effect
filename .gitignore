@@ -9,3 +9,5 @@ config/personal.cfg
 .DS_Store
 *~
 /.pydevproject
+/.project
+/.externalToolBuilders
