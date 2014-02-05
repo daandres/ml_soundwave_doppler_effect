@@ -58,6 +58,9 @@ Usage:
 	type 'h' for print available commands
 	- not all commands can be used by all classificators
 	
+example: 
+	For recording 50 times the gesture 0 type:
+	0 50 
 
 ### Usage of a classifier see in README_[classifier]
 

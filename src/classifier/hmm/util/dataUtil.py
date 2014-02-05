@@ -7,9 +7,9 @@ class DataUtil:
     
     def __init__(self, lowerBound=0.15):
         self.lowerBound=lowerBound
-        self.fileIO = GestureFileIO(relative="")
+        self.fileIO = GestureFileIO(relative="../../")
 
-    def loadRaw3dGesture(self, recordClass, recordNames=None):
+    def loadRaw3dGesture(self, recordClass, recordNames=['Daniel']):
         if recordNames is None:
             return self.fileIO.getGesture3D(recordClass)
         else:
@@ -116,19 +116,27 @@ class DataUtil:
             pos = self._getHighestSum(d)
             indexBegin = 0
             indexEnd = 0
-            fitting = 0
+            fittingBefore = 0
+            fittingAfter = 0
             if(pos-framesBefore)<0:
-                fitting = abs(pos-framesBefore)
+                fittingBefore = abs(pos-framesBefore)
             else:
                 indexBegin = pos-framesBefore
             if(pos + framesAfter) > (np.shape(d)[0]-1):
                 indexEnd = np.shape(d)[0]
-                fitting = fitting + (pos + framesAfter - (np.shape(d)[0]-1))
+                fittingAfter = (pos + framesAfter - (np.shape(d)[0]-1))
             else:
                 indexEnd =  pos + framesAfter+1
-            resultTmp = d[indexBegin:indexEnd]
-            if fitting > 0:
-                zeros = np.zeros((fitting, np.shape(data)[2]))
+            if fittingBefore > 0:
+                zeros = np.ones((fittingBefore, np.shape(data)[2]))
+                zeros = zeros*0.001
+                resultTmp = resultTmp = np.append(zeros,d[indexBegin:indexEnd])
+                resultTmp = resultTmp.reshape((indexEnd-indexBegin+fittingBefore,np.shape(data)[2]))
+            else:
+                resultTmp = d[indexBegin:indexEnd]
+            if fittingAfter > 0:
+                zeros = np.ones((fittingAfter, np.shape(data)[2]))
+                zeros = zeros*0.001
                 resultTmp = np.append(resultTmp,zeros)
                 resultTmp = resultTmp.reshape((frameRange,np.shape(data)[2]))
             result[i] = resultTmp

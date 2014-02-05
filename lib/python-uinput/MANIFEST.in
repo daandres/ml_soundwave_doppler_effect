@@ -1,6 +1,0 @@
-include NEWS
-include COPYING
-include examples/*
-include libsuinput/src/suinput.h
-include libsuinput/src/libudev.h
-include udev-rules/*

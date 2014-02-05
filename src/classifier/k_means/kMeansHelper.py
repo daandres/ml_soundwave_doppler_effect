@@ -1,4 +1,4 @@
-import view.ui_bob
+#import view.ui_bob
 import numpy as np
 
 import sys, os
@@ -24,24 +24,7 @@ from scipy import stats
 
 
 class kMeansHepler():
-    '''
-    def segmentInputData(self, inArray, outArrayLength, levelTH=0.15, wideTH ):
-        
-        result = []
-        for idx, frame in enumerate(inArray):
-            
-            maxV = np.amax(frame)
-            maxP = np.argmax(frame)
-            # Where values are higher than levelTH% of max
-            idxH = frame > maxV * levelTH
-            print 'idx : ', idx, '    wide :     ',  np.sum(idxH)#, 'mode : ', stats.mode(frame)
-            result.append(np.sum(idxH))
-        
-        
-        
-        #return stats.mode(result)
-        '''
-        
+
     ''' check one gesture after segmentation '''
     ''' because of k=2 we can hopefully see how good or bed were the thresholds set for segmentation '''
     ''' return the amount of similar class '''   
@@ -277,16 +260,16 @@ class kMeansHepler():
             #print 'arrTMP.shape ', np.asarray(arrTMP).shape
             ave = np.average(arrTMP, axis=0)
             #print 'ave.shape ', np.asarray(ave).shape
-            '''
+            
             if manyTimes > 1:
                 ave2 = np.asarray(ave)
                 ave = ave2.reshape(2,ave2.shape[0]/2) 
                 #print 'ave2.reshape', np.asarray(ave.shape)  
                 ave = np.average(ave, axis=0)
                 #print 'ave2.shape', np.asarray(ave.shape)
-            '''    
+                
             result.append(ave)
-        '''
+        
         if manyTimes > 2:
             ave3 = np.asarray(result)
             #print 'ave3.shape ', ave3 
@@ -300,13 +283,13 @@ class kMeansHepler():
             ave4 = ave4.reshape(ave4.shape[0]/2,2,ave4.shape[1])
             #print 'ave3.shape', np.asarray(ave3.shape)
             result = np.average(ave4, axis=1)
-        if True:#manyTimes > 3:
+        if False:#manyTimes > 3:
             ave5 = np.asarray(result)
             #print 'ave3.shape ', ave3 
             ave5 = ave5.reshape(ave5.shape[0]/2,2,ave5.shape[1])
             #print 'ave3.shape', np.asarray(ave3.shape)
             result = np.average(ave5, axis=1)
-        '''                
+                        
         return np.asarray(result)
                          
    
