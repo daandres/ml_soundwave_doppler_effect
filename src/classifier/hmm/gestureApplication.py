@@ -88,6 +88,7 @@ class GestureApplication():
         self.gestures = []
         self.fileIO = GestureFileIO()
         self.loadModels('classifier/hmm/data/config.cfg')
+        print 'tataa'
         '''
         classList = [0, 3]
         self.createGestures(classList)
