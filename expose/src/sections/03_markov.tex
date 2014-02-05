@@ -3,31 +3,58 @@
 
 Das \acl{HMM} ist ein stochastisches Modell für sequentielle Daten und wird vor allem in der Spracherkennung und in der Bioinformatik eingesetzt.
 
-Grundlage des \acl{HMM} waren die nach dem russischen Mathematiker Andrej Andrejewitsch Markov 
-(1856 - 1922, siehe \cite{wiki:markov}) benannten Markov-Modelle. Zu Beginn des 20. Jahrhunderts 
+In den folgenden beiden Abschnitten werden die Entstehung und Konzepte der \acl{MK} und des \acl{HMM} aufgezeigt.
+Abschnitt \ref{sec:preproc} befasst sich mit der Aufbereitung der Daten für das Training und die Klassifizierung der Gesten.
+Die Implementierung und Anwendung des \acl{HMM} werden im Abschnitt \ref{sec:impl} näher erläutert. Im letzten Abschnitt werden die Ergebnisse 
+evaluiert und ein Fazit mit Ausblick gezogen. 
+ 
+  %%%%%%%%%%%%%%%%%%
+  %  MARKOV-KETTE  % 
+  %%%%%%%%%%%%%%%%%%
+\subsection{\acl{MK}} \label{sec:chain}
+Grundlage des \acl{HMM} war die vom russischen Mathematiker Andrej Andrejewitsch Markov 
+(1856 - 1922, siehe \cite{wiki:markov}) entwickelte \acl{MK}. Zu Beginn des 20. Jahrhunderts 
 beschäftigte er sich als erster mit einer statistischen Beschreibung von Zustands- und Symbolfolgen. 
 Er führte eine statistische Analyse der Buchstabenfolge des Textes ``Eugen Onegin'' von Alexander 
 Pushkin.
 
-Der amerikanischen Mathematiker Leonard E. Baum (* 1931) und andere Autoren erweiterten dieses Konzept Ende der 
-sechziger Jahre und nannten es \acl{HMM}. Erste \acl{HMM}-Applikationen wurden zur Spracherkennung und später auch in der Bioinformatik 
-zur Analyse von Nukleotid- und Proteinsequenzen eingesetzt. 
- 
-\subsection{Markov-Ketten}
-Markov-Ketten beschreiben einen speziellen stochastischen Prozess, der aufgrund der Vorgeschichte Aussagen über die Zukunft macht.
-Bei Markov-Ketten 1. Ordnung benötigt man für diese Aussagen nur den gegenwärtigen Zustand.
+Eine \acl{MK} ist eine Sequenz von Zufallsvariablen \( X_1, x_2, X_3, \ldots\) und beschreibt einen speziellen stochastischen Prozess, 
+der aufgrund der Vorgeschichte, Aussagen über die Zukunft machen kann. 
+Eine \acl{MK} kann als Gerichteter Graph mit Zuständen \(S\) und mit Übergangswahrscheinlichkeiten \(X_i\) an den Kanten beschrieben werden. 
 
+Sie ist definiert durch eine endlich Menge an Zuständen \( S = \{ s | 1 <= s <= N \} \) und der diskreten Zeit \( t = 0, 1, 2, \ldots \) \\
 
-Eine Markov-Kette ist definiert durch eine endlich Menge an Zuständen \( S = \{ s | 1 <= s <= N \} \) und der diskreten Zeit \( t = 0, 1, 2, \ldots \) \\
 \textbf{1. Markov Eigenschaft: } \\
 \( \forall t \in \mathbb{N} : P (X_t = x_t | X_1 = x_1 ; \ldots ; X_t_-_1 = x_t_-_1 ; Y_1 = y_1 ; \ldots ; Y_t_-_1 = y_t_-_1 ) = P (X_t = x_t | X_t_-_1) \) \\
+Dies bedeutet, dass die \acl{MK} Gedächtnislos ist!
 
 
-\subsection{\acl{HMM} und \acl{GMM}}
-\acl{HMM} erweitern das Konzept der Markov-Ketten um eine zustandsspezifische Ausgabe und eine statistisch 
-modellierte Zustandsfolge.
+Eine \acl{MK} ist \cite[48]{mmmFink}:
+\begin{itemize}
+     \item \textit{stationär} \\
+           Die Wahrscheinlichkeiten sind unabhängig von der Zeit
+     \item \textit{kausal} \\
+           Die Verteilung der Zufallsvariable \( S(t)\) hängt nur von den vergangenen Zuständen ab
+     \item \textit{einfach} \\
+           Die Abhängigkeiten der Prozesseingenschaften beschränken sich nur auf den unmittelbaren Vorgänger (1. Markov Eigenschaft) 
+\end{itemize}
+Bei einer \acl{MK} 1. Ordnung benötigt man für diese Aussagen nur den gegenwärtigen Zustand, um auf den nächsten Schritt zu schließen.
 
-Ein \acl{HMM} ist eindeutig definiert durch:\\ 
+
+
+  %%%%%%%%%%%%%%%%%%
+  %  HIDDEN-MARKOV  % 
+  %%%%%%%%%%%%%%%%%%
+\subsection{\acl{HMM} und \acl{GMM}}  \label{sec:hmm}
+Der amerikanischen Mathematiker Leonard E. Baum (* 1931) und andere Autoren entwickelten auf Basis der \acl{MK} Ende der 
+sechziger Jahre das \acl{HMM}. Erste \acl{HMM}-Applikationen wurden zur Spracherkennung und später auch in der Bioinformatik 
+zur Analyse von Nukleotid- und Proteinsequenzen eingesetzt. 
+
+Ein \acl{HMM} erweitert eine \acl{MK} um eine weiteren Zufallsprozess und ist somit ein zweistufiger stochastischer Prozess \cite[67]{mmmFink}
+zustandsspezifische Ausgabe und eine statistisch modellierte Zustandsfolge. 
+
+
+Es wird beschrieben durch:\\ 
 \( \lambda = (S;V;A;B;\pi)\)
 \begin{itemize}
      \item Endlich Menge von Zuständen \\
@@ -40,17 +67,33 @@ Ein \acl{HMM} ist eindeutig definiert durch:\\
            \( B = \{ b_j_k | b_j_k = P(O_t = o_k | S_t = j) \} \)
      \item Vektor von Zustandsstartwahrscheinlichkeiten \\
            \( \pi = \{ \pi_i | \pi_i = P(S_1 = i) \} \) 
-   \end{itemize}
-   
+\end{itemize}
 
-\subsection{Datenvorbereitung}
+Das Konzept des \acl{HMM} kann laut \cite{rabiner} in drei Problemstellungen eingeteilt werden:
+\begin{itemize}
+  \item Evaluierungsproblem: 
+  \item Dekodierungsprobem: Finde interne Abläufe für eine gegebene Observationsfolge
+  \item Trainingsproblem: Finde Modellparameter für gegebene Besispieldaten
+\end{itemize}
+
+
+
+
+Um das Training und die Klassifizierung möglichst genau und perfomant umzusetzen, 
+ist es notwendig die aufgenommenen Daten auzubereiten, dies ist Thema des nächsten Abschnitts
+
+
+  %%%%%%%%%%%%%%%%%%%
+  %  PREPROCESSING  % 
+  %%%%%%%%%%%%%%%%%%%
+\subsection{Datenaufbereitung} \label{sec:preproc}
 Eine Aufnahme wird beschrieben durch ein zwei-dimensionales Array aus 32 Frames mit jeweils 64 Frequenzwerten.
 Im Ruhezustand bildet sich ein Signalpeak um die ausgesendete Frequenz (18.500hz).
 Ziel ist es die Daten zu normieren und die Datenmenge zu reduzieren, um das Trainingergebnis bzw. Performance zu verbessern.
 Weiterhin wird versucht die relevanten Werte einer Geste aus der Aufnahme zu extrahieren.
 
 Da sich Änderungen durch eine Bewegung sehr Nahe am gesendeten Signal liegen, werden die Daten im 
-Frequenzbereich von 18.000hz bis 19000hz betrachtet, die Daten vermindern sich von 64 auf 13 Werte. 
+Frequenzbereich von 18.000hz bis 19.000hz betrachtet, die Daten vermindern sich von 64 auf 13 Werte. 
 Dazu wird jede Geste auf einem Intervall von 0 bis 1 normalisiert (Geteilt durch den jeweiligen Maximalwert) und 
 auf zwei Nachkommstellen gerundet. 
 Alle Werte unterhalb eines Schwellwerts (0.1) werden zudem abgeschnitten, um niedrig amplitudiges Rauschen zu vermindern. 
@@ -62,9 +105,21 @@ und das Maximum als Mittelpunkt der Geste genutzt. Von diesem Gestenhöhepunkt w
 So wird aus einem 32 x 64 Array pro Geste ein 13x13 Array.
 
 
-\subsection{Implementierung}
+  %%%%%%%%%%%%%%%%%%%%%
+  %  IMPLEMENTIERUNG  % 
+  %%%%%%%%%%%%%%%%%%%%%
+\subsection{Implementierung}  \label{sec:impl}
 Wir haben uns für die scipy HMM implementierung entschieden. 
 Genutzt wird ein \acl{HMM} mit \acl{GMM} entschieden.
 
 
-\subsection{Evaluation und Fazit}
+  %%%%%%%%%%%%
+  %  RESULT  % 
+  %%%%%%%%%%%%
+\subsection{Evaluation und Fazit}  \label{sec:result}
+Das Hidden Markov Modell eignet sich grundsätzlich sehr gut für die gestellte Aufgabe. Da es mit sequenzielle Daten (Frames) umgehen 
+kann und ursprünglich für die Spracherkennung entwickelt wurde. Ob nun aus einem Tonsignal (versteckte Zustände) ein Wort oder 
+eine Geste (Emissionen) erkannt werden soll, ist vom Vorgehen ähnlich. Ein Vorteil ist zudem, dass die Ausführungsgeschwindigkeit
+ der Geste, bei geeigneter Aufnahmelänge, die Klassifizierung nicht unbedingt beeinflusst, da dann länger im selben versteckten 
+ Zustand verblieben wird.
+Ein Nachteil dieser Methode ist, dass keine absoluten Klassifizierungen durchgeführt werden können. Es werden nur Wahrscheinlichkeiten für alle möglichen Klasse berechnet. So muss entschieden werden, ob die Wahrscheinlichkeit für eine Klasse hoch genug ist, sodass diese als Geste identifiziert werden kann.
