@@ -31,16 +31,21 @@ wird hier als Grundlage verwendet. Es ist das Modell von McCulloch und Pitts von
 ($x_1,\ldots,x_n$) und einem Ausgabewert $y$. Die Eingabewerte entsprechen der
 Aktivierung eines Vorgängerneurons und der Ausgabewert der Aktivierung des
 betrachteten Neurons.
-\textbf{TODO Picture McCulloch and Pitts Neuron} Die \autoref{} zeigt den Aufbau
-eines solchen Neurons. Die Eingaben weren dabei zuerst im \textit{Addierer}
-summiert, eine Schwellwertfunktion (bzw. allgemeiner eine Aktivierungsfunktion)
-bestimmt dann mit der Summe den Ausgabewert (die Aktivierung) des Neurons. Des
-Weiteren werden auch die Synapsen nachgebildet in dem jeder Eingabewert bei der
-Summierung individuell gewichtet wird. Die Gewichte entsprechen den
-unterschiedlich stark ausgeprägten Synapsen. Das klassische Modell erlaubt nur
-binäre Ein- und Ausgaben, dies kann jedoch auf reelle Zahlen erweitert werden,
-um unterschiedlich starke Stimulierungen bzw. auch negative Werte (Hemmungen)
-zuzulassen.
+\begin{figure}[htbp]
+    \centering
+   \includegraphics[width=0.9\columnwidth]{lstm/neuron}
+\caption{Modell eines McCulloch and Pitt Neurons}
+\label{fig:neuron}
+\end{figure}  
+Die \autoref{fig:neuron} zeigt den Aufbau eines solchen Neurons. Die Eingaben
+weren dabei zuerst im \textit{Addierer} summiert, eine Schwellwertfunktion (bzw.
+allgemeiner eine Aktivierungsfunktion) bestimmt dann mit der Summe den
+Ausgabewert (die Aktivierung) des Neurons. Des Weiteren werden auch die Synapsen
+nachgebildet in dem jeder Eingabewert bei der Summierung individuell mit $w_i$ gewichtet
+wird. Die Gewichte entsprechen den unterschiedlich stark ausgeprägten Synapsen.
+Das klassische Modell erlaubt nur binäre Ein- und Ausgaben, dies kann jedoch auf
+reelle Zahlen erweitert werden, um unterschiedlich starke Stimulierungen bzw.
+auch negative Werte (Hemmungen) zuzulassen.
 
 \paragraph{Neuronale Netzwerke}
 Einzelne Neuronen können allerdings kein Gehrin nachbilden. Aus diesem Grund ist
@@ -65,7 +70,7 @@ auch Verbidnungen von Neuronen auf sich selbst zuzulassen. Somit entsteht ein
 zyklischer Graph und das Netzwerk wird zu einem Rekurrenten Neuronalen Netz
 (\acsu{RNN}).
 \textbf{TODO Zitat azyklischer Graph}
-
+  
 \begin{figure}[htbp]
     \centering
    \includegraphics[height=50mm]{lstm/mlp}

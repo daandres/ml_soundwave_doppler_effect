@@ -24,6 +24,7 @@ class Plot():
         self.index = index
         self.dClass = 1
         self.data = u.loadData(gesture)
+        self.actionPoint = []
         self.X = []
         self.Y = []
         self.Z = []
@@ -54,21 +55,36 @@ class Plot():
         if event.button == 3:
             if self.dClass == 0:
                 self.name = "Data"
-                p.plotData()
+                self.actionPoint=[]
+                self.plotData()
                 self.dClass += 1
             elif self.dClass == 1:
                 self.name = "RawData"
+                self.actionPoint=[]
                 p.plotRaw()
                 self.dClass += 1
             elif self.dClass == 2:
                 self.name = "GestureGMM"
+                self.actionPoint=[]
                 p.plotGestureGmms()
-                self.dClass += 1
-            elif self.dClass == 3:
-                self.name = "GMM"
-                p.plotGmms()
                 self.dClass = 0
                 
+    def onpress(self, event):
+        key = event.key.replace("alt+", "")
+        if key.isdigit():
+            gesture = int(key)
+            if 0 <= gesture <= 7:
+                self.index = 0
+                self.dClass = 1
+                self.gesture = gesture
+                self.plotData()
+
+
+    def plotData(self):
+        self.data = u.loadData(self.gesture)
+        self.name = "Data"
+        self.initAxis()
+        self.plot()
 
     def onscroll(self, event):
         if event.button == "down":
@@ -103,13 +119,14 @@ class Plot():
         self.ax = self.fig.add_subplot(111, projection='3d')
         self.surf = self.ax.plot_surface(self.X, self.Y, self.Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
         self.ax.set_zlim(-0.03, 1.03)
-        self.ax.set_title(self.name + ": " + str(self.index))
+        self.ax.set_title("gesture " + str(self.gesture) + ", " +self.name + ": " + str(self.index))
 
         self.ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
         
         self.fig.colorbar(self.surf, shrink=0.5, aspect=5)
         self.fig.canvas.mpl_connect('scroll_event', self.onscroll)
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
+        self.fig.canvas.mpl_connect('key_press_event', self.onpress)
 
 
 
@@ -117,8 +134,9 @@ class Plot():
         self.ax.cla()
         self.ax = self.fig.add_subplot(111, projection='3d')
         self.surf = self.ax.plot_surface(self.X, self.Y, self.data[self.index], rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-        self.ax.set_title(self.name + ": " + str(self.index))
-
+        self.ax.set_title("gesture " + str(self.gesture) + ", " +self.name + ": " + str(self.index))
+        if len(self.actionPoint) > 0:
+            self.ax.scatter(self.actionPoint[self.index],0,0,'o', c='r')
         self.ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
         self.fig.canvas.draw()
 
@@ -127,6 +145,9 @@ class Plot():
 
     def plotRaw(self):
         self.data = u.loadRaw(self.gesture)
+        self.actionPoint = []
+        for d in self.data:
+            self.actionPoint.append(self.dp._getHighestSum(d))
         self.index = 0
         self.initAxis()
         self.plot()
@@ -169,6 +190,6 @@ class Plot():
 
 if __name__ == "__main__":
 
-    p = Plot(1)
+    p = Plot(7)
     p.initPlot()
     p.show()

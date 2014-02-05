@@ -20,34 +20,37 @@ Im Rahmen der Lehrveranstaltung Machine Learning an der Hochschule RheinMain im 
 
 Die Anwendung soll folgende Gesten unterscheiden können:
 \begin{itemize}
-	\item Right-To-Left-One-Hand\\
+	\item \texttt{\ac{RLO}}\\
 	Das Bewegen der Hand von rechts nach links vor dem Bildschirm
-	\item Top-To-Bottom-One-Hand\\
+	\item \texttt{\ac{TBO}}\\
 	Das Bewegen der Hand von oben nach unten vor dem Bildschirm
-	\item Opposed-With-Two-Hands\\
+	\item \texttt{\ac{OT}}\\
 	Beide Hände entgegengesetzt auf den Bildschirm hin und weg bewegen
-	\item Single-Push-One-Hand\\
+	\item \texttt{\ac{SPO}}\\
 	Mit einer Hand eine kurze Bewegung in Richtung des Monitors und zurück
-	\item Double-Push-One-Hand\\
+	\item \texttt{\ac{DPO}}\\
 	Mit einer Hand zwei kurze aufeinander folgende Bewegungen in Richtung des Monitors und zurück
-	\item Rotate-One-Hand\\
+	\item \texttt{\ac{RO}}\\
 	Rotation mit einer Hand
 \end{itemize}
+
+Zur Abgrenzung der Gesten zu einer Nicht-Geste werden zusätzlich noch die Hintergrundgeräusche als Klasse definiert. Dies ist einmal \texttt{\ac{BNS}}, diese Geste spiegelt die Referenzfreuqenz wieder, und zum Anderen \texttt{\ac{BNN}}, bei dieser Geste herrscht zusätzlich noch beliebiger Lärm im Raum. 
 
 \subsection{Aufnahmeprogramm}
 \label{sec:gestures_dataformat}
 
-Zur Aufnahme der Gesten wurde pyAudio verwendet. Die Referenzfrequenz liegt bei
-19 kHz, welche abgespielt wird und die reflektierte, mdifizeirte Frequenz (vgl.
+Zur Aufnahme der Gesten wurde die Python Bibliothek \texttt{pyAudio} verwendet.
+Die Referenzfrequenz liegt bei 18,5 kHz, welche abgespielt wird und die
+reflektierte, mdifizeirte Frequenz (vgl.
 Doppler-Effekt) wird aufgenommen. Die Aufnahme beschränkt sich auf den
-Frequenzbereich von 18,5 kHz bis 19,5 kHz Khz. Jede dieser Aufnahmen besteht aus
-50 Datensätzen á 64 Datenpunkten in einem Zeitraum von 500ms. 
+Frequenzbereich von 18 kHz bis 19 kHz. Jede dieser Aufnahmen besteht aus
+32 Datensätzen á 64 Datenpunkten in einem Zeitraum von 500ms. 
 
 \subsection{Signalerzeugung}
 Die Erzeugung des Soundsignals wurde mithilfe der Python Library wavebender und
 pyAudio erreicht. In Listing \ref{lst:gen_sound} ist ein Bespiel für die
 Erzeugung eines Audiosignals gezeigt. Für die Gestenerkennung wird ein Signal
-mit 19 kHz erzeugt.
+mit 18,5 kHz erzeugt.
 
 \enlargethispage{\baselineskip}
 \enlargethispage{\baselineskip}

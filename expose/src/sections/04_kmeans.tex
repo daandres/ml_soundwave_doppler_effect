@@ -64,14 +64,48 @@ In ersten Tests zeigte sich, dass eine Erkennung des Grundrauschens mit einer zu
 
 
 \subsubsection{Datenaufbereitung}\label{subsubsec:Datenaufbereitung}
-Die Rohdaten einer Aufnahme bestehen aus 32 Frames, die jeweils 64 Lautstärkewerte beinhalten. Jeder Lautstärkewert entspricht dabei der Intensität des Tonsignals in dem jeweiligen Frequenzbereich, welche mithilfe der schnellen Fourier-Transformation (\emph{FFT}) \cite{fftMathebuch} berechnet wurde. Jede einzelne Aufnahme besteht daher aus $32 \cdot 64 = 2048$ Dimensionen.  Da hochdimensionale Eingabedaten bei Clustering-Verfahren oft schlechte Ergebnisse liefern \cite{kMeansHighDimensions}, ist es notwendig, bei der Datenaufbereitung die Dimension der Eingabedaten zu reduzieren.  Erste Tests mit nicht aufbereiteten 2048-dimensionalen Eingabedaten lieferten eine korrekte Erkennungsrate von etwa 25 bis 30 Prozent bei 7 Klassen (6 Gesten sowie Grundrauschen ohne Geste). Lediglich das Grundrauschen kann so einigermaßen zuverlässig erkannt werden, eine korrekte Unterscheidung der einzelnen Gesten ist jedoch nicht möglich. Dies zeigt deutlich die Notwendigkeit einer Datenaufbereitung.
+%Für die Klassifikation mit dem k-Means Algorithmus wurde die Anzahl der Frames einer Aufnahme von dem ursprünglichen Wert 32 auf 48
+Für die Klassifikation mit dem k-Means Algorithmus wurden nicht -- wie ursprünglich vorgesehen -- 32 Frames, sondern stattdessen 48 Frames pro Aufnahme gespeichert.  Diese Anzahl wurde angepasst, da sich herausgestellt hat, dass die Datenaufbereitung so besser realisieren werden kann.  Ein einzelner Frame besteht jedoch weiterhin aus 64 Lautstärkewerten.
+%Die Rohdaten einer Aufnahme bestehen aus 48 Frames, die jeweils 64 Lautstärkewerte beinhalten. 
+Jeder Lautstärkewert entspricht dabei der Intensität des Tonsignals in dem jeweiligen Frequenzbereich, welche mithilfe der schnellen Fourier-Transformation (\emph{FFT}) \cite{fftMathebuch} berechnet wurde. Eine einzelne Aufnahme besteht daher aus $32 \cdot 64 = 3072$ Dimensionen.  Da hochdimensionale Eingabedaten bei Clustering-Verfahren oft schlechte Ergebnisse liefern \cite{kMeansHighDimensions}, ist es notwendig, bei der Datenaufbereitung die Dimension der Eingabedaten zu reduzieren.  Erste Tests mit nicht aufbereiteten 
+%2048-dimensionalen 
+Eingabedaten lieferten eine korrekte Erkennungsrate von etwa 25 bis 30 Prozent bei 7 Klassen (6 Gesten sowie Grundrauschen ohne Geste). Lediglich das Grundrauschen kann so einigermaßen zuverlässig erkannt werden, eine korrekte Unterscheidung der einzelnen Gesten ist jedoch nicht möglich. Dies zeigt deutlich die Notwendigkeit einer Datenaufbereitung.
 
-Zu Beginn der Vorverarbeitung erfolgt eine Normalisierung der 
-Lautstärke. Dazu werden alle Lautstärkewerte in jedem einzelnen Frame um den gleichen Prozentsatz erhöht beziehungsweise verringert, sodass die Amplitude genau den vorher festgelegten Maximalwert annimmt. Dieser Schritt ist notwendig, da bei der verwendeten Hardware die Lautstärke der Aufnahmen stark schwankt.
-
-
-%TODO Bild ??
+%Die Datenaufbereitung erfolgt in folgenden Schritten, die hintereinander wie in Abbildung XX dargestellt ablaufen.
 %TODO Bild Schritte bei der Vorverarbeitung
+
+%Norm. -> Segmentierung -> Reduzieren der Datenmenge
+Die Datenaufbereitung erfolgt in der in Abbildung XX dargestellten Reihenfolge. 
+Zu Beginn der Vorverarbeitung wird eine Normalisierung der 
+Lautstärke durchgeführt. Dazu werden die Lautstärkewerte in jedem einzelnen Frame um den gleichen Prozentsatz erhöht beziehungsweise verringert, sodass die Amplitude genau den vorher festgelegten Maximalwert annimmt. Dieser Schritt ist notwendig, da bei der verwendeten Hardware die Lautstärke der Aufnahmen stark schwankt.
+
+%Im Anschluss daran werden die Frames einer Aufnahme so segmentiert, dass 
+%sich der Beginn der Geste bei jeder Aufnahme an der gleichen Frame-Postion
+%möglichst nur die Frames übrig bleiben, bei denen die Geste ausgeführt wird.
+Im Anschluss daran erfolgt die Segmentierung der Gesten. Dabei werden aus den Aufnahmen die nicht relevanten Frames vor und nach Ausführung der eigentlichen Geste entfernt. Diese Frames bestehen nur aus dem Grundrauschen und enthalten daher keine Informationen, die für die weitere Klassifikation hilfreich sind.
+% Diese bestehen eh nur aus Grundrauschen und sind daher für die weitere Klassifikation nicht weiter hilfreich / nicht nützlich. befindet.  
+Für diesen Bearbeitungsschritt muss erkannt werden, zu welchem Zeitpunkt eine Geste ausgeführt wird. Dazu werden bei allen Frames die lokalen Maxima des Frequenzspektrums ermittelt, da sich bei Ausführung einer Geste zusätzliche lokale Maxima bilden.
+Aus diesen lokalen Maxima wird anschließend der zweitgrößte Wert ermittelt. Der größte Wert wird nicht weiter verwendet, da sich dieser immer an der Stelle der Referenzfrequenz von 18500 Hz befindet. 
+Der Frame, bei dem der zweitgrößte Wert der lokalen Maxima am größten ist, wird nun als Bestandteil im Anfangsbereich der Geste erkannt. 
+Im folgenden Schritt werden die 24 Frames ermittelt, während denen die Geste ausgeführt wird. 
+%Ausgehend von diesem Frame werden 24 Frames der gesamten 48 Frames beibehalten.
+Dazu wird neben dem gefundenen Frame eine als Margin bezeichnete Anzahl von $m$ Frames davor sowie $24-m-1$ nachfolgenden Frames beibehalten. Bei der Segmentierung ist die Wahl eines passenden Werts für $m$ sehr wichtig, damit die Geste vollständig erfasst wird. Ist $m$ zu klein, werden die Frames zu Beginn der Geste nicht gespeichert. Umgekehrt werden bei einem zu großen Wert für $k$ die Frames am Ende der Geste gelöscht. Eine Aufnahme hat nach diesem Vorverarbeitungsschritt grundsätzlich eine Länge von 24 Frames. Falls die Dauer der Geste unter 24 Frames liegt, ist in den restlichen hinteren Frames das Grundrauschen gespeichert.
+
+Nach Abschluss der Segmentierung hat sich die Datenmenge durch die Beschränkung auf 24 Frames bereits von 3072 auf 1536 Dimensionen halbiert. Um das Ergebnis der Klassifikation zu optimieren, erfolgt eine weitere Reduzierung der Dimensionen. Dazu werden die ersten und letzten 16 Lautstärkewerte jedes Frames entfernt, da die zur Gestenerkennung relevanten Frequenzverschiebungen nur in den 16 Frequenzbereichen unterhalb und oberhalb der Referenzfrequenz von 18500 Hz stattfinden. Somit verringert sich die Anzahl der Dimensionen auf 768. Zuletzt werden die nun vorhandenen Daten weiter reduziert, indem die Abtastrate innerhalb der einzelnen Frames mehrmals halbiert wird. Dazu werden je zwei aufeinanderfolgende Lautstärkewerte des Frames zu einem neuen Lautstärkewert zusammengefasst, der dem arithmetischen Mittel der beiden ursprünglichen Werte entspricht. Diese Halbierung wird pro Frame viermal durchgeführt.
+Insgesamt reduziert sich somit die Anzahl der Dimensionen pro Geste nach dem vollständigen Durchlaufen der Vorverarbeitung von ursprünglich 3072 auf 96 Dimensionen. 
+%TODO wie oft, welche Dimension am Schluss?
+
+
+
+%TODO Wert Margin?
+
+%TODO Bild? 
+%An der Stelle 18500 Hz befindet sich immer das größte lokale Maximum. 
+
+
+
+
+%TODO Bilder Frames Gesten
 
 
 %Breite in beide Richtungen von der Amplitude, bis Lautstärkewert 10 % der Amplitude erreicht etc siehe Original Paper
@@ -79,9 +113,15 @@ Lautstärke. Dazu werden alle Lautstärkewerte in jedem einzelnen Frame um den g
 %TODO Datenaufbereitung beschreiben 
 
 \subsubsection{Anpassung des Klassifikators}
+%TODO "-1" wenn Cluster nicht eindeutig bestimmt, d.h. wenn der Abstand zum zweitnächsten Cluster-Zentrum nicht mindestens um einen bestimmten %satzgrößer p größer ist als der Abstand zum nächsten Zentrum. Es hat sich gezeigt, dass ein Wert von 10 für p geeignet ist
+%TODO ggf Bild wie 3.1 nur mit dicker Trennlinie
+% wurde Mit dem Wert ?? (10) % für p
+
 Der Klassifikator wurde nur geringfügig angepasst.
 In der Initialisierungsphase werden die Startpunkte der Cluster-Zentren wurden nicht wie im ursprünglichen Algorithmus zufällig gewählt, sondern mithilfe des in \autoref{subsec:kMeansFunktionsweise} vorgestellten k-Means++ Algorithmus bestimmt. Die Trainingsphase läuft hingegen unverändert ab.
 Dadurch ergeben sich in der Regel eine schnellere Laufzeit in der Trainingsphase sowie bessere Ergebnisse bei der Klassifikation.
+Weiterhin gilt eine Geste als nicht eindeutig bestimmt, wenn der Abstand zum zweitnächsten Cluster-Zentrum nicht mindestens um einen bestimmten Prozentsatz $p$ größer ist als der Abstand zum nächsten Zentrum. Es hat sich dabei herausgestellt, dass 10\% ein geeigneter Wert für $p$ ist. %TODO Prozentsatz??
+
 Ansonsten wurden keine Veränderungen am Algorithmus vorgenommen.
 Für die Qualität der Klassifikation ist weiterhin jedoch die Wahl eines geeigneten Werts für \emph{k} von Bedeutung. Dabei muss \emph{k} mindestens um eins größer sein als die Anzahl der Gesten (da mindestens eine Klasse für das Grundrauschen benötigt wird),
 damit der Algorithmus in der Lage ist, die einzelnen Aufnahmen voneinander zu unterscheiden.  
