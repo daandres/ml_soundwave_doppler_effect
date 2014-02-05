@@ -517,10 +517,39 @@ Dies wurde wurde für jede Klassifikations-Idee durchlaufen. In Tabelle
 
 Nach den Tests fällt auf das Geste 1, .. sehr gut erkannt werden. Geste .. ..
 jedoch nicht so gut.
+
+
+
 \subsection{Fazit}
-- LSTM (NN) können Eingaben nur synchron verarbeiten und nicht asynchron wie ein
-Gehirn
-- zusätzliche Einflüsse wie Botenstoffe die sich auf die Neuronenaktivität
-auswirken werden ebenfalls nicht nachgebildet. 
+\ac{LSTM}-Netzwerke haben gezeigt, dass sie Potential haben die
+Klassifizierungsaufgabe von Gesten anhand des schallbasierten Dopplereffekts
+vorzunemen. Es sind dabei verschiedene Ergebnisse zu Tage gekommen die in dieser
+Art nicht erwartet wurden. Zum Einen ist eine größere Vorverarbeitung der
+Datenin diesem konkreten Fall nicht notwendig. Ein Normalisierung und Differenz
+zur Referenzfrequenz ist ausreichend. Zum Anderen hat sich gezeigt, dass die
+\ac{LSTM}-Netzwerke einen hohen Trainingsaufwand haben. 
+
+Beides zeigt, dass neuronale Netze wie \ac{LSTM}-Netze viele
+\textit{Erfahrungen} verallgemeinern können und die Hauptmerkmale selbständig
+extrahieren und in ihren Parametern, den Gewichten, abspeichern. Dieses
+Verhalten steht in Realtion zum Verhalten des biologischen Vorbilds, dem
+\textit{Gehirn}. Auch wenn künstliche neuronale Netze ein formales Modell eines
+Gehirns sind, zeigen sich die Parallelen. Allerdings bestehen weiterhin noch
+Unterschiede. So arbeitet ein Gehirn nicht in synchronen Schritten wie das
+kpnstliche neuronale Netz, sondern asynchron. Das bedeutet Eingabewerte treffen
+zu unterschiedlichen Zeitpunkten ein, Ausgabewerte werden unterschiedlich
+gefeuert. Dies wird im Modell nicht abgebildet, da dies die Komplexität erhöht.
+EIn weiterer Unterschied besteht in der Verknüpfung unter den Neuronen. ein
+künstliches neuronales Netz wie es hier betrachtet wurde ist vollständig
+uzntereinander verknüpft, Neuronen im Gehirn haben allerdings nicht zu allen
+anderen Neuronen Synapsen. Die Synapsen können sogar auf- und wieder abgebaut
+werden. Äußere Einflüsse, die das Gehirn beeinflussen wie z.B. Botenstoffe, sind
+in den künstlichen neuronalen Netzwerken ebenfalls nciht mit eingeflochten.
+DIese Einbindung könnte z.B. in diesem Projekt dazu führen, dass Einflüssen wie
+laute oder leise Hintergrundgeräusche anders berücksichtigt werden ohne dafür
+zusätzliche Beispieldaten zu haben. Auch kann so auf unterschiedliche
+Hardwarekonfigurationen oder Lautstärkeunterschiede im Referenzton eingegangen
+werden.
+
 
 \nocite{schaul2010,GERS2001,WIKI2013,Schmidhuber2013,LSTM1,Nerbonne1}
