@@ -14,6 +14,7 @@ class Feature(object):
         cases[2] = [['both', 'both'], ['both']]
         
         both_counter = 0
+        right_left_counter = 0
         
         shifts_left = self.findShifts(gesture.bins_left_filtered, 'left')
         shifts_right = self.findShifts(gesture.bins_right_filtered, 'right')
@@ -23,6 +24,14 @@ class Feature(object):
         shifts = sorted(shifts,key=lambda x: x[1])
         prev = 0
         orderList = []
+        byte = 0
+        for shift in shifts:
+            if(shift[0] == 'right'):
+                byte = byte << 1
+                byte = byte ^ 1
+            else:
+                byte = byte << 1
+        
         for i in range(len(shifts)):
             shift = shifts[i]
             if(i > 0):
@@ -39,13 +48,16 @@ class Feature(object):
                     curr_in_prev = start_prev <= start_current and stop_prev >= stop_current
                     #print prev_in_curr
                     #print curr_in_prev
-                    if(diffStart < maxDiff or coverage <= 1 or prev_in_curr or curr_in_prev):
+                    if(diffStart < maxDiff): #or coverage <= 1 or prev_in_curr or curr_in_prev):
                         orderList.pop()
                         orderList.append('both')
                         both_counter += 1
+                        if(both_counter > 1):
+                            byte = 0
                     else:
                         orderList.append(shift[0])
                         prev = shift
+                        right_left_counter += 1
                 else:
                     orderList.append(shift[0])
                     prev = shift
@@ -56,10 +68,12 @@ class Feature(object):
         #Cases = self.findShiftCases(orderList, 0, Cases)
         #return Cases
         gesture.shift_order = orderList
-        #print orderList, both_counter
+        #print orderList, byte
+        return both_counter, byte#, right_left_counter
         for k,v in cases.iteritems():
             if(orderList in v):
                 return k, both_counter
+
         return -1, both_counter
         #print "no case available", orderList
         # Herausfinden, welche Kombinationen auch noch oft vorkommen pro case oder rauswerfen?

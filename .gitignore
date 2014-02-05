@@ -10,3 +10,4 @@ config/personal.cfg
 *~
 /.pydevproject
 /.project
+/.externalToolBuilders

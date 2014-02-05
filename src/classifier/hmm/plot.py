@@ -16,14 +16,14 @@ from sklearn.mixture import GMM
 
 class Plot():
     
-    def __init__(self, path="data/gesture_0.txt", index=0):
-        self.path = path
+    def __init__(self, gesture=0, index=0):
+        self.gesture = gesture
         self.dp = d.DataUtil()
         self.mu = h.HMM_Util()
         self.surf = None     
         self.index = index
         self.dClass = 1
-        self.data = u.loadData(path)
+        self.data = u.loadData(gesture)
         self.X = []
         self.Y = []
         self.Z = []
@@ -126,14 +126,14 @@ class Plot():
         plt.show()
 
     def plotRaw(self):
-        self.data = u.loadRaw(self.path)
+        self.data = u.loadRaw(self.gesture)
         self.index = 0
         self.initAxis()
         self.plot()
 
     def plotGestureGmms(self):
         mg = g.GMM_Util()
-        gmms = mg.sample(self.path)
+        gmms = mg.sample(self.gesture)
         print "loading..."
         data = []
         for i in range(13):
@@ -169,6 +169,6 @@ class Plot():
 
 if __name__ == "__main__":
 
-    p = Plot("data/gesture_0.txt")
+    p = Plot(1)
     p.initPlot()
     p.show()
