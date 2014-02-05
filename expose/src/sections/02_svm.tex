@@ -49,6 +49,7 @@ Support Vector Machines erfreuen sich großer Beliebtheit, da sie in der Regel w
 
 \subsection{Funktionsweise der SVM}
 
+\subsubsection{Optimale Trennung}
 Mit einem Satz von Merkmalsvektoren (Merkmalsraum) und dessen Klassenzugehörigkeiten $\{ (x_1, y_1), ..., (x_m, y_m) | x_i \in \mathcal{X}, y_i \in \{-1, 1\}, m \in \mathbb{N} \}$ wird eine mathematische Gerade errechnet,
 die in einem Koordinatensystem betrachtet die Daten räumlich in zwei Klassen trennt. 
 
@@ -127,13 +128,10 @@ Kernel-Funktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine speziel
 Es kann also das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ in $\mathbb{R}^h$ ausgerechnet werden, ohne die Daten mittles $\phi$ zu transformieren. 
 Das Beispiel \ref{eq:svm_kernel_example} verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion:
 
-
-
-
 \begin{equation}
 \label{eq:svm_kernel_example}
 \begin{split}
-    & \text{Seien } w,x \in \mathbb{R}^2 \text{ und}\\
+    \text{Seien } w,x & \in \mathbb{R}^2 \text{ und}\\
     \\
     \phi : & \mathbb{R}^2 \to \mathbb{R}^3\\
     & \begin{pmatrix}
@@ -147,7 +145,7 @@ Das Beispiel \ref{eq:svm_kernel_example} verdeutlicht die Anwendung des Kernel-T
     x_2^2
     \end{pmatrix}\\
     \\
-    & \text{dann ist:}\\
+    \text{dann ist:} &\\
     \\
     \langle \phi(w),\phi(x) \rangle = & \:\langle \begin{pmatrix}
     w_1^2 \\
@@ -175,6 +173,12 @@ Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die 
     \caption{SVM-Räume, wx+b, M (Platzhalterbild)}
     \label{fig:svm1}
 \end{figure}
+
+\subsubsection{Klassifikation von merheren Objekten}
+
+Die SVM ist ein binärere Klassifikator, d. h. er kann eine Objektzuordnung nur zwischen zwei Klassen durchführen. 
+In der Regel will man ...
+
 
 \newpage
 
