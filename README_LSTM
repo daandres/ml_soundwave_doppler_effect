@@ -1,0 +1,36 @@
+### Readme for the LSTM classifier in the gesture recognition application
+
+The LSTM module uses a neuronal network (NN) with LSTM blocks as hidden layer. For NN training is necessary. 
+The module provides both the classification with a trained network and the training itself. Additionally some
+functions for better handling are provided. 
+
+### Features:
+- create a neuronal network with different input dimension size, a hidden Layer of n LSTM Blocks and an output 
+Layer with different activation functions
+- network can be trained with different training algorithms and different iterations and a trainig set. 
+- network can be validated against a test dataset
+- network and datasets can be saved and loaded. The network is saved in xml format and can be modified manually. 
+Autosave and autoload is available
+- almost all options are customizable through a personal config file. 
+- network can classify with different variants live events
+- recognized gestures can be bound to a simulated key press of a keyboard (through config file)
+- and other
+
+### Usage:
+Config parameters are explained in config/default.cfg. On first start a config/personal.cfg file is created. Changes can be made here. 
+An already trained network is provided and specified in default.cfg. 
+
+some commands for console:
+u lstm 				- loads LSTM module
+v					- validates network against the testset and prints the error and a confmat
+t					- trains the network with the number of configured epochs
+t <num>				- rains the network with specifed epochs
+p					- prints the modules and weight of the network to console
+c					- start classification
+
+# Use these commands with care as some states checks and parsing functions are not compatible to customnames
+l <networkpath> 	- load network from this file (.xml will be appended automatically)
+s <networkpath>		- saves the current network to this path (.xml will be appended automatically)
+l ds <datasetpath> 	- load dataset from this file (.data will be appended automatically)
+s ds <datasetpath>	- saves the current dataset to this path (.data will be appended automatically)
+

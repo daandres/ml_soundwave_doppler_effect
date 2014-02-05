@@ -40,16 +40,17 @@ PyBrain: (tested with version 0.3.1, from current master branch)
 	> cd pybrain
 	> sudo python setup.py install
 	
-Python-uinput: (https://github.com/tuomasjjrasanen/python-uinput.git)
-	> cd PROJECTPATH/lib/python-uinput
+Python-uinput: (tested with version 0.10.1)
+	> git clone https://github.com/tuomasjjrasanen/python-uinput.git
+	> cd python-uinput
 	> python setup.py build
 	> python setup.py install
 	> sudo addgroup uinput
 	> sudo adduser $USER uinput
 	-- relogin your user to apply changes
 	
-	
-arac: (https://github.com/bayerj/arac): Not longer necessary for LSTM
+@Deprecated(Not longer necessary for LSTM)
+arac: (https://github.com/bayerj/arac)
 	-- no need for google testing framework: comment lines 44,45,61,62 in SConstruct
 	-- follow install instructions on arac wiki
 	-- link libarac.so to /usr/lib/ and not /usr/local/lib/

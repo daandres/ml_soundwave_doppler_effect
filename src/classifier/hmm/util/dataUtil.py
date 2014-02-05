@@ -7,7 +7,7 @@ class DataUtil:
     
     def __init__(self, lowerBound=0.15):
         self.lowerBound=lowerBound
-        self.fileIO = GestureFileIO(relative="")
+        self.fileIO = GestureFileIO(relative="../../")
 
     def loadRaw3dGesture(self, recordClass, recordNames=['Daniel']):
         if recordNames is None:
@@ -110,31 +110,58 @@ class DataUtil:
         frameRange = framesBefore + framesAfter +1
         if frameRange > np.shape(data)[1]:
             return data
+        # Old Version. Fills not completed Actions with zeros
+        '''
         result = np.zeros((np.shape(data)[0], frameRange, np.shape(data)[2]))
         i=0
         for d in data:
             pos = self._getHighestSum(d)
             indexBegin = 0
             indexEnd = 0
-            fitting = 0
+            fittingBefore = 0
+            fittingAfter = 0
             if(pos-framesBefore)<0:
-                fitting = abs(pos-framesBefore)
+                fittingBefore = abs(pos-framesBefore)
             else:
                 indexBegin = pos-framesBefore
             if(pos + framesAfter) > (np.shape(d)[0]-1):
                 indexEnd = np.shape(d)[0]
-                fitting = fitting + (pos + framesAfter - (np.shape(d)[0]-1))
+                fittingAfter = (pos + framesAfter - (np.shape(d)[0]-1))
             else:
                 indexEnd =  pos + framesAfter+1
-            resultTmp = d[indexBegin:indexEnd]
-            if fitting > 0:
-                zeros = np.zeros((fitting, np.shape(data)[2]))
+            if fittingBefore > 0:
+                break
+                zeros = np.ones((fittingBefore, np.shape(data)[2]))
+                zeros = zeros*0.001
+                resultTmp = resultTmp = np.append(zeros,d[indexBegin:indexEnd])
+                resultTmp = resultTmp.reshape((indexEnd-indexBegin+fittingBefore,np.shape(data)[2]))
+            else:
+                resultTmp = d[indexBegin:indexEnd]
+            if fittingAfter > 0:
+                break
+                zeros = np.ones((fittingAfter, np.shape(data)[2]))
+                zeros = zeros*0.001
                 resultTmp = np.append(resultTmp,zeros)
                 resultTmp = resultTmp.reshape((frameRange,np.shape(data)[2]))
             result[i] = resultTmp
             i+=1
         return result
-        
+        '''
+        # New Version - Revert none completed actions
+        result = np.zeros((np.shape(data)[0], frameRange, np.shape(data)[2]))
+        i = 0
+        for d in data:
+            pos = self._getHighestSum(d)
+            if((pos-framesBefore)<0) | ((pos + framesAfter) > (np.shape(d)[0]-1)):
+                continue
+            indexBegin = pos-framesBefore
+            indexEnd =  pos + framesAfter+1
+            result[i] = d[indexBegin:indexEnd]
+            i += 1
+        return result[0:i]
+
+            
+       
     def _getHighestSum(self, gesture):
         highestValue = 0
         position = 0
