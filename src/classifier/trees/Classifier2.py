@@ -22,15 +22,22 @@ import numpy
 #gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_4/1387647860_zimmer_left.txt")
 #gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_6/gesture_6_zimmer_1.txt")
 
-#gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_2/1387647860_zimmer.txt")
-#gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_2/1387660041_fernsehen.txt")
-#gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_3/1391439011.txt")
-#gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_3/1391439281.txt")
-#gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_4/1391439536.txt")
-#gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_4/1391439659.txt")
-gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_0/1391435081.txt")
-gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_0/1391435669.txt")
-#gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_6/gesture_6_zimmer_1.txt")
+gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_2/1391437451.txt")
+gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_2/1391437809.txt")
+#gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_2/1391615397.txt")
+gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_3/1391439011.txt")
+gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_3/1391439281.txt")
+#gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_3/1391615558.txt")
+gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_4/1391439536.txt")
+gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_4/1391439659.txt")
+#gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_4/139161589.txt")
+#gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_0/1391435081.txt")
+#gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_0/1391435669.txt")
+gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_1/1391436572.txt")
+gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_1/1391436738.txt")
+#gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_1/1391615026.txt")
+gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_6/gesture_6_zimmer_1.txt")
+gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_6/gesture_6_zimmer_3.txt")
 #gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_6/gesture_6_zimmer_3.txt")
 
 #for i in range(150,200):
@@ -67,12 +74,13 @@ data2 = []
 for gesture in gestures:
     data.append(gesture.featureVector)
     l = []
-    l.extend(gesture.bins_left_filtered)
-    l.extend(gesture.bins_right_filtered)
+    #l.extend(gesture.bins_left_filtered)
+    #l.extend(gesture.bins_right_filtered)
+    #l.extend(gesture.featureVector)
     data2.append(l)
 
 targets = []
-for class_ in [2,2,3,3,4,4,0,0,6,6]:
+for class_ in [2,2,3,3,4,4,1,1,6,6]:
     for frameIndex in range(50):
         targets.append(class_)
 
