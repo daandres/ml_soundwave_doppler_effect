@@ -41,7 +41,7 @@ class SVM(IClassifier):
         self.gestures_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'gestures')
         self.path = os.path.join(os.path.dirname(__file__), 'svm_trained.pkl')
         self.classifier = self.load(self.path)
-        self.subdirs = ["Benjamin","Alex"]#,"Alex","Daniel"]
+        self.subdirs = ["Benjamin"]#,"Alex","Daniel"]
         
         self.datalist = []
         self.datanum = 0
@@ -49,7 +49,7 @@ class SVM(IClassifier):
         self.nClasses = 7
         self.new = True
         self.framerange = 20
-        self.timeout = 10
+        self.timeout = 20
         self.threshold = 0.1
         #self.data, self.targets, self.avg = self.loadData() #, self.avg
         self.noise_frame = self.load_noise_frame()
@@ -58,8 +58,8 @@ class SVM(IClassifier):
         
         # SVM parameters
         self.kernel = "rbf"
-        self.c = 1.0
-        self.gamma = 0.1
+        self.c = 10.0
+        self.gamma = 0.25
         self.degree = 3
         self.coef0 = 0.0
         
@@ -158,8 +158,8 @@ class SVM(IClassifier):
                             
                             even = current_frameset[:16:2] 
                             odd = current_frameset[1:16:2]
-                            test = np.asarray(list(np.asarray(even) + np.asarray(odd)))
-                            normalised_gesture_frame = test.reshape(40*8,)
+                            relevant_frames = np.asarray(list(np.asarray(even) + np.asarray(odd)))
+                            normalised_gesture_frame = relevant_frames.reshape(40*8,)
                             
                         else:
                             current_frameset = [self.preprocess_frame(frame, self.noise_frame) for frame in gesture_framesets[frameset_nr]]
@@ -191,13 +191,13 @@ class SVM(IClassifier):
         self.datalist.append(frame)
         self.datanum += 1
         
-        if self.timeout < self.framerange/2:
+        if self.timeout < self.framerange:
             self.timeout += 1
-            if self.timeout == self.framerange/2:
+            if self.timeout == self.framerange:
                 print "..."
         
         ''' check if frame has some relevant information and store this running index '''
-        if np.amax(frame) > 0.0 and self.gesturefound == False and self.timeout == self.framerange/2:
+        if np.amax(frame) > 0.0 and self.gesturefound == False and self.timeout == self.framerange:
             self.gestureindex = self.datanum
             self.gesturefound = True
             
@@ -215,8 +215,8 @@ class SVM(IClassifier):
                 
                 even = current_frameset[:16:2] 
                 odd = current_frameset[1:16:2]
-                test = np.asarray(list(np.asarray(even) + np.asarray(odd)))
-                normalised_gesture_frame = test.reshape(40*8,)
+                relevant_frames = np.asarray(list(np.asarray(even) + np.asarray(odd)))
+                normalised_gesture_frame = relevant_frames.reshape(40*8,)
 
                 target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
                 self.executeCommand(target_prediction)
@@ -229,6 +229,7 @@ class SVM(IClassifier):
                 try:
                     ''' normalise gestureframe '''
                     normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
+                    print normalised_gesture_frame
                     if not np.isnan(np.sum(normalised_gesture_frame)):
                         
                         ''' start actual classification '''
