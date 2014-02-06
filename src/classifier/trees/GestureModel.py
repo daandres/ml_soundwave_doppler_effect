@@ -29,7 +29,6 @@ class GestureModel(object):
         self.amplitudes_left_filtered = []
         self.amplitudes_right_filtered = []
         
-        self.shift_order = []
         self.shifts_left = []
         self.shifts_right = []
         
