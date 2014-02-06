@@ -76,10 +76,10 @@ class HMM(IClassifier):
 
 
     def loadData(self, filename=""):
-        p = plot.Plot(0)
+        p = plot.Plot(int(filename))
         p.initPlot()
         p.show()
-        print 'Geil'
+        
 
 
     def saveData(self, filename=""):
