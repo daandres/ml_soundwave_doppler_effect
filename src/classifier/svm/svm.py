@@ -45,8 +45,9 @@ class SVM(IClassifier):
         self.config = config
 
         ''' general settings '''
-        self.subdirs = eval(self.config['used_gestures'])
-        #self.subdirs = ["Benjamin","Alex"]#,"Daniel"]
+        #self.subdirs = eval(self.config['used_gestures'])
+        #print self.subdirs
+        self.subdirs = ["Benjamin","Alex"]#,"Daniel"]
         self.nClasses = int(self.config['used_classes'])
         
         ''' preprocessing settings '''
@@ -79,8 +80,9 @@ class SVM(IClassifier):
         ''' initial methods '''
         self.classifier = self.load(self.path)
         self.noise_frame = self.load_noise_frame()
-        self.X_train, self.Y_train = self.loadData()
-        self.X_test, self.Y_test = self.X_train, self.Y_train
+        self.X_train, self.X_test, self.Y_train, self.Y_test = self.loadData()
+        #self.X_train, self.Y_train = self.loadData()
+        #self.X_test, self.Y_test = self.X_train, self.Y_train
         
         
         '''
@@ -212,7 +214,7 @@ class SVM(IClassifier):
         targets = np.array(targets)
         print data.shape, targets.shape
         
-        #return train_test_split(data, targets, random_state=0)
+        return train_test_split(data, targets, random_state=0)
     
         return data, targets
     
