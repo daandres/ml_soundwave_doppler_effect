@@ -61,12 +61,12 @@ class Plot():
             elif self.dClass == 1:
                 self.name = "RawData"
                 self.actionPoint=[]
-                p.plotRaw()
+                self.plotRaw()
                 self.dClass += 1
             elif self.dClass == 2:
                 self.name = "GestureGMM"
                 self.actionPoint=[]
-                p.plotGestureGmms()
+                self.plotGestureGmms()
                 self.dClass = 0
                 
     def onpress(self, event):

@@ -11,7 +11,7 @@ import ConfigParser
 import pickle
 from classifier.classifier import IClassifier
 from gestureFileIO import GestureFileIO
-
+import classifier.hmm.plot as plot
 
 NAME = "HiddenMarkovModel"
 GESTURE_PREFIX="gesture "
@@ -76,7 +76,10 @@ class HMM(IClassifier):
 
 
     def loadData(self, filename=""):
-        pass
+        p = plot.Plot(0)
+        p.initPlot()
+        p.show()
+        print 'Geil'
 
 
     def saveData(self, filename=""):
