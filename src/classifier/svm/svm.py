@@ -35,31 +35,69 @@ warnings.simplefilter("error", RuntimeWarning)
 class SVM(IClassifier):
     SLICE_LEFT = 12
     SLICE_RIGHT = 12
-    NUM_SAMPLES_PER_FRAME = 64  #config.leftBorder + config.rightBorder
+    NUM_SAMPLES_PER_FRAME = 64 
 
     def __init__(self, recorder=None, config=None, relative=""):
+        self.config = config
+        
+        print self.config
+        
+        ''' general settings '''
+        self.subdirs = eval(self.config['used_gestures'])
+        #self.subdirs = ["Benjamin","Alex"]#,"Daniel"]
+        self.nClasses = int(self.config['used_classes'])
+        
+        ''' preprocessing settings '''
+        self.slice_left = int(self.config['slice_left'])
+        self.slice_right = int(self.config['slice_right'])
+        self.samples_per_frame = int(self.config['samples_per_frame'])
+        self.framerange = int(self.config['framerange'])
+        self.timeout = int(self.config['timeout'])
+        self.threshold = float(self.config['threshold'])
+        self.new_preprocess = self.config['new_preprocess']
+        
+        ''' svm settings '''
+        self.kernel = self.config['kernel']
+        self.c = float(self.config['c'])
+        self.gamma = float(self.config['gamma'])
+        self.degree = int(self.config['degree'])
+        self.coef0 = float(self.config['coef0'])
+        
+        ''' static settings ''' 
         self.gestures_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'gestures')
         self.path = os.path.join(os.path.dirname(__file__), 'svm_trained.pkl')
-        self.classifier = self.load(self.path)
-        self.subdirs = ["Benjamin"]#,"Alex","Daniel"]
         
         self.datalist = []
         self.datanum = 0
-        self.num_gestures = 7
+        self.predicted = False
+        self.gesturefound = False
+        self.gestureindex = 0
+        self.executed = {"notepad": False, "taskmgr": False, "calc": False}
+        
+        ''' initial methods '''
+        self.classifier = self.load(self.path)
+        self.noise_frame = self.load_noise_frame()
+        self.X_train, self.Y_train = self.loadData()
+        self.X_test, self.Y_test = self.X_train, self.Y_train
+        
+        
+        '''
+        self.subdirs = ["Benjamin","Alex"]#,"Daniel"]
+        
         self.nClasses = 7
         self.new = True
         self.framerange = 20
         self.timeout = 20
         self.threshold = 0.1
         #self.data, self.targets, self.avg = self.loadData() #, self.avg
-        self.noise_frame = self.load_noise_frame()
-        self.X_train, self.X_test, self.Y_train, self.Y_test = self.loadData()
-        #self.data, self.targets = self.loadData()
+        
+        #self.X_train, self.X_test, self.Y_train, self.Y_test = self.loadData()
+        
         
         # SVM parameters
         self.kernel = "rbf"
-        self.c = 10.0
-        self.gamma = 0.25
+        self.c = 1.0
+        self.gamma = 0.1
         self.degree = 3
         self.coef0 = 0.0
         
@@ -72,13 +110,10 @@ class SVM(IClassifier):
         #         self.startTraining(None)
         #         self.startValidation()
         #=======================================================================
+        '''
+
+
         
-
-
-        self.predicted = False
-        self.gesturefound = False
-        self.gestureindex = 0
-        self.executed = {"notepad": False, "taskmgr": False, "calc": False}
 
     @staticmethod
     def normalise_framesets(framesets, noise_frame):
@@ -104,23 +139,20 @@ class SVM(IClassifier):
 
         return frame
     
-    @staticmethod
-    def slice_frame(frame):
-        return frame[SVM.SLICE_LEFT:(SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT)]
+    def slice_frame(self, frame):
+        return frame[self.slice_left:(self.samples_per_frame - self.slice_right)]
     
-    @staticmethod
-    def slice_framesets(framesets):
-        return framesets[:, :, SVM.SLICE_LEFT:(SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT)]
+    def slice_framesets(self, framesets):
+        return framesets[:, :, self.slice_left:(self.samples_per_frame - self.slice_right)]
 
-    @staticmethod
-    def load_gesture_framesets(txt_file):
+    def load_gesture_framesets(self, txt_file):
         gesture_plain = np.loadtxt(txt_file, delimiter=",")  # all frames in one array
         num_framesets = gesture_plain.shape[0]
         num_samples_total = gesture_plain.shape[1]
-        num_frames_per_frameset = num_samples_total / SVM.NUM_SAMPLES_PER_FRAME
+        num_frames_per_frameset = num_samples_total / self.samples_per_frame
 
         gesture_framesets_plain = gesture_plain.reshape(num_framesets, num_frames_per_frameset,
-                                                        SVM.NUM_SAMPLES_PER_FRAME)  # split the array to a frameset
+                                                        self.samples_per_frame)  # split the array to a frameset
         return gesture_framesets_plain
 
     def load_noise_frame(self):
@@ -138,7 +170,7 @@ class SVM(IClassifier):
 
         gestures = []
         targets = []
-        for gesture_nr in range(self.num_gestures):
+        for gesture_nr in range(self.nClasses):
             print "load gesture", gesture_nr
             for subdir in self.subdirs:
                 #dirf = os.listdir(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))
@@ -151,7 +183,7 @@ class SVM(IClassifier):
                     ''' create one gesture frame from relevant frames '''
                     for frameset_nr in range(gesture_framesets.shape[0]):
 
-                        if self.new:
+                        if self.new_preprocess:
                             current_frameset = [self.preprocess_frame(frame, self.noise_frame) for frame in gesture_framesets[frameset_nr] if np.amax(self.preprocess_frame(frame, self.noise_frame)) > 0]
                             while len(current_frameset) < 16:
                                 current_frameset.append(np.zeros(40))
@@ -178,7 +210,7 @@ class SVM(IClassifier):
         targets = np.array(targets)
         print data.shape, targets.shape
         
-        return train_test_split(data, targets, random_state=0)
+        #return train_test_split(data, targets, random_state=0)
     
         return data, targets
     
@@ -208,7 +240,7 @@ class SVM(IClassifier):
             self.timeout = 0
             
             
-            if self.new:
+            if self.new_preprocess:
                 current_frameset = [frame for frame in self.datalist[-self.framerange:] if np.amax(frame) > 0]
                 while len(current_frameset) < 16:
                     current_frameset.append(np.zeros(40))
