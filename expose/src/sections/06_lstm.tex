@@ -357,10 +357,9 @@ Da es zum Ende des Projektes ein Programm geben soll, indem alle Klassifikatoren
 eingebunden sind, haben sich alle Teilnehmer auf ein Interface geeinigt, was 
 jeder Klassifikator implementieren muss. Dies ist die abstrakte Klasse \texttt{IClassifier}.
 
-\textbf{TODO Klassendiagramm}
-
 Die Implementation des \ac{LSTM}-Klassifikators ist in der Klasse LSTM zu
-finden.
+finden, diese dient als Wrapper-Klasse. Ein Klassendiagramm ist in \autoref{sec:lstm_class} 
+dargestellt.
 Für diese wurde \texttt{PyBrain} \cite{schaul2010} verwendet. Diese Bibliothek
 stellt verschiedene Machine Learning Algorithmen bereit, unter anderem Neuronale
 Netzwerke mit \ac{LSTM}-Neuronen.
@@ -494,29 +493,45 @@ abgeleitet werden, welche Klassen ähnlich zu einander sind (Klasse \ac{BNS} und
 \ac{BNN} werden ungefähr zur Hälfte auf die jeweils andere Klasse klassifiziert,
 dies macht deutlich, dass das Netz keinen Unterschied in den Klassen erkennt).
 
-\textbf{TODO Matrix anzeigen?}
 
 \subsubsection{Evaluation}
-Für die Evaluation der Netzwerke ein Testparcours entwickelt. In diesem wird 
-jede der 6 Gesten 10 mal durchgeführt und die Anzahl der Erfolge protokolliert. 
-Dies wurde wurde für jede Klassifikations-Idee durchlaufen. In Tabelle 
-\cite{tab:eval} sind die Ergebnisse festgehalten.
-\begin{table}
+In \autoref{matrix_eval} ist die Evaluation-Matrix von einem Nezuwerk festgehalten. 
+Dieses wurde für 1500 Epochen trainiert. Es hat 64-Input-Neuronen, 18-LSTM-Neuronen 
+und 7-Output-Neuronen. Das Training dauerte ca. 21 Stunden. Die Spalten bilden die 
+ausgeführte Geste und die Zeilen die erkannten Gesten ab.
+
+\begin{center}
+\begin{equation}
+\label{matrix_eval}
+$
+\begin{pmatrix}
+41 & 0 & 1 & 2 & 0 & 4 & 6\\
+0 & 41 & 1 & 8 & 1 & 9 & 0\\
+0 & 2 & 44 & 2 & 0 & 5 & 0 \\
+1 & 5 & 0 & 39 & 3 & 4 & 0 \\
+0 & 0 & 0 & 3 & 64 & 0 & 0 \\
+4 & 5 & 8 & 1 & 1 & 85 & 0 \\
+1 & 0 & 0 & 0 & 0 & 0 & 168
+\end{pmatrix}
+$
+\end{equation}
+\end{center}
+
+In der Tabelle \autoref{tab:eval} sind die Erkennungsraten pro Geste dargestellt.
+
+\begin{table*}
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
 \hline
- Geste 		& 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+ Geste 		& 0 & 1 & 2 & 3 & 4 & 5 & 6\&7 \\
  \hline
- classify1  &	&	&	&	&	&	&	\\
+ Erkennungsrate  &87,23\%&77,35\%&81,48\%&70,90\%&92,75\%&79,43\%&96,55\%		\\
  \hline
- classify2  &	&	&	&	&	&	&	\\
-\hline
 \end{tabular}
 \caption{Evaluation LSTM-Netz}
 \label{tab:eval}
-\end{table}
+\end{table*}
 
-Nach den Tests fällt auf das Geste 1, .. sehr gut erkannt werden. Geste .. ..
-jedoch nicht so gut.
+Das Neuronale-Netz hat einen gesamt Error-Wert von 13,77\%. 
 
 
 
@@ -539,13 +554,13 @@ Unterschiede. So arbeitet ein Gehirn nicht in synchronen Schritten wie das
 kpnstliche neuronale Netz, sondern asynchron. Das bedeutet Eingabewerte treffen
 zu unterschiedlichen Zeitpunkten ein, Ausgabewerte werden unterschiedlich
 gefeuert. Dies wird im Modell nicht abgebildet, da dies die Komplexität erhöht.
-EIn weiterer Unterschied besteht in der Verknüpfung unter den Neuronen. ein
+Ein weiterer Unterschied besteht in der Verknüpfung unter den Neuronen. ein
 künstliches neuronales Netz wie es hier betrachtet wurde ist vollständig
-uzntereinander verknüpft, Neuronen im Gehirn haben allerdings nicht zu allen
+untereinander verknüpft, Neuronen im Gehirn haben allerdings nicht zu allen
 anderen Neuronen Synapsen. Die Synapsen können sogar auf- und wieder abgebaut
 werden. Äußere Einflüsse, die das Gehirn beeinflussen wie z.B. Botenstoffe, sind
-in den künstlichen neuronalen Netzwerken ebenfalls nciht mit eingeflochten.
-DIese Einbindung könnte z.B. in diesem Projekt dazu führen, dass Einflüssen wie
+in den künstlichen neuronalen Netzwerken ebenfalls nicht mit eingeflochten.
+Diese Einbindung könnte z.B. in diesem Projekt dazu führen, dass Einflüssen wie
 laute oder leise Hintergrundgeräusche anders berücksichtigt werden ohne dafür
 zusätzliche Beispieldaten zu haben. Auch kann so auf unterschiedliche
 Hardwarekonfigurationen oder Lautstärkeunterschiede im Referenzton eingegangen
