@@ -71,17 +71,84 @@ Jeder Lautstärkewert entspricht dabei der Intensität des Tonsignals in dem jew
 %2048-dimensionalen 
 Eingabedaten lieferten eine korrekte Erkennungsrate von etwa 25 bis 30 Prozent bei 7 Klassen (6 Gesten sowie Grundrauschen ohne Geste). Lediglich das Grundrauschen kann so einigermaßen zuverlässig erkannt werden, eine korrekte Unterscheidung der einzelnen Gesten ist jedoch nicht möglich. Dies zeigt deutlich die Notwendigkeit einer Datenaufbereitung.
 
+Bei der Analyse der Frequenzspektren der Frequenzspektren der einzelnen Gesten lassen sich folgende Besonderheiten erkennen:
+Bei allen Aufnahmen der Gesten befindet sich die Amplitude bei 18500 Hz, da dies der abgespielten Referenzfrequenz entspricht. Durch den Doppler-Effekt entstehen bei der Ausführung der Gesten zusätzliche lokale Maxima, die Amplitude verschiebt sich jedoch nicht.
+
+\begin{figure*}[htbp]
+    \centering
+   \includegraphics[width=\textwidth]{kmeans/Geste0.pdf}
+\caption{Frequenzspektrum der Geste \ac{RLO}}
+\label{fig:kMeansGeste0}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+   \includegraphics[width=\textwidth]{kmeans/Geste1.pdf}
+\caption{Frequenzspektrum der Geste \ac{TBO}}
+\label{fig:kMeansGeste1}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+   \includegraphics[width=\textwidth]{kmeans/Geste2.pdf}
+\caption{Frequenzspektrum der Geste \ac{OT} (erste Hälfte)}
+\label{fig:kMeansGeste2}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+   \includegraphics[width=\textwidth]{kmeans/Geste3.pdf}
+\caption{Frequenzspektrum der Geste \ac{SPO}}
+\label{fig:kMeansGeste3}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+   \includegraphics[width=\textwidth]{kmeans/Gesten6und7.pdf}
+\caption{Frequenzspektrum der Gesten \ac{BNS} (links) und \ac{BNN} (rechts)}
+\label{fig:kMeansGesten6und7}
+\end{figure*}
+
+
+\begin{itemize}
+%0: Right-To-Left-One-Hand
+\item \ac{RLO} (\autoref{fig:kMeansGeste0}): Bei dieser Geste tritt zu Beginn ein lokales Maximum im Frequenzbereich oberhalb der Amplitude auf. Anschließend erhöht sich der Wert dieses Maximums und wandert im weiteren Verlauf in den Frequenzbereich unterhalb der Amplitude. Zuletzt verringert sich der Wert des Maximums wieder.
+
+%1: Top-To-Bottom-One-Hand
+\item \ac{TBO} (\autoref{fig:kMeansGeste1}): Zu Beginn der Geste bildet sich ein lokales Maximum im Frequenzbereich oberhalb der Amplitude. Der Wert dieses Maximums erhöht sich im weiteren Verlauf und nimmt gegen Ende wieder ab.
+
+%2: Opposed-With-Two-Hands
+\item \ac{OT} (\autoref{fig:kMeansGeste2}): Durch die Bewegung mit zwei Händen kommt es zu einer wesentlich komplexeren Veränderung des Tonsignals als bei den übrigen Bewegungen mit einer Hand. Zu Beginn der Geste entsteht durch das Bewegen der einen Hand vom Bildschirm weg ein lokales Maximum im Frequenzbereich unterhalb der Amplitude (Frame 2). Wenn sich anschließend beide Hände auf gleicher Höhe befinden, sind zwei lokale Maxima jeweils oberhalb und unterhalb der Amplitude zu erkennen (Frames 3 und 4). 
+Danach kommt es durch die Bewegung der anderen Hand in Richtung des Bildschirms zu einem lokalen Maximum oberhalb der Amplitude (Frames 5 und 6).
+Diese Bewegungsfolge sowie die entsprechenden Veränderungen des Frequenzspektrums wiederholen noch einmal in der gleichen Reihenfolge.
+%Wenn die Hand wieder vom Bildschirm wegbewegt wird (Frame 9), entsteht wieder ein lokales Maximum unterhalb der Amplitude. Wenn sich beide Hände wieder auf gleicher Höhe befinden, sind wieder zwei lokale Maxima oberhalb und unterhalb der Amplitude zu erkennen (Frame 11).  Zuletzt entsteht durch die Bewegung in Richtung des Bildschirms wieder ein lokales Maximum oberhalb der Amplitude. (Frame 13)
+%Wenn die Hand wieder vom Bildschirm wegbewegt wird (Frame 9), entsteht wieder ein lokales Maximum unterhalb der Amplitude. Wenn sich beide Hände wieder auf gleicher Höhe befinden, sind wieder zwei lokale Maxima oberhalb und unterhalb der Amplitude zu erkennen (Frame 11).  Zuletzt entsteht durch die Bewegung in Richtung des Bildschirms wieder ein lokales Maximum oberhalb der Amplitude. (Frame 13)
+
+%3: Single-Push-One-Hand
+\item \ac{SPO} (\autoref{fig:kMeansGeste3}): Ebenso wie bei der Geste \ac{RLO} kommt es zu einer Verschiebung des lokalen Maximums vom Frequenzbereich oberhalb der Amplitude zum Frequenzbereich unterhalb der Amplitude.
+
+%4: Double-Push-One-Hand
+\item \ac{DPO}: Hierbei kommt es zweimal hintereinander zu den bei Geste \ac{SPO} beschriebenen Effekten.
+
+%5: Rotate-One-Hand
+\item \ac{RO} Bei dieser Geste sind innerhalb des Frequenzspektrums keine Unterschiede zum Hintergrundrauschen (\ac{BNS} und \ac{BNN}) zu erkennen.
+
+%6+7: Background-Noise-Silent und Background-Noise-Noisy
+\item \ac{BNS} und \ac{BNN} (\autoref{fig:kMeansGesten6und7}): Bei diesen beiden Klassen für das Hintergrundrauschen sind neben der Amplitude bei 18500 Hz keine weiteren Peaks vorhanden. Durch die Ungenauigkeit von Mikrofon und Lautsprecher entstehen lediglich geringe, kaum sichtbare Schwankungen der Lautstärkewerte. Zwischen dem Hintergrundrauschen in lauter und in leiser Umgebung sind innerhalb des betrachteten Frequenzbereichs keine Unterschiede zu erkennen.
+
+\end{itemize}
+
+Die Klassifizierung der Geste \ac{RLO} wurde nicht weiter verfolgt, da sie nicht zuverlässig von Geste \ac{SPO} unterschieden werden kann. Ebenso wird Geste \ac{RO} nicht weiter betrachtet, da sich diese nicht vom Hintergrundrauschen unterscheiden lässt.
+
 %TODO Bild Schritte bei der Vorverarbeitung
-
-
-%TODO Bilder Frames Gesten + Gesten bzw Besonderheiten beschreiben (vor eigentlicher Vorverarbeitung, ggf. nach normalisierung??)
-
-
 %Norm. -> Segmentierung -> Reduzieren der Datenmenge
-Die Datenaufbereitung erfolgt in der in Abbildung XX dargestellten Reihenfolge. 
-Zu Beginn der Vorverarbeitung wird eine Normalisierung der 
-Lautstärke durchgeführt. Dazu werden die Lautstärkewerte in jedem einzelnen Frame um den gleichen Prozentsatz erhöht beziehungsweise verringert, sodass die Amplitude genau den vorher festgelegten Maximalwert annimmt. Dieser Schritt ist notwendig, da bei der verwendeten Hardware die Lautstärke der Aufnahmen stark schwankt.
+Insgesamt ist erkennbar, dass bei den übrigen Gesten neben der Amplitude jeweils mindestens ein weiteres lokales Maximum existiert. Anhand dieser Maxima ist eine Unterscheidung vom Grundrauschen und somit auch eine Segmentierung der relevanten Frames aus einer Gesten-Aufnahme möglich.
 
+%Diese Idee wird bei der Segmentierung aufgegriffen. Vorher fidnet jedoch noch eine Normalisierung der Lautstärke statt
+
+Die Datenaufbereitung erfolgt in der in Abbildung XX dargestellten Reihenfolge. 
+Zu Beginn wird eine Normalisierung der 
+Lautstärke durchgeführt. Dazu werden die Lautstärkewerte in jedem einzelnen Frame um den gleichen Prozentsatz erhöht beziehungsweise verringert, sodass die Amplitude genau den vorher festgelegten Maximalwert annimmt. Dieser Schritt ist notwendig, da bei der verwendeten Hardware die Lautstärke der Aufnahmen stark schwankt.
 %Im Anschluss daran werden die Frames einer Aufnahme so segmentiert, dass 
 %sich der Beginn der Geste bei jeder Aufnahme an der gleichen Frame-Postion
 %möglichst nur die Frames übrig bleiben, bei denen die Geste ausgeführt wird.
@@ -116,11 +183,12 @@ Für die Qualität der Klassifikation ist weiterhin jedoch die Wahl eines geeign
 \begin{figure*}[htbp]
     \centering
    \includegraphics[width=.85\textwidth]{kmeans/kMeansWertK.pdf}
-\caption{Klassifizierung mit zwei und vier Cluster-Zentren}
+\caption{Klassifizierung mit k=2 (links) und k=4 (rechts)}
 \label{fig:kMeansWertK}
 \end{figure*}
 
-\autoref{fig:kMeansWertK} zeigt ein Beispiel, bei dem der k-Means Algorithmus bei zwei Gruppen von Daten mit einem Wert von k = 2 ein sehr ungenaues Ergebnis liefert. Für k=4 funktioniert das Clustering sehr gut, da pro Gruppe zwei Cluster-Zentren existieren. %TODO Satz
+\autoref{fig:kMeansWertK} zeigt ein Beispiel, bei dem der k-Means Algorithmus bei zwei Gruppen von Daten mit einem Wert von k = 2 ein sehr ungenaues Ergebnis liefert. Für k=4 funktioniert das Clustering sehr gut, da 
+nun pro Gruppe je zwei Cluster-Zentren existieren.
 Zur Gestenerkennung muss \emph{k} mindestens um eins größer sein als die Anzahl der Gesten (da mindestens eine Klasse für das Grundrauschen benötigt wird),
 damit der Algorithmus in der Lage ist, die einzelnen Aufnahmen voneinander zu unterscheiden.  
 
