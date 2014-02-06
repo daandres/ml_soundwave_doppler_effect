@@ -16,23 +16,24 @@ class Starter():
                          3: {"program": "taskmanager", "number": 2},
                          4: {"program": "calculator", "started": False, "processname": "calc"},
                          5: {"program": "calculator", "number": 4}}
+        print "Application-Starter loaded"
     
     def startProgramm(self, number):
-        print self.logic(number)         
+        self.logic(number)         
     
     def logic(self, number):
-        try:
-            if self.executed[number]["started"] == False:
-                self.executed[number]["started"] = self.start(number, self.executed[number]["program"], self.executed[number]["processname"])
-        except:
-            self.log("\t"+str(number)+" => "+self.executed[number]["program"]+" not started, nothing to terminate")
-        
-        try:
-            if self.executed[self.executed[number]["number"]]["started"] != False:
-                self.executed[number]["started"] = self.start(number, self.executed[number]["program"], self.executed[number]["started"])
-        except:
-            self.log("\t"+str(number)+" => "+self.executed[number]["program"]+" already started, only one instance allowed")
-        
+        if number != 6:
+            if number % 2 == 0:
+                if self.executed[number]["started"] == False:
+                    self.executed[number]["started"] = self.start(number, self.executed[number]["program"], self.executed[number]["processname"])
+                else:
+                    self.log("\t"+str(number)+" => "+self.executed[number]["program"]+" already started, only one instance allowed")
+            else:
+                if self.executed[self.executed[number]["number"]]["started"] != False:
+                    self.executed[self.executed[number]["number"]]["started"] = self.terminate(number, self.executed[number]["program"], self.executed[self.executed[number]["number"]]["started"])
+                else:
+                    self.log("\t"+str(number)+" => "+self.executed[number]["program"]+" not started, nothing to terminate")
+
              
     
     def start(self, number, program, processname):
