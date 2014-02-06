@@ -78,6 +78,17 @@ class Plot():
                 self.dClass = 1
                 self.gesture = gesture
                 self.plotData()
+        if key == 'down':
+            self.index -= 1
+        if key == 'up':
+            self.index += 1
+        if self.index < 0:
+            self.index = len(self.data)-1
+        elif self.index >= len(self.data):
+            self.index = 0
+        self.plot()
+        
+            
 
 
     def plotData(self):

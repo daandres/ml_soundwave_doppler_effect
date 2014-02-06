@@ -96,6 +96,7 @@ class GestureApplication():
         ''' Load HMM Configurationfile to Classifiy '''
         self.loadModels('classifier/hmm/data/config_night.cfg')
         
+        
         '''
         classList = [0, 3]
         self.createGestures(classList)
@@ -154,6 +155,8 @@ class GestureApplication():
         logprob = -sys.maxint - 1
         gesture = None
         for g in self.gestures.values():
+            if  (g.className == 'gesture 2') | (g.className == 'gesture 4') | (g.className == 'gesture 5'):
+                continue
             l = g.score(seq)
             
             if 0 > l > logprob:
