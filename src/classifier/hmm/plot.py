@@ -16,7 +16,7 @@ from sklearn.mixture import GMM
 
 class Plot():
     
-    def __init__(self, gesture=0, index=38):
+    def __init__(self, gesture=0, index=0):
         self.gesture = gesture
         self.dp = d.DataUtil()
         self.mu = h.HMM_Util()
