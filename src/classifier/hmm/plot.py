@@ -16,7 +16,7 @@ from sklearn.mixture import GMM
 
 class Plot():
     
-    def __init__(self, gesture=0, index=0):
+    def __init__(self, gesture=0, index=38):
         self.gesture = gesture
         self.dp = d.DataUtil()
         self.mu = h.HMM_Util()
@@ -143,6 +143,7 @@ class Plot():
 
     def plot(self):
         self.ax.cla()
+        self.fig.clf()
         self.ax = self.fig.add_subplot(111, projection='3d')
         self.surf = self.ax.plot_surface(self.X, self.Y, self.data[self.index], rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
         self.ax.set_title("gesture " + str(self.gesture) + ", " +self.name + ": " + str(self.index))
