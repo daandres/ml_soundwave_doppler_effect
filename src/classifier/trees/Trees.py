@@ -29,13 +29,11 @@ Simple gui to show an image for each gesutre.
 '''
 class Gui(QtGui.QWidget):
 
-    def __init__(self, treeClassifier):
+    def __init__(self):
         super(Gui, self).__init__()
-        #self.classifier = treeClassifier
-        #self.classifier.newGesture.connect(self._receiveGesture)
         
         hbox = QtGui.QHBoxLayout(self)
-        self.pixmap = QtGui.QPixmap("redrocks.jpg")
+        self.pixmap = QtGui.QPixmap("/Users/mutz/FH/03/machine_learning/projekt/ml_soundwave_doppler_effect/src/classifier/trees/redrocks.jpg")
 
         lbl = QtGui.QLabel(self)
         lbl.setPixmap(self.pixmap)
@@ -44,13 +42,12 @@ class Gui(QtGui.QWidget):
         self.setLayout(hbox)
         
         self.setWindowTitle('Red Rock')
-        self.show()     
+        self.show()
     
     
     @QtCore.pyqtSlot(int)
     def _receiveGesture(self, gesture):
         print gesture
-        #self.pixmap = QtGui.QPixmap("redrock.png")
 
 
 '''
@@ -69,15 +66,10 @@ class Trees(IClassifier):
         self.flag = False
         self.liste = []
         
-        
         app = QtGui.QApplication(sys.argv)
-        self.gui = Gui(self)
+        self.gui = Gui()
         self.signal = Signal(self.gui)
-        self.signal.newGesture.emit(1)
-        self.signal.newGesture.emit(2)
-        self.signal.newGesture.emit(3)
         sys.exit(app.exec_())
-        
         
 
     def getName(self):
@@ -166,7 +158,8 @@ class Trees(IClassifier):
                     recognizedGestures.extend(prediction)
                 result = numpy.argmax(numpy.bincount(recognizedGestures))
                 if(result != 6):
-                    print "Result: ", result
+                    #print "Result: ", result
+                    self.signal.newGesture.emit(result)
                 
                 self.temp.clear()
             self.queue.popleft()
