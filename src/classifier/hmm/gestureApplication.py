@@ -161,7 +161,7 @@ class GestureApplication():
         logprob = -sys.maxint - 1
         gesture = None
         for g in self.gestures.values():
-            if  (g.className == 'gesture 2') | (g.className == 'gesture 4') | (g.className == 'gesture 5'):
+            if  (g.className == 'gesture 2') | (g.className == 'gesture 4'):
                 continue
             l = g.score(seq)
             
