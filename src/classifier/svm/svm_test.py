@@ -7,7 +7,7 @@ import numpy
 import os
 from sklearn.externals import joblib
 from sklearn.metrics import accuracy_score
-
+import subprocess as sp
 
 def normalise(arr, nn_avg):
     ''' normalise each frame '''
@@ -69,3 +69,55 @@ if __name__ == "__main__":
     Y_data, Y_targets = test(nn_avg)
 
     predict_svm(classifier, Y_data, Y_targets)
+    
+    
+def executeCommand(self, number):
+    if number != 6:
+        
+        ''' some switch cases for application execution and termination '''
+        if number == 0 and self.executed["notepad"] == False:
+            print "\t",str(number),"=>","starting notepad"
+            proc = sp.Popen("notepad")
+            self.executed["notepad"] = proc.pid
+
+        elif number == 1 and self.executed["notepad"] != False:
+            print "\t",str(number),"=>","terminating notepad"
+            sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["notepad"]), shell=True, stdout=sp.PIPE)
+            self.executed["notepad"] = False
+
+        elif number == 2 and self.executed["taskmgr"] == False:
+            print "\t",str(number),"=>","starting taskmanager"
+            proc = sp.Popen("taskmgr")
+            self.executed["taskmgr"] = proc.pid
+
+        elif number == 3 and self.executed["taskmgr"] != False:
+            print "\t",str(number),"=>","terminating taskmanager"
+            sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["taskmgr"]), shell=True, stdout=sp.PIPE)
+            self.executed["taskmgr"] = False
+
+        elif number == 4 and self.executed["calc"] == False:
+            print "\t",str(number),"=>","starting calculator"
+            proc = sp.Popen("calc")
+            self.executed["calc"] = proc.pid
+
+        elif number == 5 and self.executed["calc"] != False:
+            print "\t",str(number),"=>","terminating calculator"
+            sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["calc"]), shell=True, stdout=sp.PIPE)
+            self.executed["calc"] = False
+
+        
+        elif number == 1 and self.executed["notepad"] == False:
+            print "\t",str(number),"=>","notepad not started, nothing to terminate"
+        elif number == 3 and self.executed["taskmgr"] == False:
+            print "\t",str(number),"=>","taskmanager not started, nothing to terminate"
+        elif number == 5 and self.executed["calc"] == False:
+            print "\t",str(number),"=>","calculator not started, nothing to terminate"
+            
+        elif number == 0 and self.executed["notepad"] != False:
+            print "\t",str(number),"=>","notepad already started, only one instance allowed"
+        elif number == 2 and self.executed["taskmgr"] != False:
+            print "\t",str(number),"=>","taskmanager already started, only one instance allowed"
+        elif number == 4 and self.executed["calc"] != False:
+            print "\t",str(number),"=>","calculator already started, only one instance allowed"
+
+
