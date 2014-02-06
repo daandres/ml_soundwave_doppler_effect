@@ -34,7 +34,7 @@ class LSTMClassify():
         self.maxValue = 0
         self.maxValueList = []
 
-        #self.outkeys = SystemKeys()
+        # self.outkeys = SystemKeys()
 
     '''
     Interface method for classifcation. WIll be called by LSTM interface and calls different implementations. 
@@ -43,7 +43,7 @@ class LSTMClassify():
     def classify(self, data):
         preprocessedData = data / np.amax(data)
         preprocessedData = util.preprocessFrame(preprocessedData, self.net.datacut, self.net.datafold)
-        #diffAvgData = preprocessedData - self.avg
+        # diffAvgData = preprocessedData - self.avg
         self.__classify4(preprocessedData)
 
     '''
@@ -130,15 +130,15 @@ class LSTMClassify():
     '''
     def __classify4(self, data):
         if not self.beginClassify:
-            #collecting live data for avg
+            # collecting live data for avg
             self.liveData.append(data)
             if self.liveData.__len__() == 20:
                 self.beginClassify = 1
-                #print self.liveData
+                # print self.liveData
                 self.avg = np.mean(self.liveData, axis=0)
-                #print self.avg
+                # print self.avg
                 self.beginMax = 1
-        #collecting data for maxValue
+        # collecting data for maxValue
         elif self.beginMax:
             data = data - self.avg
             self.maxValueList.append(data.max())
@@ -147,12 +147,12 @@ class LSTMClassify():
                     if self.maxValue < a:
                         self.maxValue = a
                 print self.maxValue
-                #maxValue ein bischen erhöhen (steuert empfindlichkeit der erkennung)
+                # maxValue ein bischen erhohen (steuert empfindlichkeit der erkennung)
                 self.maxValue = self.maxValue + 0.0001
                 self.beginMax = 0
         else:
             data = data - self.avg
-            #print data.max()
+            # print data.max()
             if data.max() > self.maxValue and self.start == 0:
                 print "starting ..."
                 self.start = 1
