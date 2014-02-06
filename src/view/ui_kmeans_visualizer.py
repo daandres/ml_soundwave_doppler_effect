@@ -20,7 +20,7 @@ from PyQt4.Qt import QColor
 import classifier.k_means.clusterSignal as clusterS
 
 class ViewUIKMeans:
-    def __init__(self, kMeansClassifier=None, applicationClose=None):
+    def __init__(self, kMeansClassifier=None, applicationClose=None, classSignal=None):
 
         self.kmH = None 
         self.kmeans = None
@@ -76,7 +76,7 @@ class ViewUIKMeans:
         self.kMeansClassifier = kMeansClassifier
         #self.kMeansClassifier.cSignal.currentGestureSignal.connect(self.setGestureTrigger)
         
-        self.newSignal = clusterS.SignalToGUI()
+        self.newSignal = classSignal#clusterS.SignalToGUI()
         self.newSignal.currentGestureSignal.connect(self.setGestureTrigger)
         #self.connect(self.newSignal, self.newSignal.currentGestureSignal, self.setGestureTrigger)
         
@@ -114,7 +114,9 @@ class ViewUIKMeans:
     
     @pyqtSlot(int)
     def setGestureTrigger(self, gesture):
-        print 'gesture : ', gesture
+        #print 'gesture : ', gesture
+        #self.uiplot.scrollArea.setVertical(float(gesture))
+        self.rightPage.setText(str(gesture))
         
     def plotSignal(self):
 
@@ -689,7 +691,7 @@ class ViewUIKMeans:
             
             
     def startNewThread(self):
-        self.t = Thread(name="ControlGuiBob", target=self.start, args=())
+        self.t = Thread(name="ControlGui", target=self.start, args=())
         self.t.start()
         return self.t
 
@@ -699,6 +701,8 @@ class ViewUIKMeans:
             return self.t.is_alive()
         return False
    
+    def end(self):
+        self.uiplot.timer.Stop(self.guiIntervall)
    
     def start(self):
         # application
@@ -762,19 +766,15 @@ class ViewUIKMeans:
         self.uiplot.scrollArea.setWidget(self.textEdit)
         
         self.rightPage = QtGui.QTextEdit()
+        self.rightPage.setFont(QtGui.QFont ("Courier", 200));
         self.uiplot.rightPage_sa.setWidget(self.rightPage)
-        #self.newSignal = clusterS.SignalToGUI()
-        #self.newSignal.currentGestureSignal.connect(self.setGestureTrigger)
-        #self.connect(self.newSignal, self.newSignal.currentGestureSignal, self.setGestureTrigger)
-        
+
         # ## DISPLAY WINDOWS
         self.win_plot.show()
-        #self.app.connect(self.newSignal, self.newSignal.currentGestureSignal, self.setGestureTrigger)
-        #QtCore.QTimer.singleShot(0, self.connectSlott)
         code = self.app.exec_()
         self.applicationClose(code)
        
            
-#         sys.exit(code)
-#         self.recorder.close()
+        #sys.exit(code)
+
     

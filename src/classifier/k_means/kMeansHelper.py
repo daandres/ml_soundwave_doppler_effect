@@ -60,6 +60,7 @@ class kMeansHepler():
         resultArray = None
         globalMax = np.amax(inArray)
         firstRightPeak = True
+        ratio = 0
         for idx, frame in enumerate(inArray):
             
             maxV = np.amax(frame)
@@ -72,12 +73,14 @@ class kMeansHepler():
             #get sorted indices of the local max
             lMaxIdxSort = lMaxVal.argsort()[-3:][::-1]
             #calculate ratio global / first local max
-            ratio = lMaxVal[lMaxIdxSort[1]]/lMaxVal[lMaxIdxSort[0]]
-            #check if the local max is at first right to the global max => recognize gesture 3
-            isRightPeak =  lMaxIdxSort[1] > lMaxIdxSort[0]
-            if not oneSecPeak:
-                if not isRightPeak and ratio > 0.1 :
-                    firstRightPeak = False
+            
+            if lMaxVal.shape[0]>2:
+                ratio = lMaxVal[lMaxIdxSort[1]]/lMaxVal[lMaxIdxSort[0]]
+                #check if the local max is at first right to the global max => recognize gesture 3
+                isRightPeak =  lMaxIdxSort[1] > lMaxIdxSort[0]
+                if not oneSecPeak:
+                    if not isRightPeak and ratio > 0.1 :
+                        firstRightPeak = False
             if ratio > globalRatio and maxV/ globalMax > 0.7 and firstRightPeak:
                 globalRatio = ratio       
                 matchFrameIdx = idx
