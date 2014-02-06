@@ -63,7 +63,6 @@
           <height>489</height>
          </rect>
         </property>
-        <zorder>textEdit</zorder>
        </widget>
       </widget>
       <widget class="QTextEdit" name="textEdit">
@@ -434,15 +433,14 @@
      <widget class="QPushButton" name="loadRedData_bt">
       <property name="geometry">
        <rect>
-        <x>1050</x>
-        <y>692</y>
+        <x>1280</x>
+        <y>720</y>
         <width>71</width>
-        <height>41</height>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>load
-red data</string>
+       <string>---</string>
       </property>
      </widget>
      <widget class="QSpinBox" name="perRatio_sb">
@@ -714,18 +712,18 @@ data</string>
        <number>10</number>
       </property>
      </widget>
-     <widget class="QPushButton" name="saveRedData_bt">
+     <widget class="QPushButton" name="kMeansLoop_bt">
       <property name="geometry">
        <rect>
         <x>1050</x>
-        <y>650</y>
+        <y>690</y>
         <width>71</width>
         <height>41</height>
        </rect>
       </property>
       <property name="text">
-       <string>save
-red data</string>
+       <string>learn kMeans
+loop</string>
       </property>
      </widget>
      <widget class="QSpinBox" name="maxIteration_sb">
@@ -1080,7 +1078,7 @@ red data</string>
        </rect>
       </property>
       <property name="value">
-       <number>2</number>
+       <number>5</number>
       </property>
      </widget>
      <widget class="QwtPlot" name="qwtPlot_4">
@@ -1401,6 +1399,35 @@ red data</string>
         <width>171</width>
         <height>150</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="kMeansLoop_sb">
+      <property name="geometry">
+       <rect>
+        <x>1050</x>
+        <y>661</y>
+        <width>71</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="maximum">
+       <number>10000</number>
+      </property>
+      <property name="value">
+       <number>1000</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="kMeansLoop_lb">
+      <property name="geometry">
+       <rect>
+        <x>1050</x>
+        <y>650</y>
+        <width>54</width>
+        <height>10</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>kMeans loop</string>
       </property>
      </widget>
     </widget>

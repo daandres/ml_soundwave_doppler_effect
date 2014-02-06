@@ -155,7 +155,6 @@ class DataUtil:
             #d = d - np.array([2.52e-05,2.37e-05,1.06e-04,1.34e-03,2.13e-01,4.60e-01,9.83e-01,8.19e-01,2.57e-01,1.57e-01,1.98e-04,5.28e-05,2.47e-05])
             pos = self._getHighestSum(d)
             if((pos-framesBefore)<0) | ((pos + framesAfter) > (np.shape(d)[0]-1)):
-                print j+1, pos
                 continue
             indexBegin = pos-framesBefore
             indexEnd =  pos + framesAfter+1

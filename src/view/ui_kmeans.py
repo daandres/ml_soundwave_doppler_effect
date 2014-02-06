@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_kmeans.ui'
 #
-# Created: Wed Feb 05 02:47:36 2014
+# Created: Wed Feb 05 15:08:02 2014
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -146,7 +146,7 @@ class Ui_MainWindow(object):
         self.qwtPlot_20.setGeometry(QtCore.QRect(510, 310, 171, 150))
         self.qwtPlot_20.setObjectName(_fromUtf8("qwtPlot_20"))
         self.loadRedData_bt = QtGui.QPushButton(self.tab_2)
-        self.loadRedData_bt.setGeometry(QtCore.QRect(1050, 692, 71, 41))
+        self.loadRedData_bt.setGeometry(QtCore.QRect(1280, 720, 71, 20))
         self.loadRedData_bt.setObjectName(_fromUtf8("loadRedData_bt"))
         self.perRatio_sb = QtGui.QSpinBox(self.tab_2)
         self.perRatio_sb.setGeometry(QtCore.QRect(1270, 670, 91, 20))
@@ -235,9 +235,9 @@ class Ui_MainWindow(object):
         self.n_init_sb.setMaximum(9999)
         self.n_init_sb.setProperty("value", 10)
         self.n_init_sb.setObjectName(_fromUtf8("n_init_sb"))
-        self.saveRedData_bt = QtGui.QPushButton(self.tab_2)
-        self.saveRedData_bt.setGeometry(QtCore.QRect(1050, 650, 71, 41))
-        self.saveRedData_bt.setObjectName(_fromUtf8("saveRedData_bt"))
+        self.kMeansLoop_bt = QtGui.QPushButton(self.tab_2)
+        self.kMeansLoop_bt.setGeometry(QtCore.QRect(1050, 690, 71, 41))
+        self.kMeansLoop_bt.setObjectName(_fromUtf8("kMeansLoop_bt"))
         self.maxIteration_sb = QtGui.QSpinBox(self.tab_2)
         self.maxIteration_sb.setGeometry(QtCore.QRect(900, 660, 51, 22))
         self.maxIteration_sb.setMaximum(10000)
@@ -361,7 +361,7 @@ class Ui_MainWindow(object):
         self.class0_bt.setObjectName(_fromUtf8("class0_bt"))
         self.kNumber_sb = QtGui.QSpinBox(self.tab_2)
         self.kNumber_sb.setGeometry(QtCore.QRect(900, 620, 51, 22))
-        self.kNumber_sb.setProperty("value", 2)
+        self.kNumber_sb.setProperty("value", 5)
         self.kNumber_sb.setObjectName(_fromUtf8("kNumber_sb"))
         self.qwtPlot_4 = Qwt5.QwtPlot(self.tab_2)
         self.qwtPlot_4.setEnabled(False)
@@ -458,6 +458,14 @@ class Ui_MainWindow(object):
         self.qwtPlot_15.setEnabled(False)
         self.qwtPlot_15.setGeometry(QtCore.QRect(1020, 160, 171, 150))
         self.qwtPlot_15.setObjectName(_fromUtf8("qwtPlot_15"))
+        self.kMeansLoop_sb = QtGui.QSpinBox(self.tab_2)
+        self.kMeansLoop_sb.setGeometry(QtCore.QRect(1050, 661, 71, 20))
+        self.kMeansLoop_sb.setMaximum(10000)
+        self.kMeansLoop_sb.setProperty("value", 1000)
+        self.kMeansLoop_sb.setObjectName(_fromUtf8("kMeansLoop_sb"))
+        self.kMeansLoop_lb = QtGui.QLabel(self.tab_2)
+        self.kMeansLoop_lb.setGeometry(QtCore.QRect(1050, 650, 54, 10))
+        self.kMeansLoop_lb.setObjectName(_fromUtf8("kMeansLoop_lb"))
         self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
@@ -490,8 +498,7 @@ class Ui_MainWindow(object):
         self.initKMeans_bt.setText(_translate("MainWindow", "init k-means", None))
         self.viewCase3_rb.setText(_translate("MainWindow", "view seg norm", None))
         self.learnKMeans_bt.setText(_translate("MainWindow", "learn k-means", None))
-        self.loadRedData_bt.setText(_translate("MainWindow", "load\n"
-"red data", None))
+        self.loadRedData_bt.setText(_translate("MainWindow", "---", None))
         self.viewCase4_rb.setText(_translate("MainWindow", "view ", None))
         self.class4_bt.setText(_translate("MainWindow", "Class 4", None))
         self.record_bt.setText(_translate("MainWindow", "record frames", None))
@@ -504,8 +511,8 @@ class Ui_MainWindow(object):
         self.saveFile_bt.setText(_translate("MainWindow", "save\n"
 "segmented\n"
 "data", None))
-        self.saveRedData_bt.setText(_translate("MainWindow", "save\n"
-"red data", None))
+        self.kMeansLoop_bt.setText(_translate("MainWindow", "learn kMeans\n"
+"loop", None))
         self.class7_bt.setText(_translate("MainWindow", "Class 7", None))
         self.mulFiles_cb.setText(_translate("MainWindow", "mul files", None))
         self.cutSides_lb.setText(_translate("MainWindow", "cut sides", None))
@@ -529,6 +536,7 @@ class Ui_MainWindow(object):
         self.saveCentorids_bt.setText(_translate("MainWindow", "save centroids", None))
         self.class5_bt.setText(_translate("MainWindow", "Class 5", None))
         self.reduceDim_bt.setText(_translate("MainWindow", "reduce Dim", None))
+        self.kMeansLoop_lb.setText(_translate("MainWindow", "kMeans loop", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2", None))
 
 from PyQt4 import Qwt5
