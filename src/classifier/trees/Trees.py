@@ -100,7 +100,7 @@ class Trees(IClassifier):
     def classify2(self, data):
         if(len(self.queue) == self.maxlen):
             gestures = []
-            gesture = classifier.trees.ProcessData.makeGesture(list(self.queue))
+            gesture = GestureModel(list(self.queue))
             gestures.append(gesture)
             processedData = self.__preProcess(gestures)
             
