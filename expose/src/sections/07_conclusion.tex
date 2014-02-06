@@ -1,1 +1,83 @@
 \section{Fazit und Ausblick} 
+
+In dieser Ausarbeitung wurden fünf verschiedene Verfahren vorgestellt eine
+Gestenerkennung mit Hilfe des Doppler Effekts vorzunehmen. Dazu bedarf es eines
+Klassifizeirungsalgorithmus, welcher die Rohdaten einer Geste zuordnen kann. Die
+fünf Verschiedenen Verfahren \ac{SVM}, \acsu{HMM}, k-Means, Entscheidungsbäume und
+\ac{LSTM} unterscheiden sich nicht nur im zugrunde liegenden Verfahren, auch in
+den Umsetzungen gibt es erhebliche Unterschiede vor allem in der
+Datenvorverarbeiteung. 
+
+Die Gestenerkennung kann durch die verschiedenen Verfahren mit Einschränkungen
+gut durchgeführt werden. Allerdings ist diese nicht universal einsetzbar. Es ist
+aufgefallen, dass der Doppler Effekt sich bei unterschiedlicher
+Hardwarekonfiguration unterschiedlich auswirkt. Dabei ist neben der Qualität der
+Komponenten Mikrofon und Lautsprecher die Andordnung dieser Komponenten im
+Laptop entscheiden. Die Variationen in der Anordnung reichen von Mikrofon
+unterhalb des Bildschirms zu oberhalb über Mikrofon an der Vorderseite des
+Gehäuses bis zu Lautsprecher seitlich der Tastatur zu unterhalb des vorderen
+Gehäuse in verschiednen Kombinationen. Werden Beispieldaten mit verschiedenen
+Hardwarekonfigurationen trainiert verschlechtert sich das
+Klassifikationsergebnis, da sich verschiedene Gesten in den verschiedenen
+Konfigurazionen gleichen. Des Weiteren sind auch Abhängigkeiten von der
+benutzten Hand (links oder rechts), dem Abstand der Hand zum Mikrofon und
+Bewegungen im Hintergrund erkennbar geworden. Aus diesem Grund ist es notwendig
+für die verschiedenen Konfigurationen verschiedene trainierte Klassifikatoren
+zur Verarbeitung vorzubereiten und diese entsprechend einzusetzen. Ein weiteres
+Hindernis ist, dass einige Gesten sich stark ähneln, z.B. \ac{RO} mit \ac{BNN}
+und \ac{BNS} oder \ac{SPO} mit \ac{RLO}. Das führt dazu, dass die Unterschiede
+nur bei korrekter Ausführung der Geste deutlich hervortreten.
+Klassifikatoren, die stark auf eine Datenvorverarbeitung mit Merkmalsextraktion
+setzen wie z.B. k-Means oder Entscheidungsbäume, stoßen hier auf ihre Grenzen.
+Auf die spezielle Konfigurationen ausgerichtete Klassifikatoren liefern jedoch
+gute Ergebnisse. Auch bei anderen Klassifikatoren wie \ac{HMM}, \ac{SVM} und
+\ac{LSTM} ist eine spezielle Konfiguration von Vorteil. beim \ac{LSTM} ist im
+Vergleich am wenigsten Vorverarbeitung notwendig, da der Klassifikator durch das
+training die Unterschiede selbstständig erkennt und dies in seinen Parametern
+modelliert. Nachteil dieser Strategie ist jedoch der mit Abstand höchste
+Trainingsaufwand (von einigen Stunden bis mehrere Tage und potentiell noch
+länger) und die größte benötigte Menge an Beispieldaten (mehr als 4000
+Beispiele). \ac{HMM} und \ac{LSTM} eignen sich für die Verarbeitung der Rohdaten
+als Sequenz gut, da sie über interne Zustände verfügen, die eine zeitliche
+Abhängigkeit modellieren können. Im Gegensatz dazu stehen die anderen drei
+Verfahren \ac{SVM}, k-Means und Entscheidungsbäume, die die zeitliche
+Abhängigkeit durch geignete Datenverarbeitung ohne Informationsverlust nicht
+benötigen.
+
+Das zentrale Problem der Live Klassifikation lässt sich auf alle fünf
+Klassifikatoren anwenden. Während des Trainings sind Start- und Ende einer Geste
+in einem groben Rahmen bekannt. Bei der Live Klassifikation ist dies jedoch
+nicht der Fall. Daher sind Verfahren entwickelt worden, die entweder nach Start-
+und Ende von Gesten suchen und die so gefundenen Daten klassifieziern oder
+Verfahren die eine statistisches Modell und fortlaufend alles klassifizeiren,
+dabei ist das beste Ergebnis in einem Intervall die gefundene Geste.
+
+\paragraph{Ausblick} 
+Die entworfenen Klassifikatoren enthalten bereits betrachtliche Ergebnisse.
+Dennoch besteht Verbesserungsbedarf. Dies zielt vor allem auf einer besseren
+Datenvorverarbeitung im Trainingsstadium sowie einer besseren Segementierung in
+der Live Klassifikation ab. Mit weiteren Beispieldaten können weitere Merkmale
+herausgefunden werden, um die Klassifikationsrate zu erhöhen. Des Weiteren ist
+eine systematische Testreihe der Parameter der einzelnen Klassifikatoren und
+deren Bibliotheksimplementierungen vorzunehmen, um die optimalen Ergebnisse zu
+erhalten. Ein weiteres Problemfeld, dass es weiter zu verbessern gilt, ist der
+Umgang mit unterschiedlichen hardwarekonfigurationen. Eine Idee hierzu ist es
+verschieden trainierte Klassifikatoren zu verwenden und einen Mehrheitsentscheid
+herbeizuführen oder entsprechend der aktuellen Hardwarekonfiguration einen
+speziellen Klassifkator nur zu laden. Ein zusätzlicher Punkt der im Projekt
+bisher nur nebenläufig behandelt wurde, ist die Integration mit dem Hostsystem.
+Die Gesten sollen einer bestimmten Aktion zugeordnet werden. Dazu werden bei
+erkannten Gesten zuvor definierte Aktionen durchgeführt, wie z.B. das drücken
+der Escape Taste. Hierbei ist es wichtig, dass die Gesten nicht zu häufig falsch
+erkannt werden, keine Klassifikation ist vor einer falschen Kalssifikation
+vorzuziehen, da diese sonst unerwartete Aktionen hervorruft. Auch ist es
+notwendig Gesten nicht zu schnell in einem kleinen Zeitintervall zu erkennen, um
+eventuelle Bewegungen in Vor- und Nachbereitung zur Geste nicht auch noch zu
+klassifizieren.
+
+
+
+
+
+
+

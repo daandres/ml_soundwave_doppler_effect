@@ -3,7 +3,10 @@ import numpy as np
 from scipy import stats as stats
 from systemkeys import SystemKeys
 
-
+'''
+LSTMCLassify class provides different methods for live/online classification with the LSTM Module. 
+It also calls the Systemkeys class to bind keys to classes and execute the bindings
+'''
 class LSTMClassify():
 
     def __init__(self, config, net):
@@ -23,13 +26,20 @@ class LSTMClassify():
         # Classify3 method
         self.predhistoryforclassify3 = []
 
+        # classify4
+        self.start = 0
+
         self.outkeys = SystemKeys()
 
+    '''
+    Interface method for classifcation. WIll be called by LSTM interface and calls different implementations. 
+    Preprocess data. 
+    '''
     def classify(self, data):
         preprocessedData = data / np.amax(data)
         preprocessedData = util.preprocessFrame(preprocessedData, self.net.datacut, self.net.datafold)
         diffAvgData = preprocessedData - self.avg
-        self.__classify2(diffAvgData)
+        self.__classify4(diffAvgData)
 
     '''
     Gesten werden starr nach 32 frames erkannt
@@ -112,4 +122,22 @@ class LSTMClassify():
     '''
     def __classify4(self, data):
         # sequence maximum erkennen
-        pass
+        # print data.max()
+        if data.max() > 0.32 and self.start == 0:
+            print "starting ..."
+            self.start = 1
+
+        if self.start:
+            self.datalist.append(data)
+            self.datanum += 1
+            if(self.datanum % 32 == 0):
+                print "net ac"
+                self.net.reset()
+                out = self.net._activateSequence(self.datalist)
+                print(str(out))
+                self.datalist = []
+                self.datanum = 0
+                self.start = 0
+                return out
+
+        return -1

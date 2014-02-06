@@ -8,29 +8,17 @@ class Feature(object):
     
     #reihenfolge der frequenzverschiebungen
     def featureOrderOfShifts(self, gesture, maxDiff):
-        cases = {}
-        cases[0] = [['right', 'left'], ['right']]
-        cases[1] = [['right','left','right','left'], ['right','left','right']]
-        cases[2] = [['both', 'both'], ['both']]
         
-        both_counter = 0
-        right_left_counter = 0
-        
-        shifts_left = self.findShifts(gesture.bins_left_filtered, 'left')
-        shifts_right = self.findShifts(gesture.bins_right_filtered, 'right')
-        gesture.shifts_left = shifts_left
-        gesture.shifts_right = shifts_right
-        shifts = shifts_left + shifts_right
-        shifts = sorted(shifts,key=lambda x: x[1])
-        prev = 0
+        concurrent_counter = 0
+        order_binary = 0
         orderList = []
-        byte = 0
-        for shift in shifts:
-            if(shift[0] == 'right'):
-                byte = byte << 1
-                byte = byte ^ 1
-            else:
-                byte = byte << 1
+
+        gesture.shifts_left = self.findShifts(gesture.bins_left_filtered, 'left')
+        gesture.shifts_right = self.findShifts(gesture.bins_right_filtered, 'right')
+        shifts = gesture.shifts_left + gesture.shifts_right
+        shifts = sorted(shifts,key=lambda x: x[1])
+        
+        prev = 0
         
         for i in range(len(shifts)):
             shift = shifts[i]
@@ -38,45 +26,33 @@ class Feature(object):
                 if(prev[0] != shift[0]):
                     start_current = shift[1]
                     start_prev = prev[1]
-                    stop_current = shift[2]
-                    stop_prev = prev[2]
                     diffStart = abs(start_current - start_prev)
-                    intersection = abs(max(start_current,start_prev) - min(stop_current,stop_prev))
-                    union = abs(min(start_current,start_prev) - max(stop_current,stop_prev))
-                    coverage = union - intersection
-                    prev_in_curr = start_current <= start_prev and stop_current >= stop_prev
-                    curr_in_prev = start_prev <= start_current and stop_prev >= stop_current
-                    #print prev_in_curr
-                    #print curr_in_prev
-                    if(diffStart < maxDiff): #or coverage <= 1 or prev_in_curr or curr_in_prev):
+                    if(diffStart < maxDiff):
                         orderList.pop()
                         orderList.append('both')
-                        both_counter += 1
-                        if(both_counter > 1):
-                            byte = 0
+                        concurrent_counter += 1
+                        if(concurrent_counter > 1):
+                            order_binary = 0
                     else:
                         orderList.append(shift[0])
                         prev = shift
-                        right_left_counter += 1
                 else:
                     orderList.append(shift[0])
                     prev = shift
-                        
             else:
                 orderList.append(shift[0])        
                 prev = shifts[i]
-        #Cases = self.findShiftCases(orderList, 0, Cases)
-        #return Cases
+                
+        for shift in shifts:
+            if('both' in shift):
+                if(shift[0] == 'right'):
+                    order_binary = order_binary << 1
+                    order_binary = order_binary ^ 1
+                else:
+                    order_binary = order_binary << 1
         gesture.shift_order = orderList
-        #print orderList, byte
-        return both_counter, byte#, right_left_counter
-        for k,v in cases.iteritems():
-            if(orderList in v):
-                return k, both_counter
-
-        return -1, both_counter
-        #print "no case available", orderList
-        # Herausfinden, welche Kombinationen auch noch oft vorkommen pro case oder rauswerfen?
+        return concurrent_counter, order_binary
+    
     
     def shiftDistance(self, gesture):
         shift_order = gesture.shift_order
@@ -106,7 +82,8 @@ class Feature(object):
             if(len(equal_list) > 0):
                 distance_equal = sum(equal_list) / len(equal_list)
         return distance_contrary, distance_equal
-           
+     
+    # -------------------------------------------- ACHTUNG!!!!!!!! -> sinnvoll????      
     def featureAmplitudes(self, gesture):
         ampl_val = 0
         shift_order = gesture.shift_order

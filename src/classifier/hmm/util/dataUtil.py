@@ -183,7 +183,10 @@ class DataUtil:
                 position = i
         return position
         '''
+<<<<<<< HEAD
     
+=======
+>>>>>>> branch 'master' of https://github.com/daandres/ml_soundwave_doppler_effect.git
 
     def findAvg(self, data):
 

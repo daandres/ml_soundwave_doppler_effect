@@ -2,7 +2,10 @@ import uinput
 import time
 import properties.config as c
 
-
+'''
+Class to provide an interface to simulate a keyboard stroke to the system. 
+Uses uinput library
+'''
 class SystemKeys():
 
     def __init__(self):
@@ -17,7 +20,10 @@ class SystemKeys():
         self.endCounter = 0
         self.enableEndCounter = False
 
-
+    '''
+    outputs the key for specific class. 
+    If counter is enabled this will work only 10 times (counter is necesary for some testing purposes)
+    '''
     def outForClass(self, clazz):
         if(self.enableEndCounter):
             if(self.endCounter <= 10):
@@ -28,6 +34,9 @@ class SystemKeys():
             if(self.keys[clazz] != None):
                 self.device.emit_click(self.keys[clazz])
 
+    '''
+    Bind keys to classes. 
+    '''
     def createKeyBindings(self):
         keys = {}
         config = c.getInstance().getConfig("keys")

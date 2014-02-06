@@ -1,20 +1,18 @@
-# Install PyBrain 0.3.1 or greater from https://github.com/pybrain/pybrain
+'''
+Util methods for LSTM Classes.
+'''
+
 from pybrain.tools.customxml.networkwriter import NetworkWriter
 from pybrain.tools.customxml.networkreader import NetworkReader
 from pybrain.datasets import SequenceClassificationDataSet
 from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
-    # Optimization learners imports
-from pybrain.optimization import *  # @UnusedWildImport
-
+from pybrain.optimization import GA, HillClimber, MemeticSearch, NelderMead, CMAES, OriginalNES, ES, MultiObjectiveGA
 import numpy as np
 from gestureFileIO import GestureFileIO
 import time
-
-def save(net, ds, filename=""):
-    save_network(net, filename)
-    save_dataset(ds, filename)
-    return
-
+'''
+saves network to file. If no name is provided current timestamp is used
+'''
 def save_network(net, filename=""):
     if filename == "":
         filename = time.time()[:-3]
@@ -22,6 +20,9 @@ def save_network(net, filename=""):
     print("networked saved in " + filename + '.xml')
     return
 
+'''
+Saves training- and testset to files. If no name is provided current timestamp is used
+'''
 def save_dataset(ds, testds, filename=""):
     if filename == "":
         filename = time.time()[:-3]
@@ -31,6 +32,9 @@ def save_dataset(ds, testds, filename=""):
     print("testdataset saved in " + filename + '_test.data')
     return
 
+'''
+Loads a network from file
+'''
 def load_network(filename=""):
     if filename == "":
         raise Exception("No network loaded because no network name provided")
@@ -38,6 +42,9 @@ def load_network(filename=""):
     print("networked loaded from " + filename + '.xml')
     return net
 
+'''
+loads a dataset from file. Trainingset and Testsset have to exist
+'''
 def load_dataset(filename=""):
     if filename == "":
         raise Exception("No dataset loaded because no network name provided")
@@ -47,6 +54,9 @@ def load_dataset(filename=""):
     print("testdataset loaded from " + filename + '_test.data')
     return ds, testds
 
+'''
+parses a network filename for variables
+'''
 def parseNetworkFilename(filename):
     filename = filename.split('/')
     filename = filename[-1]
@@ -71,11 +81,9 @@ def parseNetworkFilename(filename):
             netValues['epochs'] = comp[1:]
     return netValues
 
-
-
-def load(filename):
-    return load_network(filename), load_dataset(filename)
-
+'''
+Loads data from sample files, preprocesses data and creates a PyBrain DataSet
+'''
 def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="false", merge67="false", cut=0, fold=1):
     def __loadDataFromFile(merge67="false"):
         g = GestureFileIO(relative=relative)
@@ -135,6 +143,9 @@ def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="fals
 
 '''
 reduces dimensions of data as this is still representative enough
+First cutting on each size 'cut' elements and then folds each 'fold' elements together.
+---
+@Deprecated (not used as tests have shown noise rduction reduces classification performance)
 removes a noise from the quadratic value by setting to zero
 '''
 def preprocessData(data, cut, fold):
@@ -151,7 +162,6 @@ def preprocessData(data, cut, fold):
 #         temp = data[i] ** 2
 #         cond = np.where(temp <= removeNoiseTreshold)
 #         data[i][cond] = 0
-    print np.shape(newData)
     return newData
 
 '''
@@ -168,8 +178,10 @@ def preprocessFrame(frame, cut, fold):
 #     frame = frame[::select]
     return newFrame
 
-# Average frequency
+'''
+Calculates average frequency 
 # TODO aktuelle Ruhe Frequenz messen und davon average nehmen.
+'''
 avg = None
 def getAverage(cut, fold):
     global avg
@@ -179,6 +191,9 @@ def getAverage(cut, fold):
         avg = preprocessFrame(avg, cut, fold)
     return avg
 
+'''
+Goes through a network and prints each module Name, each connection and each weight in a pretty format
+'''
 def printNetwork(net):
     for mod in net.modules:
         print("Module: " + str(mod.name))
@@ -195,7 +210,9 @@ def printNetwork(net):
             if conn.paramdim > 0:
                 print("\t\t- parameters " + str(conn.params))
 
-
+'''
+returns Gradient Training Algorithm by Name
+'''
 def getGradientTrainAlgo(method="rprop"):
     if(method == "rprop"):
         return RPropMinusTrainer
@@ -204,6 +221,9 @@ def getGradientTrainAlgo(method="rprop"):
     else:
         raise Exception("No train Alog specified")
 
+'''
+returns Optimzation Training Algorithm by Name
+'''
 def getOptimizationTrainAlgo(method="GA"):
     if(method == "GA"):
         return GA
@@ -224,7 +244,9 @@ def getOptimizationTrainAlgo(method="GA"):
     else:
         raise Exception("No train Alog specified")
 
-
+'''
+Creates NumPy Array with shape = (dim,) and containing only 6's
+'''
 def createArraySix(dim):
     array = np.zeros((dim,))
     for i in range(dim):

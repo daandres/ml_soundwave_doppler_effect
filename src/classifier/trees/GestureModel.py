@@ -4,6 +4,9 @@ import scipy.ndimage as ndi
 import numpy as np
 import math
 
+'''
+This class implements different functions to process training data for feature extraction and classification.
+'''
 class GestureModel(object):
 
     def __init__(self, data, normalize=True):
@@ -12,23 +15,26 @@ class GestureModel(object):
         if (normalize):
             self.normalize()
         
+        #original bins
         self.bins_left = []
         self.bins_right = []
+        #gaussian filtered bins
         self.bins_left_filtered = []
         self.bins_right_filtered = []
         
+        #original amplitudes
         self.amplitudes_left = []
         self.amplitudes_right = []
+        #gaussian filtered amplitudes
         self.amplitudes_left_filtered = []
         self.amplitudes_right_filtered = []
         
-        self.shift_order = []
         self.shifts_left = []
         self.shifts_right = []
         
         self.featureVector = []
         
-        # iterate over samples and extract num of bins on left/right side of peak
+        # iterate over samples and extract num of bins on left/right side of peak larger than 10% of max peak
         for sample in data:
             filtered = ndi.gaussian_filter1d(sample, sigma=1, output=np.float64, mode='nearest')
             peakPosition = len(sample)/2
@@ -42,9 +48,11 @@ class GestureModel(object):
             amp_left = []
             amp_left_filtered = []
             while pos >= 0:
+                #extract bins of original data
                 if sample[pos] >= threshold:
                     numBins+=1
                     amp_left.append(sample[pos])
+                #extract bins of gaussian filtered data
                 if filtered[pos] >= threshold:
                     numBinsFiltered+=1
                     amp_left_filtered.append(filtered[pos])
@@ -61,9 +69,11 @@ class GestureModel(object):
             amp_right = []
             amp_right_filtered = []
             while pos < len(sample):
+                #extract bins of original data
                 if sample[pos] >= threshold:
                     numBins+=1
                     amp_right.append(sample[pos])
+                #extract bins of gaussian filtered data
                 if filtered[pos] >= threshold:
                     numBinsFiltered+=1
                     amp_right_filtered.append(filtered[pos])
@@ -73,7 +83,12 @@ class GestureModel(object):
             self.amplitudes_right.append(amp_left)
             self.amplitudes_right_filtered.append(amp_left_filtered)
     
-       
+
+    '''
+    Each extracted number of bins on the left and right side is compared with the previous
+    smoothed value. If this value is less than minPeakSize the value is replaced with the previous smoothed value.
+    This method can be used to remove small variations in the extracted number of bins on both sides.
+    '''       
     def smoothRelative(self, left_vals, right_vals, minPeakSize):
         #left
         smoothed_left = []
@@ -102,6 +117,11 @@ class GestureModel(object):
         return [smoothed_left, smoothed_right]
     
     
+    '''
+    Each extracted number of bins on the left and right side is compared with the previous
+    value. If this value is less than minPeakSize the value is replaced with the previous value.
+    This method can be used to remove small variations in the extracted number of bins on both sides.
+    '''       
     def smoothAbsolute(self, left_vals, right_vals, minPeakSize):
         average = self.mostCommonNumberOfBins()
         
@@ -128,6 +148,10 @@ class GestureModel(object):
         return [smoothed_left, smoothed_right]
     
     
+    '''
+    All values of the left and right side are set to the most common number of bins if the absolute 
+    difference is smaller than threshold.
+    '''
     def smoothToMostCommonNumberOfBins(self, left_vals, right_vals, threshold):
         average = self.mostCommonNumberOfBins()
         
@@ -153,7 +177,9 @@ class GestureModel(object):
         
         return [smoothed_left, smoothed_right]
     
-    
+    '''
+    All peaks which are separated by just one step are combined.
+    '''
     def combineNearPeaks(self, left_vals, right_vals):
         average_left, average_right = self.mostCommonNumberOfBins()
         
@@ -185,7 +211,9 @@ class GestureModel(object):
         
         return (combined_left, combined_right)
     
-    #normalizes all samples and all values to median peak
+    '''
+    All samples and all values are normalized to the median peak.
+    '''
     def normalize(self):
         #compute median peak value
         median = 0
@@ -200,8 +228,9 @@ class GestureModel(object):
             for i in range(len(sample)):
                 sample[i] = sample[i] * diff
     
-              
-    #returns the most common number of bins as tuple (count left, count right), not the median!
+    '''          
+    This function returns the most common number of bins as tuple (count left, count right), not the median!
+    '''
     def mostCommonNumberOfBins(self):
         #left
         counts_left = np.bincount(self.bins_left_filtered)
