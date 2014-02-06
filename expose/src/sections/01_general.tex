@@ -83,33 +83,33 @@ beschrieben. Folgende fünf Verfahren werden in den Kapiteln untersucht:
 \subsection{Rahmenprogramm}
 \label{sec:app}
 Alle fünf Klassifikatoren nutzen ein gemeinsames Grundprogramm, welches die
-gemeinsamen Aufgaben bewätligt. Das programm ist in \texttt{Python} geschrieben
+gemeinsamen Aufgaben bewältigt. Das Programm ist in \texttt{Python} geschrieben
 und ist für die Tonerzeugung und -aufnahme sowie für die allgemeine Steuerung
 verantwortlich. 
 
 Die Referenzfrequenz von 18,5 kHz wird kontinuierlich im Modul
-\texttt{soundplayer.py} abgespielt. Mit der Modul \texttt{recorder.py} werden
-die Audiosignale mit einer Samplingrate von 48000 aufgenommen und mittels eine
-Foruiertransformation zu einem Datenobjekt mit dem Frequenzspektrum im Bereich
+\texttt{soundplayer.py} abgespielt. Mit dem Modul \texttt{recorder.py} werden
+die Audiosignale mit einer Samplingrate von 48000 aufgenommen und mit Hilfe einer
+Fouriertransformation zu einem Datenobjekt mit dem Frequenzspektrum im Bereich
 von ~18 kHz bis ~19 kHz umgewandelt. Die so aufgenommenen Rohdaten werden
 entweder bei der Aufnahme von Beispielen abgespeichert oder bei der Live
 Klassifikation dem genutzten Klassifikator übergeben. Das aufgenommene Array des
 Frequenzspektrums enthält 64 Werte. Dieses Array wird als \textit{Frame}
 bezeichnet.
 
-Des Weiteren wird ein einhetliches Interface für die Klassifikatoren verwendet,
-um die Steuerung der einzelnen Klassifikatoren zu verienheitlichen. Diese können
-über eine intergrierte Konsole angesteuert werden. In der Konsole können über
-verschiedene Befehle die Live Klassifizierung, das Training, eine Validierung,
+Des Weiteren wird das einheitliche Interface \texttt{IClassifier} für die Klassifikatoren verwendet,
+um die Steuerung der einzelnen Klassifikatoren zu vereinheitlichen. Diese können
+über eine integrierte Konsole angesteuert werden. In der Konsole können über
+verschiedene Befehle die Live Klassifizierung, das Training, eine Validierung
 etc. gestartet werden.  
 \enlargethispage{\baselineskip}
 Die Konsole bietet auch die Möglichkeit Beispieldaten aufzunehmen. Eine
-Beispielgeste besteht aus 32 hintereinaderfolgenden Frames. Die Aufnahme kann
+Beispielgeste besteht aus 32 aufeinanderfolgenden Frames. Die Aufnahme kann
 auch im Batchverfahren direkt hintereinander erfolgen (mehrmals die gleiche
-Geste ohne zusätzliche Interaktion). Aufgenomme Gesten werden pro Nutzer in
-einem Gestenordner gespeichert. Das Rahmenprogramm bietet auch eine
+Geste ohne zusätzliche Interaktion). Aufgenommene Gesten werden pro Nutzer in
+einzelnen Gesten-Ordnern gespeichert. Das Rahmenprogramm bietet auch eine
 Schnittstelle zum Laden der Beispieldaten in ein NumPy Array. Dies wird im Modul
 \texttt{gesturefileio.py} vorgenommen. Dabei können verschiedene Datenformate
-geladen und auch schon eine einfache Normailiserung vorgenommen werden.
+geladen und auch schon eine einfache Normalisierung vorgenommen werden.
 
 
