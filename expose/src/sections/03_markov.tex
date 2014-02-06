@@ -1,4 +1,5 @@
 ﻿\section{\acl{HMM}}
+\label{mainsec:hmm}
 \textit{Paul Pasler, Sebastian Rieder}
 
 Das \acl{HMM} ist ein stochastisches Modell für sequentielle Daten und wird vor allem in der Spracherkennung und in der Bioinformatik eingesetzt.
@@ -25,7 +26,7 @@ Eine \acl{MK} kann als Gerichteter Graph mit Zuständen \(S\) und mit Übergangs
 Sie ist definiert durch eine endlich Menge an Zuständen \( S = \{ s | 1 <= s <= N \} \) und der diskreten Zeit \( t = 0, 1, 2, \ldots \) \\
 
 \textbf{1. Markov Eigenschaft: } \\
-\( \forall t \in \mathbb{N} : P (X_t = x_t | X_1 = x_1 ; \ldots ; X_t_-_1 = x_t_-_1 ; Y_1 = y_1 ; \ldots ; Y_t_-_1 = y_t_-_1 ) = P (X_t = x_t | X_t_-_1) \) \\
+\( \forall t \in \mathbb{N} : P (X_t = x_t | X_1 = x_1 ; \ldots ; X_{t-1} = x_{t-1} ; Y_1 = y_1 ; \ldots ; Y_{t-1} = y_{t-1} ) = P (X_t = x_t | X_{t-1} ) \) \\
 Dies bedeutet, dass die \acl{MK} Gedächtnislos ist!
 
 
@@ -62,9 +63,9 @@ Es wird beschrieben durch:\\
      \item Alphabeth der Emissionen \\
            \( V = \{ v | 1 <= v <= M \} \)
      \item Matrix der Zustandsübergangswahrscheinlichkeiten \\
-           \( A = \{ a_i_j | a_i_j = P(S_t = j | S_t_-_1 = i) \} \)
+           \( A = \{ a_{ij} | a_{ij} = P(S_t = j | S_{t-1} = i) \} \)
      \item Matrix der Emissionswahrscheinlichkeiten \\
-           \( B = \{ b_j_k | b_j_k = P(O_t = o_k | S_t = j) \} \)
+           \( B = \{ b_{jk} | b_{jk} = P(O_t = o_k | S_t = j) \} \)
      \item Vektor von Zustandsstartwahrscheinlichkeiten \\
            \( \pi = \{ \pi_i | \pi_i = P(S_1 = i) \} \) 
 \end{itemize}

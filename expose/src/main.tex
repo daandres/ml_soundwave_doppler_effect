@@ -17,6 +17,7 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 
 \usepackage[]{acronym}
 \usepackage{graphicx}
+\usepackage{subfigure}
 \usepackage{wrapfig}
 
 \usepackage{tikz}
@@ -28,6 +29,9 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \usepackage{booktabs} %% better horizontal lines in tables with \toprule[<breite>], \midrule[<breite>], \cmidrule[<breite>](trim){a-b}, \bottomrule 
 \usepackage{supertabular}
 \usepackage{longtable}
+\usepackage{rotating} 
+\usepackage{makecell}
+\usepackage{pict2e}
 
 \usepackage{chngcntr}
 \usepackage{float}
@@ -80,6 +84,7 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 	\renewcommand{\subsectionautorefname}{\sectionautorefname}
 	\renewcommand{\subsubsectionautorefname}{\sectionautorefname}
 	\renewcommand{\figureautorefname}{Abbildung}
+	\renewcommand{\figurename}{Abb.}
 	\renewcommand{\tableautorefname}{Tabelle}
 	\renewcommand{\equationautorefname}{Formel}
 	\counterwithin{equation}{section}

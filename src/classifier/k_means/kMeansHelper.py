@@ -60,6 +60,7 @@ class kMeansHepler():
         resultArray = None
         globalMax = np.amax(inArray)
         firstRightPeak = True
+        ratio = 0
         for idx, frame in enumerate(inArray):
             
             maxV = np.amax(frame)
@@ -72,12 +73,14 @@ class kMeansHepler():
             #get sorted indices of the local max
             lMaxIdxSort = lMaxVal.argsort()[-3:][::-1]
             #calculate ratio global / first local max
-            ratio = lMaxVal[lMaxIdxSort[1]]/lMaxVal[lMaxIdxSort[0]]
-            #check if the local max is at first right to the global max => recognize gesture 3
-            isRightPeak =  lMaxIdxSort[1] > lMaxIdxSort[0]
-            if not oneSecPeak:
-                if not isRightPeak and ratio > 0.1 :
-                    firstRightPeak = False
+            
+            if lMaxVal.shape[0]>2:
+                ratio = lMaxVal[lMaxIdxSort[1]]/lMaxVal[lMaxIdxSort[0]]
+                #check if the local max is at first right to the global max => recognize gesture 3
+                isRightPeak =  lMaxIdxSort[1] > lMaxIdxSort[0]
+                if not oneSecPeak:
+                    if not isRightPeak and ratio > 0.1 :
+                        firstRightPeak = False
             if ratio > globalRatio and maxV/ globalMax > 0.7 and firstRightPeak:
                 globalRatio = ratio       
                 matchFrameIdx = idx
@@ -249,9 +252,73 @@ class kMeansHepler():
             result.append(gestureTMP)
             
         return np.asarray(result)
-    
+    #16
     def reduceDimensionality(self, inArray, sidesCut=16, manyTimes=4):
+        ''' 
+        sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
+        #print sidesCutedArray.shape
         
+        
+        res3DArray = sidesCutedArray.reshape(2, sidesCutedArray.shape[0]/ 2, 24)
+        #print res3DArray.shape
+    
+        ave1 = np.average(res3DArray, axis=0)
+        #print ave1.shape
+        
+        res3DArray = ave1.reshape(ave1.shape[0], 2, 12)
+        #print res3DArray .shape
+    
+        ave1 = np.average(res3DArray, axis=1)
+        #print ave1.shape
+        
+        res3DArray = ave1.reshape(ave1.shape[0], 2, 6)
+        #print res3DArray .shape
+    
+        ave1 = np.average(res3DArray, axis=1)
+        #print ave1.shape   
+                 
+        res3DArray = ave1.reshape(2, ave1.shape[0]/2, 6 )
+        #print res3DArray.shape
+    
+        ave1 = np.average(res3DArray, axis=0)
+        #print ave1.shape
+        
+        
+        return np.asarray(ave1)
+        
+   
+        sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
+        #print sidesCutedArray.shape
+        
+        res3DArray = sidesCutedArray.reshape(sidesCutedArray.shape[0], 2, 16)
+        #print res3DArray.shape
+    
+        ave1 = np.average(res3DArray, axis=1)
+        #print ave1.shape
+        
+        res3DArray = ave1.reshape(ave1.shape[0], 2, 8)
+        #print res3DArray .shape
+    
+        ave1 = np.average(res3DArray, axis=1)
+        #print ave1.shape
+        
+        res3DArray = ave1.reshape(ave1.shape[0], 2, 4)
+        #print res3DArray .shape
+    
+        ave1 = np.average(res3DArray, axis=1)
+        #print ave1.shape   
+                 
+        res3DArray = ave1.reshape(2, ave1.shape[0]/2,  4)
+        #print res3DArray.shape
+    
+        ave1 = np.average(res3DArray, axis=0)
+        #print ave1.shape
+    
+        
+        return np.asarray(ave1)
+        '''
+ 
+        #print 'inArray.shape ', inArray.shape
         result = []
         for x in xrange(0,inArray.shape[0]-1,2):
             arrTMP = []
@@ -279,18 +346,18 @@ class kMeansHepler():
         
         if manyTimes > 3:
             ave4 = np.asarray(result)
-            #print 'ave3.shape ', ave3 
+            #print 'ave3.shape ', ave3.shape 
             ave4 = ave4.reshape(ave4.shape[0]/2,2,ave4.shape[1])
             #print 'ave3.shape', np.asarray(ave3.shape)
             result = np.average(ave4, axis=1)
-        if False:#manyTimes > 3:
+        if manyTimes > 4:
             ave5 = np.asarray(result)
-            #print 'ave3.shape ', ave3 
+            print 'ave5.shape ', ave5.shape 
             ave5 = ave5.reshape(ave5.shape[0]/2,2,ave5.shape[1])
             #print 'ave3.shape', np.asarray(ave3.shape)
             result = np.average(ave5, axis=1)
                         
         return np.asarray(result)
                          
-   
+
    

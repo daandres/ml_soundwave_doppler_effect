@@ -1,4 +1,5 @@
 \section{Support Vector Machine}
+\label{mainsec:svm}
 \textit{Manuel Dudda, Benjamin Weißer}
 
 Im Jahr 1958 veröffentlichte der Psycholge und Informatiker Frank Rosenblatt sein entwickeltes Konzept des Perzeptrons \cite{rosenblatt58a}. 
@@ -11,20 +12,21 @@ Bei der Verarbeitung des Eingabevektors wird für jede Komponente eine Gewichtun
 Mehrlagige Perzeptronen (MLP) sind in der Lage, Eingabevektoren in Ausgabevektoren umzuwandeln. 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[height=40mm]{svm/svm_1.png}
-    \caption{AND-Perzeptron und Raum (Platzhalterbild)}
+    \subfigure[Pezeptron mit einem Neuron]{\includegraphics[width=0.22\textwidth]{svm/svm_perceptron.png}}
+    \subfigure[Klassentrennung im Koordinatensystem]{\includegraphics[width=0.22\textwidth]{svm/svm_and.png}}
+    \caption{AND-Perzeptron}
     \label{fig:perceptron_and}
 \end{figure}
 
 Die jeweiligen Gewichtungen können so eingestellt werden, dass der Eingabevektor in einen bestimmten Ausgabevektor umgewandelt wird. 
-Abbildung \ref{fig:perceptron_and} zeigt, wie ein einfaches Perzeptron die UND-Funktion realisiert und visualisiert die Klassifizierungsentscheidung in einem Koordinatensystem. 
+Abb. \ref{fig:perceptron_and} zeigt, wie ein einfaches Perzeptron die UND-Funktion realisiert und visualisiert die Klassifizierungsentscheidung in einem Koordinatensystem. 
 
 Einlagige Perzeptronen sind beschränkt auf die Lösung linear separierbarer Probleme. 
 Ein einfaches XOR kann also nicht realisiert werden (Abb. \ref{fig:perceptron_xor}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[height=50mm]{svm/svm_1.png}
-    \caption{XOR-Perzeptron-Raum, nichtlinear separierbar (Platzhalterbild)}
+    \includegraphics[width=0.25\textwidth]{svm/svm_xor.png}
+    \caption{nichtlinear separierbares XOR}
     \label{fig:perceptron_xor}
 \end{figure}
 
@@ -65,21 +67,16 @@ Intuitiv ist klar, dass alle Punkte auf der Hyperebene selbst keinen Abstand hab
  
 Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die SVM die Eingabe einr Klasse zu. Dabei können nur zwei Klassen  prognostiziert werden. Die Klasse gehört also entweder zur Klassenmenge \ref{eq:svm_decision0} oder zu \ref{eq:svm_decision1}.
 
-\begin{equation}
-\label{eq:svm_decision0}
-    \mathcal{C}_{-1}: \{ c \,|\, sign(\langle w,x \rangle + b) = -1 \}
-\end{equation}
-
-\begin{equation}
-\label{eq:svm_decision1}
-    \mathcal{C}_1: \{ c \,|\, sign(\langle w,x \rangle + b) = 1 \}
-\end{equation}
+\begin{eqnarray}
+    \mathcal{C}_{-1}: \{ c \,|\, sign(\langle w,x \rangle + b) = -1 \} \label{eq:svm_decision0} \\
+    \mathcal{C}_1: \{ c \,|\, sign(\langle w,x \rangle + b) = 1 \} \label{eq:svm_decision1}
+\end{eqnarray}
 
 Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. \ref{fig:svm_separator}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[height=50mm]{svm/svm_1.png}
-    \caption{XOR-Perzeptron-Raum, nichtlinear separierbar (Platzhalterbild)}
+    \includegraphics[width=0.22\textwidth]{svm/svm_overview.png}
+    \caption{Trenngerade einer SVM}
     \label{fig:svm_separator}
 \end{figure}
 
@@ -92,13 +89,7 @@ Das macht die SVM zu einem sehr transparenten und performantent Klassifikator.
 Es ergeben sich Unregelmäßigkeiten bei der Lösung von nichtlinear separierbaren Probleme und der Klassifikation von mehr als 2 Klassen.
 Im Gegensatz zu den MLPs kann man mit der Erhöhung der Dimension diesen Umstand nicht umgehen. 
 Die SVMs setzen in diesem Falle auf die Transformation der Datenrepräsentation. 
-Mit Hilfe von Kernfunktionen lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren (\ref{eq:svm_kernel_function}, in dem sie linear separierbar erscheinen (Abb. \ref{fig:svm_kernel}). 
-
-\begin{figure}[htbp] \centering
-    \includegraphics[height=50mm]{svm/svm_1.png}
-    \caption{Die Kernel-Funktion repräsentiert die Daten in einem höherdimensionalen Raum, in dem sie linear separierbar erscheinen (Platzhalterbild)}
-    \label{fig:svm_kernel}
-\end{figure}
+Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren in dem sie linear separierbar erscheinen (Abb. \ref{fig:svm_kernel}). 
 
 \begin{equation}
 \label{eq:svm_kernel_function}
@@ -107,6 +98,13 @@ Mit Hilfe von Kernfunktionen lassen sich Daten von $\mathbb{R}^n$ in einen höhe
     & x \mapsto \phi(x)
 \end{split} 
 \end{equation}
+
+\begin{figure}[htbp] \centering
+    \subfigure[Datenpunkte $x$ nichtlinear separierbar]{\includegraphics[width=0.22\textwidth]{svm/svm_fitting-line.png}}
+    \subfigure[transformtierte Datenpunkte $\phi(x)$ linear sepraierbar]{\includegraphics[width=0.22\textwidth]{svm/svm_linear-fitting.png}}
+    \caption{Kernfunktion $\phi$}
+    \label{fig:svm_kernel}
+\end{figure}
 
 Als Bedingung des Raums $\mathbb{R}^h$ gilt, dass das Skalarprodukt erklärt ist. 
 Wir haben nach der Transformation also die neue Form \ref{eq:svm_kern_tranformation}. 
@@ -117,8 +115,9 @@ In der neuen Form müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rang
     \mathcal{C}: \{ c_i \,|\, sign(\langle \phi(w),\phi(x) \rangle + b) = i \}
 \end{equation}
 
+
 Dadurch, dass die Trainingspunkte $x$ nur in Skalarprodukten auftauchen, können wir uns des Kernel-Tricks bedienen.
-Kernel-Funktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle Eigenschaft aus, da sie sich verhalten wie ein Skalarprodukt in $\mathbb{R}^h$ (\ref{eq:svm_kern_trick}). 
+Kernfunktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle Eigenschaft aus, da sie sich verhalten wie ein Skalarprodukt in $\mathbb{R}^h$ (\ref{eq:svm_kern_trick}). 
 
 \begin{equation}
 \label{eq:svm_kern_trick}
@@ -126,13 +125,14 @@ Kernel-Funktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine speziel
 \end{equation}
 
 Es kann also das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ in $\mathbb{R}^h$ ausgerechnet werden, ohne die Daten mittles $\phi$ zu transformieren. 
-Das Beispiel \ref{eq:svm_kernel_example} verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion:
+Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion:
 
-\begin{equation}
+\renewcommand{\figurename}{Bsp.}
+\begin{figure}[htbp]
+\begin{equation*}
 \label{eq:svm_kernel_example}
 \begin{split}
     \text{Seien } w,x & \in \mathbb{R}^2 \text{ und}\\
-    \\
     \phi : & \mathbb{R}^2 \to \mathbb{R}^3\\
     & \begin{pmatrix}
     x_1 \\
@@ -144,9 +144,7 @@ Das Beispiel \ref{eq:svm_kernel_example} verdeutlicht die Anwendung des Kernel-T
     \sqrt{x_1x_2} \\
     x_2^2
     \end{pmatrix}\\
-    \\
     \text{dann ist:} &\\
-    \\
     \langle \phi(w),\phi(x) \rangle = & \:\langle \begin{pmatrix}
     w_1^2 \\
     \sqrt{w_1w_2} \\
@@ -164,19 +162,25 @@ Das Beispiel \ref{eq:svm_kernel_example} verdeutlicht die Anwendung des Kernel-T
     \\
     = & \:\langle w,x \rangle^2 \overset{\text{(def)}}= \mathcal{K}(w,x)
 \end{split}
-\end{equation}
-
-Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach Satz von Mercer \cite[S. 127]{Marsland} erfüllen.
-
-\begin{figure}[htbp] \centering
-    \includegraphics[height=50mm]{svm/svm_1.png}
-    \caption{SVM-Räume, wx+b, M (Platzhalterbild)}
-    \label{fig:svm1}
+\end{equation*}
+    \caption{Beispiel einer Kernfunktion}
+    \label{fig:ex_kernel}
 \end{figure}
+\renewcommand{\figurename}{Abb.}
 
-\subsubsection{Klassifikation von merheren Objekten}
+Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
+Gängige Kernfunktionen sind:
+\begin{itemize}
+\item{linear: $\mathcal{K}(w,x) = \langle w,x \rangle$}
+\item{polynomiell: $\mathcal{K}(w,x) = (\gamma\langle w,x \rangle+c_0)^d$}
+\item{radial basis function: $\mathcal{K}(w,x) = exp(- \gamma \|w - x \| ^2)$}
+\end{itemize}
 
-Die SVM ist ein binärere Klassifikator, d. h. er kann eine Objektzuordnung nur zwischen zwei Klassen durchführen. 
+\newpage
+
+\subsubsection{Klassifikation von merheren Klassen}
+
+Die SVM ist ein binärer Klassifikator, d. h. er kann eine Objektzuordnung nur zwischen zwei Klassen durchführen. 
 In der Regel will man ...
 
 

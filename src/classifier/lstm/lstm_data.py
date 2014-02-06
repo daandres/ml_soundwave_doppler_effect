@@ -43,13 +43,13 @@ class LSTMData:
                 if(self.config['autoload_dataset'] == "true"):
                     self.__loadDataset(filename)
                 else:
-                    self.ds = util.createPyBrainDatasetFromSamples(self.classes, self.nClasses, "", self.config['data_average'], self.config['merge67'], self.datacut, self.datafold)
+                    self.ds = util.createPyBrainDatasetFromSamples(self.net.classes, self.net.nClasses, "", self.config['data_average'], self.config['merge67'], self.net.datacut, self.net.datafold)
                     self.testds, self.ds = self.ds.splitWithProportion(0.2)
                     if(self.config['autosave_dataset'] == "true"):
                         parms = []
-                        parms.append("o" + str(self.nClasses))
-                        parms.append("c" + str(self.datacut))
-                        parms.append("f" + str(self.datafold))
+                        parms.append("o" + str(self.net.nClasses))
+                        parms.append("c" + str(self.net.datacut))
+                        parms.append("f" + str(self.net.datafold))
                         self.saveData("_".join(parms))
             else:
                 self.testds, self.ds = None, None

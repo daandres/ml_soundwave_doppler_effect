@@ -1,6 +1,7 @@
 import ui_kmeans as ui_kmeans_
 import numpy as np
-
+#from PySide import QtCore, 
+from PyQt4.QtCore import QObject, pyqtSlot, pyqtSignal
 import sys, os
 from PyQt4 import Qt, QtCore, QtGui
 from PyQt4.QtGui import QMainWindow, QPushButton, QApplication
@@ -11,22 +12,22 @@ from threading import Thread
 import copy
 import ntpath
 from functools import partial
-
+#import classifier.k_means.clusterSignal as cSignal
 from sklearn import cluster
-import src.classifier.k_means.kMeansHelper as kmHelper
+import classifier.k_means.kMeansHelper as kmHelper
 from properties.config import ConfigProvider
 from PyQt4.Qt import QColor
-
+import classifier.k_means.clusterSignal as clusterS
 
 class ViewUIKMeans:
-    def __init__(self, kMeansClassifier=None, applicationClose=None):
+    def __init__(self, kMeansClassifier=None, applicationClose=None, classSignal=None):
 
         self.kmH = None 
         self.kmeans = None
         self.kmeansClusterCenters = None
         
         self.checkOnline = False
-        
+       
         self.toogleClass0 = False
         self.toogleClass1 = False
         self.toogleClass2 = False
@@ -73,6 +74,12 @@ class ViewUIKMeans:
         if kMeansClassifier == None:
             raise Exception("No kMeansClassifier, so go home")
         self.kMeansClassifier = kMeansClassifier
+        #self.kMeansClassifier.cSignal.currentGestureSignal.connect(self.setGestureTrigger)
+        
+        self.newSignal = classSignal#clusterS.SignalToGUI()
+        self.newSignal.currentGestureSignal.connect(self.setGestureTrigger)
+        #self.connect(self.newSignal, self.newSignal.currentGestureSignal, self.setGestureTrigger)
+        
         self.recorder = kMeansClassifier.recorder
         
         if applicationClose == None:
@@ -97,6 +104,20 @@ class ViewUIKMeans:
         self.sampleRate = int(float(config.getRecordConfig()['leftborder']) + float(config.getRecordConfig()['rightborder']))
 
      
+    def connectSlott(self):
+        self.newSignal = clusterS.SignalToGUI()
+        #self.newSignal.currentGestureSignal.connect(self.setGestureTrigger)
+        self.uiplot.rightPage_sa.connect(self.newSignal, self.newSignal.currentGestureSignal, self.setGestureTrigger)
+    
+    def macheCrash(self, value):
+        self.addLogText(value)
+    
+    @pyqtSlot(int)
+    def setGestureTrigger(self, gesture):
+        #print 'gesture : ', gesture
+        #self.uiplot.scrollArea.setVertical(float(gesture))
+        self.rightPage.setText(str(gesture))
+        
     def plotSignal(self):
 
         data = self.recorder.getTransformedData()
@@ -165,15 +186,15 @@ class ViewUIKMeans:
  
     def recordByRecorder(self):
         self.recordFramesCount = self.uiplot.frames_sb.value()
-        self.kMeansClassifier.fillBuffer(self.recordFramesCount, self.callback)
+        self.kMeansClassifier.fillBuffer(self.recordFramesCount)
         #self.recorder.fillBuffer(self.recordFramesCount, self.callback)
         self.uiplot.record_bt.setStyleSheet('QPushButton {color: green}')
         
 
     def showPlot(self):
         self.showRecords = False
-      
-        
+
+
         
     def openFile(self):
         print QtCore.QDir.currentPath()
@@ -191,8 +212,8 @@ class ViewUIKMeans:
         paths = self.fileName
        
         if not self.multipleFiles:
-            classButton = getattr(self.uiplot,'class%s_bt' %path[-1::])
-            classButton.setStyleSheet('QPushButton {color: black; background-color: blue; font: bold;}')        
+            #classButton = getattr(self.uiplot,'class%s_bt' %path[-1::])
+            #classButton.setStyleSheet('QPushButton {color: black; background-color: blue; font: bold;}')        
             for idx, path in enumerate(paths):
                 if idx == 0:
                     self.arrayFromFile = np.asarray(np.loadtxt(str(self.fixpath(path)), delimiter=","))
@@ -410,7 +431,60 @@ class ViewUIKMeans:
         self.checkOnline = not self.checkOnline
         self.kMeansClassifier.checkKMeansOnline()
 
-        
+    def kMeansLoop(self):
+        maxIterations = self.uiplot.maxIteration_sb.value()
+        nInit = self.uiplot.n_init_sb.value()
+        kLoop = self.uiplot.kMeansLoop_sb.value()
+        k = self.uiplot.kNumber_sb.value()
+        '''
+        per = np.random.permutation(self.learnArrayKMeans)
+        self.kmeans = cluster.KMeans(k,  max_iter=maxIterations, n_init=nInit)
+        cluster_ = self.kmeans.fit_predict(per)
+        print cluster_
+        distanceList = []
+        distanceListNoise = []
+        if self.kmeansClusterCenters is not None:
+            for x in xrange(k-1):
+                oldDistance = np.linalg.norm(self.kmeansClusterCenters[x] - self.kmeansClusterCenters[x+1])
+                newDistance = np.linalg.norm(self.kmeans.cluster_centers_[x] - self.kmeans.cluster_centers_[x+1])
+                distanceList.append(int(newDistance))
+                newDistanceNoise = np.linalg.norm(self.kmeans.cluster_centers_[0] - self.kmeans.cluster_centers_[x+1])
+                distanceListNoise.append(int(newDistanceNoise))
+            self.addLogText('to neighbors    : ', distanceList, textColor='blue') 
+            self.addLogText('to noise____    : ', distanceListNoise, textColor='blue')
+            
+        self.kmeansClusterCenters =   self.kmeans.cluster_centers_
+        self.kMeansClassifier.setKMeans(self.kmeans)        
+        '''
+        minDistance = 0.0
+        endDisList = []
+        for x in range(kLoop):
+            if x == 0:
+                self.kmeans = cluster.KMeans(k,  max_iter=maxIterations, n_init=nInit)
+                cluster_ = self.kmeans.fit_predict(self.learnArrayKMeans)
+                self.kmeansClusterCenters =   self.kmeans.cluster_centers_
+            else:
+                self.kmeans = cluster.KMeans(k,  max_iter=maxIterations, n_init=nInit)
+                cluster_ = self.kmeans.fit_predict(self.learnArrayKMeans)
+                distanceList = []
+                disIdxList = []
+                for y in range(k):
+                    for z in range(y+1,k):
+                        distance = np.linalg.norm(self.kmeans.cluster_centers_[y] - self.kmeans.cluster_centers_[z])
+                        #print int(distance)
+                        distanceList.append(int(distance))
+                        disIdxList.append([int(distance), y, z])
+                        
+                distanceArray = np.asarray(distanceList)
+                currDistance = np.amin(distanceArray)
+                #print 'currDistance : ', currDistance
+                if currDistance > minDistance:
+                    minDistance = currDistance
+                    endDisList = disIdxList
+                    self.kmeansClusterCenters = self.kmeans.cluster_centers_
+                    print 'currDistance : ', currDistance
+        print 'endeeee !!!' 
+        print disIdxList          
     def testKMeans(self):
         class_  = self.kmeans.predict(self.learnArrayKMeans)
         print class_
@@ -475,6 +549,7 @@ class ViewUIKMeans:
         
     
     def startRecognition(self):
+        #self.kMeansClassifier.startTraining
         if self.kmeansClusterCenters is None:
             #default
             self.kmeansClusterCenters = np.asarray(np.loadtxt(str(self.fixpath("C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert/Centroids/cen_12N.kmeans")), delimiter=","))        
@@ -507,6 +582,8 @@ class ViewUIKMeans:
         self.uiplot.testKMeans_bt.clicked.connect(self.testKMeans)
         self.uiplot.saveCentorids_bt.clicked.connect(self.saveCentroids)
         self.uiplot.loadCentorids_bt.clicked.connect(self.loadCentroids)
+        self.uiplot.kMeansLoop_bt.clicked.connect(self.kMeansLoop)
+        
         
         ''' classes buttons '''
         self.uiplot.class0_bt.clicked.connect(partial(self.segmentClasses, 0))
@@ -614,7 +691,7 @@ class ViewUIKMeans:
             
             
     def startNewThread(self):
-        self.t = Thread(name="ControlGuiBob", target=self.start, args=())
+        self.t = Thread(name="ControlGui", target=self.start, args=())
         self.t.start()
         return self.t
 
@@ -624,6 +701,8 @@ class ViewUIKMeans:
             return self.t.is_alive()
         return False
    
+    def end(self):
+        self.uiplot.timer.Stop(self.guiIntervall)
    
     def start(self):
         # application
@@ -638,14 +717,12 @@ class ViewUIKMeans:
         
         self.curve_tab1 = Qwt.QwtPlotCurve()
         self.curve_2_tab1 = Qwt.QwtPlotCurve()
-        print 'geo : ', self.win_plot.geometry()
-        desktop = self.app.desktop()
-        res =  desktop.availableGeometry(desktop.primaryScreen());
-        koor =  res.getCoords()
-        print koor, (koor[2]/2-1378/2)/13, (koor[3]/2-740/2)/5
+        
         self.win_plot.setGeometry(18, 33, 1366, 780)
+        
+                
         plot = self.uiplot
-        print 'geo : ', self.win_plot.geometry()
+        
         for i in range(1,33):
 
             qwtPlot = getattr(plot ,'qwtPlot_%d' %i)
@@ -689,16 +766,15 @@ class ViewUIKMeans:
         self.uiplot.scrollArea.setWidget(self.textEdit)
         
         self.rightPage = QtGui.QTextEdit()
+        self.rightPage.setFont(QtGui.QFont ("Courier", 200));
         self.uiplot.rightPage_sa.setWidget(self.rightPage)
-        
-        
+
         # ## DISPLAY WINDOWS
         self.win_plot.show()
-       
         code = self.app.exec_()
         self.applicationClose(code)
        
            
-#         sys.exit(code)
-#         self.recorder.close()
+        #sys.exit(code)
+
     

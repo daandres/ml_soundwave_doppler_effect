@@ -15,7 +15,7 @@ def preprocessData(data):
     data = dp.normalizeBound(data)
     data = dp.cutRelevantAction(data)
     data = dp.round(data)
-    data = dp.cutBad(data)
+    #data = dp.cutBad(data)
     #data = dp.cutPeak(data)
     return data
 

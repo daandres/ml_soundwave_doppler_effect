@@ -1,7 +1,7 @@
 import classifier.lstm.util as util
 import numpy as np
 from scipy import stats as stats
-from systemkeys import SystemKeys
+import properties.config as c
 
 '''
 LSTMCLassify class provides different methods for live/online classification with the LSTM Module. 
@@ -28,8 +28,15 @@ class LSTMClassify():
 
         # classify4
         self.start = 0
-
-        self.outkeys = SystemKeys()
+        self.liveData = []
+        self.beginClassify = 0
+        self.beginMax = 0
+        self.maxValue = 0
+        self.maxValueList = []
+        self.outkeys = None
+        if(c.getInstance().getOSConfig()['type'] == "posix"):
+            from systemkeys import SystemKeys
+            self.outkeys = SystemKeys()
 
     '''
     Interface method for classifcation. WIll be called by LSTM interface and calls different implementations. 
@@ -38,13 +45,14 @@ class LSTMClassify():
     def classify(self, data):
         preprocessedData = data / np.amax(data)
         preprocessedData = util.preprocessFrame(preprocessedData, self.net.datacut, self.net.datafold)
-        diffAvgData = preprocessedData - self.avg
-        self.__classify4(diffAvgData)
+        # diffAvgData = preprocessedData - self.avg
+        self.__classify4(preprocessedData)
 
     '''
     Gesten werden starr nach 32 frames erkannt
     '''
     def __classify1(self, data):
+        data = data - self.avg
         self.datalist.append(data)
         self.datanum += 1
         if(self.datanum % 32 == 0):
@@ -66,6 +74,7 @@ class LSTMClassify():
     - 
     '''
     def __classify2(self, data):
+        data = data - self.avg
         self.datanum += 1
         self.datalist.append(data)
         if(self.datanum % 32 == 0):
@@ -87,7 +96,8 @@ class LSTMClassify():
                     self.predcounter += 1
                     if(self.predcounter == 4):
                         print(str(self.previouspredict))
-                        self.outkeys.outForClass(self.previouspredict)
+                        if(self.outkeys != None):
+                            self.outkeys.outForClass(self.previouspredict)
                     return self.previouspredict, self.predcounter
         return -1, -1
 
@@ -97,6 +107,7 @@ class LSTMClassify():
     TODO not finished yet
     '''
     def __classify3(self, data):
+        data = data - self.avg
         pred, predcounter = self.__classifiy2(data)
         if(pred != -1 and predcounter >= 4):
             try:
@@ -121,23 +132,45 @@ class LSTMClassify():
     Gesten werden anhand eines erkannten Starttresholds erkannt
     '''
     def __classify4(self, data):
-        # sequence maximum erkennen
-        # print data.max()
-        if data.max() > 0.32 and self.start == 0:
-            print "starting ..."
-            self.start = 1
+        if not self.beginClassify:
+            # collecting live data for avg
+            self.liveData.append(data)
+            if self.liveData.__len__() == 20:
+                self.beginClassify = 1
+                # print self.liveData
+                self.avg = np.mean(self.liveData, axis=0)
+                # print self.avg
+                self.beginMax = 1
+        # collecting data for maxValue
+        elif self.beginMax:
+            data = data - self.avg
+            self.maxValueList.append(data.max())
+            if self.maxValueList.__len__() == 30:
+                for a in self.maxValueList:
+                    if self.maxValue < a:
+                        self.maxValue = a
+                print self.maxValue
+                # maxValue ein bischen erhohen (steuert empfindlichkeit der erkennung)
+                self.maxValue = self.maxValue + 0.0001
+                self.beginMax = 0
+        else:
+            data = data - self.avg
+            # print data.max()
+            if data.max() > self.maxValue and self.start == 0:
+                print "starting ..."
+                self.start = 1
 
-        if self.start:
-            self.datalist.append(data)
-            self.datanum += 1
-            if(self.datanum % 32 == 0):
-                print "net ac"
-                self.net.reset()
-                out = self.net._activateSequence(self.datalist)
-                print(str(out))
-                self.datalist = []
-                self.datanum = 0
-                self.start = 0
-                return out
+            if self.start:
+                self.datalist.append(data)
+                self.datanum += 1
+                if(self.datanum % 32 == 0):
+                    print "net ac"
+                    self.net.reset()
+                    out = self.net._activateSequence(self.datalist)
+                    print(str(out))
+                    self.datalist = []
+                    self.datanum = 0
+                    self.start = 0
+                    return out
 
         return -1

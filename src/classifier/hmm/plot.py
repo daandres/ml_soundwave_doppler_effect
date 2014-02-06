@@ -61,12 +61,12 @@ class Plot():
             elif self.dClass == 1:
                 self.name = "RawData"
                 self.actionPoint=[]
-                p.plotRaw()
+                self.plotRaw()
                 self.dClass += 1
             elif self.dClass == 2:
                 self.name = "GestureGMM"
                 self.actionPoint=[]
-                p.plotGestureGmms()
+                self.plotGestureGmms()
                 self.dClass = 0
                 
     def onpress(self, event):
@@ -78,6 +78,17 @@ class Plot():
                 self.dClass = 1
                 self.gesture = gesture
                 self.plotData()
+        if key == 'down':
+            self.index -= 1
+        if key == 'up':
+            self.index += 1
+        if self.index < 0:
+            self.index = len(self.data)-1
+        elif self.index >= len(self.data):
+            self.index = 0
+        self.plot()
+        
+            
 
 
     def plotData(self):
@@ -119,7 +130,7 @@ class Plot():
         self.ax = self.fig.add_subplot(111, projection='3d')
         self.surf = self.ax.plot_surface(self.X, self.Y, self.Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
         self.ax.set_zlim(-0.03, 1.03)
-        self.ax.set_title("gesture " + str(self.gesture) + ", " +self.name + ": " + str(self.index))
+        self.ax.set_title("gesture " + str(self.gesture) + ", " +self.name + ": " + str(self.index+1))
 
         self.ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
         
@@ -132,9 +143,10 @@ class Plot():
 
     def plot(self):
         self.ax.cla()
+        self.fig.clf()
         self.ax = self.fig.add_subplot(111, projection='3d')
         self.surf = self.ax.plot_surface(self.X, self.Y, self.data[self.index], rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-        self.ax.set_title("gesture " + str(self.gesture) + ", " +self.name + ": " + str(self.index))
+        self.ax.set_title("gesture " + str(self.gesture) + ", " +self.name + ": " + str(self.index+1))
         if len(self.actionPoint) > 0:
             self.ax.scatter(self.actionPoint[self.index],0,0,'o', c='r')
         self.ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
@@ -145,6 +157,7 @@ class Plot():
 
     def plotRaw(self):
         self.data = u.loadRaw(self.gesture)
+        
         self.actionPoint = []
         for d in self.data:
             self.actionPoint.append(self.dp._getHighestSum(d))
@@ -155,7 +168,7 @@ class Plot():
     def plotGestureGmms(self):
         mg = g.GMM_Util()
         gmms = mg.sample(self.gesture)
-        print "loading..."
+        print "loading Gesture GMM..."
         data = []
         for i in range(13):
             lis = []
@@ -164,7 +177,6 @@ class Plot():
                 sample = np.mean(sample, 0)
                 lis.append(np.ravel(sample))
             data.append(lis)
-        print np.shape(data)
         self.data = data
         self.index = 0
         self.initAxis()
@@ -180,7 +192,6 @@ class Plot():
         data = []
         for gmm in model.gmms_:
             data.append(gmm.sample(13))
-        print np.shape(data)
 
         self.data = data
         self.index = 0
@@ -190,6 +201,6 @@ class Plot():
 
 if __name__ == "__main__":
 
-    p = Plot(7)
+    p = Plot(5)
     p.initPlot()
     p.show()

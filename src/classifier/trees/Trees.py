@@ -8,9 +8,51 @@ from classifier.trees.GestureModel import GestureModel
 from collections import deque
 import numpy
 from sklearn import cross_validation
+from PyQt4 import Qt, QtCore, QtGui
+import sys
 
 
+'''
+QObject for signal
+'''
+class Signal(QtCore.QObject):
+    
+    newGesture = QtCore.pyqtSignal(int)
+    def __init__(self, view):
+        super(Signal, self).__init__()
+        self.view = view # trees gui
+        self.newGesture.connect(view._receiveGesture)
 
+    
+'''
+Simple gui to show an image for each gesutre.
+'''
+class Gui(QtGui.QWidget):
+
+    def __init__(self):
+        super(Gui, self).__init__()
+        
+        hbox = QtGui.QHBoxLayout(self)
+        self.pixmap = QtGui.QPixmap("C:/Users/Annalena/git/ml_soundwave_doppler_effect/src/classifier/trees/redrocks.jpg")
+
+        lbl = QtGui.QLabel(self)
+        lbl.setPixmap(self.pixmap)
+
+        hbox.addWidget(lbl)
+        self.setLayout(hbox)
+        
+        self.setWindowTitle('Red Rock')
+        self.show()
+    
+    
+    @QtCore.pyqtSlot(int)
+    def _receiveGesture(self, gesture):
+        print gesture
+
+
+'''
+Implementation of tree classifier
+'''
 class Trees(IClassifier):
 
     def __init__(self, recorder=None, n_est=5):
@@ -23,6 +65,9 @@ class Trees(IClassifier):
         self.startTraining()
         self.flag = False
         self.liste = []
+        
+        
+        
 
     def getName(self):
         return self.name
@@ -33,6 +78,12 @@ class Trees(IClassifier):
         return self.t
 
     def startTraining(self):
+        
+        app = QtGui.QApplication(sys.argv)
+        self.gui = Gui()
+        self.signal = Signal(self.gui)
+        app.exec_()
+        
         t = TrainingData()
         gestures = t.getRawData()
         
@@ -110,7 +161,8 @@ class Trees(IClassifier):
                     recognizedGestures.extend(prediction)
                 result = numpy.argmax(numpy.bincount(recognizedGestures))
                 if(result != 6):
-                    print "Result: ", result
+                    #print "Result: ", result
+                    self.signal.newGesture.emit(result)
                 
                 self.temp.clear()
             self.queue.popleft()
@@ -179,4 +231,6 @@ class Trees(IClassifier):
             
             data.append(featureVector)
         return data
+    
+ 
             

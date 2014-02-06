@@ -1,4 +1,5 @@
 \section{\acl{LSTM}}
+\label{mainsec:lstm}
 \textit{Daniel Andrés López, Frank Reichwein}
 
 Eine weitere Art eine Klassifizierung vorzunehmen ist es ein neuronales Netz zu
@@ -17,7 +18,7 @@ abgebaut bzw. verändert. Dieser Vorgang wird im Allgemeinen Lernen bezeichnet.
 Die erlebten Erfahrungen werden in dem Netz von Neuronen und Synapsen
 verarbeitet und dadurch gespeichert. Erreichen das Gehirn nun neue
 Sinneseindrücke werden die Neuronen erneut stimuliert und je nach Ergebnis
-werden bestimmte Erinnerungen, Gefühle, Aktionen oder anderes erlebt und
+werden bestimmte Erinnerungen, Gefühle, Aktionen oder anderes erlebt und 
 ausgeführt. Jedoch sind sie nicht direkt an ein bestimmtes Ereignis geknüpft,
 sondern wurden durch verschiedene Erfahrungen verallgemeinert, um so
 verschiedenen Situationen gut verarbeiten zu können.
@@ -185,7 +186,7 @@ repräsentiert und $m$ der Index über die Eingabedimension ist. Daher hat ein
 \acp{LSTM} werden durch ihre autorekurrente Verbindung der Memoryzelle zu
 \acp{RNN}. Diese rekurrente Verbindung ist besonders, da sie beim Training
 Fehler nicht vor in die komplette Vergangenheit zurück propagiert. Erreicht wird
-das durch ein Gewicht der Verbindung von $1.0$ (\autoref{eq_lstm_sc}). Das zuvor
+das durch ein Gewicht der Verbindung von $1.0$ (\autoref{eq_lstm_cs}). Das zuvor
 beschriebene Forgetgate nimmt Einfluss auf dieses Gewicht. Soll der Wert
 $s_c(t-1)$ in der Berechnung nicht berücksichtigt werden, setzt das Gate das
 Gewicht auf $\approx0$ andernfalls behält es den aktuellen Wert des Gewichts mit
@@ -218,24 +219,24 @@ weiter betrachtet. Weitere Informationen sind unter anderem in \cite{GERS2001}
 zu finden.
 
 \paragraph{Training eines \ac{LSTM} Netzes}
-Damit neuronale Netze (damit auch \ac{LSTM}-Netze) ein gutes
-Ergebnis liefern müssen ihre Gewichte auf das Problem angepasst sein. Es ist
-jedoch nicht einfach berechenbar wie die korrekten problembezogenen Gewichte
-sind. Daher müssen sie iterativ verbessert werden. Dieser Vorgang wird Training
-genannt. Dabei werden einem zufällig initialisierten Netzwerk Datensätze zum
-Klassifizieren gezeigt. Das Netzwerk liefert daraufhin ein Ergebnis. Das
-gewonnene Ergebnis wird mit dem Zielergebnis verglichen. So lässt sich eine
-Fehlerquote berechnen. Es gibt verschiedene Verfahren wie die Fehlerquote die
-Gewichte bzw. das Netz beeinflusst, um in der nächsten Iteration eine geringere
-Fehlerquote zu erhalten. Nachfolgend werden die Grundideen zweier Basisverfahren
-erläutert:
+Damit neuronale Netze (damit auch \ac{LSTM}-Netze) ein gutes Ergebnis liefern
+müssen ihre Gewichte auf das Problem angepasst sein. Es ist jedoch nicht einfach
+berechenbar wie die korrekten problembezogenen Gewichte sind. Daher müssen sie
+iterativ verbessert werden. Dieser Vorgang wird Training genannt. Dabei werden
+einem zufällig initialisierten Netzwerk Datensätze zum Klassifizieren gezeigt.
+Das Netzwerk liefert daraufhin ein Ergebnis. Das gewonnene Ergebnis wird mit dem
+Zielergebnis verglichen. So lässt sich eine Fehlerquote berechnen. Es gibt
+verschiedene Verfahren wie die Fehlerquote die Gewichte bzw. das Netz
+beeinflusst, um in der nächsten Iteration eine geringere Fehlerquote zu
+erhalten. Nachfolgend werden die Grundideen von zwei verschiedenen
+Trainingsansätzen erläutert:
 \begin{itemize}
-	\item Backpropagation
+	\item Fehlerrückführung (engl. Backpropagation)
 	\item Evolution based Training
 \end{itemize}
 
 \subparagraph{Backpropagation}
-Das Verfahren \textit{Fehlerrückführung (Backpropagation)} ist ein
+Das Verfahren \textit{Fehlerrückführung} ist ein
 Gradientenabstiegsverfahren. Das bedeutet, es versucht die Fehlerquote als
 Ergebnis einer Funktion des Netzes aufzufassen und diesen Wert daran zu
 minimieren. Dabei werden in Richtung des Gradienten der Funktion die Gewichte in
@@ -349,21 +350,29 @@ da dies kein signifikanter Beitrag zur Geste ist sondern ein Rauschen. Das
 Ergebnis dieser Untersuchung ist jedoch unbefriedigend, sodass die Idee nicht
 genutzt wird. \textbf{TODO Messwerte?}
  
-
-
 \subsubsection{Anpassung des Klassifikators}
+Das \ac{LSTM}-Netz wird mit Hilfe der Python Bibliothek \texttt{PyBrain}
+\cite{schaul2010} erstellt. Diese Bibliothek stellt verschiedene Machine
+Learning Algorithmen bereit, unter anderem Neuronale Netzwerke mit
+\ac{LSTM}-Neuronen. Des Weiteren sind verschiedene Algorithmen zum Training und
+Module zur Nutzung der Netzwerke bereitgestellt. Aufgrund der Beschränkungen der
+Bibliothek werden nur \ac{LSTM}-Blöcke mit einer einzelnen Memoryzelle
+verwendet. Die verschiedenen Parameter zur Erstellung (Anzahl der
+\ac{LSTM}-Blöcke, Anzahl der Ausgabeneuronen, Nutzung von Peepholes, etc.) sowie
+die Parameter zur Vorverarbeitung (vgl. \autoref{sec:lstm_data}) werden anhand
+von Tests ermittelt, denn eine Berechnung der optimalen Parameter ist nicht
+möglich. In den eriteren Kapiteln wird auf die unterschiedlichen Parameter noch
+einmal im Detail eingegangen. 
+
+
 \subsubsection{Implementierung}
-Da es zum Ende des Projektes ein Programm geben soll, indem alle Klassifikatoren 
-eingebunden sind, haben sich alle Teilnehmer auf ein Interface geeinigt, was 
-jeder Klassifikator implementieren muss. Dies ist die abstrakte Klasse \texttt{IClassifier}.
+Da es zum Ende des Projektes ein Programm geben soll, indem alle Klassifikatoren
+eingebunden sind, haben sich alle Teilnehmer auf ein Interface geeinigt, was
+jeder Klassifikator implementieren muss. Dies ist die abstrakte Klasse
+\texttt{IClassifier}. Die Implementatierung des \ac{LSTM}-Klassifikators ist in
+der Klasse LSTM zu finden, diese dient als Wrapper-Klasse. Ein Klassendiagramm
+ist in \autoref{sec:lstm_class} dargestellt.
 
-\textbf{TODO Klassendiagramm}
-
-Die Implementation des \ac{LSTM}-Klassifikators ist in der Klasse LSTM zu
-finden.
-Für diese wurde \texttt{PyBrain} \cite{schaul2010} verwendet. Diese Bibliothek
-stellt verschiedene Machine Learning Algorithmen bereit, unter anderem Neuronale
-Netzwerke mit \ac{LSTM}-Neuronen.
 Außerdem wurden in der Datei \texttt{util.py} verschiedene Hilfsfunktionen
 erstellt.
 Des weiteren werden Konfigurationseinstellungen in einer Datei gespeichert und
@@ -494,29 +503,46 @@ abgeleitet werden, welche Klassen ähnlich zu einander sind (Klasse \ac{BNS} und
 \ac{BNN} werden ungefähr zur Hälfte auf die jeweils andere Klasse klassifiziert,
 dies macht deutlich, dass das Netz keinen Unterschied in den Klassen erkennt).
 
-\textbf{TODO Matrix anzeigen?}
 
 \subsubsection{Evaluation}
-Für die Evaluation der Netzwerke ein Testparcours entwickelt. In diesem wird 
-jede der 6 Gesten 10 mal durchgeführt und die Anzahl der Erfolge protokolliert. 
-Dies wurde wurde für jede Klassifikations-Idee durchlaufen. In Tabelle 
-\cite{tab:eval} sind die Ergebnisse festgehalten.
-\begin{table}
+In \autoref{matrix_eval} ist die Evaluation-Matrix von einem Nezuwerk festgehalten. 
+Dieses wurde für 1500 Epochen trainiert. Es hat 64-Input-Neuronen, 18-LSTM-Neuronen 
+und 7-Output-Neuronen. Das Training dauerte ca. 21 Stunden. Die Spalten bilden die 
+ausgeführte Geste und die Zeilen die erkannten Gesten ab.
+
+\begin{center}
+\begin{equation}
+\label{matrix_eval}
+\begin{pmatrix}
+41 & 0 & 1 & 2 & 0 & 4 & 6\\
+0 & 41 & 1 & 8 & 1 & 9 & 0\\
+0 & 2 & 44 & 2 & 0 & 5 & 0 \\
+1 & 5 & 0 & 39 & 3 & 4 & 0 \\
+0 & 0 & 0 & 3 & 64 & 0 & 0 \\
+4 & 5 & 8 & 1 & 1 & 85 & 0 \\
+1 & 0 & 0 & 0 & 0 & 0 & 168
+\end{pmatrix}
+\end{equation}
+\end{center}
+
+In der Tabelle \autoref{tab:eval} sind die Erkennungsraten pro Geste dargestellt.
+
+\begin{table*}
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
 \hline
- Geste 		& 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+ Geste 		& 0 & 1 & 2 & 3 & 4 & 5 & 6\&7 \\
  \hline
- classify1  &	&	&	&	&	&	&	\\
+ Erkennungsrate  &87,23\%&77,35\%&81,48\%&70,90\%&92,75\%&79,43\%&96,55\%		\\
  \hline
- classify2  &	&	&	&	&	&	&	\\
-\hline
 \end{tabular}
 \caption{Evaluation LSTM-Netz}
 \label{tab:eval}
-\end{table}
+\end{table*}
 
-Nach den Tests fällt auf das Geste 1, .. sehr gut erkannt werden. Geste .. ..
-jedoch nicht so gut.
+Wie man aus der Tabelle entnehmen kann, werden die Gesten \ac{BNS} \& \ac{BNN} sehr gut erkannt. 
+Auch die Gesten \ac{RLO} und \ac{DPO} werden sehr gut erkannt. Die Geste \ac{SPO} 
+wird häufig mit der Geste \ac{TBO} verwechselt.
+Insgesamt erkennt das Neuronale-Netz 13,77\% der Gesten niht korrekt. 
 
 
 
@@ -539,13 +565,13 @@ Unterschiede. So arbeitet ein Gehirn nicht in synchronen Schritten wie das
 kpnstliche neuronale Netz, sondern asynchron. Das bedeutet Eingabewerte treffen
 zu unterschiedlichen Zeitpunkten ein, Ausgabewerte werden unterschiedlich
 gefeuert. Dies wird im Modell nicht abgebildet, da dies die Komplexität erhöht.
-EIn weiterer Unterschied besteht in der Verknüpfung unter den Neuronen. ein
+Ein weiterer Unterschied besteht in der Verknüpfung unter den Neuronen. ein
 künstliches neuronales Netz wie es hier betrachtet wurde ist vollständig
-uzntereinander verknüpft, Neuronen im Gehirn haben allerdings nicht zu allen
+untereinander verknüpft, Neuronen im Gehirn haben allerdings nicht zu allen
 anderen Neuronen Synapsen. Die Synapsen können sogar auf- und wieder abgebaut
 werden. Äußere Einflüsse, die das Gehirn beeinflussen wie z.B. Botenstoffe, sind
-in den künstlichen neuronalen Netzwerken ebenfalls nciht mit eingeflochten.
-DIese Einbindung könnte z.B. in diesem Projekt dazu führen, dass Einflüssen wie
+in den künstlichen neuronalen Netzwerken ebenfalls nicht mit eingeflochten.
+Diese Einbindung könnte z.B. in diesem Projekt dazu führen, dass Einflüssen wie
 laute oder leise Hintergrundgeräusche anders berücksichtigt werden ohne dafür
 zusätzliche Beispieldaten zu haben. Auch kann so auf unterschiedliche
 Hardwarekonfigurationen oder Lautstärkeunterschiede im Referenzton eingegangen

@@ -1,23 +1,46 @@
 \section{Einleitung}
 \label{sec:intro}
-Eine Alternative zu den Standardeingabegeräten wie Maus und Tastatur zur Interaktion mit Computern sind Gesten. 
-Von besonderem Interesse ist dabei das Erkennen von sogenannten \glqq In-Air\grqq -Gesten, die mit den Händen in der Luft ausgeführt werden. Der Unterschied zu Gesten, wie sie beispielsweise auf Touch-Displays von Smartphones für das Rotieren oder Skalieren von Bildern verwendet werden, besteht darin, dass die Interaktion kontaktfrei ist und durch die Bewegung der Hände im Raum wesentlich komplexere Gesten realisiert werden können.
+Eine Alternative zu den Standardeingabegeräten wie Maus und Tastatur zur
+Interaktion mit Computern sind Gesten.
+Von besonderem Interesse ist dabei das Erkennen von sogenannten \glqq
+In-Air\grqq -Gesten, die mit den Händen in der Luft ausgeführt werden. Der
+Unterschied zu Gesten, wie sie beispielsweise auf Touch-Displays von Smartphones
+für das Rotieren oder Skalieren von Bildern verwendet werden, besteht darin,
+dass die Interaktion kontaktfrei ist und durch die Bewegung der Hände im Raum
+wesentlich komplexere Gesten realisiert werden können.
 
-Zwei bekannte Geräte zur In-Air-Gestenerkennung sind Leap Motion~\cite{LeapMotion} und Microsoft Kinect~\cite{Kinect}. Diese Geräte verwenden optische Verfahren zur Erkennung der Hände oder Finger. Ein Nachteil beider Verfahren ist jedoch, dass sie wegen der optischen Erkennung sehr abhängig von der Beleuchtung sind. Weiterhin ist die Gesten-Erkennung erst durch die Verwendung zusätzlicher Hardware möglich.
+Zwei bekannte Geräte zur In-Air-Gestenerkennung sind Leap
+Motion~\cite{LeapMotion} und Microsoft Kinect~\cite{Kinect}. Diese Geräte
+verwenden optische Verfahren zur Erkennung der Hände oder Finger. Ein Nachteil
+beider Verfahren ist jedoch, dass sie wegen der optischen Erkennung sehr
+abhängig von der Beleuchtung sind. Weiterhin ist die Gesten-Erkennung erst durch
+die Verwendung zusätzlicher Hardware möglich.
 
-Ein alternativer Ansatz ist die Verwendung von Mikrofon und Lautsprecher zur akustischen Erkennung von Gesten. Ein Vorteil dieses Ansatzes gegenüber Leap Motion oder Microsoft Kinect ist, dass die meisten Computer und Laptops mit dieser Hardware bereits ausgestattet sind.
-Das in \cite{Gupta2012} beschriebene Verfahren nutzt dazu den Doppler-Effekt, also die Frequenzverschiebungen eines konstanten Tons bei zeitlicher Veränderung der Entfernung zwischen der Schallquelle (Sender) und dem Empfänger. 
-Über die Lautsprecher (Sender) wird ein konstanter, hochfrequenter Ton ausgegeben, der von dem Mikrofon (Empfänger) aufgenommen wird. 
-Da sowohl Sender als auch Empfänger eine feste Position haben, kommt es durch das Bewegen der Hände zu Frequenzverschiebungen, die sich auf den Doppler-Effekt zurückführen lassen. 
-Diese Frequenzverschiebungen können analysiert und Rückschlüsse auf die Richtung und die Geschwindigkeit von der Bewegung gezogen werden. 
+Ein alternativer Ansatz ist die Verwendung von Mikrofon und Lautsprecher zur
+akustischen Erkennung von Gesten. Ein Vorteil dieses Ansatzes gegenüber Leap
+Motion oder Microsoft Kinect ist, dass die meisten Computer und Laptops mit
+dieser Hardware bereits ausgestattet sind.
+Das in \cite{Gupta2012} beschriebene Verfahren nutzt dazu den Doppler-Effekt,
+also die Frequenzverschiebungen eines konstanten Tons bei zeitlicher Veränderung
+der Entfernung zwischen der Schallquelle (Sender) und dem Empfänger.
+Über die Lautsprecher (Sender) wird ein konstanter, hochfrequenter Ton
+ausgegeben, der von dem Mikrofon (Empfänger) aufgenommen wird.
+Da sowohl Sender als auch Empfänger eine feste Position haben, kommt es durch
+das Bewegen der Hände zu Frequenzverschiebungen, die sich auf den Doppler-Effekt
+zurückführen lassen.
+Diese Frequenzverschiebungen können analysiert und Rückschlüsse auf die Richtung
+und die Geschwindigkeit von der Bewegung gezogen werden.
 
-%Ziel des Projektes ist es ein Programm zu entwickeln, was Gesten erkennt. Dazu
-%wurde von Microsoft ein Verfahren entwickelt, welches anhand der Doppler
-%Verschiebung, eines Soundsignals, Gesten erkennt. Dieses Verfahren wird in
-%\cite{Gupta2012} beschrieben. Um die Gesten zu erkennen sollen verschiedene
-%Machine Learning Verfahren verwendet werden.
+% Ziel des Projektes ist es ein Programm zu entwickeln, was Gesten erkennt. Dazu
+% wurde von Microsoft ein Verfahren entwickelt, welches anhand der Doppler
+% Verschiebung, eines Soundsignals, Gesten erkennt. Dieses Verfahren wird in
+% \cite{Gupta2012} beschrieben. Um die Gesten zu erkennen sollen verschiedene
+% Machine Learning Verfahren verwendet werden.
 
-Im Rahmen der Lehrveranstaltung Machine Learning an der Hochschule RheinMain im Studiengang Master Informatik soll eine Anwendung mit dem Ziel entwickelt werden, die akustische Erkennung und Klassifikation von Gesten auf Grundlage des Doppler-Effekts durch verschiedene Machine Learning Verfahren zu realisieren. 
+Im Rahmen der Lehrveranstaltung Machine Learning an der Hochschule RheinMain im
+Studiengang Master Informatik soll eine Anwendung mit dem Ziel entwickelt
+werden, die akustische Erkennung und Klassifikation von Gesten auf Grundlage des
+Doppler-Effekts durch verschiedene Machine Learning Verfahren zu realisieren.
 
 Die Anwendung soll folgende Gesten unterscheiden können:
 \begin{itemize}
@@ -35,36 +58,58 @@ Die Anwendung soll folgende Gesten unterscheiden können:
 	Rotation mit einer Hand
 \end{itemize}
 
-Zur Abgrenzung der Gesten zu einer Nicht-Geste werden zusätzlich noch die Hintergrundgeräusche als Klasse definiert. Dies ist einmal \texttt{\ac{BNS}}, diese Geste spiegelt die Referenzfreuqenz wieder, und zum Anderen \texttt{\ac{BNN}}, bei dieser Geste herrscht zusätzlich noch beliebiger Lärm im Raum. 
+Zur Abgrenzung der Gesten zu einer Nicht-Geste werden zusätzlich noch die
+Hintergrundgeräusche als Klasse definiert. Dies ist einmal \texttt{\ac{BNS}},
+diese Geste spiegelt die Referenzfreuqenz wieder, und zum Anderen
+\texttt{\ac{BNN}}, bei dieser Geste herrscht zusätzlich noch beliebiger Lärm im
+Raum.
 
-\subsection{Aufnahmeprogramm}
-\label{sec:gestures_dataformat}
+\subsection{Klassifikationsverfahren}
+Die Gestenerkennung soll anhand verschiedener Klassifikationsverfahren erfolgen.
+Dabei müssen die Rohdaten unterschiedlich verarbeitet und auf verschiedene
+Methoden angewendet werden, um eine Klassifikation zu erreichen. Es werden die
+Vor- und Nachteile der unterschiedlichen verfahren auf das Projekt bezogen
+dirkustiert. Jedes Klassifikationsverfahren ist in einem Kapitel im Detail
+beschrieben. Folgende fünf Verfahren werden in den Kapiteln untersucht:
+\begin{itemize}
+	\item \ref{mainsec:svm}. \nameref{mainsec:svm}
+	\item \ref{mainsec:hmm}. \nameref{mainsec:hmm}
+	\item \ref{mainsec:kmeans}. \nameref{mainsec:kmeans}
+	\item \ref{mainsec:trees}. \nameref{mainsec:trees}
+	\item \ref{mainsec:lstm}. \nameref{mainsec:lstm}
+\end{itemize}
 
-Zur Aufnahme der Gesten wurde die Python Bibliothek \texttt{pyAudio} verwendet.
-Die Referenzfrequenz liegt bei 18,5 kHz, welche abgespielt wird und die
-reflektierte, mdifizeirte Frequenz (vgl.
-Doppler-Effekt) wird aufgenommen. Die Aufnahme beschränkt sich auf den
-Frequenzbereich von 18 kHz bis 19 kHz. Jede dieser Aufnahmen besteht aus
-32 Datensätzen á 64 Datenpunkten in einem Zeitraum von 500ms. 
 
-\subsection{Signalerzeugung}
-Die Erzeugung des Soundsignals wurde mithilfe der Python Library wavebender und
-pyAudio erreicht. In Listing \ref{lst:gen_sound} ist ein Bespiel für die
-Erzeugung eines Audiosignals gezeigt. Für die Gestenerkennung wird ein Signal
-mit 18,5 kHz erzeugt.
+\subsection{Rahmenprogramm}
+\label{sec:app}
+Alle fünf Klassifikatoren nutzen ein gemeinsames Grundprogramm, welches die
+gemeinsamen Aufgaben bewältigt. Das Programm ist in \texttt{Python} geschrieben
+und ist für die Tonerzeugung und -aufnahme sowie für die allgemeine Steuerung
+verantwortlich. 
 
+Die Referenzfrequenz von 18,5 kHz wird kontinuierlich im Modul
+\texttt{soundplayer.py} abgespielt. Mit dem Modul \texttt{recorder.py} werden
+die Audiosignale mit einer Samplingrate von 48000 aufgenommen und mit Hilfe einer
+Fouriertransformation zu einem Datenobjekt mit dem Frequenzspektrum im Bereich
+von ~18 kHz bis ~19 kHz umgewandelt. Die so aufgenommenen Rohdaten werden
+entweder bei der Aufnahme von Beispielen abgespeichert oder bei der Live
+Klassifikation dem genutzten Klassifikator übergeben. Das aufgenommene Array des
+Frequenzspektrums enthält 64 Werte. Dieses Array wird als \textit{Frame}
+bezeichnet.
+
+Des Weiteren wird das einheitliche Interface \texttt{IClassifier} für die Klassifikatoren verwendet,
+um die Steuerung der einzelnen Klassifikatoren zu vereinheitlichen. Diese können
+über eine integrierte Konsole angesteuert werden. In der Konsole können über
+verschiedene Befehle die Live Klassifizierung, das Training, eine Validierung
+etc. gestartet werden.  
 \enlargethispage{\baselineskip}
-\enlargethispage{\baselineskip}
-\enlargethispage{\baselineskip}
-\begin{lstlisting}[caption={Erzeugung eines Soundsignals},label={lst:gen_sound}]{lst:gen_sound} 
-audioDev = pyaudio.PyAudio()
-channels = ((wb.sine_wave(frequency, amplitude=amplitude, framerate=framerate),),)
-samples = wb.compute_samples(channels, framerate * duration * 1)
-audioStream = MyStream(self.audioDev.open(format=audioDev.get_format_from_width(2),
-					 channels=1, rate=framerate, output=True))
-wb.write_wavefile(audioStream, samples)
-\end{lstlisting}
+Die Konsole bietet auch die Möglichkeit Beispieldaten aufzunehmen. Eine
+Beispielgeste besteht aus 32 aufeinanderfolgenden Frames. Die Aufnahme kann
+auch im Batchverfahren direkt hintereinander erfolgen (mehrmals die gleiche
+Geste ohne zusätzliche Interaktion). Aufgenommene Gesten werden pro Nutzer in
+einzelnen Gesten-Ordnern gespeichert. Das Rahmenprogramm bietet auch eine
+Schnittstelle zum Laden der Beispieldaten in ein NumPy Array. Dies wird im Modul
+\texttt{gesturefileio.py} vorgenommen. Dabei können verschiedene Datenformate
+geladen und auch schon eine einfache Normalisierung vorgenommen werden.
 
-% \subsection{Gesten aufnehmen und Datenformat}
 
-\nocite{Gupta2012}

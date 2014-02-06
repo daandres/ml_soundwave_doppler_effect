@@ -1,50 +1,53 @@
 from classifier.classifier import IClassifier
-
+from PyQt4 import QtCore
 import numpy as np
 import kMeansHelper as kmHelper
-
+import clusterSignal as cSignal
+from PyQt4.QtCore import QObject, pyqtSlot, pyqtSignal
+from PyQt4 import QtGui
+import sys
 from src.view.ui_kmeans_visualizer import ViewUIKMeans
 
 class KMeans(IClassifier):
     
     def __init__(self, recorder=None):
         self.name = 'kmeans'
-        self.currentRecordFrame = None
         
+        self.currentRecordFrame = None
         self.recorder = recorder
-        #bob
         self.kmH = kmHelper.kMeansHepler()
         self.kmeans = None
         self.checkOnline = False
         self.startBuffern = False
         
-        #new
-        
+        self.cSignal = cSignal.SignalToGUI()
+        self.viewUiKmeans_ = None
         self.percentRatio = 0.0
         self.gestureIdx = 0
         self.gestureArray = []
-        #bob end
- 
+          
+        self.recorder.classifyStart(self)
+        
+        
+    def startGui(self, recorder, callback):
+        self.app = ViewUIKMeans(self, self.getName, self.cSignal)
+        self.app.start()
+        callback()
+        
+        
     def getName(self):
         return self.name
+    
 
- 
     def startTraining(self, args=[]):
-
-        
-        self.viewUiKmeans_ = ViewUIKMeans(self, self.getName)
-        self.viewUiKmeans_.startNewThread()
-        self.recorder.classifyStart(self)
-  
+        pass
 
  
     def classify(self, data):
-        self.currentRecordFrame = data
-        #bob
+        '''
         if self.startBuffern:  
-            data = self.currentRecordFrame
             self.bufferArray = np.roll(self.bufferArray, -1, axis=0)
-            self.bufferArray[23] = self.kmH.normalizeSignalLevelSecond(data)
+            self.bufferArray[self.bufferSize-1] = self.kmH.normalizeSignalLevelSecond(data)
             
             if self.checkOnline:
                 result = self.kmH.reduceDimensionality(self.bufferArray)
@@ -54,9 +57,26 @@ class KMeans(IClassifier):
                 if len(result) == self.kmeans.cluster_centers_.shape[1]:
                     self.kMeansOnline(result)
                 else:
-                    print 'result len !!!!  : ', len(result)
+                    print 'result length not matched !!!!  : ', len(result)
+                    
+        '''            
+        if self.startBuffern:
+            
+            self.bufferArray = np.roll(self.bufferArray, -1, axis=0)
+            self.bufferArray[27] = self.kmH.normalizeSignalLevelSecond(data)
+            if self.checkOnline:
+            
+                result = self.kmH.segmentOneHandGesture(self.bufferArray, outArrayLength=24, leftMargin=4, oneSecPeak=False)
+                if result is not None:
+                    result = self.kmH.reduceDimensionality(result)
+                    result = np.asarray(result)
+                    result = result.reshape(result.shape[0]*result.shape[1])
+                    
+                    if len(result) == self.kmeans.cluster_centers_.shape[1]:
+                        self.kMeansOnline(result)
+                    else:
+                        print 'result length not matched !!!!  : ', len(result)
 
- 
     def startValidation(self):
         pass
 
@@ -66,6 +86,7 @@ class KMeans(IClassifier):
 
  
     def save(self, filename=""):
+        print 'jojo'
         pass
 
  
@@ -80,21 +101,19 @@ class KMeans(IClassifier):
     def printClassifier(self):
         pass
 
-    #bob
-    def fillBuffer(self, bufferSize, callback):
-        self.idx = 0
-        self.progress = 0.0
+
+    def fillBuffer(self, bufferSize):
         self.bufferSize = bufferSize
-        #self.bufferArray = np.zeros((self.bufferSize, self.idxRight -self.idxLeft))
-        self.bufferArray = np.zeros((self.bufferSize, 64))
+        #self.bufferArray = np.zeros((self.bufferSize, 64))
+        self.bufferArray = np.zeros((28, 64))
         self.startBuffern = True
-        self.callback = callback
         print 'fillBuffer'
         print self.bufferArray.shape
         
     def getBuffer(self):
         return self.bufferArray
-    # changed scope
+
+
     def setKMeans(self, kMeans):
         self.kmeans = kMeans
         self.gestureArray = np.array(['bob\n', 'bob\n', 'bob\n', 'bob\n', 'bob\n', 'bob\n', 'bob\n', 'bob\n', 'bob\n', 'bob\n'])
@@ -105,7 +124,9 @@ class KMeans(IClassifier):
         class_  = self.kmeans.transform(checkArray)
         cluster =  self.kmH.checkClusterDistance(class_, self.percentRatio)
         self.setGestureArray(cluster)
-       
+        
+        self.cSignal.emitSignal(cluster)
+        
         if cluster == -1:
             print '-1'
         elif cluster == 0:
