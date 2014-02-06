@@ -11,7 +11,7 @@ class DataUtil:
 
     def loadRaw3dGesture(self, recordClass, recordNames=None):
         if recordNames is None:
-            return self.fileIO.getGesture3D(recordClass, ["Sebastian"]) # insert names here
+            return self.fileIO.getGesture3D(recordClass, ["paul"]) # insert names here
         else:
             return self.fileIO.getGesture3D(recordClass, recordNames)
 
@@ -60,7 +60,7 @@ class DataUtil:
         return np.array(train), test
     
         
-    def reduceBins(self, data, leftBorder=23, rightBorder=41):
+    def reduceBins(self, data, leftBorder=26, rightBorder=39):
         ''' reduces array from 64 to 16 bins '''
 
         data3dNew = np.zeros((data.shape[0], data.shape[1], rightBorder-leftBorder))
@@ -101,7 +101,7 @@ class DataUtil:
 
         return np.array(lis)
     
-    def cutRelevantAction(self,data, framesBefore=7, framesAfter=7):
+    def cutRelevantAction(self,data, framesBefore=6, framesAfter=6):
         ''' 
         extracts relevant actions from data 
         
