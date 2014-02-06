@@ -7,22 +7,20 @@ from PyQt4.QtCore import QObject, pyqtSlot, pyqtSignal
 from PyQt4 import QtGui
 import sys
 from src.view.ui_kmeans_visualizer import ViewUIKMeans
-id = QtCore.QMetaType.type('ViewUIKMeans')
+
 class KMeans(IClassifier):
     
     def __init__(self, recorder=None):
         self.name = 'kmeans'
-        self.currentRecordFrame = None
         
+        self.currentRecordFrame = None
         self.recorder = recorder
-        #bob
         self.kmH = kmHelper.kMeansHepler()
         self.kmeans = None
         self.checkOnline = False
         self.startBuffern = False
         
         self.cSignal = cSignal.SignalToGUI()
-        #self.cSignal.currentGestureSignal.connect(self.setGestureTrigger)
         self.viewUiKmeans_ = None
         self.percentRatio = 0.0
         self.gestureIdx = 0
@@ -32,7 +30,7 @@ class KMeans(IClassifier):
         
         
     def startGui(self, recorder, callback):
-        self.app = ViewUIKMeans(self, self.getName)
+        self.app = ViewUIKMeans(self, self.getName, self.cSignal)
         self.app.start()
         callback()
         
@@ -42,18 +40,11 @@ class KMeans(IClassifier):
     
 
     def startTraining(self, args=[]):
-        
-        
-
         pass
-        #self.recorder.classifyStart(self)
-
-        #self.viewUiKmeans_ = ViewUIKMeans(self, self.getName)
-        #self.viewUiKmeans_.startNewThread()
-        #self.cSignal = self.viewUiKmeans_.macheCrash#cSignal#.SignalToGUI(parent=self.viewUiKmeans_)       
 
  
     def classify(self, data):
+        '''
         if self.startBuffern:  
             self.bufferArray = np.roll(self.bufferArray, -1, axis=0)
             self.bufferArray[self.bufferSize-1] = self.kmH.normalizeSignalLevelSecond(data)
@@ -67,17 +58,25 @@ class KMeans(IClassifier):
                     self.kMeansOnline(result)
                 else:
                     print 'result length not matched !!!!  : ', len(result)
-
-
-    
-    @pyqtSlot(int)
-    def setGestureTrigger(self, gesture):
-        print 'gesture : ', gesture
+                    
+        '''            
+        if self.startBuffern:
             
-    
-    def jojo(self):
-        return 
-    
+            self.bufferArray = np.roll(self.bufferArray, -1, axis=0)
+            self.bufferArray[27] = self.kmH.normalizeSignalLevelSecond(data)
+            if self.checkOnline:
+            
+                result = self.kmH.segmentOneHandGesture(self.bufferArray, outArrayLength=24, leftMargin=4, oneSecPeak=False)
+                if result is not None:
+                    result = self.kmH.reduceDimensionality(result)
+                    result = np.asarray(result)
+                    result = result.reshape(result.shape[0]*result.shape[1])
+                    
+                    if len(result) == self.kmeans.cluster_centers_.shape[1]:
+                        self.kMeansOnline(result)
+                    else:
+                        print 'result length not matched !!!!  : ', len(result)
+
     def startValidation(self):
         pass
 
@@ -87,6 +86,7 @@ class KMeans(IClassifier):
 
  
     def save(self, filename=""):
+        print 'jojo'
         pass
 
  
@@ -104,7 +104,8 @@ class KMeans(IClassifier):
 
     def fillBuffer(self, bufferSize):
         self.bufferSize = bufferSize
-        self.bufferArray = np.zeros((self.bufferSize, 64))
+        #self.bufferArray = np.zeros((self.bufferSize, 64))
+        self.bufferArray = np.zeros((28, 64))
         self.startBuffern = True
         print 'fillBuffer'
         print self.bufferArray.shape
