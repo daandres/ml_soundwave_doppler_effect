@@ -57,7 +57,7 @@ class DataUtil:
         ''' splits data in 2/3 training, 1/3 test '''
         
         train, test = list(data[::4]) + list(data[1::4]) + list(data[2::4]), data[3::4]
-        return np.array(train), test
+        return data, data
     
         
     def reduceBins(self, data, leftBorder=26, rightBorder=39):
