@@ -7,9 +7,9 @@ class DataUtil:
     
     def __init__(self, lowerBound=0.15):
         self.lowerBound=lowerBound
-        self.fileIO = GestureFileIO(relative="")
+        self.fileIO = GestureFileIO(relative="../../")
 
-    def loadRaw3dGesture(self, recordClass, recordNames=None):
+    def loadRaw3dGesture(self, recordClass, recordNames=['Sebastian']):
         if recordNames is None:
             return self.fileIO.getGesture3D(recordClass)
         else:
@@ -183,10 +183,7 @@ class DataUtil:
                 position = i
         return position
         '''
-<<<<<<< HEAD
-    
-=======
->>>>>>> branch 'master' of https://github.com/daandres/ml_soundwave_doppler_effect.git
+
 
     def findAvg(self, data):
 
