@@ -72,7 +72,7 @@ class SVM(IClassifier):
         
         self.datalist = []
         self.datanum = 0
-        self.predicted = False
+        #self.predicted = False
         self.gesturefound = False
         self.gestureindex = 0
         self.executed = {"notepad": False, "taskmgr": False, "calc": False}
