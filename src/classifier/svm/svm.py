@@ -4,21 +4,23 @@ Created on 14/01/2014
 @author: Benny, Manuel
 '''
 
+''' general imports '''
 import os
 import numpy as np
 import subprocess as sp
 import pylab as pl
 import warnings
 
+''' explicit imports '''
 from sklearn.externals import joblib
 from sklearn import svm
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 
+''' custom imports '''
 from gestureFileIO import GestureFileIO
 from classifier.classifier import IClassifier
-#import properties.config as config
 
 ''' catch warnings as error '''
 np.set_printoptions(precision=4, suppress=True, threshold='nan')
@@ -33,15 +35,15 @@ warnings.simplefilter("error", RuntimeWarning)
 
 
 class SVM(IClassifier):
+    '''
     SLICE_LEFT = 12
     SLICE_RIGHT = 12
     NUM_SAMPLES_PER_FRAME = 64 
-
+    '''
+    
     def __init__(self, recorder=None, config=None, relative=""):
         self.config = config
-        
-        print self.config
-        
+
         ''' general settings '''
         self.subdirs = eval(self.config['used_gestures'])
         #self.subdirs = ["Benjamin","Alex"]#,"Daniel"]
@@ -140,19 +142,21 @@ class SVM(IClassifier):
         return frame
     
     def slice_frame(self, frame):
+        ''' slice one single 1d-frame from 64 to 40 datavalues '''
         return frame[self.slice_left:(self.samples_per_frame - self.slice_right)]
     
     def slice_framesets(self, framesets):
+        ''' slice 3d-framesets from 64 to 40 datavalues '''
         return framesets[:, :, self.slice_left:(self.samples_per_frame - self.slice_right)]
 
     def load_gesture_framesets(self, txt_file):
-        gesture_plain = np.loadtxt(txt_file, delimiter=",")  # all frames in one array
+        ''' load gesture training datasets ''' 
+        gesture_plain = np.loadtxt(txt_file, delimiter=",")
         num_framesets = gesture_plain.shape[0]
         num_samples_total = gesture_plain.shape[1]
         num_frames_per_frameset = num_samples_total / self.samples_per_frame
-
-        gesture_framesets_plain = gesture_plain.reshape(num_framesets, num_frames_per_frameset,
-                                                        self.samples_per_frame)  # split the array to a frameset
+        gesture_framesets_plain = gesture_plain.reshape(num_framesets, num_frames_per_frameset, self.samples_per_frame)
+        
         return gesture_framesets_plain
 
     def load_noise_frame(self):
@@ -163,17 +167,15 @@ class SVM(IClassifier):
         noise_framesets = self.normalise_framesets(noise_framesets_plain, 0) # max amplitude = 1, dont subtract noise
         noise_avg_frameset = np.mean(noise_framesets, axis=1) # reduce to 1 frame per frameset
         noise_frame = self.slice_frame(np.mean(noise_avg_frameset, axis=0))
+        
         return noise_frame
 
     def loadData(self, filename=""):
-        
-
         gestures = []
         targets = []
         for gesture_nr in range(self.nClasses):
             print "load gesture", gesture_nr
             for subdir in self.subdirs:
-                #dirf = os.listdir(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))
                 files = [c for a,b,c in os.walk(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))][0]
                 for textfile in files:
                     ''' load and reshape textfile with gesture data '''
@@ -284,7 +286,8 @@ class SVM(IClassifier):
 
     def executeCommand(self, number):
         if number != 6:
-
+            
+            ''' some switch cases for application execution and termination '''
             if number == 0 and self.executed["notepad"] == False:
                 print "\t",str(number),"=>","starting notepad"
                 proc = sp.Popen("notepad")
@@ -337,10 +340,11 @@ class SVM(IClassifier):
 
 
     def startTraining(self, args=[]):
+        ''' start training '''
         classifier = svm.SVC(kernel=self.kernel, C=self.c, gamma=self.gamma, degree=self.degree, coef0=self.coef0)
-        #classifier.fit(self.data, self.targets)
         classifier.fit(self.X_train, self.Y_train)
 
+        ''' save classifier and store reference in global variable '''
         joblib.dump(classifier, self.path, compress=9)
         self.classifier = classifier
 
@@ -483,29 +487,34 @@ class SVM(IClassifier):
         print self.path
         
     def show_confusion_matrix(self):
-        # Compute confusion matrix
+        ''' method for creating confusion matrix with graphical visualization '''
+        ''' callable from separate svm_conf.py module '''
+        
         target_names = ["gesture 0","gesture 1","gesture 2","gesture 3","gesture 4","gesture 5","gesture 6"]
         self.Y_pred = self.classifier.predict(self.X_test)
         cm = confusion_matrix(self.Y_test, self.Y_pred)
         print(cm)
         print(classification_report(self.Y_test, self.Y_pred, target_names=target_names))
+        
         definition = '''
-        The precision is the ratio tp / (tp + fp) where tp is the number of true positives and fp the number of false positives.
-        The precision is intuitively the ability of the classifier not to label as positive a sample that is negative.
+The precision is the ratio tp / (tp + fp) where tp is the number of true positives and fp the number of false positives.
+The precision is intuitively the ability of the classifier not to label as positive a sample that is negative.
 
-        The recall is the ratio tp / (tp + fn) where tp is the number of true positives and fn the number of false negatives.
-        The recall is intuitively the ability of the classifier to find all the positive samples.
-        
-        The F-beta score can be interpreted as a weighted harmonic mean of the precision and recall, 
-        where an F-beta score reaches its best value at 1 and worst score at 0.
-        
-        The F-beta score weights recall more than precision by a factor of beta.
-        beta == 1.0 means recall and precision are equally important.
-        
-        The support is the number of occurrences of each class in y_true.
+The recall is the ratio tp / (tp + fn) where tp is the number of true positives and fn the number of false negatives.
+The recall is intuitively the ability of the classifier to find all the positive samples.
+
+The F-beta score can be interpreted as a weighted harmonic mean of the precision and recall, 
+where an F-beta score reaches its best value at 1 and worst score at 0.
+
+The F-beta score weights recall more than precision by a factor of beta.
+beta == 1.0 means recall and precision are equally important.
+
+The support is the number of occurrences of each class in y_true.
         '''
+        
         print definition
-        # Show confusion matrix in a separate window
+        
+        ''' show confusion matrix in a separate window '''
         pl.matshow(cm)
         pl.title('Confusion matrix')
         pl.colorbar()
