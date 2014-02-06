@@ -11,7 +11,7 @@ import ConfigParser
 import pickle
 from classifier.classifier import IClassifier
 from gestureFileIO import GestureFileIO
-
+import classifier.hmm.plot as plot
 
 NAME = "HiddenMarkovModel"
 GESTURE_PREFIX="gesture "
@@ -43,17 +43,19 @@ class HMM(IClassifier):
         if(len(self.gestureWindow1)==32):
             seq = np.array([self.gestureWindow1])
             seq = u.preprocessData(seq)
-            print self.gestureApp.scoreSeq(seq[0])
-            self.gestureWindow1[:] = []
+            if len(seq) != 0:
+                print self.gestureApp.scoreSeq(seq[0])
+            self.gestureWindow1 = []
         if self.isFirstRun:
             if(len(self.gestureWindow1)==16):
-                self.gestureWindow2[:] = []
+                self.gestureWindow2 = []
                 self.isFirstRun = False
         if (len(self.gestureWindow2)==32):
-                seq = np.array([self.gestureWindow2])
-                seq = u.preprocessData(seq)
+            seq = np.array([self.gestureWindow2])
+            seq = u.preprocessData(seq)
+            if len(seq) != 0:
                 print self.gestureApp.scoreSeq(seq[0])
-                self.gestureWindow2[:] = []
+            self.gestureWindow2 = []
         self.gestureWindow1.append(data)
         self.gestureWindow2.append(data)
 
@@ -74,7 +76,10 @@ class HMM(IClassifier):
 
 
     def loadData(self, filename=""):
-        pass
+        p = plot.Plot(0)
+        p.initPlot()
+        p.show()
+        print 'Geil'
 
 
     def saveData(self, filename=""):
@@ -89,8 +94,11 @@ class GestureApplication():
         self.mu = h.HMM_Util()
         self.gestures = {}
         self.fileIO = GestureFileIO()
-        self.test()
-        # self.loadModels('classifier/hmm/data/config.cfg')
+        ''' Create HMM Model based on all existing Gesture datasets '''
+        #self.test()
+        ''' Load HMM Configurationfile to Classifiy '''
+        self.loadModels('classifier/hmm/data/config_night.cfg')
+        
         
         '''
         classList = [0, 3]
@@ -150,11 +158,15 @@ class GestureApplication():
         logprob = -sys.maxint - 1
         gesture = None
         for g in self.gestures.values():
+            if  (g.className == 'gesture 2') | (g.className == 'gesture 4') | (g.className == 'gesture 5'):
+                continue
             l = g.score(seq)
             
             if 0 > l > logprob:
                 logprob = l
                 gesture = g 
+        if (gesture.className == 'gesture 6') | (gesture.className == 'gesture 7'):
+            return None
         return gesture, logprob
     
     def saveModels(self, filePath, configurationName='Default'):
@@ -182,23 +194,32 @@ class GestureApplication():
 
     def test(self):
         print "#### START ####"
-        classList = [0,1,2,3,4,5,6,7]
+        classList = [0, 1, 2, 3, 4, 5, 6, 7]
         
         self.createGestures(classList)
         cp = classList[:]
-      
-        for classNum in cp:
-            # score it
-            className = GESTURE_PREFIX + str(classNum)
-            obs, test = u.loadSplitData(classNum)
-            scores, accuracy, className = self.scoreClassData(test, className)
-            
-      
-            #self.saveModels('classifier/hmm/data/config_night'+str(className)+'.cfg', 'over 90s')
-            #cp.remove(classNum)
-            print className, accuracy, scores
-            
-        self.saveModels('classifier/hmm/data/config_night.cfg')
+        i = 0
+        while cp != []:
+            for classNum in cp:
+                # score it
+                className = GESTURE_PREFIX + str(classNum)
+                obs, test = u.loadSplitData(classNum)
+                scores, accuracy, className = self.scoreClassData(test, className)
+                
+                #recreate it
+                if accuracy < 90:
+                    print className, accuracy, scores
+                    self.createGesture(classNum, className)
+                else:
+                    self.saveModels('classifier/hmm/data/config_night'+str(className)+'.cfg', 'over 90s')
+                    cp.remove(classNum)
+                    print className, accuracy, scores
+            i += 1
+            print i
+            if i > 100:
+                print "\n SHIAT \n"
+                break
+        self.saveModels('classifier/hmm/data/config_night.cfg', 'over 90s')
         print "#### END ####"
 
 

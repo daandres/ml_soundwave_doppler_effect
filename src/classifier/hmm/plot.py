@@ -61,12 +61,12 @@ class Plot():
             elif self.dClass == 1:
                 self.name = "RawData"
                 self.actionPoint=[]
-                p.plotRaw()
+                self.plotRaw()
                 self.dClass += 1
             elif self.dClass == 2:
                 self.name = "GestureGMM"
                 self.actionPoint=[]
-                p.plotGestureGmms()
+                self.plotGestureGmms()
                 self.dClass = 0
                 
     def onpress(self, event):
@@ -78,6 +78,17 @@ class Plot():
                 self.dClass = 1
                 self.gesture = gesture
                 self.plotData()
+        if key == 'down':
+            self.index -= 1
+        if key == 'up':
+            self.index += 1
+        if self.index < 0:
+            self.index = len(self.data)-1
+        elif self.index >= len(self.data):
+            self.index = 0
+        self.plot()
+        
+            
 
 
     def plotData(self):
@@ -190,6 +201,6 @@ class Plot():
 
 if __name__ == "__main__":
 
-    p = Plot(7)
+    p = Plot(5)
     p.initPlot()
     p.show()
