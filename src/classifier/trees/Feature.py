@@ -87,6 +87,35 @@ class Feature(object):
     def featureAmplitudes(self, gesture):
         ampl_val = 0
         shift_order = gesture.shift_order
+        
+        shifts = gesture.shifts_left + gesture.shifts_right
+        shifts = sorted(shifts,key=lambda x: x[1])
+        
+        right_lefts = []
+        prev = 0
+        
+        for shift in shifts:
+            if(prev != 0):
+                if(prev[0] == 'right' and shift[0] == 'left'):
+                    right_lefts.append((prev,shift))
+            prev = shift
+        
+        #print "shifts", shifts
+        #print "right_lefts", right_lefts
+        
+        ampl_vals = []
+        
+        for shift_tuple in right_lefts:
+            maxAmpl1 = self.getMaxAmplitude(shift_tuple[0][1], shift_tuple[0][2], gesture.amplitudes_right_filtered)
+            maxAmpl2 = self.getMaxAmplitude(shift_tuple[1][1], shift_tuple[1][2], gesture.amplitudes_left_filtered)
+            diff = abs(maxAmpl1 - maxAmpl2)
+            ampl_val = diff / 100.
+            ampl_vals.append(ampl_val)
+        
+        if(len(ampl_vals) > 0):
+            return sum(ampl_vals) / len(ampl_vals)
+        return 0
+        
         if(len(shift_order) > 1):
             if(len(shift_order) == 2):
                 if(shift_order[0] == 'right' and shift_order[1] == 'left'):

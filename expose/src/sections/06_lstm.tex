@@ -186,7 +186,7 @@ repräsentiert und $m$ der Index über die Eingabedimension ist. Daher hat ein
 \acp{LSTM} werden durch ihre autorekurrente Verbindung der Memoryzelle zu
 \acp{RNN}. Diese rekurrente Verbindung ist besonders, da sie beim Training
 Fehler nicht vor in die komplette Vergangenheit zurück propagiert. Erreicht wird
-das durch ein Gewicht der Verbindung von $1.0$ (\autoref{eq_lstm_sc}). Das zuvor
+das durch ein Gewicht der Verbindung von $1.0$ (\autoref{eq_lstm_cs}). Das zuvor
 beschriebene Forgetgate nimmt Einfluss auf dieses Gewicht. Soll der Wert
 $s_c(t-1)$ in der Berechnung nicht berücksichtigt werden, setzt das Gate das
 Gewicht auf $\approx0$ andernfalls behält es den aktuellen Wert des Gewichts mit
@@ -219,24 +219,24 @@ weiter betrachtet. Weitere Informationen sind unter anderem in \cite{GERS2001}
 zu finden.
 
 \paragraph{Training eines \ac{LSTM} Netzes}
-Damit neuronale Netze (damit auch \ac{LSTM}-Netze) ein gutes
-Ergebnis liefern müssen ihre Gewichte auf das Problem angepasst sein. Es ist
-jedoch nicht einfach berechenbar wie die korrekten problembezogenen Gewichte
-sind. Daher müssen sie iterativ verbessert werden. Dieser Vorgang wird Training
-genannt. Dabei werden einem zufällig initialisierten Netzwerk Datensätze zum
-Klassifizieren gezeigt. Das Netzwerk liefert daraufhin ein Ergebnis. Das
-gewonnene Ergebnis wird mit dem Zielergebnis verglichen. So lässt sich eine
-Fehlerquote berechnen. Es gibt verschiedene Verfahren wie die Fehlerquote die
-Gewichte bzw. das Netz beeinflusst, um in der nächsten Iteration eine geringere
-Fehlerquote zu erhalten. Nachfolgend werden die Grundideen zweier Basisverfahren
-erläutert:
+Damit neuronale Netze (damit auch \ac{LSTM}-Netze) ein gutes Ergebnis liefern
+müssen ihre Gewichte auf das Problem angepasst sein. Es ist jedoch nicht einfach
+berechenbar wie die korrekten problembezogenen Gewichte sind. Daher müssen sie
+iterativ verbessert werden. Dieser Vorgang wird Training genannt. Dabei werden
+einem zufällig initialisierten Netzwerk Datensätze zum Klassifizieren gezeigt.
+Das Netzwerk liefert daraufhin ein Ergebnis. Das gewonnene Ergebnis wird mit dem
+Zielergebnis verglichen. So lässt sich eine Fehlerquote berechnen. Es gibt
+verschiedene Verfahren wie die Fehlerquote die Gewichte bzw. das Netz
+beeinflusst, um in der nächsten Iteration eine geringere Fehlerquote zu
+erhalten. Nachfolgend werden die Grundideen von zwei verschiedenen
+Trainingsansätzen erläutert:
 \begin{itemize}
-	\item Backpropagation
+	\item Fehlerrückführung (engl. Backpropagation)
 	\item Evolution based Training
 \end{itemize}
 
 \subparagraph{Backpropagation}
-Das Verfahren \textit{Fehlerrückführung (Backpropagation)} ist ein
+Das Verfahren \textit{Fehlerrückführung} ist ein
 Gradientenabstiegsverfahren. Das bedeutet, es versucht die Fehlerquote als
 Ergebnis einer Funktion des Netzes aufzufassen und diesen Wert daran zu
 minimieren. Dabei werden in Richtung des Gradienten der Funktion die Gewichte in
@@ -350,20 +350,29 @@ da dies kein signifikanter Beitrag zur Geste ist sondern ein Rauschen. Das
 Ergebnis dieser Untersuchung ist jedoch unbefriedigend, sodass die Idee nicht
 genutzt wird. \textbf{TODO Messwerte?}
  
-
-
 \subsubsection{Anpassung des Klassifikators}
-\subsubsection{Implementierung}
-Da es zum Ende des Projektes ein Programm geben soll, indem alle Klassifikatoren 
-eingebunden sind, haben sich alle Teilnehmer auf ein Interface geeinigt, was 
-jeder Klassifikator implementieren muss. Dies ist die abstrakte Klasse \texttt{IClassifier}.
+Das \ac{LSTM}-Netz wird mit Hilfe der Python Bibliothek \texttt{PyBrain}
+\cite{schaul2010} erstellt. Diese Bibliothek stellt verschiedene Machine
+Learning Algorithmen bereit, unter anderem Neuronale Netzwerke mit
+\ac{LSTM}-Neuronen. Des Weiteren sind verschiedene Algorithmen zum Training und
+Module zur Nutzung der Netzwerke bereitgestellt. Aufgrund der Beschränkungen der
+Bibliothek werden nur \ac{LSTM}-Blöcke mit einer einzelnen Memoryzelle
+verwendet. Die verschiedenen Parameter zur Erstellung (Anzahl der
+\ac{LSTM}-Blöcke, Anzahl der Ausgabeneuronen, Nutzung von Peepholes, etc.) sowie
+die Parameter zur Vorverarbeitung (vgl. \autoref{sec:lstm_data}) werden anhand
+von Tests ermittelt, denn eine Berechnung der optimalen Parameter ist nicht
+möglich. In den eriteren Kapiteln wird auf die unterschiedlichen Parameter noch
+einmal im Detail eingegangen. 
 
-Die Implementation des \ac{LSTM}-Klassifikators ist in der Klasse LSTM zu
-finden, diese dient als Wrapper-Klasse. Ein Klassendiagramm ist in \autoref{sec:lstm_class} 
-dargestellt.
-Für diese wurde \texttt{PyBrain} \cite{schaul2010} verwendet. Diese Bibliothek
-stellt verschiedene Machine Learning Algorithmen bereit, unter anderem Neuronale
-Netzwerke mit \ac{LSTM}-Neuronen.
+
+\subsubsection{Implementierung}
+Da es zum Ende des Projektes ein Programm geben soll, indem alle Klassifikatoren
+eingebunden sind, haben sich alle Teilnehmer auf ein Interface geeinigt, was
+jeder Klassifikator implementieren muss. Dies ist die abstrakte Klasse
+\texttt{IClassifier}. Die Implementatierung des \ac{LSTM}-Klassifikators ist in
+der Klasse LSTM zu finden, diese dient als Wrapper-Klasse. Ein Klassendiagramm
+ist in \autoref{sec:lstm_class} dargestellt.
+
 Außerdem wurden in der Datei \texttt{util.py} verschiedene Hilfsfunktionen
 erstellt.
 Des weiteren werden Konfigurationseinstellungen in einer Datei gespeichert und
