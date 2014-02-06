@@ -30,11 +30,6 @@ def getTestData(filename):
             gestures.append(GestureModel(tmp))
     return gestures
 
-#TODO: das könnt man auch ohne funktion im direkt im code machen oder? :) 
-def makeGesture(dataArray):
-    gesture = GestureModel(dataArray)
-    return gesture
-
 '''
 Show graph with the number of extracted bins of the original signal
 on the left (red) and right (blue) side of max amplitude.
