@@ -1,7 +1,7 @@
 import classifier.lstm.util as util
 import numpy as np
 from scipy import stats as stats
-from systemkeys import SystemKeys
+import properties.config as c
 
 '''
 LSTMCLassify class provides different methods for live/online classification with the LSTM Module. 
@@ -33,8 +33,10 @@ class LSTMClassify():
         self.beginMax = 0
         self.maxValue = 0
         self.maxValueList = []
-
-        # self.outkeys = SystemKeys()
+        self.outkeys = None
+        if(c.getInstance().getOSConfig()['type'] == "posix"):
+            from systemkeys import SystemKeys
+            self.outkeys = SystemKeys()
 
     '''
     Interface method for classifcation. WIll be called by LSTM interface and calls different implementations. 
@@ -94,7 +96,8 @@ class LSTMClassify():
                     self.predcounter += 1
                     if(self.predcounter == 4):
                         print(str(self.previouspredict))
-                        self.outkeys.outForClass(self.previouspredict)
+                        if(self.outkeys != None):
+                            self.outkeys.outForClass(self.previouspredict)
                     return self.previouspredict, self.predcounter
         return -1, -1
 
