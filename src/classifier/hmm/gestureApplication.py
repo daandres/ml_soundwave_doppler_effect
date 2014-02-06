@@ -44,7 +44,9 @@ class HMM(IClassifier):
             seq = np.array([self.gestureWindow1])
             seq = u.preprocessData(seq)
             if len(seq) != 0:
-                print self.gestureApp.scoreSeq(seq[0])
+                gesture, prob = self.gestureApp.scoreSeq(seq[0])
+                if (gesture.className != 'gesture 6') & (gesture.className != 'gesture 7'):
+                    print gesture, prob
             self.gestureWindow1 = []
         if self.isFirstRun:
             if(len(self.gestureWindow1)==16):
@@ -54,7 +56,9 @@ class HMM(IClassifier):
             seq = np.array([self.gestureWindow2])
             seq = u.preprocessData(seq)
             if len(seq) != 0:
-                print self.gestureApp.scoreSeq(seq[0])
+                gesture, prob =  self.gestureApp.scoreSeq(seq[0])
+                if (gesture.className != 'gesture 6') & (gesture.className != 'gesture 7'):
+                    print gesture, prob
             self.gestureWindow2 = []
         self.gestureWindow1.append(data)
         self.gestureWindow2.append(data)
@@ -95,9 +99,9 @@ class GestureApplication():
         self.gestures = {}
         self.fileIO = GestureFileIO()
         ''' Create HMM Model based on all existing Gesture datasets '''
-        self.test()
+        #self.test()
         ''' Load HMM Configurationfile to Classifiy '''
-        #self.loadModels('classifier/hmm/data/config_night.cfg')
+        self.loadModels('classifier/hmm/data/config_night.cfg')
         
         
         '''
@@ -165,8 +169,6 @@ class GestureApplication():
             if 0 > l > logprob:
                 logprob = l
                 gesture = g 
-        if (gesture.className == 'gesture 6') | (gesture.className == 'gesture 7'):
-            return None
         return gesture, logprob
     
     def saveModels(self, filePath, configurationName='Default'):
