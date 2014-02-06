@@ -11,7 +11,7 @@ import ConfigParser
 import pickle
 from classifier.classifier import IClassifier
 from gestureFileIO import GestureFileIO
-
+import classifier.hmm.plot as plot
 
 NAME = "HiddenMarkovModel"
 GESTURE_PREFIX="gesture "
@@ -76,7 +76,10 @@ class HMM(IClassifier):
 
 
     def loadData(self, filename=""):
-        pass
+        p = plot.Plot(int(filename))
+        p.initPlot()
+        p.show()
+        
 
 
     def saveData(self, filename=""):
@@ -95,6 +98,7 @@ class GestureApplication():
         #self.test()
         ''' Load HMM Configurationfile to Classifiy '''
         self.loadModels('classifier/hmm/data/config_night.cfg')
+        
         
         '''
         classList = [0, 3]
@@ -154,6 +158,8 @@ class GestureApplication():
         logprob = -sys.maxint - 1
         gesture = None
         for g in self.gestures.values():
+            if  (g.className == 'gesture 2') | (g.className == 'gesture 4') | (g.className == 'gesture 5'):
+                continue
             l = g.score(seq)
             
             if 0 > l > logprob:

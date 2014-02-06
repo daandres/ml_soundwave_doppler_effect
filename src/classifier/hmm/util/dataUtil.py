@@ -7,11 +7,11 @@ class DataUtil:
     
     def __init__(self, lowerBound=0.15):
         self.lowerBound=lowerBound
-        self.fileIO = GestureFileIO(relative="../../")
+        self.fileIO = GestureFileIO(relative="")
 
-    def loadRaw3dGesture(self, recordClass, recordNames=['Sebastian']):
+    def loadRaw3dGesture(self, recordClass, recordNames=None):
         if recordNames is None:
-            return self.fileIO.getGesture3D(recordClass)
+            return self.fileIO.getGesture3D(recordClass, ["Sebastian"]) # insert names here
         else:
             return self.fileIO.getGesture3D(recordClass, recordNames)
 
@@ -60,7 +60,7 @@ class DataUtil:
         return np.array(train), test
     
         
-    def reduceBins(self, data, leftBorder=26, rightBorder=39):
+    def reduceBins(self, data, leftBorder=23, rightBorder=41):
         ''' reduces array from 64 to 16 bins '''
 
         data3dNew = np.zeros((data.shape[0], data.shape[1], rightBorder-leftBorder))
@@ -101,7 +101,7 @@ class DataUtil:
 
         return np.array(lis)
     
-    def cutRelevantAction(self,data, framesBefore=6, framesAfter=6):
+    def cutRelevantAction(self,data, framesBefore=7, framesAfter=7):
         ''' 
         extracts relevant actions from data 
         
@@ -150,19 +150,28 @@ class DataUtil:
         # New Version - Revert none completed actions
         result = np.zeros((np.shape(data)[0], frameRange, np.shape(data)[2]))
         i = 0
-        for d in data:
+        print np.shape(data)
+        for j, d in enumerate(data):
             # subtract no gesture mean values from data
             #d = d - np.array([2.52e-05,2.37e-05,1.06e-04,1.34e-03,2.13e-01,4.60e-01,9.83e-01,8.19e-01,2.57e-01,1.57e-01,1.98e-04,5.28e-05,2.47e-05])
             pos = self._getHighestSum(d)
             if((pos-framesBefore)<0) | ((pos + framesAfter) > (np.shape(d)[0]-1)):
+                print j+1
                 continue
             indexBegin = pos-framesBefore
             indexEnd =  pos + framesAfter+1
-            result[i] = d[indexBegin:indexEnd]
+            #print gest
+            result[i] = self.amplifySignal(d[indexBegin:indexEnd])
             i += 1
+        print np.shape(result[0:i])
         return result[0:i]
 
-            
+    def amplifySignal(self, gesture):
+        #gest = np.where(gest[:,:] > 0.6, gest[:,:], gest[:,:]*0.75 )
+        gesture = np.where(gesture[:,:] < 0.2, gesture[:,:]*4.0, gesture[:,:] )
+        gesture = np.where(gesture[:,:] < 0.4, gesture[:,:]*2.0, gesture[:,:] )
+        gesture = np.where(gesture[:,:] > 0.8, gesture[:,:]*0.75, gesture[:,:] )
+        return gesture
        
     def _getHighestSum(self, gesture):
         highestValue = 0

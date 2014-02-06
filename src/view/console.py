@@ -62,7 +62,7 @@ class Console:
         elif(name == "hmm"):
             if(name not in self.classificators):
                 from classifier.hmm.gestureApplication import HMM
-                #hmmConfig = c.getInstance().getConfig("hmm")
+                # hmmConfig = c.getInstance().getConfig("hmm")
                 cl = HMM(self.recorder)
                 self.classificators[name] = cl
             cl = self.classificators[name]
@@ -177,6 +177,18 @@ class Console:
         self.applicationClose()
 
     def view(self, command):
+        if(self.classificator != None):
+            try:
+                print(self.classificator.getName() + " has GUI")
+                self.classificator.startGui(self.recorder, self.viewCallback)
+            except NotImplementedError:
+                print(self.classificator.getName() + " has no GUI, use default one")
+                self.defaultView()
+        else:
+            print("No classifcator selected, use default GUI")
+            self.defaultView()
+
+    def defaultView(self):
         self.view = View(self.recorder, self.viewCallback)
         self.view.startNewThread()
 
