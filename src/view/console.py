@@ -181,7 +181,7 @@ class Console:
             try:
                 print(self.classificator.getName() + " has GUI")
                 self.classificator.startGui(self.recorder, self.viewCallback)
-            except Exception:
+            except NotImplementedError:
                 print(self.classificator.getName() + " has no GUI, use default one")
                 self.defaultView()
         else:

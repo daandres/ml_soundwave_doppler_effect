@@ -40,4 +40,4 @@ class IClassifier:
         pass
 
     def startGui(self, recorder, callback):
-        raise Exception("No GUI implemented")
+        raise NotImplementedError("No GUI implemented")
