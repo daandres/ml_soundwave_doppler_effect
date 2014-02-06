@@ -1,7 +1,7 @@
 \section{\acs{LSTM}}
-\begin{table*}
+\begin{table}[h]
 \centering
-\begin{tabular}{|l|c|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
 \diaghead{\theadfont xxxxxxxxxxxxxxxxxxxx}%
 {\textbf{LSTM-Blöcke}}{\textbf{Iterationen}}& \textbf{100} & \textbf{200} & \textbf{300} & \textbf{400} & \textbf{700} & \textbf{1000}\\
@@ -14,16 +14,50 @@
 18&45,33\%&34,71\%&28,44\%&25,63\%&18,35\%&15,70\%\\ \hline
 20&48,40\%&37,18\%&31,42\%&30,02\%&22,80\%&18,38\%\\ \hline
 \end{tabular} 
-\caption[Tests für LSTM-Block Anzahl]{Tests um Anzahl der LSTM-Blöcke herauszufinden}
+\caption[Tests für LSTM-Block Anzahl]{Tests um Anzahl der LSTM-Blöcke herauszufinden. Werte geben Fehlerrate des Netzwerks an. Das Trainigsverfahren ist \texttt{RProp}. Outputlayerart ist \texttt{Softmax}. }
 \label{tab:neurontests}
-\end{table*}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\diaghead{\theadfont xxxxxxxxxxxxxxxxxxxx}%
+{\textbf{Layerart}}{\textbf{Iterationen}}& \textbf{500} & \textbf{1000} & \textbf{1500}\\
+ \hline
+linear&30,42\%&22,22\%&19,57\%\\\hline
+sigmoid&23,74\%&19,62\%&17,25\%\\\hline
+softmax&23,57\%&18,70\%&16,25\%\\\hline
+\end{tabular} 
+\caption[Tests für Outputlayer]{Tests um Art des Outputlayer zu bestimmen. Werte geben Fehlerrate des Netzwerks an. Das Trainigsverfahren ist \texttt{RProp}. Die Anzahl der LSTM-Blöcke ist 16. }
+\label{tab:outlayertests}
+\end{table}
 
 
-\begin{sidewaystable*}
+\begin{table}
+\centering
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+\diaghead{\theadfont xxxxxxxxxxxxxxxxxxxx}%
+{\textbf{LSTM-Blöcke}}{\textbf{Iterationen}}& \textbf{250} & \textbf{500}\\
+ \hline
+8&55,40\%&84,02\%\\\hline
+10&64,05\%&70,09\%\\\hline
+12&65,97\%&57,35\%\\\hline
+14&64,41\%&45,40\%\\\hline
+16&64,62\%&67,35\%\\\hline
+18&70,48\%&67,50\%\\\hline
+\end{tabular} 
+\caption[Tests für Trainigverfahren]{Tests um instabiles Ergebnisverhalten des Trainingverfahrens Backpropagation zu zeigen. Werte geben Fehlerrate des Netzwerks an. Outputlayerart ist \texttt{Softmax}. }
+\label{tab:outlayertests}
+\end{table}
+
+\begin{sidewaystable}[h]
 \centering
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
 \hline
- \textbf{Fold} & \textbf{Cut} & \textbf{Peephole} & \textbf{Neurons} & \textbf{250} & \textbf{500} & \textbf{750} & \textbf{1000} & \textbf{1250} & \textbf{1500}\\
+ \textbf{Fold} & \textbf{Cut} & \textbf{Peephole} & \diaghead{\theadfont xxxxxxxxxxxxxxxxxxxx}%
+{\textbf{LSTM-Blöcke}}{\textbf{Iterationen}} & \textbf{250} & \textbf{500} & \textbf{750} & \textbf{1000} & \textbf{1250} & \textbf{1500}\\
  \hline
  \multirow{12}{*}{1}&\multirow{4}{*}{0}&\multirow{2}{*}{true}&16&28,39\%&27,30\%&26,54\%&27,19\%&26,33\%&26,33\%\\\cline{4-10}
   & & &18&29,14\%&28,06\%&26,00\%&26,89\%&25,14\%&26,11\%\\\cline{3-10}
@@ -56,14 +90,14 @@
   & & &18&31,85\%&30,99\%&30,34\%&28,71\%&28,91\%&27,95\%\\
 \hline
 \end{tabular} 
-\caption[Tests für Daten und LSTM-Netz]{Tests um Parameter für Datenvorverarbeitung und LSTM-Netz zu finden}
+\caption[Tests für Daten und LSTM-Netz]{Tests um Parameter für Datenvorverarbeitung und LSTM-Netz zu finden. Werte geben Fehlerrate des Netzwerks an. Das Trainigsverfahren ist \texttt{RProp}. Outputlayerart ist \texttt{Softmax}. }
 \label{tab:inputtests}
-\end{sidewaystable*}
+\end{sidewaystable}
 
-\begin{figure*}[htfp]
+\begin{figure}[h]
   \begin{center}
   \includegraphics[width=0.95\textwidth]{lstm/diagram}
-  \caption[\acs{LSTM} Klassendiagramm]{\acs{LSTM} Klassendiagramm}
+  \caption[\acs{LSTM} Klassendiagramm]{Klassendiagramm des \acs{LSTM} Moduls innerhalb des Gestenerkennungsprogramm. }
   \label{fig:lstm_class}
   \end{center}
-\end{figure*}  
+\end{figure}  
