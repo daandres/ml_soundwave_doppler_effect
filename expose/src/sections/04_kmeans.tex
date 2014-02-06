@@ -142,12 +142,19 @@ Diese Bewegungsfolge sowie die entsprechenden Veränderungen des Frequenzspektru
 Die Klassifizierung der Geste \ac{RLO} wurde nicht weiter verfolgt, da sie nicht zuverlässig von Geste \ac{SPO} unterschieden werden kann. Ebenso wird Geste \ac{RO} nicht weiter betrachtet, da sich diese nicht vom Hintergrundrauschen unterscheiden lässt.
 
 %TODO Bild Schritte bei der Vorverarbeitung
+\begin{figure*}[htbp]
+    \centering
+   \includegraphics[width=0.9\textwidth]{kmeans/Vorverarbeitung.pdf}
+\caption{Vorverarbeitung der Aufnahmen}
+\label{fig:kMeansVorverarbeitung}
+\end{figure*}
+
 %Norm. -> Segmentierung -> Reduzieren der Datenmenge
 Insgesamt ist erkennbar, dass bei den übrigen Gesten neben der Amplitude jeweils mindestens ein weiteres lokales Maximum existiert. Anhand dieser Maxima ist eine Unterscheidung vom Grundrauschen und somit auch eine Segmentierung der relevanten Frames aus einer Gesten-Aufnahme möglich.
 
 %Diese Idee wird bei der Segmentierung aufgegriffen. Vorher fidnet jedoch noch eine Normalisierung der Lautstärke statt
 
-Die Datenaufbereitung erfolgt in der in Abbildung XX dargestellten Reihenfolge. 
+Die Datenaufbereitung erfolgt in der in \autoref{fig:kMeansVorverarbeitung} dargestellten Reihenfolge. 
 Zu Beginn wird eine Normalisierung der 
 Lautstärke durchgeführt. Dazu werden die Lautstärkewerte in jedem einzelnen Frame um den gleichen Prozentsatz erhöht beziehungsweise verringert, sodass die Amplitude genau den vorher festgelegten Maximalwert annimmt. Dieser Schritt ist notwendig, da bei der verwendeten Hardware die Lautstärke der Aufnahmen stark schwankt.
 %Im Anschluss daran werden die Frames einer Aufnahme so segmentiert, dass 
