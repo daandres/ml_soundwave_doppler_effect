@@ -184,7 +184,6 @@ class DataUtil:
         return position
         '''
 
-
     def findAvg(self, data):
 
         summe = []
