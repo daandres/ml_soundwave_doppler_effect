@@ -157,6 +157,7 @@ class Plot():
 
     def plotRaw(self):
         self.data = u.loadRaw(self.gesture)
+        
         self.actionPoint = []
         for d in self.data:
             self.actionPoint.append(self.dp._getHighestSum(d))
@@ -167,7 +168,7 @@ class Plot():
     def plotGestureGmms(self):
         mg = g.GMM_Util()
         gmms = mg.sample(self.gesture)
-        print "loading..."
+        print "loading Gesture GMM..."
         data = []
         for i in range(13):
             lis = []
@@ -176,7 +177,6 @@ class Plot():
                 sample = np.mean(sample, 0)
                 lis.append(np.ravel(sample))
             data.append(lis)
-        print np.shape(data)
         self.data = data
         self.index = 0
         self.initAxis()
@@ -192,7 +192,6 @@ class Plot():
         data = []
         for gmm in model.gmms_:
             data.append(gmm.sample(13))
-        print np.shape(data)
 
         self.data = data
         self.index = 0
