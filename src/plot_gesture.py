@@ -3,8 +3,10 @@ Created on 14/12/2013
 
 @author: Benny
 '''
+from scipy.ndimage import gaussian_filter1d
 import numpy
 import pylab
+
 numpy.seterr(all='warn')
 import warnings
 warnings.simplefilter("error", RuntimeWarning)
@@ -60,7 +62,25 @@ def make_plot(arr,avg,length,c):
             pylab.plot(x, arr[i], c)  #[::2]
     return numpy.asarray(temp)
         
+def smoothListGaussian(list,strippedXs=False,degree=6):  
+    window=degree*2-1  
+    weight=numpy.array([1.0]*window)  
+    weightGauss=[]  
+    
+    for i in range(window):  
+        i=i-degree+1  
+        frac=i/float(window)  
+        gauss=1/(numpy.exp((4*(frac))**2))  
+        weightGauss.append(gauss)  
 
+    weight=numpy.array(weightGauss)*weight
+    smoothed=[0.0]*(len(list)-window)
+    
+    for i in range(len(smoothed)):  
+        smoothed[i]=sum(numpy.array(list[i:i+window])*weight)/sum(weight)  
+    
+    print list.shape, len(smoothed)
+    return smoothed
 
 def main():
 #===============================================================================
@@ -92,13 +112,13 @@ def main():
 #===============================================================================
     
     g = 5
-    for gesture in range(4,5): #0+g,1+g):
+    for gesture in range(0,1): #0+g,1+g):
         ''' get preprocessed data '''
         nn_avg, gn = preprocess(gesture)
         
         print "Gesture",gesture
         gesture_avg = []
-        for i in range(5,len(gn)):
+        for i in range(0,len(gn)):
             #i = 5
             temp = []
             for rf in range(len(gn[i])):
@@ -114,19 +134,32 @@ def main():
             
             while len(temp) < 16:
                 temp.append(numpy.zeros(40))
-            print len(temp)
+            #print len(temp)
             
-            even = temp[::2] 
-            odd = temp[1::2]
+            even = temp[:16:2] 
+            odd = temp[1:16:2]
             
             test = numpy.asarray(list(numpy.asarray(even) + numpy.asarray(odd)))/2.0
+
             for rf in range(0,len(test)):
-                ax = pylab.subplot(4,4,rf)
+                #print numpy.amax(test[rf])
+                try:
+                    d = 1#numpy.amax(test[rf])
+                    p = gaussian_filter1d(test[rf]/d, 1.5)
+                    #p = p/numpy.amax(p)
+                except:
+                    p = test[rf]
+
+                
+                ax = pylab.subplot(2,4,rf)
                 ax.set_ylim([-0.1,1])
                 scaling = numpy.arange(40)
-                pylab.plot(scaling,test[rf],"g")
+                if rf == 0:
+                    pylab.plot(scaling,p,"b")
+                else:
+                    pylab.plot(scaling,p,"g")
             
-            return
+            '''return
             for rf in range(0,len(temp[:16]),2):
                 ax = pylab.subplot(4,4,rf)
                 ax.set_ylim([-0.1,1])
@@ -134,7 +167,7 @@ def main():
                 pylab.plot(scaling,(temp[rf]+temp[rf+1])/2.0,"g")
             
             return
-                
+            '''    
             '''
             print i,"=>",len(temp),
             if len(temp) > 8:
