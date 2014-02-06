@@ -371,76 +371,38 @@ eingebunden sind, haben sich alle Teilnehmer auf ein Interface geeinigt, was
 jeder Klassifikator implementieren muss. Dies ist die abstrakte Klasse
 \texttt{IClassifier}. Die Implementatierung des \ac{LSTM}-Klassifikators ist in
 der Klasse LSTM zu finden, diese dient als Wrapper-Klasse. Ein Klassendiagramm
-ist in \autoref{sec:lstm_class} dargestellt.
-
+ist in \autoref{sec:lstm_class} dargestellt. Die \textit{LSTM}-Klasse enthält je eine Instanz von: 
+\begin{itemize}
+\item \textit{LSTMClassify}: Enthält die verschiedenen Methode für die Live-Klassifizierung.
+\item \textit{LSTMData}: Ist für das speichern und laden der Datensets zuständig.
+\item \textit{LSTMNet}: Erstellt, lädt, aktiviert oder speichert ein LSTM-Netz.
+\item \textit{LSTMTrain}: Trainiert ein mit verschiednen Algorithmen das LSTM-Netz.
+\end{itemize}
 Außerdem wurden in der Datei \texttt{util.py} verschiedene Hilfsfunktionen
 erstellt.
 Des weiteren werden Konfigurationseinstellungen in einer Datei gespeichert und
 zur Initialisierung der geladen.
 Da beabsichtigt ist mit dem Programm den PC zu steuern, wurde die Python
-Bibliothek \cite{Python-uinput}\textbf{TODO} eingebunden. Mit dieser können
+Bibliothek \textit{Python-uinput} eingebunden. Mit dieser können
 Keycodes an den Kernel geschickt werden.
 Die Bibliothek funktioniert nur unter Linux und erfordert Root-Rechte.
 Im folgenden wird auf die Implementation der einzelnen Methoden der
-\textit{IClassifier}-Klasse eingegangen.
+\textit{LSTM}-Klasse eingegangen.
 
 \subsubsection*{Live Klassifikation}
-Für die Live Klassifikation wurde zwei verschiedene Ideen implementiert. 
-Bei beiden wird zuerst die \textit{classify} Methode der LSTM-Klasse 
+Für die Live Klassifikation wurde verschiedene Ideen implementiert. 
+Bei allen wird zuerst die \textit{classify} Methode der LSTM-Klasse 
 aufgerufen. Diese bekommt den Datensatz der aktuellen Aufnahme übergeben. 
 Der Datensatz enthält ein Array mit 64-Datenpunkten. Die übergebenen Daten werden 
 Normalisiert und anschließend wird der Durchschnitt abgezogen, wie in Kapitel 
 \autoref{sec:lstm_data} beschrieben. Nachdem die Daten vorverarbeitet wurden, 
-werden diese einer \textit{classify1}-Methode übergeben. 
-\begin{lstlisting}[language=Python,caption={Classify
-Variante 1},label={lst:lstm_classify1}]{lst:lstm_classify1}
-def __classify1(self,data):
-	self.datalist.append(data)
-	self.datanum += 1
-	if(self.datanum % 32 == 0):
-		self.net.reset()
-		out = self._activateSequence(self.datalist)
-		print(str(out))
-		self.datalist = []
-		self.datanum = 0
-		return out
-	return -1
-\end{lstlisting}
+werden diese einer der verschiedenen\textit{classify}-Methoden übergeben. 
 
 Die Methode \textit{classify1} speichert so lange die übergebenen Datenwerte, 
 bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz 
 übergeben und eine Klassifikation gestartet. Da es bei diesem Ansatz passieren kann, 
 dass eine Geste nicht komplett in diesen 32-Werte enthalten ist, wurde ein zweite 
 Idee umgesetzt, welche in der Methode \textit{classify2} umgesetzt ist.
-
-\begin{lstlisting}[language=Python,caption={Classify
-Variante 2},label={lst:lstm_classify2}]{lst:lstm_classify2}
-def __classify2(self, data):
-	self.datanum += 1
-	self.datalist.append(data)
-	if(self.datanum % 32 == 0):
-		self.has32 = True
-	if(self.has32):
-		self.net.reset()
-		Y_pred = self._activateSequence(self.datalist)
-		del self.datalist[0]
-		self.predHistory[0] = Y_pred
-		self.predHistory = np.roll(self.predHistory, -1)
-		expected = stats.mode(self.predHistory, 0)
-		if(expected[1][0] >= self.predHistHalfUpper):
-			if(int(expected[0][0]) != self.previouspredict):
-				oldPrevious, oldPredCounter = self.previouspredict, self.previouspredict
-				self.previouspredict = int(expected[0][0])
-				self.predcounter = 1
-				return oldPrevious, oldPredCounter
-			else:
-				self.predcounter += 1
-				if(self.predcounter == 4):
-					print(str(self.previouspredict))
-					self.outkeys.outForClass(self.previouspredict)
-				return self.previouspredict, self.predcounter
-	return -1, -1
-\end{lstlisting}
 
 Die Methode \textit{classify2} speichert so lange die übergebenen Datenwerte, 
 bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz 
@@ -449,6 +411,19 @@ Liste gespeichert. Von dieser Liste wird, mittels der Python-Funktion mode,
 der Wert ermittelt der am häufigsten vorkommt. Ist dieser Wert größer als eine 
 definierte Schranke wird er in \textit{previouspredict} gespeichert. Wenn vier 
 mal hinter einander die gleiche Geste erkannt wurde, wird diese ausgegeben.
+
+Eine weitere Idee besteht darin, die Geste zwischen zwei mal der Geste 6 zu 
+suchen. Dies wird in \textit{classify3} versucht.
+
+Da von jedem Datensatz der Durchschnitt abgezogen wird, erscheint sobald eine 
+BEwegung statt findet, ein Ausschlag. Diesen zu erkennen wird in \textit{classify4} 
+vesucht. Bei dieser Implementaion muss der Auschlag einen bestimmten Schwellwert 
+überschreiten und wird anschließend dem LSTM-Netz übergeben.
+
+Bei der Methode \textit{classify5} wird genau so vorgegangen wie bei der vierten 
+Idee, es werden aber nicht ab dem Beginn des Auschlags die Daten an das 
+Netz übergeben, sondern mit einem Puffer gearbeitet und wenn eine Ausschlag erkannt 
+werden die nächsten 22-Datensätze und 10-Datensätze aus dem Puffer übergeben.
 
 \subsubsection{Training}
 Das Training des \ac{RNN} mit \ac{LSTM}-Blöcken erfolgt mit den in
