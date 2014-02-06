@@ -42,11 +42,7 @@ class HMM(IClassifier):
     def classify(self, data):
         if(len(self.gestureWindow1)==32):
             seq = np.array([self.gestureWindow1])
-            seq = u.preprocessData(seq)
-            if len(seq) != 0:
-                gesture, prob = self.gestureApp.scoreSeq(seq[0])
-                if (gesture.className != 'gesture 6') & (gesture.className != 'gesture 7'):
-                    print gesture, prob
+            self.startClassificationAction(seq)
             self.gestureWindow1 = []
         if self.isFirstRun:
             if(len(self.gestureWindow1)==16):
@@ -54,16 +50,19 @@ class HMM(IClassifier):
                 self.isFirstRun = False
         if (len(self.gestureWindow2)==32):
             seq = np.array([self.gestureWindow2])
-            seq = u.preprocessData(seq)
-            if len(seq) != 0:
-                gesture, prob =  self.gestureApp.scoreSeq(seq[0])
-                if (gesture.className != 'gesture 6') & (gesture.className != 'gesture 7'):
-                    print gesture, prob
+            self.startClassificationAction(seq)
             self.gestureWindow2 = []
         self.gestureWindow1.append(data)
         self.gestureWindow2.append(data)
 
-
+    def startClassificationAction(self,seq):
+        seq = u.preprocessData(seq)
+        if len(seq) != 0:
+            gesture, prob =  self.gestureApp.scoreSeq(seq[0])
+            if (gesture.className != 'gesture 6') & (gesture.className != 'gesture 7'):
+                #if prob > -250.0:
+                print gesture, prob
+                
     def startValidation(self):
         ret = []
         for className, dataPath in classList:

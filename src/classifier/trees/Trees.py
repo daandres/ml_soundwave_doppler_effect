@@ -33,7 +33,7 @@ class Gui(QtGui.QWidget):
         super(Gui, self).__init__()
         
         hbox = QtGui.QHBoxLayout(self)
-        self.pixmap = QtGui.QPixmap("/Users/mutz/FH/03/machine_learning/projekt/ml_soundwave_doppler_effect/src/classifier/trees/redrocks.jpg")
+        self.pixmap = QtGui.QPixmap("C:/Users/Annalena/git/ml_soundwave_doppler_effect/src/classifier/trees/redrocks.jpg")
 
         lbl = QtGui.QLabel(self)
         lbl.setPixmap(self.pixmap)
@@ -62,14 +62,11 @@ class Trees(IClassifier):
         self.data = []
         self.queue = deque()
         self.temp = deque()
-        #self.startTraining()
+        self.startTraining()
         self.flag = False
         self.liste = []
         
-        app = QtGui.QApplication(sys.argv)
-        self.gui = Gui()
-        self.signal = Signal(self.gui)
-        sys.exit(app.exec_())
+        
         
 
     def getName(self):
@@ -81,6 +78,12 @@ class Trees(IClassifier):
         return self.t
 
     def startTraining(self):
+        
+        app = QtGui.QApplication(sys.argv)
+        self.gui = Gui()
+        self.signal = Signal(self.gui)
+        app.exec_()
+        
         t = TrainingData()
         gestures = t.getRawData()
         
