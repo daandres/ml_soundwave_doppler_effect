@@ -29,11 +29,12 @@ class KMeans(IClassifier):
         self.gestureArray = []
           
         self.recorder.classifyStart(self)
-        #self.app = ViewUIKMeans(self, self.getName)
-        #self.app.start()
         
         
-        
+    def startGui(self, recorder, callback):
+        self.app = ViewUIKMeans(self, self.getName)
+        self.app.start()
+        callback()
         
         
     def getName(self):
@@ -123,7 +124,7 @@ class KMeans(IClassifier):
         cluster =  self.kmH.checkClusterDistance(class_, self.percentRatio)
         self.setGestureArray(cluster)
         
-        #self.cSignal(cluster)
+        self.cSignal.emitSignal(cluster)
         
         if cluster == -1:
             print '-1'
