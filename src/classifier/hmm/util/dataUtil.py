@@ -9,9 +9,9 @@ class DataUtil:
         self.lowerBound=lowerBound
         self.fileIO = GestureFileIO(relative="")
 
-    def loadRaw3dGesture(self, recordClass, recordNames=['Sebastian']):
+    def loadRaw3dGesture(self, recordClass, recordNames=None):
         if recordNames is None:
-            return self.fileIO.getGesture3D(recordClass, ["paul"])
+            return self.fileIO.getGesture3D(recordClass) # insert names here
         else:
             return self.fileIO.getGesture3D(recordClass, recordNames)
 
