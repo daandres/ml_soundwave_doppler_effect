@@ -51,6 +51,7 @@ class SVM(IClassifier):
         self.slice_left = int(self.config['slice_left'])
         self.slice_right = int(self.config['slice_right'])
         self.samples_per_frame = int(self.config['samples_per_frame'])
+        self.wanted_frames = self.samples_per_frame - self.slice_left - self.slice_right
         self.framerange = int(self.config['framerange'])
         self.timeout = int(self.config['timeout'])
         self.threshold = float(self.config['threshold'])
@@ -102,7 +103,7 @@ class SVM(IClassifier):
             irrelevant_samples = np.where(frame <= self.threshold)
             frame[irrelevant_samples] = 0.0
         except:
-            frame = np.zeros(dataframe.shape[0])
+            frame = np.zeros(self.wanted_frames)
 
         return frame
     
@@ -162,12 +163,12 @@ class SVM(IClassifier):
                             ''' get first 16 recordingframes which contain relevant gesture information '''
                             ''' if less than 16, append frames with zeros '''
                             current_frameset = [self.preprocess_frame(frame, self.ref_frequency_frame) for frame in gesture_framesets[frameset_nr] if np.amax(self.preprocess_frame(frame, self.ref_frequency_frame)) > 0]
-                            while len(current_frameset) < 16:
-                                current_frameset.append(np.zeros(40))
+                            while len(current_frameset) < self.framerange/2:
+                                current_frameset.append(np.zeros(self.wanted_frames))
                             
                             ''' slice to two lists (even/odd) and sum every pair; reshape to 1d array '''
-                            relevant_frames = np.asarray(list(np.asarray(current_frameset[:16:2] ) + np.asarray(current_frameset[1:16:2])))
-                            normalised_gesture_frame = relevant_frames.reshape(40*8,)
+                            relevant_frames = np.asarray(list(np.asarray(current_frameset[:self.framerange/2:2] ) + np.asarray(current_frameset[1:self.framerange/2:2])))
+                            normalised_gesture_frame = relevant_frames.reshape(self.wanted_frames*self.framerange/4,)
                         
                         # old second preprocess step
                         else:
@@ -225,17 +226,17 @@ class SVM(IClassifier):
                 ''' get first 16 recordingframes which contain relevant gesture information '''
                 ''' if less than 16, append frames with zeros '''
                 current_frameset = [frame for frame in self.datalist[-self.framerange:] if np.amax(frame) > 0]
-                while len(current_frameset) < 16:
-                    current_frameset.append(np.zeros(40))
+                while len(current_frameset) < self.framerange/2:
+                    current_frameset.append(np.zeros(self.wanted_frames))
                 
                 ''' slice to two lists (even/odd) and sum every pair; reshape to 1d array '''
-                relevant_frames = np.asarray(list(np.asarray(current_frameset[:16:2] ) + np.asarray(current_frameset[1:16:2])))
-                normalised_gesture_frame = relevant_frames.reshape(40*8,)
+                relevant_frames = np.asarray(list(np.asarray(current_frameset[:self.framerange/2:2] ) + np.asarray(current_frameset[1:self.framerange/2:2])))
+                normalised_gesture_frame = relevant_frames.reshape(self.wanted_frames*self.framerange/4,)
                 
                 try:
                     ''' start actual classification and applicationstarter '''
                     target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
-                    self.starter.startProgramm(target_prediction)
+                    self.starter.controlProgram(target_prediction)
                 except:
                     print "some error occured =("
                 
@@ -252,7 +253,7 @@ class SVM(IClassifier):
                         
                         ''' start actual classification and applicationstarter '''
                         target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
-                        self.starter.startProgramm(target_prediction)
+                        self.starter.controlProgram(target_prediction)
                 except:
                     print "some error occured =("
 
