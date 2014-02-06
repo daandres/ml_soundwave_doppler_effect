@@ -9,7 +9,7 @@ Andererseits ist das Erzeugen von Bäumen im Allgemeinen relativ effizient, was 
 in der Traningsphase wichtig ist. Das Verwenden bzw. Durchlaufen eines Baumes hat lediglich eine logarithmische Komplexität, 
 so dass auch die Klassifikation durch einem Baum sehr effizient ist, sofern dieser nicht entartet ist. 
 
-\subsection*{Entscheidungsbäume}
+\subsection{Funktionsweise des KLassifikators}
 
 Bäume zur Klassifikation von Daten werden auch als \glqq Entscheidungsbäume\grqq\ bezeichnet und bestehen aus Knoten, Kanten und Blättern. Knoten entsprechen dabei Merkmalen bzw. \glqq Features\grqq\ der zu klassifizierenden Daten und die Kanten an einem Knoten den verschiedenen Merkmalsausprägungen. 
 Ein Knoten kann entweder einen weiteren Knoten als Kind haben (also ein weiteres Merkmal) oder aber ein Blatt, was einer Klasse entspricht.
@@ -82,15 +82,15 @@ Ein anderes Maß zur Auswahl von geeigneten Entscheidungsmerkmalen ist die sogen
 %Beginnend beim Wurzelknoten wird bei jedem Knoten mithilfe einer Testfunktion berechnet, welche Abzweigung genommen werden muss. 
 %Ist man am Blattknoten angekommen, ist dies die zur Eingabe gehörende Klasse~\cite{alpaydin:maschinelles_lernen, borgelt:data_mining}.
 
-\subsection{Ensemble Learning}
+\subsubsection*{Ensemble Learning}
 Die Idee von Ensemble Learning ist es, mehrere Klassifikatoren gleichzeitig zu verwenden anstatt eines einzigen Klassifikators, um bessere Ergebnisse zu erzielen. Der Vorteil bei der Verwendung mehrerer Klassifikatoren ist es, dass nicht ein einzelner Klassifikator alle Klassen möglichst gut unterscheiden können muss, sondern dass mehrere (unabhängig voneinander gesehen schwächere) Klassifikatoren zusammen einen starken Klassifikator bilden können. Wichtig ist dabei lediglich, dass jeder der schwachen Klassifikatoren geringfügig besser sein muss als raten, also bei einer binären Klassifikation eine Erfolgsrate von mehr als 50\% hat.
 Bezugnehmend auf das einführende Beispiel zur Klassifikation verschiedener Gemüsesorten könnte man also beispielsweise einen Klassifikator verwenden, der sehr gut anhand der Form klassifizieren kann und einen weiteren anhand der Farbe. Ein Nachteil von Ensemble Learning ist jedoch, dass der Trainingsaufwand mit der Anzahl der Klassifikatoren steigt. Da bei Entscheidungsbäumen das Training verglichen mit anderen Klassifikatoren jedoch relativ effizient ist, bieten sich Entscheidungsbäume besonders als Klassifikatoren für Ensemble Learning an. Im Folgenden werden daher zwei verschiedene Ansätze des Ensemble Learning vorgestellt.
 
 
-\subsection*{Bagging}
+\subsubsection*{Bagging}
 Eine einfache Methode, um mehrere Klassifikatoren miteinander zu kombinieren, wird als Bagging bezeichnet, eine Abkürzung für Bootstrap Aggregating. Der Name steht im Zusammenhang mit der Ziehung von Stichproben aus einer Menge, wo ein \glqq bootstrap sample\grqq\ eine Bezeichnung dafür ist, ein Testdatensatz \glqq mit Zurücklegen\grqq\ aus der Testmenge zu ziehen. Somit können manche Testdaten mehrfach, andere gar nicht in der Trainingsmenge vorhanden sein. Durch die daraus resultierenden unterschiedlichen Trainingsdaten entstehen Klassifikatoren, die verschiedene Klassen unterschiedlich gut unterscheiden können. Die Klassifikation erfolgt dann aufgrund einer Mehrheitsentscheidung.
 
-\subsection*{Boosting}
+\subsubsection*{Boosting}
 Boosting unterscheidet sich zu Bagging dahingehend, dass während des Trainings immer mit den gleichen Trainings- und Testdaten gearbeitet wird und nicht eine zufällige Auswahl verwendet wird.
 Das bekannteste Boosting-Verfahren heißt AdaBoost und existiert seit Mitte der 90er Jahre. Die grundsätzliche Idee bei dem Verfahren ist es, jeden Datensatz um ein zusätzliches Gewicht als Maß dafür zu erweitern, wie fehlerbehaftet dieser Datensatz in den vorigen Trainingsrunden klassifiziert worden ist. Durch dieses Gewicht, welches im Laufe der Klassifikation immer wieder angepasst wird, werden falsch klassifizierte Daten hervorgehoben und stärker fokussiert. AdaBoost ist ein iterativer Algorithmus, der für jede neue Iteration die Fehlklassifikationen des vorherigen Trainings mit einbezieht mit dem Ziel, im besten Fall am Ende alle Testdaten richtig zuzuordnen. Das Gewicht berechnet sich anhand des jeweiligen Fehlers $\epsilon$, der sich aus der Summe der Gewichte der falsch klassifizierten Datenpunkte zusammensetzt. Das Gewicht dieser Datenpunkte wird mit
 $ \alpha = \frac{\epsilon}{(1-\epsilon)} $ 
@@ -185,19 +185,40 @@ Ein Beispiel dafür zeigt Abbildung~\ref{fig:left_right_same_time}
 Bei der in der Grafik abgebildeten Geste handelt es sich um ein mit der rechten und linken Hand entgegengesetztes zu und 
 wegbewegen von dem Monitor, so dass gleichzeitig auf der rechten und linken Seite eine Vergrößerung der 
 zum Referenzton gehörenden Frequenzanteile entsteht, was sich auch in der Grafik ablesen lässt.
-Diese Unterscheidungsmerkmale können sehr gut durch einen Entscheidungsbaum abgebildet werden. 
-Dazu kann die Verschiebungsrichtung als Maß dienen, um die Eingabemenge zu unterteilen und 
-somit eine Klassifizierung zu erreichen.
+%Diese Unterscheidungsmerkmale können sehr gut durch einen Entscheidungsbaum abgebildet werden. 
+%Dazu kann die Verschiebungsrichtung als Maß dienen, um die Eingabemenge zu unterteilen und 
+%somit eine Klassifizierung zu erreichen.
 
 \subsubsection{Charakteristiken der Gesten} \label{charakteristiken}
-Durch die Vorverarbeitung der Daten entstehen für die einzelnen Gesten Charakteristiken, anhand dessen sie unterschieden werden können. 
+Durch die Vorverarbeitung der Daten entstehen für die einzelnen Gesten Charakteristiken, anhand dessen sie unterschieden werden können. Nachfolgend wird zu sehen sein, dass sich einige der Gesten gut von den anderen abgrenzen lassen, andere sich dagegen stark ähneln.
 
-%\paragraph*{Right-to-left}
+\paragraph*{\acl{RLO}}
+Die Geste \acl{RLO} beschreibt eine Bewegung mit der Hand von links nach rechts oder von rechts nach links, also bewegt sie sich zunächst auf den Sender zu und dann wieder von ihm weg. Dadurch entsteht zunächst eine Frequenzverschiebung auf der rechten Seite und danach auf der linken Seite des Frequenzspektrums. In Abbildung\ref{fig:left_right} wird eine typische Charakteristik mit der Verschiebung auf der rechten Seite (türkis) und auf der linken Seite (pink).
 
-%\paragraph*{Top-to-bottom}
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/left_right.png}
+\caption{\acl{RLO}}
+\label{fig:left_right}
+\end{figure}
+
+
+\paragraph*{\acl{TBO}}
+In Abbildung~\ref{fig:top_bottom2} ist die Geste \acl{TBO} abgebildet. Diese wird durch eine Bewegung mit der flachen Hand von oben nach unten ausgeführt. Dabei entsteht die Frequenzverschiebung auf der rechten Seite (türkis) und darauf folgend eine Frequenzverschiebung auf der linken Seite (pink). 
+
+%\begin{figure}[htbp] \centering
+%\includegraphics[height=60mm]{trees/top_bottom.png}
+%\caption{\acl{TBO}}
+%\label{fig:top_bottom}
+%\end{figure}
+
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/top_bottom2.png}
+\caption{\acl{TBO}}
+\label{fig:top_bottom}
+\end{figure}
 
 \paragraph*{\acl{OT}}
-Die in Abbildung~\ref{fig:contrary} dargestellten aufbereiteten Daten der Frequenzverschiebungen, die die Geste \glqq \acl{OT}\grqq\ erzeugt, zeigt üblicherweise je zwei gleichzeitige, also übereinander liegende, Frequenzverschiebungen. Dies ist dadurch zu erklären, dass zur selben Zeit eine Bewegung auf das Schallquelle zu und von diesem weg durchgeführt wird.
+Die in Abbildung~\ref{fig:contrary} dargestellten aufbereiteten Daten der Frequenzverschiebungen, die die Geste \glqq \acl{OT}\grqq\ erzeugt, zeigt üblicherweise je zwei gleichzeitige, also übereinander liegende, Frequenzverschiebungen. Dies ist dadurch zu erklären, dass zur selben Zeit eine Bewegung auf das Schallquelle zu und von dieser weg durchgeführt wird.
 
 \begin{figure}[htbp] \centering
 \includegraphics[height=60mm]{trees/contrary.png}
@@ -207,7 +228,7 @@ Die in Abbildung~\ref{fig:contrary} dargestellten aufbereiteten Daten der Freque
 
 
 \paragraph*{\acl{SPO}}
-Der \glqq \acl{SPO}\grqq\ ist eine einfache Bewegung auf die Schallquelle zu, sodass eine Frequenzverschiebung auf der rechten Seite des Frequenzspektrums festgestellt werden kann. Dies ist in Abbildung~\ref{fig:single_push} dargestellt.
+Der \glqq \acl{SPO}\grqq\ ist eine einfache Bewegung auf den Sender zu, sodass eine Frequenzverschiebung auf der rechten Seite des Frequenzspektrums festgestellt werden kann. Dies ist in Abbildung~\ref{fig:single_push} dargestellt.
 
 \begin{figure}[htbp] \centering
 \includegraphics[height=60mm]{trees/single_push.png}
@@ -234,11 +255,12 @@ Um später Gesten live zu erkennen, muss auch definiert sein, wann keine Geste a
 \end{figure}
 
 \subsection{Merkmalsextraktion}
-Durch die Filterung und Glättung können nun die einzelnen Frequenzverschiebungen eindeutig identifiziert werden. Zudem ist in Abschnitt~\ref{charakteristiken} beschrieben, welche typische Gestalten der Graph für die verschiedenen Gesten annimmt. So lassen sich durch die Anordnung, Ausprägung und Aufkommen der Frequenzverschiebungen die unterschiedlichen Charakteristiken der einzelnen Gesten erkennen. Das Ziel der Merkmalsextraktion ist es, aus den 32 Datenpunkten weitere eindeutige Merkmale herauszuarbeiten um schließlich einen Merkmalsvektor mit überschaubarer Anzahl an Merkmalen zu generieren. Um dies zu realisieren, wurden folgende Eigenschaften der einzelnen Gesten untersucht:
+Durch die Filterung und Glättung können nun die einzelnen Frequenzverschiebungen eindeutig identifiziert werden. Zudem ist in Abschnitt~\ref{charakteristiken} beschrieben, welche typische Gestalten der Graph für die verschiedenen Gesten annimmt. So lassen sich durch die Anordnung, Ausprägung und Aufkommen der Frequenzverschiebungen die unterschiedlichen Charakteristiken der einzelnen Gesten erkennen. Wie jedoch auch ersichtlich wurde, ähneln sich einige Gesten sehr stark, sodass eine Unterscheidung zum Teil auch mit bloßem Auge schwer fällt. Hier kommt die Merkmalsextraktion zum Tragen, denn sie soll unterstützen feine Unterschiede besser zu erkennen, indem sie stärker gewichtet werden. Das Ziel der Merkmalsextraktion ist es, aus den 32 Datenpunkten weitere eindeutige Merkmale herauszuarbeiten um schließlich einen Merkmalsvektor mit überschaubarer Anzahl an Merkmalen zu generieren. Um dies zu realisieren, wurden folgende Eigenschaften der einzelnen Gesten untersucht:
 
 \begin{itemize} 
 \item Anzahl der Frequenzverschiebungen
 \item Zeitliche Abfolge der Frequenzverschiebungen
+\item Anzahl der gleichzeitigen Frequenzverschiebungen
 \item Amplitudenunterschiede zwischen den Frequenzverschiebungen
 \end{itemize}
 
@@ -250,15 +272,19 @@ Ein einfacher \glqq \acl{SPO}\grqq\ erzeugt deshalb im optimalen Fall eine Frequ
 \subsubsection*{Zeitliche Abfolge der Frequenzverschiebungen}
 Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq \acl{SPO}\grqq\ erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die in Abbildung~\ref{fig:contrary} dargestellte Geste \glqq \acl{OT}\grqq beschreibt dagegen die gleichzeitige gegensätzliche Bewegungen in Richtung der Schallquelle und von diesem weg. Somit tritt in diesem Fall gleichzeitig je eine Verschiebung nach rechts und links auf. 
 
+\subsubsection*{Anzahl der gleichzeitigen Frequenzverschiebungen}
+Die beiden Gesten \glqq \acl{DPO}\grqq\ und \glqq \acl{OT}\grqq\ gehören zu den Gesten, die mehr Frequenzverschiebungen erzeugen als die häufige erst Rechts- dann Linksverschiebung. Dadurch sind sie sich ähnlich. Im optimalen Fall generiert Geste \glqq \acl{OT}\grqq\ gleichzeitige Frequenzverschiebungen auf beiden Seiten. Um die Anzahl der Falschklassifikationen zu verringern, werden die gleichzeitigen Frequenzverschiebungen gezählt und in den Merkmalsvektor aufgenommen. So wird die das Merkmal der Gleichzeitigkeit verstärkt.
 
 \subsubsection*{Amplitudenunterschiede zwischen den Frequenzverschiebungen}
-Die Gesten \glqq \acl{SPO}\grqq\ und \glqq Right-to-Left-One-Hand\grqq\ unterscheiden sich in der zeitlichen Abfolge der Verschiebungen nicht. In beiden Fällen tritt erst eine Verschiebung rechts, dann links auf. Jedoch unterscheiden sich die Verschiebungen an sich. Bei \glqq \acl{SPO}\grqq\ unterscheiden sich die beiden Verschiebungen im optimalen Fall nur dadurch, dass die eine Verschiebung links und die andere rechts vom Peak auftritt. Bei \glqq Right-to-Left-One-Hand\grqq\ dagegen ist die Amplitude der zweiten Verschiebung, links vom Peak, schwächer als die andere.
+Die Gesten \glqq \acl{SPO}\grqq\, \glqq \acl{TBO}\grqq\ und \glqq \acl{RLO}\grqq\ unterscheiden sich in der zeitlichen Abfolge der Verschiebungen nicht. In beiden Fällen tritt erst eine Verschiebung rechts, dann links auf. Jedoch unterscheiden sich die Verschiebungen an sich. Bei \glqq \acl{SPO}\grqq\ unterscheiden sich die beiden Verschiebungen im optimalen Fall nur dadurch, dass die eine Verschiebung links und die andere rechts vom Peak auftritt. Bei \glqq \acl{RLO}\grqq\ dagegen ist die Amplitude der zweiten Verschiebung, links vom Peak, schwächer als die andere.
 
 \subsection{Anpassung des Klassifikators}
 
 \subsection{Implementierung}
 
-%Die Bibliothek \textit{sklearn}~\cite{sklearn} stellt mit dem Modul \textit{sklearn.ensemble}~\cite{sklearn.ensemble} einige hilfreiche Klassen und Methoden zur Klassifikation bereit.
+
+
+Die Bibliothek \textit{sklearn}~\cite{sklearn} stellt mit dem Modul \textit{sklearn.ensemble}~\cite{sklearn.ensemble} einige hilfreiche Klassen und Methoden zur Klassifikation bereit.
 
 \subsection{Training}
 
