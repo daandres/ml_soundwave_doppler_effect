@@ -21,6 +21,7 @@ from sklearn.metrics import classification_report
 ''' custom imports '''
 from gestureFileIO import GestureFileIO
 from classifier.classifier import IClassifier
+from starter import Starter
 
 ''' catch warnings as error '''
 np.set_printoptions(precision=4, suppress=True, threshold='nan')
@@ -43,7 +44,8 @@ class SVM(IClassifier):
     
     def __init__(self, recorder=None, config=None, relative=""):
         self.config = config
-
+        self.starter = Starter()
+        print self.starter.log("starter loaded")
         ''' general settings '''
         #self.subdirs = eval(self.config['used_gestures'])
         #print self.subdirs
@@ -72,7 +74,7 @@ class SVM(IClassifier):
         
         self.datalist = []
         self.datanum = 0
-        self.predicted = False
+        #self.predicted = False
         self.gesturefound = False
         self.gestureindex = 0
         self.executed = {"notepad": False, "taskmgr": False, "calc": False}
@@ -270,7 +272,8 @@ class SVM(IClassifier):
                         
                         ''' start actual classification '''
                         target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
-                        self.executeCommand(target_prediction)
+                        self.starter.startProgramm(target_prediction)
+                        #self.executeCommand(target_prediction)
                 except:
                     print "error =("
 

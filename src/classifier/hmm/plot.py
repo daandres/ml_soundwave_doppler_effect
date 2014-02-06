@@ -130,7 +130,7 @@ class Plot():
         self.ax = self.fig.add_subplot(111, projection='3d')
         self.surf = self.ax.plot_surface(self.X, self.Y, self.Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
         self.ax.set_zlim(-0.03, 1.03)
-        self.ax.set_title("gesture " + str(self.gesture) + ", " +self.name + ": " + str(self.index))
+        self.ax.set_title("gesture " + str(self.gesture) + ", " +self.name + ": " + str(self.index+1))
 
         self.ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
         
@@ -143,9 +143,10 @@ class Plot():
 
     def plot(self):
         self.ax.cla()
+        self.fig.clf()
         self.ax = self.fig.add_subplot(111, projection='3d')
         self.surf = self.ax.plot_surface(self.X, self.Y, self.data[self.index], rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-        self.ax.set_title("gesture " + str(self.gesture) + ", " +self.name + ": " + str(self.index))
+        self.ax.set_title("gesture " + str(self.gesture) + ", " +self.name + ": " + str(self.index+1))
         if len(self.actionPoint) > 0:
             self.ax.scatter(self.actionPoint[self.index],0,0,'o', c='r')
         self.ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))

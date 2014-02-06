@@ -12,19 +12,20 @@ Bei der Verarbeitung des Eingabevektors wird für jede Komponente eine Gewichtun
 Mehrlagige Perzeptronen (MLP) sind in der Lage, Eingabevektoren in Ausgabevektoren umzuwandeln. 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[height=40mm]{svm/svm_1.png}
+    \subfigure{\includegraphics[width=0.22\textwidth]{svm/svm_perceptron.png}}
+    \subfigure{\includegraphics[width=0.22\textwidth]{svm/svm_and.png}}
     \caption{AND-Perzeptron und Raum (Platzhalterbild)}
     \label{fig:perceptron_and}
 \end{figure}
 
 Die jeweiligen Gewichtungen können so eingestellt werden, dass der Eingabevektor in einen bestimmten Ausgabevektor umgewandelt wird. 
-Abbildung \ref{fig:perceptron_and} zeigt, wie ein einfaches Perzeptron die UND-Funktion realisiert und visualisiert die Klassifizierungsentscheidung in einem Koordinatensystem. 
+Abb. \ref{fig:perceptron_and} zeigt, wie ein einfaches Perzeptron die UND-Funktion realisiert und visualisiert die Klassifizierungsentscheidung in einem Koordinatensystem. 
 
 Einlagige Perzeptronen sind beschränkt auf die Lösung linear separierbarer Probleme. 
 Ein einfaches XOR kann also nicht realisiert werden (Abb. \ref{fig:perceptron_xor}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[height=50mm]{svm/svm_1.png}
+    \includegraphics[width=0.30\textwidth]{svm/svm_xor.png}
     \caption{XOR-Perzeptron-Raum, nichtlinear separierbar (Platzhalterbild)}
     \label{fig:perceptron_xor}
 \end{figure}
@@ -79,8 +80,8 @@ Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die SVM die Eingabe
 Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. \ref{fig:svm_separator}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[height=50mm]{svm/svm_1.png}
-    \caption{XOR-Perzeptron-Raum, nichtlinear separierbar (Platzhalterbild)}
+    \includegraphics[width=0.22\textwidth]{svm/svm_overview.png}
+    \caption{Trenngerade einer SVM (Platzhalterbild)}
     \label{fig:svm_separator}
 \end{figure}
 
@@ -96,8 +97,9 @@ Die SVMs setzen in diesem Falle auf die Transformation der Datenrepräsentation.
 Mit Hilfe von Kernfunktionen lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren (\ref{eq:svm_kernel_function}, in dem sie linear separierbar erscheinen (Abb. \ref{fig:svm_kernel}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[height=50mm]{svm/svm_1.png}
-    \caption{Die Kernel-Funktion repräsentiert die Daten in einem höherdimensionalen Raum, in dem sie linear separierbar erscheinen (Platzhalterbild)}
+    \subfigure[$x$]{\includegraphics[width=0.22\textwidth]{svm/svm_fitting-line.png}}
+    \subfigure[$\phi(x)$]{\includegraphics[width=0.22\textwidth]{svm/svm_linear-fitting.png}}
+    \caption{Die Kernfunktion $\phi$ repräsentiert die Daten in einem höherdimensionalen Raum, in dem sie linear separierbar erscheinen (Platzhalterbild)}
     \label{fig:svm_kernel}
 \end{figure}
 
@@ -167,17 +169,18 @@ Das Beispiel \ref{eq:svm_kernel_example} verdeutlicht die Anwendung des Kernel-T
 \end{split}
 \end{equation}
 
-Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach Satz von Mercer \cite[S. 127]{Marsland} erfüllen.
+Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
+Gängige Kernfunktionen sind:
+\begin{itemize}
+\item{linear: $\mathcal{K}(w,x) = \langle w,x \rangle$}
+\item{polynomiell: $\mathcal{K}(w,x) = (\gamma\langle w,x \rangle+c_0)^d$}
+\item{radial basis function: $\mathcal{K}(w,x) = exp(- \gamma \|w - x \| ^2)$}
+\end{itemize}
 
-\begin{figure}[htbp] \centering
-    \includegraphics[height=50mm]{svm/svm_1.png}
-    \caption{SVM-Räume, wx+b, M (Platzhalterbild)}
-    \label{fig:svm1}
-\end{figure}
 
-\subsubsection{Klassifikation von merheren Objekten}
+\subsubsection{Klassifikation von merheren Klassen}
 
-Die SVM ist ein binärere Klassifikator, d. h. er kann eine Objektzuordnung nur zwischen zwei Klassen durchführen. 
+Die SVM ist ein binärer Klassifikator, d. h. er kann eine Objektzuordnung nur zwischen zwei Klassen durchführen. 
 In der Regel will man ...
 
 
