@@ -79,10 +79,10 @@ class Trees(IClassifier):
 
     def startTraining(self):
         
-        app = QtGui.QApplication(sys.argv)
-        self.gui = Gui()
-        self.signal = Signal(self.gui)
-        app.exec_()
+        #app = QtGui.QApplication(sys.argv)
+        #self.gui = Gui()
+        #self.signal = Signal(self.gui)
+        #app.exec_()
         
         t = TrainingData()
         gestures = t.getRawData()
@@ -95,57 +95,6 @@ class Trees(IClassifier):
         result = self.clf.predict(X_test) == y_test
         rightPredicts = len([x for x in result if x == True])
         print "Classifier is trained: received ", 100. / len(result) * rightPredicts, "%"
-
-
-    def classify2(self, data):
-        if(len(self.queue) == self.maxlen):
-            gestures = []
-            gesture = GestureModel(list(self.queue))
-            gestures.append(gesture)
-            processedData = self.__preProcess(gestures)
-            
-            prediction = self.clf.predict(processedData)
-            self.temp.append(prediction)
-            
-            if(len(self.temp) == 32 ):
-                li = []
-                for x in self.temp:
-                    li.extend(x)
-                #print li
-                result = numpy.argmax(numpy.bincount(li))
-                
-                bincount = numpy.bincount(li)
-                maxValue = 0
-                maxIndex = 0
-                for i in range(len(bincount)):
-                    if (bincount[i] > maxValue):
-                        maxValue = bincount[i]
-                        maxIndex = i
-                        
-                second = 0
-                secondIndex = 0
-                for i in range(len(bincount)):
-                    if (bincount[i] > second and bincount[i] < maxValue):
-                        second = bincount[i]
-                        secondIndex = i
-                
-                #print (maxValue, maxIndex), (second, secondIndex), (maxValue - second)/float(maxValue)
-                
-                if((maxValue - second)/float(maxValue) > 0.6 and maxIndex != 6):
-                    #print "Prediction", maxIndex, numpy.bincount(li)
-                    self.liste.append(maxIndex)
-                    if len(self.liste) > 5:
-                        print numpy.argmax(numpy.bincount(self.liste))
-                        self.liste = []
-                        
-                elif(maxIndex == 6 and len(self.liste) > 0):
-                    print numpy.argmax(numpy.bincount(self.liste))
-                    self.liste = []
-                
-                
-                self.temp.popleft()
-            self.queue.popleft()
-        self.queue.append(data)
 
     def classify(self, data):
         if(len(self.queue) == self.maxlen):
@@ -167,28 +116,6 @@ class Trees(IClassifier):
                 self.temp.clear()
             self.queue.popleft()
         self.queue.append(data)
-        
-    def classify3(self, data):
-        if(len(self.queue) == self.maxlen):
-            gestures = []
-            gesture = classifier.trees.ProcessData.makeGesture(list(self.queue))
-            gestures.append(gesture)
-            processedData = self.__preProcess(gestures)
-            prediction = self.clf.predict(processedData)
-            #self.temp.append(prediction)
-            
-            if(prediction != 6):
-                self.liste.extend(prediction)
-                
-            else:
-                if(len(self.liste) > 0):
-                    result = numpy.argmax(numpy.bincount(self.liste))
-                    print result
-                    self.liste = []
-            
-            self.queue.popleft()
-        self.queue.append(data)
-
 
     def startValidation(self):
         pass

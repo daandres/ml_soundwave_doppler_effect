@@ -116,33 +116,6 @@ class Feature(object):
             return sum(ampl_vals) / len(ampl_vals)
         return 0
         
-        if(len(shift_order) > 1):
-            if(len(shift_order) == 2):
-                if(shift_order[0] == 'right' and shift_order[1] == 'left'):
-                    # start, stop 
-                    maxAmpl1 = self.getMaxAmplitude(gesture.shifts_right[0][1], gesture.shifts_right[0][2], gesture.amplitudes_right_filtered)
-                    maxAmpl2 = self.getMaxAmplitude(gesture.shifts_left[0][1], gesture.shifts_left[0][2], gesture.amplitudes_left_filtered)
-                    diff = abs(maxAmpl1 - maxAmpl2)
-                    ampl_val = diff / 100.
-            if(len(shift_order) == 3):
-                if(shift_order[0] == 'right' and shift_order[1] == 'left' and shift_order[2] == 'right'):   
-                    maxAmpl1 = self.getMaxAmplitude(gesture.shifts_right[0][1], gesture.shifts_right[0][2], gesture.amplitudes_right_filtered)
-                    maxAmpl2 = self.getMaxAmplitude(gesture.shifts_left[0][1], gesture.shifts_left[0][2], gesture.amplitudes_left_filtered)
-                    diff = abs(maxAmpl1 - maxAmpl2)
-                    ampl_val = diff / 100.
-            if(len(shift_order) == 4):
-                if(shift_order[0] == 'right' and shift_order[1] == 'left' and shift_order[2] == 'right' and shift_order[3] == 'left'):   
-                    maxAmpl1 = self.getMaxAmplitude(gesture.shifts_right[0][1], gesture.shifts_right[0][2], gesture.amplitudes_right_filtered)
-                    maxAmpl2 = self.getMaxAmplitude(gesture.shifts_left[0][1], gesture.shifts_left[0][2], gesture.amplitudes_left_filtered)
-                    
-                    maxAmpl3 = self.getMaxAmplitude(gesture.shifts_right[1][1], gesture.shifts_right[1][2], gesture.amplitudes_right_filtered)
-                    maxAmpl4 = self.getMaxAmplitude(gesture.shifts_left[1][1], gesture.shifts_left[1][2], gesture.amplitudes_left_filtered)
-                    
-                    diff1 = abs(maxAmpl1 - maxAmpl2)
-                    diff2 = abs(maxAmpl3 - maxAmpl4)
-                    ampl_val = ((diff1+diff2)/2) / 100.
-        return ampl_val
-                    
                     
     def getMaxAmplitude(self, start, stop, amplitudes):
         ampl_list = []
