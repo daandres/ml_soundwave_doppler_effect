@@ -38,3 +38,6 @@ class IClassifier:
     @abc.abstractmethod
     def printClassifier(self):
         pass
+
+    def startGui(self, recorder, callback):
+        raise Exception("No GUI implemented")
