@@ -236,19 +236,19 @@ Trainingsansätzen erläutert:
 \end{itemize}
 
 \subparagraph{Backpropagation}
-Das Verfahren \textit{Fehlerrückführung} ist ein
-Gradientenabstiegsverfahren. Das bedeutet, es versucht die Fehlerquote als
-Ergebnis einer Funktion des Netzes aufzufassen und diesen Wert daran zu
-minimieren. Dabei werden in Richtung des Gradienten der Funktion die Gewichte in
-kleinen Schritten angepasst. Die Anpassung der Gewichte erfolgt im sog.
+Das Verfahren \textit{Fehlerrückführung} ist ein Gradientenabstiegsverfahren.
+Das bedeutet, es versucht die Fehlerquote als Ergebnis einer Funktion des Netzes
+aufzufassen und diesen Wert daran zu minimieren. Dabei werden in Richtung des
+Gradienten der Funktion die Gewichte in kleinen Schritten angepasst. Die
+Anpassung der Gewichte erfolgt im sog.
 \textit{Backward-Pass} des Netzes. Der Fehler wird durch das Netz rückwärts
 gereicht und dabei sukzessive die Gewichte angepasst. Das Problem, das jedoch
 auftritt, ist, dass dieses Verfahren nicht gegen 0 konvergieren muss, denn es
 wird entlang eines Gradienten optimiert, der auch zu einem lokalen Minima führen
-kann. Außerdem ist es möglich über Minima hin wegzuoptimieren und das Ergebnis so
-wieder zu verschlechtern. Um dies zu verhindern gibt es verschiedene Methoden,
-welche hier nicht weiter erläutert werden. Für \ac{LSTM}-Netze ist eine
-Erweiterung des Backpropagation Algorithmus sinnvoll:
+kann. Außerdem ist es möglich über Minima hin wegzuoptimieren und das Ergebnis
+so wieder zu verschlechtern. Um dies zu verhindern gibt es verschiedene
+Methoden, welche hier nicht weiter erläutert werden. Für \ac{LSTM}-Netze ist
+eine Erweiterung des Backpropagation Algorithmus sinnvoll:
 \acl{RProp} (elastische Fortpflanzung, \acsu{RProp}). Für die erweiterte Form
 kann sogar eine globale Konvergenz bewiesen werden. Des Weiteren liefert er im
 Allgemeinen Konvergenz schneller als Backpropagation. Jedoch besteht auch hier
@@ -257,11 +257,13 @@ da ein globales Minima evtl. eine zu hohe Trainingszeit erfordert und deshalb
 lokale Minima gesucht werden. Der wesentliche Unterschied von \ac{RProp} zu
 Backpropagation besteht darin, dass \ac{RProp} die vorherige Gewichtsänderung
 mit in die aktuelle Änderung mit einfließen lässt. Bei Backpropagation ist dies
-nicht der Fall. Weitere Informationen zu diesen Verfahren sind in
-\cite{RainerSchmoll2006,Gers2002b,GERS2001} zu finden. 
+nicht der Fall. Weitere Informationen zu diesen Verfahren und deren konkreten
+Umsetzungen durch \textit{Backprogation through time (BPTT)} und \textit{Real
+Time Recurrent Learning (RTRL)} sind in
+\cite{RainerSchmoll2006,Gers2002b,GERS2001} zu finden.
 
 \subparagraph{Evolution based Training}
-
+\cite{Schmidhuber05evolino:hybrid}
 \textbf{TODO}
 
 
@@ -288,19 +290,19 @@ sich aus der Anzahl der Gesten. Es ist üblich für jedes Ergebnis ein eigenes
 Output-Neuron zu erstellen.
 
 \subsubsection{Datenaufbereitung}
-\label{sec:lstm_data}
+\label{sec:lstm_data} 
 
-In \autoref{sec:intro} wird beschrieben wie die Daten aufgenommen und
-im Allgemeinen verarbeitet werden, bevor sie den Klassifikatoren zur
-Verfügung gestellt werden. Diese erhalten jeweils einzelne Frames mit je 64
-Daten. Die Daten entsprechen dem Frequenzspektrum im Umfeld der
-Referenzfrequenz von $18500\text{kHz}$. Eine Geste wurde mit 32 Frames
-aufgenommen. Für \ac{LSTM}-Netzwerke sind diese rohen Daten eher ungeeignet. Die
-Netzwerke können zwar im Allgemeinen mit unverarbeiteten Daten umgehen,
-trotzdem ist ein Vorverarbeitung sinnvoll, da sich dadurch die Verallgemeinerung
-des Problems verbessert, die Trainingszeit verkürzt und die benötigten Beispiele
-verringern \textbf{Cite}. Aus diesen Gründen wird eine Vorverarbeitung der Daten
-vorgenommen. 
+In \autoref{sec:intro} wird beschrieben wie die Daten aufgenommen und im
+Allgemeinen verarbeitet werden, bevor sie den Klassifikatoren zur Verfügung
+gestellt werden. Diese erhalten jeweils einzelne Frames mit je 64 Daten. Die
+Daten entsprechen dem Frequenzspektrum im Umfeld der Referenzfrequenz von
+$18500\text{kHz}$. Eine Geste wurde mit 32 Frames aufgenommen. Für
+\ac{LSTM}-Netzwerke sind diese rohen Daten eher ungeeignet. Die Netzwerke können
+zwar im Allgemeinen mit unverarbeiteten Daten umgehen, trotzdem ist ein
+Vorverarbeitung sinnvoll, da sich dadurch die Verallgemeinerung des Problems
+verbessert, die Trainingszeit verkürzt und die benötigten Beispiele verringern
+\cite{RainerSchmoll2006}. Aus diesen Gründen wird eine Vorverarbeitung der Daten
+vorgenommen.
 
 Die Beispieldaten sind auf verschiedenen Hardwareplattformen mit
 unterschiedlichen Lautstärke und Aufnahmelautstärke Konfigurationen erzeugt
@@ -313,15 +315,12 @@ Trainingsverfahren iterativ die Gewichte in kleinen Schritten anpasst, führen
 große Gewichte zu einem hohen Trainingsaufwand. Um dies zu vermeiden werden die
 Daten normalisiert. Konkret wird dabei der Maximalwert eines Frames als
 Normierungsfaktor gewählt. Dadurch liegen alle Werte im Intervall $[0,1]$.
-Eine Transformation \textbf{richtiges Wort?} des Spektrums hin zu den
-Veränderungen der Spektrums im Vergleich zum Ruhespektrum wird ebenfalls
-vorgenommen. Dies wird aufgrund durchgeführter Tests vorgenommen, die eine
-bessere Klassifizierungen für die transformierten Daten bescheinigen
-(\textbf{Tests einbinden}). Der allgemeine Ruhezustand wird aus den Beispielen
-des Ruhezustands (Geste 6 und 7) durch das normalisierte Mittel gewonnen. Der
-Ruhezustand wird dann von jedem Beispiel abgezogen. Es werden hierbei lediglich
-die Beispiele verwendet, denkbar ist jedoch auch die Aufnahme des Ruhezustands
-auf dem Zielgerät, um spezifischere Daten zu erhalten. 
+Eine Transformation des Spektrums wird druch die Differenz zum Ruhespektrum
+vorgenommen. Dazu wird der allgemeine Ruhezustand aus den Beispielen (Geste 6
+und 7) durch das normalisierte Mittel gewonnen und dann von jedem Beispiel
+abgezogen. Es werden hierbei lediglich die Beispiele verwendet, denkbar ist
+jedoch auch die Aufnahme des Ruhezustands auf dem Zielgerät, um spezifischere
+Daten zu erhalten.
 
 Bei der Betrachtung der Daten fällt auf, dass der Doppler-Effekt in einem
 kleinen Intervall um die Referenzfrequenz auftritt und die Daten außerhalb
@@ -347,8 +346,21 @@ hat dies die Ergebnisse ebenfalls negativ beeinflusst, weshalb sie nicht näher
 betrachtet wurden. Darunter fällt u.a. die statische Eliminierung von Rauschen.
 Diese Methode setzt jeden Wert der unter einem bestimmten Schwellwert ist zu 0,
 da dies kein signifikanter Beitrag zur Geste ist sondern ein Rauschen. Das
-Ergebnis dieser Untersuchung ist jedoch unbefriedigend, sodass die Idee nicht
-genutzt wird. \textbf{TODO Messwerte?}
+Ergebnis dieser Untersuchung zeigt jedoch keinen positiven Effekt auf die Fehlererkennungsrate, sodass die Idee nicht
+genutzt wird (vgl. \autoref{tab:noiseremovingtests}).
+ 
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Rausch-} & keine & \textless 0,0125 & \textless 0,025\\
+\textbf{entfernung}&&&\\
+ \hline
+\textbf{Fehlerrate}&31,83\%&47,87\%&57,59\%\\\hline
+\end{tabular} 
+\caption[Tests für Rauschentfernung]{Tests um den Einfluss von Rauschentfernung zu untersuchen. Das Trainigsverfahren ist \texttt{RProp}. Die Anzahl der LSTM-Blöcke ist 16. Iterationen 100.}
+\label{tab:noiseremovingtests}
+\end{table}
  
 \subsubsection{Anpassung des Klassifikators}
 Das \ac{LSTM}-Netz wird mit Hilfe der Python Bibliothek \texttt{PyBrain}
@@ -371,7 +383,7 @@ eingebunden sind, haben sich alle Teilnehmer auf ein Interface geeinigt, was
 jeder Klassifikator implementieren muss. Dies ist die abstrakte Klasse
 \texttt{IClassifier}. Die Implementatierung des \ac{LSTM}-Klassifikators ist in
 der Klasse LSTM zu finden, diese dient als Wrapper-Klasse. Ein Klassendiagramm
-ist in \autoref{sec:lstm_class} dargestellt. Die \textit{LSTM}-Klasse enthält je eine Instanz von: 
+ist in \autoref{fig:lstm_class} dargestellt. Die \textit{LSTM}-Klasse enthält je eine Instanz von: 
 \begin{itemize}
 \item \textit{LSTMClassify}: Enthält die verschiedenen Methode für die Live-Klassifizierung.
 \item \textit{LSTMData}: Ist für das speichern und laden der Datensets zuständig.
@@ -439,9 +451,10 @@ nicht geeignet. Der Fokus des Trainings liegt deshalb auf den
 Gradientenabstiegsverfahren. Wie oben beschrieben ist \ac{RProp} eine
 Weiterentwicklung von Backpropagation, welche im Gegensatz zur Fehlerrückführung
 stabiles Konvergenzverhalten zeigt. Dies wurde mit einer kleinen Testreihe
-bestätigt. Aus diesem Grund wird das Training nur mit \ac{RProp} durchgeführt.
-\textbf{TODO Tabelle mit Testergebnissen in Anhang}
-
+bestätigt, welche zeigt, dass Backpropagtaion schwankende Ergebnisse liefert
+(vgl. \autoref{tab:backproptests}). Aus diesem Grund wird das Training nur mit
+\ac{RProp} durchgeführt.
+ 
 Das Training eines \ac{LSTM}-Netzes ist in der Regel \texttt{supervised}.
 PyBrain bietet daher die Möglichkeit Datasets für die Klassifikation von
 Sequenzen an. Dieses wird mit den Daten und den zugehörigen Klassen erstellt.
@@ -460,8 +473,12 @@ Trainingseinheiten relativ lange benötigen, ist eine Traininsplanung, um die
 Resourcen des Rechners optimal einsetzn zu können, notwendig. Dazu wird
 allerdings die Zeit für das Training benötigt. Daher wird die Gesamtzeit am Ende
 ausgegeben. Um den zeitlichen Fortschritt nachvollziehen zu können werden
-Zwischenzeiten nach jedem Zehntel der Trainngsiterationen berechnet.
-\textbf{TODO Zeiten kurz nennen}
+Zwischenzeiten nach jedem Zehntel der Trainngsiterationen berechnet. In
+\autoref{tab:inputtests} sind zusätzich zu den tests auch noch
+Durchschnittswerte von Zeiten enthalten. Die beiden Durchschnittszeiten von
+Minuten pro Iteration beziehen sich einersteits auf die Vorberechnung der Daten,
+zum Anderen ist eine Differenz durch minimal unterschiedliche Taktfrequenzen der
+Prozessoren beim Training zu erkären.
 
 Es werden nicht alle Daten für das Training verwendet. Ein Teil wird als
 Testsatz vom Training ausgeschlossen. So kann eine unabhängige Validierung
@@ -500,7 +517,7 @@ ausgeführte Geste und die Zeilen die erkannten Gesten ab.
 \end{equation}
 \end{center}
 
-In der Tabelle \autoref{tab:eval} sind die Erkennungsraten pro Geste dargestellt.
+In \autoref{tab:eval} sind die Erkennungsraten pro Geste dargestellt.
 
 \begin{table*}
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
@@ -552,5 +569,3 @@ zusätzliche Beispieldaten zu haben. Auch kann so auf unterschiedliche
 Hardwarekonfigurationen oder Lautstärkeunterschiede im Referenzton eingegangen
 werden.
 
-
-\nocite{schaul2010,GERS2001,WIKI2013,Schmidhuber2013,LSTM1,Nerbonne1}
