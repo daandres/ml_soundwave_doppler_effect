@@ -8,9 +8,54 @@ from classifier.trees.GestureModel import GestureModel
 from collections import deque
 import numpy
 from sklearn import cross_validation
+from PyQt4 import Qt, QtCore, QtGui
+import sys
 
 
+'''
+QObject for signal
+'''
+class Signal(QtCore.QObject):
+    
+    newGesture = QtCore.pyqtSignal(int)
+    def __init__(self, view):
+        super(Signal, self).__init__()
+        self.view = view # trees gui
+        self.newGesture.connect(view._receiveGesture)
 
+    
+'''
+Simple gui to show an image for each gesutre.
+'''
+class Gui(QtGui.QWidget):
+
+    def __init__(self, treeClassifier):
+        super(Gui, self).__init__()
+        #self.classifier = treeClassifier
+        #self.classifier.newGesture.connect(self._receiveGesture)
+        
+        hbox = QtGui.QHBoxLayout(self)
+        self.pixmap = QtGui.QPixmap("redrocks.jpg")
+
+        lbl = QtGui.QLabel(self)
+        lbl.setPixmap(self.pixmap)
+
+        hbox.addWidget(lbl)
+        self.setLayout(hbox)
+        
+        self.setWindowTitle('Red Rock')
+        self.show()     
+    
+    
+    @QtCore.pyqtSlot(int)
+    def _receiveGesture(self, gesture):
+        print gesture
+        #self.pixmap = QtGui.QPixmap("redrock.png")
+
+
+'''
+Implementation of tree classifier
+'''
 class Trees(IClassifier):
 
     def __init__(self, recorder=None, n_est=5):
@@ -20,9 +65,20 @@ class Trees(IClassifier):
         self.data = []
         self.queue = deque()
         self.temp = deque()
-        self.startTraining()
+        #self.startTraining()
         self.flag = False
         self.liste = []
+        
+        
+        app = QtGui.QApplication(sys.argv)
+        self.gui = Gui(self)
+        self.signal = Signal(self.gui)
+        self.signal.newGesture.emit(1)
+        self.signal.newGesture.emit(2)
+        self.signal.newGesture.emit(3)
+        sys.exit(app.exec_())
+        
+        
 
     def getName(self):
         return self.name
@@ -179,4 +235,6 @@ class Trees(IClassifier):
             
             data.append(featureVector)
         return data
+    
+ 
             
