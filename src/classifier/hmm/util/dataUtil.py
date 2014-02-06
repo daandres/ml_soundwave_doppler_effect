@@ -7,9 +7,9 @@ class DataUtil:
     
     def __init__(self, lowerBound=0.15):
         self.lowerBound=lowerBound
-        self.fileIO = GestureFileIO(relative="../../")
+        self.fileIO = GestureFileIO(relative="")
 
-    def loadRaw3dGesture(self, recordClass, recordNames=['Daniel']):
+    def loadRaw3dGesture(self, recordClass, recordNames=None):
         if recordNames is None:
             return self.fileIO.getGesture3D(recordClass)
         else:
@@ -56,7 +56,7 @@ class DataUtil:
     def splitData(self, data):
         ''' splits data in 2/3 training, 1/3 test '''
         
-        train, test = list(data[::3]) + list(data[1::3]), data[2::3]
+        train, test = list(data[::4]) + list(data[1::4]) + list(data[2::4]), data[3::4]
         return np.array(train), test
     
         
@@ -151,6 +151,8 @@ class DataUtil:
         result = np.zeros((np.shape(data)[0], frameRange, np.shape(data)[2]))
         i = 0
         for d in data:
+            # subtract no gesture mean values from data
+            #d = d - np.array([2.52e-05,2.37e-05,1.06e-04,1.34e-03,2.13e-01,4.60e-01,9.83e-01,8.19e-01,2.57e-01,1.57e-01,1.98e-04,5.28e-05,2.47e-05])
             pos = self._getHighestSum(d)
             if((pos-framesBefore)<0) | ((pos + framesAfter) > (np.shape(d)[0]-1)):
                 continue
@@ -172,6 +174,15 @@ class DataUtil:
                 highestValue = highTmp
                 position = i
         return position
+        '''
+        for i in range(len(gesture)):
+            ab = np.abs(gesture[i])
+            highTmp = np.sum(ab)
+            if highTmp > highestValue:
+                highestValue = highTmp
+                position = i
+        return position
+        '''
     
 
     def findAvg(self, data):
