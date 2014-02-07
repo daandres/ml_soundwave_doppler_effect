@@ -1,27 +1,33 @@
 \section{Fazit und Ausblick} 
 
 In dieser Ausarbeitung wurden fünf verschiedene Verfahren vorgestellt um eine
-Gestenerkennung mit Hilfe des Doppler Effekts vorzunehmen. Dazu benötigt man zum einen eine Vorverarbeitung der Daten, damit Merkmale aus den Rohdaten herausgefiltert werden können und zum anderen einen Klassifikator, der die Daten einer bestimmten Geste zuordnet. Die
-fünf verschiedenen Verfahren \ac{SVM}, \acsu{HMM}, k-Means, Entscheidungsbäume und
-\ac{LSTM} unterscheiden sich nicht nur in den zugrundeliegenden Verfahren, sondern auch in
-der Umsetzungen gibt es erhebliche Unterschiede, vor allem in der
-Datenvorverarbeitung. 
+Gestenerkennung mit Hilfe des Doppler Effekts vorzunehmen. Dazu benötigt man zum
+einen eine Vorverarbeitung der Daten, damit Merkmale aus den Rohdaten
+herausgefiltert werden können und zum anderen einen Klassifikator, der die Daten
+einer bestimmten Geste zuordnet. Die fünf verschiedenen Verfahren \ac{SVM},
+\acsu{HMM}, k-Means, Entscheidungsbäume und \ac{LSTM} unterscheiden sich nicht
+nur in den zugrundeliegenden Verfahren, sondern auch in der Umsetzungen gibt es
+erhebliche Unterschiede, vor allem in der Datenvorverarbeitung.
 
 Die Gestenerkennung kann durch die verschiedenen Verfahren mit Einschränkungen
 gut durchgeführt werden. Allerdings ist diese nicht universal einsetzbar. Es ist
 aufgefallen, dass der Doppler Effekt sich bei unterschiedlicher
 Hardwarekonfiguration unterschiedlich auswirkt. Dabei ist neben der Qualität der
 Komponenten Mikrofon und Lautsprecher die Anordnung dieser Komponenten
-entscheidend. Grundsätzliche Unterschiede bestehen darin, dass sich beispielsweise bei Notebooks Mikrofon und Lautsprecher an verschiedenen Stellen befinden und so in unterschiedlicher Weise zusammenarbeiten. Eine Bewegung auf das Display zu kann dann je nach Anordnung die Geste \acl{SPO} oder \acl{TBO} sein. Werden Beispieldaten mit verschiedenen
-Hardwarekonfigurationen trainiert verschlechtert sich das
-Klassifikationsergebnis. Des Weiteren sind auch Abhängigkeiten von der
-benutzten Hand (links oder rechts), dem Abstand der Hand zum Mikrofon und
-Bewegungen im Hintergrund erkennbar geworden. Aus diesem Grund ist es notwendig
-für die verschiedenen Konfigurationen verschiedene trainierte Klassifikatoren
-zur Verarbeitung vorzubereiten und diese entsprechend einzusetzen. Ein weiteres
-Hindernis ist, dass einige Gesten sich stark ähneln, z.B. \ac{RO} mit \ac{BNN}
-und \ac{BNS} oder \ac{SPO} mit \ac{RLO}. Das führt dazu, dass die Unterschiede
-nur bei korrekter Ausführung der Geste deutlich hervortreten.
+entscheidend. Grundsätzliche Unterschiede bestehen darin, dass sich
+beispielsweise bei Notebooks Mikrofon und Lautsprecher an verschiedenen Stellen
+befinden und so in unterschiedlicher Weise zusammenarbeiten. Eine Bewegung auf
+das Display zu kann dann je nach Anordnung die Geste \acl{SPO} oder \acl{TBO}
+sein. Werden Beispieldaten mit verschiedenen Hardwarekonfigurationen trainiert
+verschlechtert sich das Klassifikationsergebnis. Des Weiteren sind auch
+Abhängigkeiten von der benutzten Hand (links oder rechts), dem Abstand der Hand
+zum Mikrofon und Bewegungen im Hintergrund erkennbar geworden. Aus diesem Grund
+ist es notwendig für die verschiedenen Konfigurationen verschiedene trainierte
+Klassifikatoren zur Verarbeitung vorzubereiten und diese entsprechend
+einzusetzen. Ein weiteres Hindernis ist, dass einige Gesten sich stark ähneln,
+z.B. \ac{RO} mit \ac{BNN} und \ac{BNS} oder \ac{SPO} mit \ac{RLO}. Das führt
+dazu, dass die Unterschiede nur bei korrekter Ausführung der Geste deutlich
+hervortreten.
 Klassifikatoren, die stark auf eine Datenvorverarbeitung mit Merkmalsextraktion
 setzen wie z.B. k-Means oder Entscheidungsbäume, stoßen hier an ihre Grenzen.
 Auf die spezielle Konfigurationen ausgerichtete Klassifikatoren liefern jedoch
@@ -61,17 +67,22 @@ verschieden trainierte Klassifikatoren zu verwenden und einen Mehrheitsentscheid
 herbeizuführen oder entsprechend der aktuellen Hardwarekonfiguration einen
 speziellen Klassifikator nur zu laden. 
 
-Ein zusätzlicher Punkt, der im Projekt bisher nur am Rande behandelt wurde, ist, die Gesten für eine tatsächliche Anwendung zu verwenden, sodass man damit beispielsweise Programme sinnvoll steuern kann. Für eine Nutzung sollte allerdings die Klassifikation so fehlerfrei wie möglich funktionieren, um Fehlfunktionen zu vermeiden.
+Ein zusätzlicher Punkt, der im Projekt bisher nur am Rande behandelt wurde, ist,
+die Gesten für eine tatsächliche Anwendung zu verwenden, sodass man damit
+beispielsweise Programme sinnvoll steuern kann. Für eine Nutzung sollte
+allerdings die Klassifikation so fehlerfrei wie möglich funktionieren, um
+Fehlfunktionen zu vermeiden.
 
 
-%Ein zusätzlicher Punkt der im Projekt bisher nur am Rande behandelt wurde, ist die Integration mit dem Hostsystem. Die Gesten sollen einer bestimmten Aktion zugeordnet werden. Dazu werden bei
-%erkannten Gesten zuvor definierte Aktionen durchgeführt, wie z.B. das Drücken
-%der Escape Taste. Hierbei ist es wichtig, dass die Gesten nicht zu häufig falsch
-%erkannt werden, keine Klassifikation ist vor einer falschen Klassifikation
-%vorzuziehen, da diese sonst unerwartete Aktionen hervorruft. Auch ist es
-%notwendig Gesten nicht zu schnell in einem kleinen Zeitintervall zu erkennen, um
-%eventuelle Bewegungen in Vor- und Nachbereitung zur Geste nicht auch noch zu
-%klassifizieren.
+% Ein zusätzlicher Punkt der im Projekt bisher nur am Rande behandelt wurde, ist
+% die Integration mit dem Hostsystem. Die Gesten sollen einer bestimmten Aktion
+% zugeordnet werden. Dazu werden bei erkannten Gesten zuvor definierte Aktionen
+% durchgeführt, wie z.B. das Drücken der Escape Taste. Hierbei ist es wichtig,
+% dass die Gesten nicht zu häufig falsch erkannt werden, keine Klassifikation
+% ist vor einer falschen Klassifikation vorzuziehen, da diese sonst unerwartete
+% Aktionen hervorruft. Auch ist es notwendig Gesten nicht zu schnell in einem
+% kleinen Zeitintervall zu erkennen, um eventuelle Bewegungen in Vor- und
+% Nachbereitung zur Geste nicht auch noch zu klassifizieren.
 
 
 

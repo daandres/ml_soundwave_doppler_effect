@@ -8,7 +8,7 @@ import util as u
 class GestureGMM(GMM):
     def __init__(self, n_components=1, covariance_type='diag',
                  random_state=None, thresh=1e-2, min_covar=1e-3,
-                 n_iter=1000, n_init=1, params='stwmc', init_params='stwmc'):
+                 n_iter=1000, n_init=1, params='', init_params=''):
         
 #         if random_state == None:
 #             random_state = random_state = RandomState([1, 3, 5, 7, 11, 13])

@@ -70,7 +70,7 @@ class HMM_Util:
                         logprob = l
                         model = m
                     i += 1
-                    if i > c.n_tries:
+                    if i >= c.n_tries:
                         break
         print "states: " + str(c.n_components) + "\tlikeli: " + str(round(logprob, 2))
         return model, logprob
