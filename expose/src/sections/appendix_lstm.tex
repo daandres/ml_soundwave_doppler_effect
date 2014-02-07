@@ -52,6 +52,19 @@ softmax&23,57\%&18,70\%&16,25\%\\\hline
 \label{tab:backproptests}
 \end{table}
 
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Rausch-} & keine & \textless 0,0125 & \textless 0,025\\
+\textbf{entfernung}&&&\\
+ \hline
+\textbf{Fehlerrate}&31,83\%&47,87\%&57,59\%\\\hline
+\end{tabular} 
+\caption[Tests für Rauschentfernung]{Tests um den Einfluss von Rauschentfernung zu untersuchen. Das Trainingsverfahren ist \texttt{RProp}. Die Anzahl der LSTM-Blöcke ist 16. Iterationen 100.}
+\label{tab:noiseremovingtests}
+\end{table}
+
 \begin{sidewaystable}[h]
 \centering
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}

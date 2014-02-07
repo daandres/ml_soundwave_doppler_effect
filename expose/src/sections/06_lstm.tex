@@ -65,7 +65,7 @@ einen Perzeptrons (ein Layer) die Eingabe des nächsten Perzeptrons ist (vgl.
 \begin{figure}[htbp]
     \centering
    \includegraphics[height=50mm]{lstm/mlp}
-\caption{MLP-Netz}
+\caption[\acs{MLP}-Netz]{MLP-Netz mit 3 Eingaben, 2 versteckten Neuronen und 2 Ausgabeneuronen}
 \label{fig:mlp}
 \end{figure}
 Lediglich die Ausgabe des letzten Perzeptrons ist die Ausgabe des Netzwerks.
@@ -114,7 +114,7 @@ Arten verwendet, z.B. lineare, sigmoidale oder Softmax-Layer.
 \begin{figure*}[htfp]
 	\begin{center}
 	\includegraphics[width=0.8\textwidth]{lstm/lstm_block_formulas}
-	\caption[\acs{LSTM} Block]{\acs{LSTM} Block mit einer Memoryzelle ohne
+	\caption[\acs{LSTM} Block]{\acs{LSTM} Block mit einer Memoryzelle und Forgetgate,  ohne
 	Peepholes} \tiny Quelle: \cite{Gers2002b}
 	\label{fig:lstm_block}
 	\end{center}
@@ -280,7 +280,7 @@ Lernen wird hier nicht weiter betrachtet, da es nicht genutzt werden kann (vgl.
 
 
 \subsection{Anwendung auf Projekt}
-Für das Projekt wird ein LSTM-Netz erstellt welches aus folgenden Schichten besteht:
+Für das Projekt wird ein LSTM-Netz erstellt, welches aus folgenden Schichten besteht:
 
 \begin{itemize}
 \item \textbf{Input Layer} Für die Annahme der Daten.
@@ -292,7 +292,7 @@ Softmax Funktion als Aktivierungsfunktion verwenden.
 \begin{figure}[htbp]
     \centering
    \includegraphics[height=50mm]{lstm/lstm_netz}
-\caption{LSTM-Netz}
+\caption[LSTM-Netz]{LSTM-Netz mit n Eingaben, 18 LSTM-Blöcken und 7 Ausgaben}
 \label{fig:lstm_netz}
 \end{figure}
 Die genaue Anzahl der Neuronen für das Input- und Hidden-Layer stand zu Beginn
@@ -359,20 +359,7 @@ betrachtet wurden. Darunter fällt u.a. die statische Eliminierung von Rauschen.
 Diese Methode setzt jeden Wert der unter einem bestimmten Schwellwert ist zu 0,
 da dies kein signifikanter Beitrag zur Geste ist sondern ein Rauschen. Das
 Ergebnis dieser Untersuchung zeigt jedoch keinen positiven Effekt auf die Fehlererkennungsrate, sodass die Idee nicht
-genutzt wird (vgl. \autoref{tab:noiseremovingtests}).
- 
-\begin{table}[h]
-\centering
-\begin{tabular}{|c|c|c|c|}
-\hline
-\textbf{Rausch-} & keine & \textless 0,0125 & \textless 0,025\\
-\textbf{entfernung}&&&\\
- \hline
-\textbf{Fehlerrate}&31,83\%&47,87\%&57,59\%\\\hline
-\end{tabular} 
-\caption[Tests für Rauschentfernung]{Tests um den Einfluss von Rauschentfernung zu untersuchen. Das Trainingsverfahren ist \texttt{RProp}. Die Anzahl der LSTM-Blöcke ist 16. Iterationen 100.}
-\label{tab:noiseremovingtests}
-\end{table}
+genutzt wird (vgl. Anhang \autoref{tab:noiseremovingtests}).
  
 \subsubsection{Anpassung des Klassifikators}
 Das \ac{LSTM}-Netz wird mit Hilfe der Python Bibliothek \texttt{PyBrain}
@@ -411,8 +398,6 @@ zur Initialisierung der geladen. Durch diese Einstellungen ist das Verhalten des
 netzwerkeigenschaften, zum Trainingsalgorithmus, aber auch zur
 Datenvorverarbeitung vorhanden. Ebenfalls sind Komforteigenschaften zum Laden
 und speichern von Netzwerken und vorverarbeiteten Daten in Datasets vorhanden.
-Mit Hilfe dieser Konfigurationsmöglichkeiten ist es einfach verschiedene Tests
-durchzufürhern.
 
 Da beabsichtigt ist mit dem Programm den PC zu steuern, wurde die Python
 Bibliothek \textit{Python-uinput} (nur für Linux) eingebunden. Mit dieser können
@@ -424,8 +409,8 @@ springen.
 Im folgenden wird auf die Implementation der einzelnen Methoden der
 \textit{LSTM}-Klasse eingegangen.
 
-\subsubsection*{Live Klassifikation} Für die Live Klassifikation wurde
-verschiedene Ideen implementiert.
+\subsubsection*{Live Klassifikation} 
+Für die Live Klassifikation wurde verschiedene Ideen implementiert.
 Bei allen wird zuerst die \textit{classify} Methode der LSTMClassify-Klasse aufgerufen.
 Diese bekommt den Datensatz der aktuellen Aufnahme übergeben.
 Der Datensatz enthält ein Array mit 64-Datenpunkten. Die übergebenen Daten
@@ -453,7 +438,7 @@ gleiche Geste erkannt wurde, wird diese als \textit{erkannt} ausgegeben.
 Eine weitere Idee besteht darin, die Geste zwischen zwei mal der Geste 6 zu 
 suchen. Dies wird in \textit{classify3} versucht.
 
-Da von jedem Datensatz der Durchschnitt abgezogen wird, erscheint sobald eine 
+Da von jedem Datensatz der Durchschnitt abgezogen wird, erscheint, sobald eine 
 Bewegung statt findet, ein Ausschlag. Diesen zu erkennen wird in \textit{classify4} 
 versucht. Bei dieser Implementierung muss der Ausschlag einen bestimmten Schwellwert 
 überschreiten und wird anschließend dem LSTM-Netz übergeben.
@@ -531,14 +516,6 @@ sind (Klasse \ac{BNS} und \ac{BNN} werden ungefähr zur Hälfte auf die jeweils
 andere Klasse klassifiziert, dies macht deutlich, dass das Netz keinen
 Unterschied in den Klassen erkennt).
 
-In \autoref{matrix_eval} ist die Confusion-Matrix für ein Netzwerk festgehalten.
-Dieses wurde für 1500 Epochen trainiert. Es hat 64 Input-Neuronen, 18
-\ac{LSTM}-Blöcke und 7 Output-Neuronen. Das Training dauerte ca. 21 Stunden. Die
-Zeilen bilden die ausgeführte Geste und die Spalte die erkannten Gesten ab. Das
-Netzwerk wurde mit mit den Daten einer speziellen Hardwarekonfiguration
-trainiert. Dabei ist das Mikrofon unterhalb des Bildschirms und die Lautsprecher
-links und rechts neben der Tastatur. Es gibt 2800 Beispieldaten für diese Konfiguration. 
-
 \begin{center}
 \begin{equation}
 \label{matrix_eval}
@@ -554,20 +531,52 @@ links und rechts neben der Tastatur. Es gibt 2800 Beispieldaten für diese Konfi
 \end{equation}
 \end{center}
 
+In \autoref{matrix_eval} ist die Confusion-Matrix für ein Netzwerk festgehalten.
+Dieses wurde für 1500 Epochen trainiert. Es hat 64 Input-Neuronen, 18
+\ac{LSTM}-Blöcke und 7 Output-Neuronen. Das Training dauerte ca. 21 Stunden. Die
+Zeilen bilden die ausgeführte Geste und die Spalte die erkannten Gesten ab. Das
+Netzwerk wurde mit mit den Daten einer speziellen Hardwarekonfiguration
+trainiert. Dabei ist das Mikrofon unterhalb des Bildschirms und die Lautsprecher
+links und rechts neben der Tastatur. Es gibt 2800 Beispieldaten für diese Konfiguration. 
 In \autoref{tab:eval} sind die Erkennungsraten pro Geste dargestellt.
 
-\begin{table*}
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
+% \begin{table*}[h]
+% \begin{tabular}{|c|c|c|c|c|c|c|c|}
+% \hline
+%  \textbf{Geste} 		& 0 & 1 & 2 & 3 & 4 & 5 & 6\&7 \\
+%  \hline
+%  \textbf{Erkennungsrate}  &87,23\%&77,35\%&81,48\%&70,90\%&92,75\%&79,43\%&96,55\%		\\
+%  \hline
+% \end{tabular}
+% \caption[Evaluation eines LSTM-Netzes]{Evaluation eines LSTM-Netzes mit 18 LSTM-Blöcken und 1500 Trainingsepochen}
+% \label{tab:eval}
+% \end{table*}
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|}
 \hline
- Geste 		& 0 & 1 & 2 & 3 & 4 & 5 & 6\&7 \\
+ \textbf{Geste} & \textbf{Erkennungsrate} \\
  \hline
- Erkennungsrate  &87,23\%&77,35\%&81,48\%&70,90\%&92,75\%&79,43\%&96,55\%		\\
+  0 &87,23\% \\  
+  \hline
+  1 &77,35\% \\
+ \hline
+  2 &81,48\% \\
+ \hline
+  3 &70,90\% \\
+ \hline
+  4 &92,75\% \\
+ \hline
+  5 &79,43\% \\
+ \hline
+  6\&7&96,55\%\\
  \hline
 \end{tabular}
-\caption{Evaluation LSTM-Netz}
+\caption[Evaluation eines LSTM-Netzes]{Evaluation eines LSTM-Netzes mit 18 LSTM-Blöcken und 1500 Trainingsepochen}
 \label{tab:eval}
-\end{table*}
-
+\end{table}
 Wie man aus der Tabelle entnehmen kann, werden die Gesten \ac{BNS} \& \ac{BNN} sehr gut erkannt. 
 Auch die Gesten \ac{RLO} und \ac{DPO} werden sehr gut erkannt. Die Geste \ac{SPO} 
 wird häufig mit der Geste \ac{TBO} verwechselt.
