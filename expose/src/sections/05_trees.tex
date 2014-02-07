@@ -63,8 +63,8 @@ des zu klassifizierenden Objektes eine erste Entscheidung vornimmt. Als zweites 
     }
     ;
 \end{tikzpicture}
-\label{fig:tree}
 \caption{Entscheidungsbaum}
+\label{fig:tree}
 \end{figure}
 
 In dem Beispiel hätte als erstes Unterscheidungsmerkmal auch die Farbe dienen können, wodurch direkt in einem Schritt alle drei Gemüsesorten hätten klassifiziert werden können. Somit hat die Wahl der Reihenfolge der Merkmale einen wesentlichen Einfluss auf die Form des Entscheidungsbaumes sowie die Effizienz, mit der Testdaten klassifiziert werden können. Weiterhin können durch die ungünstige Wahl von Kriterien verschiedene Klassen mehrfach in dem Entscheidungsbaum vorkommen, was darauf schließen lässt, dass der Baum aufgrund der Redundanz mehr Knoten enthält, als für eine Klassifizierung notwendig wäre.
@@ -209,7 +209,7 @@ Die Geste \acl{RLO} beschreibt eine Bewegung mit der Hand von links nach rechts 
 
 
 \paragraph*{\acl{TBO}}
-In Abbildung~\ref{fig:top_bottom2} ist die Geste \acl{TBO} abgebildet. Diese wird durch eine Bewegung mit der flachen Hand von oben nach unten ausgeführt. Dabei entsteht die Frequenzverschiebung auf der rechten Seite (türkis) und darauf folgend eine Frequenzverschiebung auf der linken Seite (pink). 
+In Abbildung~\ref{fig:top_bottom} ist die Geste \acl{TBO} abgebildet. Diese wird durch eine Bewegung mit der flachen Hand von oben nach unten ausgeführt. Dabei entsteht die Frequenzverschiebung auf der rechten Seite (türkis) und darauf folgend eine Frequenzverschiebung auf der linken Seite (pink). 
 
 %\begin{figure}[htbp] \centering
 %\includegraphics[height=60mm]{trees/top_bottom.png}
@@ -292,8 +292,9 @@ Für die Datenaufbereitung und Merkmalsextraktion wurden in den Modulen GestureM
 >> Datenaufbereitung
 >> Merkmalsextraktion
 
+Das Modul \textit{Feature.py} stellt einige Funktionen zur Merkmalsextraktion bereit. In Abschnitt~\ref{subsec:featureextraction} sind die erkennbaren Charakteristiken der einzelnen Gesten beschrieben und auch das Problem der Ähnlichkeit einiger Charakteristiken beschrieben. 
+
 \subsection{Evaluation}
 
 \subsection{Fazit}
-
 

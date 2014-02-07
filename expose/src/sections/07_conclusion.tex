@@ -1,6 +1,6 @@
 \section{Fazit und Ausblick} 
 
-In dieser Ausarbeitung wurden fünf verschiedene Verfahren vorgestellt um eine
+In dieser Ausarbeitung wurden fünf verschiedene Verfahren vorgestellt, um eine
 Gestenerkennung mit Hilfe des Doppler Effekts vorzunehmen. Dazu benötigt man zum
 einen eine Vorverarbeitung der Daten, damit Merkmale aus den Rohdaten
 herausgefiltert werden können und zum anderen einen Klassifikator, der die Daten
@@ -18,11 +18,11 @@ entscheidend. Grundsätzliche Unterschiede bestehen darin, dass sich
 beispielsweise bei Notebooks Mikrofon und Lautsprecher an verschiedenen Stellen
 befinden und so in unterschiedlicher Weise zusammenarbeiten. Eine Bewegung auf
 das Display zu kann dann je nach Anordnung die Geste \acl{SPO} oder \acl{TBO}
-sein. Werden Beispieldaten mit verschiedenen Hardwarekonfigurationen trainiert
+sein. Werden Beispieldaten mit verschiedenen Hardwarekonfigurationen trainiert,
 verschlechtert sich das Klassifikationsergebnis. Des Weiteren sind auch
 Abhängigkeiten von der benutzten Hand (links oder rechts), dem Abstand der Hand
 zum Mikrofon und Bewegungen im Hintergrund erkennbar geworden. Aus diesem Grund
-ist es notwendig für die verschiedenen Konfigurationen verschiedene trainierte
+ist es notwendig, für die verschiedenen Konfigurationen verschiedene trainierte
 Klassifikatoren zur Verarbeitung vorzubereiten und diese entsprechend
 einzusetzen. Ein weiteres Hindernis ist, dass einige Gesten sich stark ähneln,
 z.B. \ac{RO} mit \ac{BNN} und \ac{BNS} oder \ac{SPO} mit \ac{RLO}. Das führt
@@ -46,26 +46,26 @@ Abhängigkeit durch geeignete Datenverarbeitung ohne Informationsverlust nicht
 benötigen.
 
 Das zentrale Problem der Live Klassifikation lässt sich auf alle fünf
-Klassifikatoren anwenden. Während des Trainings sind Start- und Ende einer Geste
+Klassifikatoren anwenden. Während des Trainings sind Start und Ende einer Geste
 in einem groben Rahmen bekannt. Bei der Live Klassifikation ist dies jedoch
-nicht der Fall. Daher sind Verfahren entwickelt worden, die entweder nach Start-
+nicht der Fall. Daher sind Verfahren entwickelt worden, die entweder nach Start
 und Ende von Gesten suchen und die so gefundenen Daten klassifizieren oder
-Verfahren die fortlaufend alles klassifizieren,
+Verfahren, die fortlaufend alles klassifizieren,
 dabei ist das häufigste Ergebnis in einem Intervall die gefundene Geste.
 
 \paragraph{Ausblick} 
 Die entworfenen Klassifikatoren erzeugen bereits beträchtliche Ergebnisse.
 Dennoch besteht Verbesserungsbedarf. Dies zielt vor allem auf eine bessere
 Datenvorverarbeitung im Trainingsstadium sowie einer besseren Segmentierung in
-der Live Klassifikation ab. Mit weiteren Beispieldaten können weitere Merkmale
+der Live Klassifikation ab. Mit weiteren Beispieldaten können zusätzliche Merkmale
 herausgefunden werden, um die Klassifikationsrate zu erhöhen. Des Weiteren ist
 eine systematische Testreihe der Parameter der einzelnen Klassifikatoren und
 deren Bibliotheksimplementierungen vorzunehmen, um die optimalen Ergebnisse zu
 erhalten. Ein weiteres Problemfeld, das es weiter zu verbessern gilt, ist der
 Umgang mit unterschiedlichen Hardwarekonfigurationen. Eine Idee hierzu ist es,
 verschieden trainierte Klassifikatoren zu verwenden und einen Mehrheitsentscheid
-herbeizuführen oder entsprechend der aktuellen Hardwarekonfiguration einen
-speziellen Klassifikator nur zu laden. 
+herbeizuführen oder entsprechend der aktuellen Hardwarekonfiguration nur einen
+speziellen Klassifikator zu laden. 
 
 Ein zusätzlicher Punkt, der im Projekt bisher nur am Rande behandelt wurde, ist,
 die Gesten für eine tatsächliche Anwendung zu verwenden, sodass man damit
