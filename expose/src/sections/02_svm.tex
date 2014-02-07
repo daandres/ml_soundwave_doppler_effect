@@ -209,39 +209,37 @@ Dies ermöglicht uns eine echtzeitnahe Gestenerkennung.
 \item{transformation}
 \end{itemize}
 
-% UND-Perzeptron
-
 \subsubsection{Datenaufbereitung}\label{sec:svm_data} 
 In \autoref{sec:intro} wurde die Aufnahme und die generelle Vorverarbeitung der Daten bereits erläutert, bevor diese an die entsprechenden Klassifikatoren weitergeleitet werden.
 Da jeder Klassifikator aufgrund seiner Funktionsweise unterschiedlich mit den Eingabedaten arbeitet, ist eine entsprechende und auf den jeweiligen Klassifikator angepasste Datenaufbereitung notwendig.
 Gleichzeitig kann durch eine entsprechende Vorverarbeitung gegenüber unverarbeiteten Daten das Problem der Klassifikation von unterschiedlichen Datensätzen verallgemeinert und somit die Trainingszeit verringert werden.
 Dieser Abschnitt befasst sich mit der spezifischen Datenaufbereitung für den Support Vector Machine Klassifikator.
 
-\paragraph{Reduzierung der Eingabevektordimension}\label{sec:svm_reduce} 
-Bei der Betrachtung der Trainingsdaten, die jeweils aus insgesamt 32 Frames zu je 64 Werten bestehen, wird offensichtlich, dass die durch den Doppler-Effekt verursachten Frequenzverschiebungen in einem begrenzten Umfeld der Referenzfrequenz von $18,5\text{kHz}$ herum sattfinden.
+\paragraph{Eingabevektordimensionsreduzierung}\label{sec:svm_reduce}$\;$ \\
+Bei der Betrachtung der Trainingsdaten, die jeweils aus insgesamt 32 Frames zu je 64 Werten bestehen, wird offensichtlich, dass die durch den Doppler-Effekt verursachten Frequenzverschiebungen in einem begrenzten Umfeld der Referenzfrequenz von $18\text{,}5\text{ kHz}$ herum sattfinden.
 Zudem stellt sich heraus, dass nur ein Bruchteil der ursprünglich veranschlagten 32 Frames pro Geste relevante Informationen enthalten, da die Ausführung einer Geste meist zwischen 8 und 16 Frames dauert und nur innerhalb dieser Frame-Anzahl Frequenzverschiebungen verursacht (Bild).
 Aufgrund dieser beiden Gründe werden im ersten Schritt der Reduzierung der verwendete Wertebereich eines Frames von 64 auf 40 verkleinert und im nächsten Reduzierungsschritt sowohl für das Training der \ac{SVM}, als auch für die Live-Klassifikation, nur 20 Frames pro Geste verwendet (Bild). 
 
 Die dritte Reduzierung wird mittels der Addition benachbarter Frames erzielt, so dass letztlich nur noch jeweils 10 Frames zu je 40 Werten pro Datensatz/Geste existieren.
 Im Anschluss erfolgt die Transformation in ein eindimensionales Array mit insgesamt 400 Werten, welches als Eingabevektor für die \ac{SVM} dient.
 Gegenüber der ursprünglichen Gesamtanzahl von 2048 Werten pro Datensatz wurde mittels der Vorverarbeitung die Dimension eines Eingabevektors um den Faktor 5 verringert.
-Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite Wert der Einheitsgeste für das Training verwendet wird.
+Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite Wert der Einheitsgeste für das Training verwendet werden soll.
 
-\paragraph{Vorverarbeitung}\label{sec:svm_preprocess} 
+\paragraph{Vorverarbeitung}\label{sec:svm_preprocess}$\;$ \\\\
 Die Reduzierung der Eingabevektordimension und die vorverarbeitenden Schritte sind zwei notwendige Handlungen, die sich in der Implementierung nicht trennen lassen, allerdings lassen sie sich in ihrer Beschreibung gut separieren.
 Unmittelbar nach dem ersten Reduzierungsschritt wird jeder einzelne Frame normalisiert und die Referenzfrequenz subtrahiert.
 Da trotz Subtraktion der Referenzfrequenz teilweise noch sehr feines Rauschen in den Daten vorhanden sein kann, werden Werte unterhalb eines festgelegten Schwellenwerts auf 0 gesetzt.
 Die ersten 20 Frames, die relevante Informationen enthalten (Frame-Maximalwert > 0) werden für den dritten Reduzierungsschritt verwendet.
 Optional kann eine eindimensionale Gauß'sche Filterung zur Glättung der Werte als abschließender Vorverarbeitungsschritt angewandt werden.
 
+\begin{figure*}[htbp] \centering
+    \includegraphics[width=0.8\textwidth]{svm/svm_preprocessing_steps.png}
+    \caption{Vorverarbeitungsschritte}
+    \label{fig:svm_preprocessing_steps}
+\end{figure*}
 
 
-Die Klassifikatoren erhalten dabei jeweils einzelne Frames mit bereits normalisierten 64 Werten, die sich innerhab des Frequenzbereichs um die Referenzfrequenz von $18,5\text{kHz}$ befinden  \{Bild einfügen\}. 
-
-
-\subsubsection{Anpassung des Klassifikators}
-Die \ac{SVM} wird mittels des 
-
+Die Klassifikatoren erhalten dabei jeweils einzelne Frames zu je 64 Werten, die sich innerhab des Frequenzbereichs um die Referenzfrequenz von $18\text{,}5\text{ kHz}$ befinden.
 
 \subsubsection{Implementierung}
 Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Interface für alle Klassifikatoren vorhanden, welches von jedem Klassifikator -- allerdings unterschiedlich -- implementiert ist. 
