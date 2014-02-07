@@ -9,11 +9,12 @@ Andererseits ist das Erzeugen von Bäumen im Allgemeinen relativ effizient, was 
 in der Traningsphase wichtig ist. Das Verwenden bzw. Durchlaufen eines Baumes hat lediglich eine logarithmische Komplexität, 
 so dass auch die Klassifikation durch einem Baum sehr effizient ist, sofern dieser nicht entartet ist~\cite{Marsland}. 
 
-\subsection{Funktionsweise des Klassifikators}
+\subsection{Entscheidungsbäume}
 
-Bäume zur Klassifikation von Daten werden auch als \glqq Entscheidungsbäume\grqq\ bezeichnet und bestehen aus Knoten, Kanten und Blättern. Knoten entsprechen dabei Merkmalen bzw. \glqq Features\grqq\ der zu klassifizierenden Daten und die Kanten an einem Knoten den verschiedenen Merkmalsausprägungen. 
+Bäume zur Klassifikation von Daten werden auch als Entscheidungsbäume bezeichnet und bestehen aus Knoten, Kanten und Blättern. Knoten entsprechen dabei Merkmalen bzw. \glqq Features\grqq\ der zu klassifizierenden Daten und die Kanten an einem Knoten den verschiedenen Merkmalsausprägungen. 
 Ein Knoten kann entweder einen weiteren Knoten als Kind haben (also ein weiteres Merkmal) oder aber ein Blatt, was einer Klasse entspricht.
 
+\subsubsection{Einführendes Beispiel}
 Um beispielsweise verschiedene Gemüsesorten zu klassifizieren, könnten im einfachsten Fall Farbe und Form als Unterscheidungsmerkmale dienen. Wenn jedes Objekt der Testmenge die Merkmale (Form, Farbe) hat, würde eine Tomate mit (rund, rot) beschrieben, eine Gurke mit (länglich, grün) und eine Möhre mit (länglich, orange).
 
 Ein Entscheidungsbaum zur Klassifikation könnte dann aus einem Wurzel-Knoten bestehen, der zunächst anhand der Form 
@@ -62,17 +63,18 @@ des zu klassifizierenden Objektes eine erste Entscheidung vornimmt. Als zweites 
     }
     ;
 \end{tikzpicture}
-\label{fig:tree}
 \caption{Entscheidungsbaum}
+\label{fig:tree}
 \end{figure}
 
 In dem Beispiel hätte als erstes Unterscheidungsmerkmal auch die Farbe dienen können, wodurch direkt in einem Schritt alle drei Gemüsesorten hätten klassifiziert werden können. Somit hat die Wahl der Reihenfolge der Merkmale einen wesentlichen Einfluss auf die Form des Entscheidungsbaumes sowie die Effizienz, mit der Testdaten klassifiziert werden können. Weiterhin können durch die ungünstige Wahl von Kriterien verschiedene Klassen mehrfach in dem Entscheidungsbaum vorkommen, was darauf schließen lässt, dass der Baum aufgrund der Redundanz mehr Knoten enthält, als für eine Klassifizierung notwendig wäre.
 
+\subsubsection{Entscheidungskriterien}
 Maße für die Güte eines Baumes können beispielsweise die Baumhöhe, die Anzahl der Blätter sein oder die Summe aller Pfade, was auch als externe Pfadlänge bezeichnet wird. Das Problem zu entscheiden, ob ein Entscheidungsbaum mit einer maximalen externen Pfadlänge existiert, ist NP-vollständig. Es gibt jedoch verschiedene Kriterien, nach denen die Reihenfolge der Merkmale so gewählt werden kann, dass ein möglichst kompakter und damit effizienter Entscheidungsbaum entsteht. Ein Ansatz für das Erstellen eines möglichst guten Entscheidungsbaumes besteht darin zu berechnen, wie groß der Informationsgehalt der zu unterscheidenden Merkmale ist~\cite{Shannon}. Der Informationsgehalt eines Merkmals bestimmt sich daraus, wie häufig es vorkommt und ist definiert als 
-\[I = -log(p_i)\] wobei $p_i$ die relative Häufigkeit ist, mit der das Merkmal $i$ vorkommt. Ein sehr häufig vorkommendes Merkmal hat dementsprechend einen niedrigeren Informationsgehalt als ein seltenes Merkmal. Der Mittlere Informationsgehalt aller Merkmale wird auch als Entropie bezeichnet lässt sich dann mit Hilfe der Formel 
-\[E = - \sum \limits_{i=1}^n p_i \cdot \log (p_i)\] berechnen, wobei $n$ die Menge aller Merkmale ist und $p_i$ die relative Häufigkeit des Merkmals $i$.
+\[I = -log \left( p_i \right)\] wobei $p_i$ die relative Häufigkeit ist, mit der das Merkmal $i$ vorkommt. Ein sehr häufig vorkommendes Merkmal hat dementsprechend einen niedrigeren Informationsgehalt als ein seltenes Merkmal. Der Mittlere Informationsgehalt aller Merkmale wird auch als Entropie bezeichnet lässt sich dann mit Hilfe der Formel 
+\[E = - \sum \limits_{i=1}^n p_i \cdot \log \left( p_i \right)\] berechnen, wobei $n$ die Menge aller Merkmale ist und $p_i$ die relative Häufigkeit des Merkmals $i$.
 Um nun das Vorkommen der Merkmale in Relation zu den möglichen Klassifikationen zu setzen, wird die bedingte Wahrscheinlichkeit für die Merkmale bezogen auf die möglichen Klassen ermittelt, woraus sich der mittlere Informationsgewinn ermitteln lässt. Dieser ist definiert als 
-\[H = - \sum \limits_{i=1}^n p_i \cdot \left( \sum \limits_{j=1}^m \frac{x_{ij}}{x_i} \cdot \log (\frac{x_{ij}}{x_i})\right) \] wobei $n$ die Anzahl der Merkmale ist und $m$ die Anzahl der Klassen. Der Wert $x_i$ beschreibt die Anzahl der Vorkommen der Merkmalsausprägung $i$ und $x_{ij}$ die Anzahl der Vorkommen dieser Merkmalsausprägung unter der Bedingung, dass das Objekt zur Klasse $j$ gehört.
+\[H = - \sum \limits_{i=1}^n p_i \cdot \left( \sum \limits_{j=1}^m \frac{x_{ij}}{x_i} \cdot \log \left(\frac{x_{ij}}{x_i}\right)\right) \] wobei $n$ die Anzahl der Merkmale ist und $m$ die Anzahl der Klassen. Der Wert $x_i$ beschreibt die Anzahl der Vorkommen der Merkmalsausprägung $i$ und $x_{ij}$ die Anzahl der Vorkommen dieser Merkmalsausprägung unter der Bedingung, dass das Objekt zur Klasse $j$ gehört.
 Beim Erstellen eines Entscheidungsbaumes ist dann das Merkmal für die Teilung der Datenmenge in Teilbäume auf der aktuellen Ebene am interessantesten, was den größten mittleren Informationsgewinn \textit{H} hat, also die innere Summe minimal ist.
 Da sich durch das Merkmal \glqq Farbe\grqq\ aus dem vorigen Beispiel direkt alle möglichen Klassen unterscheiden lassen, hat dieses Merkmal z.B. einen höheren Informationsgewinn als das Merkmal \glqq Form\grqq\ und bietet sich daher als erstes Entscheidungskriterium an.
 
@@ -82,15 +84,15 @@ Ein anderes Maß zur Auswahl von geeigneten Entscheidungsmerkmalen ist die sogen
 %Beginnend beim Wurzelknoten wird bei jedem Knoten mithilfe einer Testfunktion berechnet, welche Abzweigung genommen werden muss. 
 %Ist man am Blattknoten angekommen, ist dies die zur Eingabe gehörende Klasse~\cite{alpaydin:maschinelles_lernen, borgelt:data_mining}.
 
-\subsubsection*{Ensemble Learning}
+\subsection{Ensemble Learning}
 Die Idee von Ensemble Learning ist es, mehrere Klassifikatoren gleichzeitig zu verwenden anstatt eines einzigen Klassifikators, um bessere Ergebnisse zu erzielen~\cite{Opitz99popularensemble}. Der Vorteil bei der Verwendung mehrerer Klassifikatoren ist es, dass nicht ein einzelner Klassifikator alle Klassen möglichst gut unterscheiden können muss, sondern dass mehrere (unabhängig voneinander gesehen schwächere) Klassifikatoren zusammen einen starken Klassifikator bilden können. Wichtig ist dabei lediglich, dass jeder der schwachen Klassifikatoren geringfügig besser sein muss als raten, also bei einer binären Klassifikation eine Erfolgsrate von mehr als 50\% hat.
 Bezugnehmend auf das einführende Beispiel zur Klassifikation verschiedener Gemüsesorten könnte man also beispielsweise einen Klassifikator verwenden, der sehr gut anhand der Form klassifizieren kann und einen weiteren anhand der Farbe. Ein Nachteil von Ensemble Learning ist jedoch, dass der Trainingsaufwand mit der Anzahl der Klassifikatoren steigt. Da bei Entscheidungsbäumen das Training verglichen mit anderen Klassifikatoren jedoch relativ effizient ist, bieten sich Entscheidungsbäume besonders als Klassifikatoren für Ensemble Learning an. Im Folgenden werden daher zwei verschiedene Ansätze des Ensemble Learning vorgestellt.
 
 
-\subsubsection*{Bagging}
+\subsubsection{Bagging}
 Eine einfache Methode, um mehrere Klassifikatoren miteinander zu kombinieren, wird als Bagging bezeichnet, eine Abkürzung für Bootstrap Aggregating~\cite{Breiman96baggingpredictors}. Der Name steht im Zusammenhang mit der Ziehung von Stichproben aus einer Menge, wo ein \glqq bootstrap sample\grqq\ eine Bezeichnung dafür ist, ein Testdatensatz \glqq mit Zurücklegen\grqq\ aus der Testmenge zu ziehen. Somit können manche Testdaten mehrfach, andere gar nicht in der Trainingsmenge vorhanden sein. Durch die daraus resultierenden unterschiedlichen Trainingsdaten entstehen Klassifikatoren, die verschiedene Klassen unterschiedlich gut unterscheiden können. Die Klassifikation erfolgt dann aufgrund einer Mehrheitsentscheidung.
 
-\subsubsection*{Boosting}
+\subsubsection{Boosting}
 Boosting unterscheidet sich zu Bagging dahingehend, dass während des Trainings immer mit den gleichen Trainings- und Testdaten gearbeitet wird und nicht eine zufällige Auswahl verwendet wird.
 Das bekannteste Boosting-Verfahren heißt AdaBoost und existiert seit Mitte der 90er Jahre~\cite{Freund95adecision-theoretic}. Die grundsätzliche Idee bei dem Verfahren ist es, jeden Datensatz um ein zusätzliches Gewicht als Maß dafür zu erweitern, wie fehlerbehaftet dieser Datensatz in den vorigen Trainingsrunden klassifiziert worden ist. Durch dieses Gewicht, welches im Laufe der Klassifikation immer wieder angepasst wird, werden falsch klassifizierte Daten hervorgehoben und stärker fokussiert. AdaBoost ist ein iterativer Algorithmus, der für jede neue Iteration die Fehlklassifikationen des vorherigen Trainings mit einbezieht mit dem Ziel, im besten Fall am Ende alle Testdaten richtig zuzuordnen. Das Gewicht berechnet sich anhand des jeweiligen Fehlers $\epsilon$, der sich aus der Summe der Gewichte der falsch klassifizierten Datenpunkte zusammensetzt. Das Gewicht dieser Datenpunkte wird mit
 $ \alpha = \frac{\epsilon}{(1-\epsilon)} $ 
@@ -98,6 +100,7 @@ multipliziert, sodass die \glqq schwierig\grqq\ zu klassifizierenden Daten stär
 
 \subsection{Datenaufbereitung}
 \label{sect:Trees_Datenaufbereitung}
+
 Die zu klassifizierenden Gesten unterscheiden sich dahingehend, dass sie die Bandbreite 
 des Frequenzspektrums um den Referenzton in unterschiedlicher Weise verschieben bzw. vergrößern. 
 Um eine Geste zu erkennen, werden daher die Amplituden der aufgezeichneten Frequenzen 
@@ -189,6 +192,9 @@ zum Referenzton gehörenden Frequenzanteile entsteht, was sich auch in der Grafi
 %Dazu kann die Verschiebungsrichtung als Maß dienen, um die Eingabemenge zu unterteilen und 
 %somit eine Klassifizierung zu erreichen.
 
+\subsection{Merkmalsextraktion}
+Einleitungsblabla..
+
 \subsubsection{Charakteristiken der Gesten} \label{charakteristiken}
 Durch die Vorverarbeitung der Daten entstehen für die einzelnen Gesten Charakteristiken, anhand dessen sie unterschieden werden können. Nachfolgend wird zu sehen sein, dass sich einige der Gesten gut von den anderen abgrenzen lassen, andere sich dagegen stark ähneln.
 
@@ -203,7 +209,7 @@ Die Geste \acl{RLO} beschreibt eine Bewegung mit der Hand von links nach rechts 
 
 
 \paragraph*{\acl{TBO}}
-In Abbildung~\ref{fig:top_bottom2} ist die Geste \acl{TBO} abgebildet. Diese wird durch eine Bewegung mit der flachen Hand von oben nach unten ausgeführt. Dabei entsteht die Frequenzverschiebung auf der rechten Seite (türkis) und darauf folgend eine Frequenzverschiebung auf der linken Seite (pink). 
+In Abbildung~\ref{fig:top_bottom} ist die Geste \acl{TBO} abgebildet. Diese wird durch eine Bewegung mit der flachen Hand von oben nach unten ausgeführt. Dabei entsteht die Frequenzverschiebung auf der rechten Seite (türkis) und darauf folgend eine Frequenzverschiebung auf der linken Seite (pink). 
 
 %\begin{figure}[htbp] \centering
 %\includegraphics[height=60mm]{trees/top_bottom.png}
@@ -254,7 +260,7 @@ Um später Gesten live zu erkennen, muss auch definiert sein, wann keine Geste a
 \label{fig:nothing}
 \end{figure}
 
-\subsection{Merkmalsextraktion}
+\subsubsection{??????}
 Durch die Filterung und Glättung können nun die einzelnen Frequenzverschiebungen eindeutig identifiziert werden. Zudem ist in Abschnitt~\ref{charakteristiken} beschrieben, welche typische Gestalten der Graph für die verschiedenen Gesten annimmt. So lassen sich durch die Anordnung, Ausprägung und Aufkommen der Frequenzverschiebungen die unterschiedlichen Charakteristiken der einzelnen Gesten erkennen. Wie jedoch auch ersichtlich wurde, ähneln sich einige Gesten sehr stark, sodass eine Unterscheidung zum Teil auch mit bloßem Auge schwer fällt. Hier kommt die Merkmalsextraktion zum Tragen, denn sie soll unterstützen feine Unterschiede besser zu erkennen, indem sie stärker gewichtet werden. Das Ziel der Merkmalsextraktion ist es, aus den 32 Datenpunkten weitere eindeutige Merkmale herauszuarbeiten um schließlich einen Merkmalsvektor mit überschaubarer Anzahl an Merkmalen zu generieren. Um dies zu realisieren, wurden folgende Eigenschaften der einzelnen Gesten untersucht:
 
 \begin{itemize} 
@@ -264,35 +270,31 @@ Durch die Filterung und Glättung können nun die einzelnen Frequenzverschiebung
 \item Amplitudenunterschiede zwischen den Frequenzverschiebungen
 \end{itemize}
 
-\subsubsection*{Anzahl der Frequenzverschiebungen}
+\paragraph*{Anzahl der Frequenzverschiebungen}
 Die Anzahl der Frequenzverschiebung sagt bereits einiges über die Geste aus, wobei auch wichtig ist, ob die Frequenzverschiebungen im höheren oder niedrigeren Frequenzbereich liegen. Wie bereits in Abschnitt~\ref{sect:Trees_Datenaufbereitung} erwähnt, erzeugt eine Bewegung auf die Schallquelle zu eine Frequenzverschiebung auf der rechten Seite, also eine Ausdehnung in Richtung der höheren Frequenzen. Durch das Bewegen von der Schallquelle weg, erfolgt eine Frequenzverschiebung zur linken Seite, bzw. in Richtung der niedrigeren Frequenzen. 
 
 Ein einfacher \glqq \acl{SPO}\grqq\ erzeugt deshalb im optimalen Fall eine Frequenzverschiebung auf der rechten Seite des Peaks. Wird die Hand wieder zurückgezogen, tritt auch eine Frequenzverschiebung auf der linken Seite auf. Klar davon abgegrenzt werden kann beispielsweise die Geste \glqq \acl{DPO}\grqq. Diese erzeugt mit dem Zurückziehen der Hand nach dem zweiten Push zwei Frequenzverschiebungen auf der linken und zwei auf der rechten Seite.
 
-\subsubsection*{Zeitliche Abfolge der Frequenzverschiebungen}
+\paragraph*{Zeitliche Abfolge der Frequenzverschiebungen}
 Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq \acl{SPO}\grqq\ erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die in Abbildung~\ref{fig:contrary} dargestellte Geste \glqq \acl{OT}\grqq beschreibt dagegen die gleichzeitige gegensätzliche Bewegungen in Richtung der Schallquelle und von diesem weg. Somit tritt in diesem Fall gleichzeitig je eine Verschiebung nach rechts und links auf. 
 
-\subsubsection*{Anzahl der gleichzeitigen Frequenzverschiebungen}
+\paragraph*{Anzahl der gleichzeitigen Frequenzverschiebungen}
 Die beiden Gesten \glqq \acl{DPO}\grqq\ und \glqq \acl{OT}\grqq\ gehören zu den Gesten, die mehr Frequenzverschiebungen erzeugen als die häufige erst Rechts- dann Linksverschiebung. Dadurch sind sie sich ähnlich. Im optimalen Fall generiert Geste \glqq \acl{OT}\grqq\ gleichzeitige Frequenzverschiebungen auf beiden Seiten. Um die Anzahl der Falschklassifikationen zu verringern, werden die gleichzeitigen Frequenzverschiebungen gezählt und in den Merkmalsvektor aufgenommen. So wird die das Merkmal der Gleichzeitigkeit verstärkt.
 
-\subsubsection*{Amplitudenunterschiede zwischen den Frequenzverschiebungen}
+\paragraph*{Amplitudenunterschiede zwischen den Frequenzverschiebungen}
 Die Gesten \glqq \acl{SPO}\grqq\, \glqq \acl{TBO}\grqq\ und \glqq \acl{RLO}\grqq\ unterscheiden sich in der zeitlichen Abfolge der Verschiebungen nicht. In beiden Fällen tritt erst eine Verschiebung rechts, dann links auf. Jedoch unterscheiden sich die Verschiebungen an sich. Bei \glqq \acl{SPO}\grqq\ unterscheiden sich die beiden Verschiebungen im optimalen Fall nur dadurch, dass die eine Verschiebung links und die andere rechts vom Peak auftritt. Bei \glqq \acl{RLO}\grqq\ dagegen ist die Amplitude der zweiten Verschiebung, links vom Peak, schwächer als die andere.
 
-\subsection{Anpassung des Klassifikators}
 
 \subsection{Implementierung}
 
 Für die Datenaufbereitung und Merkmalsextraktion wurden in den Modulen GestureModel.py und Feature.py verschiedene Datentransformationen vorgenommen. Für die Klassifikation wurde auf Klassen und Methoden des Moduls \textit{sklearn.ensemble}~\cite{sklearn.ensemble} der Bibliothek \textit{sklearn}~\cite{sklearn} zurückgegriffen.
 
-\subsubsection{Datenaufbereitung}
+>> Datenaufbereitung
+>> Merkmalsextraktion
 
-
-\subsubsection{Merkmalsextraktion}
-
-\subsection{Training}
+Das Modul \textit{Feature.py} stellt einige Funktionen zur Merkmalsextraktion bereit. In Abschnitt~\ref{subsec:featureextraction} sind die erkennbaren Charakteristiken der einzelnen Gesten beschrieben und auch das Problem der Ähnlichkeit einiger Charakteristiken beschrieben. 
 
 \subsection{Evaluation}
 
 \subsection{Fazit}
-
 
