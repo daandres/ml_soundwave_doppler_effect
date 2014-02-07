@@ -29,7 +29,7 @@ class HMM(IClassifier):
         self.classList = CLASS_LIST
         self.gestureApp = GestureApplication()
         self.fileIO = GestureFileIO()
-        self.gestureWindows=[]
+        self.gestureWindows=[[],[]]
         self.activeWindow = 0
         if os.name == 'nt':
             self.isWindows = True
@@ -53,7 +53,7 @@ class HMM(IClassifier):
                 seq = np.array([self.gestureWindows[i]])
                 self.startClassificationAction(seq)
                 self.gestureWindows[i] = []
-            if (len(self.gestureWindows[i]==round((c.framesBefore+c.framesAfter+1))/2)) & (self.activeWindow == i):
+            if (len(self.gestureWindows[i])==(c.framesTotal-round((c.framesBefore+c.framesAfter+1))/2)) & (self.activeWindow == i):
                 self.gestureWindows[(i+1)%2] = []
                 self.activeWindow = (i+1)%2
         
