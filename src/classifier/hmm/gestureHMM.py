@@ -47,11 +47,6 @@ class GestureHMM(GMMHMM):
                  params="",
                  init_params=""):
 
-        
-#         if random_state == None:
-#             random_state = random_state = RandomState([1, 3, 5, 7, 11, 13])
-            
-
         GMMHMM.__init__(self, n_components, n_mix, startprob, transmat,
                  startprob_prior, transmat_prior,
                  algorithm, gmms, covariance_type,
