@@ -39,3 +39,4 @@ tmp/*
 /tmp
 /out
 /.externalToolBuilders
+/src

@@ -3,7 +3,8 @@ Created on 06/02/2014
 
 @author: Benny
 '''
-import os
+
+''' general imports '''
 import subprocess as sp
 import time
 

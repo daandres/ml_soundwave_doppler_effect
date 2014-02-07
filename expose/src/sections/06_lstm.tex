@@ -232,7 +232,7 @@ erhalten. Nachfolgend werden die Grundideen von zwei verschiedenen
 Trainingsansätzen erläutert:
 \begin{itemize}
 	\item Fehlerrückführung (engl. Backpropagation)
-	\item Evolution based Training
+	\item Evolutionsbasiertes Training
 \end{itemize}
 
 \subparagraph{Backpropagation}
@@ -262,9 +262,21 @@ Umsetzungen durch \textit{Backprogation through time (BPTT)} und \textit{Real
 Time Recurrent Learning (RTRL)} sind in
 \cite{RainerSchmoll2006,Gers2002b,GERS2001} zu finden.
 
-\subparagraph{Evolution based Training}
-\cite{Schmidhuber05evolino:hybrid}
-\textbf{TODO}
+\subparagraph{Evolutionsbasiertes Training}
+Die Idee des evolutionären Traiinigs ist wie neuronale Netze biologisch
+motiviert. Eine Population mutiert bzw. pflanzt sich fort (Kombination von
+spezifischen Eigenschaften, Genom). Dabei wird jedoch eine \textit{Fitness}
+Funktion angewendet, sodass die Fitness des Genoms mit jeder Generationsstufe
+(Veränderungsschritt) ein besseres Ergebnis liefert. \cite{Marsland} Dieser
+Mechanismus der Evolution eines Genoms wird mit Hilfe verschiedener Algorithmen
+wie dem \textit{Genetischen Algorithmus} versucht nachzuahmen. Wichtig ist
+dabei, dass eine geeignetete Repräsentation des Netzwerkes durch ein Genom
+gefunden, eine problemspezifische Fitness Funktion genutzt und die Population
+sich in einer sinnvollen Art und Weise verändert. Dieser Ansatz wird in
+\cite{Schmidhuber05evolino:hybrid} mit dem \textit{Evolino} Algorithmus
+(Evolution of recurrent systems with Linear outputs) umgesetzt. Evolutionäres
+Lernen wird hier nicht weiter betrachtet, da es nicht genutzt werden kann (vgl.
+\autoref{sec:lstm_training}).
 
 
 \subsection{Anwendung auf Projekt}
@@ -438,6 +450,7 @@ Netz übergeben, sondern mit einem Puffer gearbeitet und wenn eine Ausschlag erk
 werden die nächsten 22-Datensätze und 10-Datensätze aus dem Puffer übergeben.
 
 \subsubsection{Training}
+\label{sec:lstm_training}
 Das Training des \ac{RNN} mit \ac{LSTM}-Blöcken erfolgt mit den in
 \autoref{sec:lstm_allg} erläuterten Verfahren in optimierten Version.
 \texttt{PyBrain} bietet dazu die Gradientenabstiegsverfahren
@@ -484,7 +497,16 @@ Es werden nicht alle Daten für das Training verwendet. Ein Teil wird als
 Testsatz vom Training ausgeschlossen. So kann eine unabhängige Validierung
 vorgenommen werden. Aufgrund der geringen Menge an Beispieldaten wird eine
 Teilung der Daten in 80\% Trainigsdaten und 20\% Validierungsdaten vorgenommen.
-\textbf{TODO Referenz für Menge der benötigten Trainigsdaten}
+Nach \cite{NNFAQ} besagt eine Faustregel, dass in etwa 30 mal so viele Beispiele
+benötigt werden wie veränderbare Gewichte. In einem Netzwerk mit 64 Eingaben,
+zehn \ac{LSTM}-Blöcken (TGewichte für die EIngaben und jedes Gate) und sieben
+Ausgaben gibt es $64\cdot(4\cdot10)+10\cdot7 = 2630$ Gewichte, die trainiert
+werden können, d.h. es werden etwa $26300$ Beispiele bzw. mehr bei mehr
+\ac{LSTM}-Blöcken zum Training benötigt. Diese hohe Anzahl an
+Trainingsbeispielen ist nicht annähernd erreicht (es gibt ca. so viele Beispiele
+wie Gewichte). Daher wird das Verhältnis zwischen Trainings- und
+Validierungsdaten zugunsten der Trainingsdaten gesetzt.
+
 
 Für die Validierung des Netzes wird zum einen der mittlere quadratische Fehler
 berechnet und zur Veranschaulichung auch die Fehlerrate mit Hilfe einer
@@ -568,4 +590,4 @@ laute oder leise Hintergrundgeräusche anders berücksichtigt werden ohne dafür
 zusätzliche Beispieldaten zu haben. Auch kann so auf unterschiedliche
 Hardwarekonfigurationen oder Lautstärkeunterschiede im Referenzton eingegangen
 werden.
-
+ 

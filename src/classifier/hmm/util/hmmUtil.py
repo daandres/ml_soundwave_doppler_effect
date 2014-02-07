@@ -56,10 +56,10 @@ class HMM_Util:
             for algo in c.algorithm:
                 print "  algo: " + algo
                 i = 0
-                while logprob < -100:
-                    i += 1
+                while logprob < c.logprobBound:
                     ### init HMM instance ###
                     gmms = self._createGMMS(obs)
+                    #gmms = None
                     m = GestureHMM(c.n_components, n_mix=c.n_mix, gmms=gmms, covariance_type=cov_type, algorithm=algo, n_iter=c.n_iter, params='stmc', thresh=1e-4)
                     ### fit the model ###        
                     m = m.fit(obs)
@@ -69,7 +69,8 @@ class HMM_Util:
                     if 0 > l > logprob:
                         logprob = l
                         model = m
-                    if i > c.n_tries:
+                    i += 1
+                    if i >= c.n_tries:
                         break
         print "states: " + str(c.n_components) + "\tlikeli: " + str(round(logprob, 2))
         return model, logprob
