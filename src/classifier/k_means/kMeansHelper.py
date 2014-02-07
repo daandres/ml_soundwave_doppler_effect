@@ -255,12 +255,12 @@ class kMeansHepler():
     
     
     #16 / try with side cut equal 20
-    def reduceDimensionality(self, inArray, sidesCut=20, manyTimes=4):
+    def reduceDimensionality(self, inArray, sidesCut=20, manyTimes=4, setAxisTo=0):
         
         
         #standard 1a
         sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
-        return np.average(sidesCutedArray, axis=0)
+        return np.average(sidesCutedArray, axis=setAxisTo)
         
         '''
         #standard 1b
