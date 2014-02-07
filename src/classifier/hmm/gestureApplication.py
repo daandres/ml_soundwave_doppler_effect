@@ -95,7 +95,6 @@ class HMM(IClassifier):
         gesture = int(filename)
         p = plot.Plot(gesture, gmms=self._getGMMDic())
         p.initPlot()
-        p.show()
         
     def _getGMMDic(self):
         dic = {}
