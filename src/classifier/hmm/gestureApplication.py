@@ -16,7 +16,7 @@ import classifier.hmm.plot as plot
 NAME = "HiddenMarkovModel"
 GESTURE_PREFIX="gesture "
 
-CLASS_LIST = [0, 1, 5, 7]
+CLASS_LIST = [0, 1, 5, 6, 7]
 
 class HMM(IClassifier):
 
@@ -94,7 +94,7 @@ class HMM(IClassifier):
         return dic
 
     def saveData(self, filename=""):
-        self.startTraining()
+        self.gestureApp.trainAndSave()
 
 
 
@@ -167,8 +167,7 @@ class GestureApplication():
             if  (g.className == 'gesture 2') | (g.className == 'gesture 4'):
                 continue
             l = g.score(seq)
-            
-            if 0 > l > logprob:
+            if 0 > l >= logprob:
                 logprob = l
                 gesture = g 
         return gesture, logprob
