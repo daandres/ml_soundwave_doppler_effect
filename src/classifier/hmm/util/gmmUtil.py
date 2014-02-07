@@ -105,7 +105,6 @@ class GMM_Util():
             else:
                 data = u.loadData(dataPath)
         self.trainGmms(data)
-        print np.shape(data)
         return self._gmms
     
 

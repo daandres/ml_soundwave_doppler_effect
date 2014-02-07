@@ -16,14 +16,16 @@ import classifier.hmm.plot as plot
 NAME = "HiddenMarkovModel"
 GESTURE_PREFIX="gesture "
 
+CLASS_LIST = [0, 1, 5, 7]
+
 class HMM(IClassifier):
 
     def __init__(self, recorder=None, config=None, relative=""):
         self.recorder = recorder
         self.config = config
         self.relative = relative
+        self.classList = CLASS_LIST
         self.gestureApp = GestureApplication()
-        self.classList = [1, 2, 3]
         self.fileIO = GestureFileIO()
         self.gestureWindow1=[]
         self.gestureWindow2=[]
@@ -37,7 +39,6 @@ class HMM(IClassifier):
 
     def startTraining(self, args=[]):
         return self.gestureApp.createGestures(self.classList)
-
 
     def classify(self, data):
         if(len(self.gestureWindow1)==32):
@@ -79,14 +80,21 @@ class HMM(IClassifier):
 
 
     def loadData(self, filename=""):
-        p = plot.Plot(int(filename))
+        gesture = int(filename)
+        p = plot.Plot(gesture, gmms=self._getGMMDic())
         p.initPlot()
         p.show()
         
-
+    def _getGMMDic(self):
+        dic = {}
+        for gesture in self.gestureApp.gestures.values():
+            gestureNum = gesture.getClassNum()
+            hmm = gesture.getHMM()
+            dic[gestureNum] = hmm.gmms_
+        return dic
 
     def saveData(self, filename=""):
-        pass
+        self.startTraining()
 
 
 
@@ -97,24 +105,19 @@ class GestureApplication():
         self.mu = h.HMM_Util()
         self.gestures = {}
         self.fileIO = GestureFileIO()
-        ''' Create HMM Model based on all existing Gesture datasets '''
-        self.test()
-        ''' Load HMM Configurationfile to Classifiy '''
-        #self.loadModels('classifier/hmm/data/config_night.cfg')
         
-        
-        '''
-        classList = [0, 3]
-        self.createGestures(classList)
-        for classNum in classList:
-            className = GESTURE_PREFIX + str(classNum)
-            obs, test = u.loadSplitData(classNum)
-            print self.scoreClassData(obs, className)
-            print self.scoreClassData(test, className)
-        self.saveModels('classifier/hmm/data/config.cfg')
-        '''
+        state = 2
+        if state == 1:
+            try:
+                ''' Load HMM Configurationfile to Classifiy '''
+                self.loadModels('classifier/hmm/data/config_5000_20140206_2019.cfg')
+            except Exception:
+                ''' Create HMM Model based on all existing Gesture datasets '''
+                self.trainAndSave()
+        else:
+            self.trainAndSave()
 
-               
+
     def createGesture(self, gesture, className):
         obs, test = u.loadSplitData(gesture)
             
@@ -193,9 +196,9 @@ class GestureApplication():
             gesture = pickle.loads(gestureConfig)
             self.gestures[i] = (gesture)
 
-    def test(self):
+    def trainAndSave(self):
         print "#### START ####"
-        classList = [0, 1, 5, 7]
+        classList = CLASS_LIST
         
         self.createGestures(classList)
         cp = classList[:]
@@ -206,8 +209,9 @@ class GestureApplication():
             scores, accuracy, className = self.scoreClassData(test, className)
 
             print className, accuracy, scores
-            
-        self.saveModels('classifier/hmm/data/config_essen.cfg', '0, 1, 5, 7')
+        
+        timestamp = str(int(time.time()))
+        self.saveModels('classifier/hmm/data/config_' + timestamp +'.cfg', '0, 1, 5, 7')
         print "#### END ####"
 
 
@@ -224,6 +228,9 @@ class Gesture():
     
     def getHMM(self):
         return self._hmm
+    
+    def getClassNum(self):
+        return int(self.className.replace(GESTURE_PREFIX, ""))
     
     def score(self, seq):
         return self._hmm.score(seq)
