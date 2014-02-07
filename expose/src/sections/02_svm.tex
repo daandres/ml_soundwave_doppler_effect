@@ -180,8 +180,24 @@ Gängige Kernfunktionen sind:
 
 \subsubsection{Klassifikation von merheren Klassen}
 
-Die SVM ist ein binärer Klassifikator, d. h. er kann eine Objektzuordnung nur zwischen zwei Klassen durchführen. 
-In der Regel will man ...
+Da die SVM als binärer Klassifikator entwickelt wurde, müssen für eine Klassifikation von mehr als zwei Klassen Strategien entwickelt werden, um das Prinzip der SVM zu erweitern. 
+Ein Verfahren ist die "{}Einer gegen den Rest"{}-Klassifikation. 
+Bei dieser Technik wird für jedes zu klassifizierende Objekt eine binäre SVM trainiert. 
+Für jede SVM wird eine Klasse separiert, die anderen Klassen werden nicht unterschieden und als negative Beispiele zu einer Restklasse definiert. 
+Die Vorraussage eines Objektes ergibt sich aus der Auswertung aller SVMs. 
+Es ist nun möglich, dass mehrere SVMs eine positive Klassenzuordnung feststellen nicht die Restklasse klassifizieren. 
+In diesem Fall entscheidet sich das "{}Einer gegen den Rest"{}-Verfahren für die Klasse, dessen SVM die höchste Ausgabe erzeugt (winner-takes-all). 
+Als höchstes Ergebnis wird der weiteste Abstand zur Trennhyperebene angenommen. 
+Offensichtlich erhöht sich die Laufzeit der Trainingsphase mit der Anzahl der Klassen $|\mathcal{C}|$. 
+Glücklicherweise beeinflusst das nicht die Laufzeitanalyse in der $\mathcal{O}$-Notation (\ref{eq:svm_winner_runtime}). 
+
+\begin{equation}
+\label{eq:svm_winner_runtime}
+    |\mathcal{C}| \cdot \mathcal{O}(n) = \mathcal{O}(|\mathcal{C}| \cdot n) =  \mathcal{O}(n)
+\end{equation}
+
+Sind die SVMs trainiert, beeindrucken sie durch rasante Klassifikation. 
+Dies ermöglicht uns eine echtzeitnahe Gestenerkennung.
 
 
 \newpage
