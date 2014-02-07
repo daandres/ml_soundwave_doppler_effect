@@ -12,6 +12,7 @@ import pickle
 from classifier.classifier import IClassifier
 from gestureFileIO import GestureFileIO
 import classifier.hmm.plot as plot
+import win32com.client
 
 NAME = "HiddenMarkovModel"
 GESTURE_PREFIX="gesture "
@@ -59,9 +60,16 @@ class HMM(IClassifier):
         seq = u.preprocessData(seq)
         if len(seq) != 0:
             gesture, prob =  self.gestureApp.scoreSeq(seq[0])
-            if (gesture.className != 'gesture 6') & (gesture.className != 'gesture 7'):
+            if (gesture.className != 'gesture 7'):
                 #if prob > -250.0:
                 print gesture, prob
+            if (gesture.className == 'gesture 1'):
+                shell = win32com.client.Dispatch("WScript.Shell")
+                shell.SendKeys("{PGDN}",0)
+            if (gesture.className == 'gesture 5'):
+                shell = win32com.client.Dispatch("WScript.Shell")
+                shell.SendKeys("{PGUP}",0)
+                
                 
     def startValidation(self):
         ret = []
@@ -98,9 +106,9 @@ class GestureApplication():
         self.gestures = {}
         self.fileIO = GestureFileIO()
         ''' Create HMM Model based on all existing Gesture datasets '''
-        self.test()
+        #self.test()
         ''' Load HMM Configurationfile to Classifiy '''
-        #self.loadModels('classifier/hmm/data/config_night.cfg')
+        self.loadModels('classifier/hmm/data/config_essen_20140206_1533.cfg')
         
         
         '''
