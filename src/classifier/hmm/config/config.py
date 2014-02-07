@@ -33,7 +33,8 @@ n_components=components # Number of frames
 n_iter=5 # Number of iterations to perform.
 logprobBound = -100
 
-
+### Live Classification ###
+classificationTreshhold = 0.1 #Percantage (0.1 = 10%)
 
 
 

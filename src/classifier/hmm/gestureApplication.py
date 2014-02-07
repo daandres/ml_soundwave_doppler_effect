@@ -61,7 +61,9 @@ class HMM(IClassifier):
     def startClassificationAction(self,seq):
         seq = u.preprocessData(seq)
         if len(seq) != 0:
-            gesture, prob =  self.gestureApp.scoreSeq(seq[0])
+            gesture, prob =  self.gestureApp.scoreSeqLive(seq[0])
+            if gesture == None:
+                return
             if (gesture.className != 'gesture 7'):
                 #if prob > -250.0:
                 print gesture, prob
@@ -181,8 +183,24 @@ class GestureApplication():
             if 0 > l >= logprob:
                 logprob = l
                 gesture = g 
-            
         return gesture, logprob
+    
+    def scoreSeqLive(self, seq):
+        
+        ''' find most likely class '''
+        logprob1 = -sys.maxint - 1
+        logprob2 = -sys.maxint - 1
+        gesture = None
+        for g in self.gestures.values():
+            l = g.score(seq)
+            print ' '+str(l), g
+            if 0 > l >= logprob1:
+                logprob2 = logprob1
+                logprob1 = l
+                gesture = g 
+        if (logprob1*c.classificationTreshhold + logprob1) < logprob2:
+            return None, None
+        return gesture, logprob1
     
     def saveModels(self, filePath, configurationName='Default'):
         config = ConfigParser.RawConfigParser()
