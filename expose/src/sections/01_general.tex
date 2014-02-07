@@ -9,8 +9,8 @@ für das Rotieren oder Skalieren von Bildern verwendet werden, besteht darin,
 dass die Interaktion kontaktfrei ist und durch die Bewegung der Hände im Raum
 wesentlich komplexere Gesten realisiert werden können.
 
-Zwei bekannte Geräte zur In-Air-Gestenerkennung sind Leap
-Motion~\cite{LeapMotion} und Microsoft Kinect~\cite{Kinect}. Diese Geräte
+Zwei bekannte Geräte zur In-Air-Gestenerkennung sind \textit{Leap
+Motion}~\cite{LeapMotion} und \textit{Microsoft Kinect}~\cite{Kinect}. Diese Geräte
 verwenden optische Verfahren zur Erkennung der Hände oder Finger. Ein Nachteil
 beider Verfahren ist jedoch, dass sie wegen der optischen Erkennung sehr
 abhängig von der Beleuchtung sind. Weiterhin ist die Gesten-Erkennung erst durch
@@ -60,7 +60,7 @@ Die Anwendung soll folgende Gesten unterscheiden können:
 
 Zur Abgrenzung der Gesten zu einer Nicht-Geste werden zusätzlich noch die
 Hintergrundgeräusche als Klasse definiert. Dies ist einmal \texttt{\ac{BNS}},
-diese Geste spiegelt die Referenzfreuqenz wieder, und zum Anderen
+diese Geste spiegelt die Referenzfrequenz wieder, und zum Anderen
 \texttt{\ac{BNN}}, bei dieser Geste herrscht zusätzlich noch beliebiger Lärm im
 Raum.
 
@@ -69,7 +69,7 @@ Die Gestenerkennung soll anhand verschiedener Klassifikationsverfahren erfolgen.
 Dabei müssen die Rohdaten unterschiedlich verarbeitet und auf verschiedene
 Methoden angewendet werden, um eine Klassifikation zu erreichen. Es werden die
 Vor- und Nachteile der unterschiedlichen verfahren auf das Projekt bezogen
-dirkustiert. Jedes Klassifikationsverfahren ist in einem Kapitel im Detail
+diskutiert. Jedes Klassifikationsverfahren ist in einem Kapitel im Detail
 beschrieben. Folgende fünf Verfahren werden in den Kapiteln untersucht:
 \begin{itemize}
 	\item \ref{mainsec:svm}. \nameref{mainsec:svm}
@@ -97,16 +97,16 @@ Klassifikation dem genutzten Klassifikator übergeben. Das aufgenommene Array de
 Frequenzspektrums enthält 64 Werte. Dieses Array wird als \textit{Frame}
 bezeichnet.
 
-Des Weiteren wird das einheitliche Interface \texttt{IClassifier} für die Klassifikatoren verwendet,
-um die Steuerung der einzelnen Klassifikatoren zu vereinheitlichen. Diese können
-über eine integrierte Konsole angesteuert werden. In der Konsole können über
-verschiedene Befehle die Live Klassifizierung, das Training, eine Validierung
-etc. gestartet werden.  
+Des Weiteren wird das einheitliche Interface \texttt{IClassifier} für die
+Klassifikatoren verwendet, um die Steuerung der einzelnen Klassifikatoren zu
+vereinheitlichen. Diese können über eine integrierte Konsole angesteuert werden.
+In der Konsole können über verschiedene Befehle die Live Klassifizierung, das
+Training, eine Validierung etc. gestartet werden.
 \enlargethispage{\baselineskip}
-Die Konsole bietet auch die Möglichkeit Beispieldaten aufzunehmen. Eine
-Beispielgeste besteht aus 32 aufeinanderfolgenden Frames. Die Aufnahme kann
-auch im Batchverfahren direkt hintereinander erfolgen (mehrmals die gleiche
-Geste ohne zusätzliche Interaktion). Aufgenommene Gesten werden pro Nutzer in
+Die Konsole bietet auch die Möglichkeit, Beispieldaten aufzunehmen. Eine
+Beispielgeste besteht aus 32 aufeinanderfolgenden Frames. Die Aufnahme kann auch
+im Batchverfahren direkt hintereinander erfolgen (mehrmals die gleiche Geste
+ohne zusätzliche Interaktion). Aufgenommene Gesten werden pro Nutzer in
 einzelnen Gesten-Ordnern gespeichert. Das Rahmenprogramm bietet auch eine
 Schnittstelle zum Laden der Beispieldaten in ein NumPy Array. Dies wird im Modul
 \texttt{gesturefileio.py} vorgenommen. Dabei können verschiedene Datenformate
