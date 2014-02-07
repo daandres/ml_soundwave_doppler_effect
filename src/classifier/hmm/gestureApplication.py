@@ -23,17 +23,15 @@ CLASS_LIST = [0, 1, 5, 6, 7]
 class HMM(IClassifier):
 
     def __init__(self, recorder=None, config=None, relative=""):
-        self.recorder = recorder
-        self.config = config
-        self.relative = relative
         self.classList = CLASS_LIST
         self.gestureApp = GestureApplication()
         self.fileIO = GestureFileIO()
         self.gestureWindows=[[],[]]
         self.activeWindow = 0
+        self.framesCut = round((c.framesBefore+c.framesAfter+1))/2
         if os.name == 'nt':
             self.isWindows = True
-            
+            self.shell = win32com.client.Dispatch("WScript.Shell")
         else:
             self.isWindows = False
 
@@ -53,7 +51,7 @@ class HMM(IClassifier):
                 seq = np.array([self.gestureWindows[i]])
                 self.startClassificationAction(seq)
                 self.gestureWindows[i] = []
-            if (len(self.gestureWindows[i])==(c.framesTotal-round((c.framesBefore+c.framesAfter+1))/2)) & (self.activeWindow == i):
+            if (len(self.gestureWindows[i])==(c.framesTotal-self.framesCut)) and (self.activeWindow == i):
                 self.gestureWindows[(i+1)%2] = []
                 self.activeWindow = (i+1)%2
         
@@ -65,15 +63,12 @@ class HMM(IClassifier):
             if gesture == None:
                 return
             if (gesture.className != 'gesture 7'):
-                #if prob > -250.0:
                 print gesture, prob
             if self.isWindows:
                 if (gesture.className == 'gesture 1'):
-                    shell = win32com.client.Dispatch("WScript.Shell")
-                    shell.SendKeys("{PGDN}",0)
+                    self.shell.SendKeys("{PGDN}",0)
                 if (gesture.className == 'gesture 5'):
-                    shell = win32com.client.Dispatch("WScript.Shell")
-                    shell.SendKeys("{PGUP}",0)
+                    self.shell.SendKeys("{PGUP}",0)
                 
                 
     def startValidation(self):
@@ -113,15 +108,14 @@ class GestureApplication():
     
     def __init__(self):
         self.dp = d.DataUtil()
-        self.mu = h.HMM_Util()
         self.gestures = {}
         self.fileIO = GestureFileIO()
         
-        state = 2
+        state = 1
         if state == 1:
             try:
                 ''' Load HMM Configurationfile to Classifiy '''
-                self.loadModels('classifier/hmm/data/config_5000_20140206_2019.cfg')
+                self.loadModels('classifier/hmm/data/config.cfg')
             except Exception:
                 ''' Create HMM Model based on all existing Gesture datasets '''
                 self.trainAndSave()
@@ -130,12 +124,13 @@ class GestureApplication():
 
 
     def createGesture(self, gesture, className):
+        mu = h.HMM_Util()
         obs, test = u.loadSplitData(gesture)
             
         gesture = Gesture(className)
         print "### building " + str(className) + " ###"
         print " training " + str(len(obs)) + ", testing " + str(len(test)) 
-        hmm, logprob = self.mu.buildModel(obs, test)
+        hmm, logprob = mu.buildModel(obs, test)
         gesture.setHMM(hmm)
         
         return gesture
@@ -192,7 +187,7 @@ class GestureApplication():
         gesture = None
         for g in self.gestures.values():
             l = g.score(seq)
-            print ' '+str(l), g
+            #print ' '+str(l), g
             if 0 > l >= logprob1:
                 logprob2 = logprob1
                 logprob1 = l

@@ -73,7 +73,7 @@ class Plot():
                     self.index = 0
                     self.dClass = 1
                     self.gesture = gesture
-                    self.plotRawData()
+                    self.plotRaw()
             if key == 'down':
                 self.index -= 1
             if key == 'up':
