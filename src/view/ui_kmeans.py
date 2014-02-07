@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_kmeans.ui'
 #
-# Created: Wed Feb 05 15:08:02 2014
+# Created: Fri Feb 07 01:26:38 2014
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -477,7 +477,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

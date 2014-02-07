@@ -68,8 +68,8 @@ class ViewUIKMeans:
         
         self.fileName = None
         self.multipleFiles = False
-        self.openFileDirectory = "C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert"
-        self.centroidsFileDirectory = "C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert/Centroids"
+        self.openFileDirectory = "../gestures/Robert"
+        self.centroidsFileDirectory = "../gestures/Robert/Centroids/new/shape 24"
         self.app = None
         if kMeansClassifier == None:
             raise Exception("No kMeansClassifier, so go home")
@@ -116,8 +116,16 @@ class ViewUIKMeans:
     def setGestureTrigger(self, gesture):
         #print 'gesture : ', gesture
         #self.uiplot.scrollArea.setVertical(float(gesture))
-        self.rightPage.setText(str(gesture))
-        
+        if gesture == 5:
+            self.rightPage.moveCursor(QtGui.QTextCursor.Up)
+        if gesture == 0:
+            self.rightPage.moveCursor(QtGui.QTextCursor.Down)
+            #self.uiplot.rightPage_sa.verticalScrollBar(QtGui.QScrollBar.setSingleStep(10))
+            #vbar = self.uiplot.rightPage_sa.verticalScrollBar()
+            #vbar.setValue(10)
+        else:
+            pass#self.rightPage.setText('-')
+            
     def plotSignal(self):
 
         data = self.recorder.getTransformedData()
@@ -544,7 +552,7 @@ class ViewUIKMeans:
     
     def initializeKMeans(self):
         self.loadCentroids()
-        text=open("C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert/Centroids/shakespeare.kmeans").read()
+        text=open("../gestures/Robert/Centroids/shakespeare.kmeans").read()
         self.rightPage.setPlainText(text)
         
     
@@ -552,7 +560,7 @@ class ViewUIKMeans:
         #self.kMeansClassifier.startTraining
         if self.kmeansClusterCenters is None:
             #default
-            self.kmeansClusterCenters = np.asarray(np.loadtxt(str(self.fixpath("C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert/Centroids/cen_12N.kmeans")), delimiter=","))        
+            self.kmeansClusterCenters = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/cen_12N.kmeans")), delimiter=","))        
             self.kmeansClusterCenters = np.asarray(self.noiseArray)
         print self.kmeansClusterCenters.shape     
         self.kmeans = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters)
@@ -614,7 +622,7 @@ class ViewUIKMeans:
     def loadNoiseFile(self):
 
         print QtCore.QDir.currentPath()
-        self.fileName = QtGui.QFileDialog.getOpenFileNames(self.win_plot, "Load Noise File", "C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert/gesture_7", "*.kmeans")
+        self.fileName = QtGui.QFileDialog.getOpenFileNames(self.win_plot, "Load Noise File", "../gestures/Robert/gesture_7", "*.kmeans")
 
         paths = self.fileName
         if len(paths) == 0:
@@ -631,8 +639,9 @@ class ViewUIKMeans:
     
     
     def loadDefaultNoiseFile(self):
-        self.noiseArray = np.asarray(np.loadtxt(str(self.fixpath("C:/Users/Robert/git/ml_soundwave_doppler_effect/gestures/Robert/gesture_7/1391535140.kmeans")), delimiter=","))        
-        self.noiseArray = np.asarray(self.noiseArray)
+        pass
+        #self.noiseArray = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/gesture_7/1391535140.kmeans")), delimiter=","))        
+        #self.noiseArray = np.asarray(self.noiseArray)
        
        
     def reduceDimension(self):
@@ -657,12 +666,13 @@ class ViewUIKMeans:
                 if result is not None:
                     #print result.shape
                     result = np.asarray(result)
-                    result = result.reshape(result.shape[0]*result.shape[1])
+                    #xxx
+                    #result = result.reshape(result.shape[0]*result.shape[1])
 
                     self.learnArrayKMeans.append(result)
                     #print result
                 else:
-                    self.addLogText('dupa')
+                    self.addLogText('bad')
             self.learnArrayKMeans = np.asarray(self.learnArrayKMeans)
             
             self.addLogText('reduce dimensionality finished !')
@@ -766,7 +776,7 @@ class ViewUIKMeans:
         self.uiplot.scrollArea.setWidget(self.textEdit)
         
         self.rightPage = QtGui.QTextEdit()
-        self.rightPage.setFont(QtGui.QFont ("Courier", 200));
+        self.rightPage.setFont(QtGui.QFont ("Courier", 16));
         self.uiplot.rightPage_sa.setWidget(self.rightPage)
 
         # ## DISPLAY WINDOWS
