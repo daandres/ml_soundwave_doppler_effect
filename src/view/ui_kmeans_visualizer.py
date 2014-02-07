@@ -27,18 +27,9 @@ class ViewUIKMeans:
         self.kmeans_16N = None
         self.kmeansClusterCenters = None
         self.kmeansClusterCenters_16N = None
-        
+        self.arraySignal = np.array([]) 
         self.checkOnline = False
-       
-        self.toogleClass0 = False
-        self.toogleClass1 = False
-        self.toogleClass2 = False
-        self.toogleClass3 = False
-        self.toogleClass4 = False
-        self.toogleClass5 = False
-        self.toogleClass6 = False
-        self.toogleClass7 = False
-        
+
         self.idxLeft = 20
         self.idxRight = 44
 
@@ -127,7 +118,17 @@ class ViewUIKMeans:
             #vbar.setValue(10)
         else:
             pass#self.rightPage.setText('-')
-            
+    '''
+       
+    @pyqtSlot(np.array([]))       
+    def setCurveFromIClassifier(self, frame):
+        ys = frame[self.idxLeft:self.idxRight]
+        xs = self.xPoints[self.idxLeft:self.idxRight]
+        print '132132132'
+        self.curve_page_1.setData(xs, ys) 
+        self.uiplot.qwtPlot_page_1.replot()
+    '''  
+           
     def plotSignal(self):
 
         data = self.recorder.getTransformedData()
@@ -137,6 +138,11 @@ class ViewUIKMeans:
         
         ys = ys[self.idxLeft:self.idxRight]
         xs = self.xPoints[self.idxLeft:self.idxRight]
+        
+  
+        self.curve_page_1.setData(xs, ys) 
+        self.uiplot.qwtPlot_page_1.replot()
+        
         
         if not self.showRecords:
        
@@ -152,24 +158,8 @@ class ViewUIKMeans:
                 self.plot_id = 1
         
         if self.checkOnline:
-            #self.toogleForClass()
-              
-            #text = self.recorder.getGestureArray()
-            #self.textEdit.setText(text.tostring())
-            #self.textEdit.moveCursor(QtGui.QTextCursor.End)
-            text = np.array(['\ta\n','b\n','\tc\n'])
-            self.textEdit.setText(text.tostring())
+            pass
             
-   
-    def toogleForClass(self):
-        for x in xrange(8):
-            classBool = self.recorder.toogleClassList[x]
-            classButton = getattr(self.uiplot,'class%d_bt' %x)  
-            if classBool:
-                classButton.setStyleSheet(self.getButtonColor(x))
-            else:
-                classButton.setStyleSheet('QPushButton {color: black; background-color: grey; font: bold;}')
- 
             
     def getButtonColor(self, classNumber, button=True):
         startString = 'QPushButton {color: black; background-color:'
@@ -671,7 +661,7 @@ class ViewUIKMeans:
             arrayToReduce =  self.kmH.reshapeArray2DTo3D64(arrayToReduce) 
             self.learnArrayKMeans = []
             for gesture in arrayToReduce:
-                result = self.kmH.reduceDimensionality(gesture)
+                result = self.kmH.reduceDimensionality(gesture, std='cut')
                 if result is not None:
                     #print result.shape
                     result = np.asarray(result)
@@ -737,9 +727,14 @@ class ViewUIKMeans:
         self.curve_tab1 = Qwt.QwtPlotCurve()
         self.curve_2_tab1 = Qwt.QwtPlotCurve()
         
+        
+        
         self.win_plot.setGeometry(18, 33, 1366, 780)
         
-                
+        
+        self.curve_page_1 = Qwt.QwtPlotCurve()
+        self.curve_page_1.attach(self.uiplot.qwtPlot_page_1)       
+        self.uiplot.qwtPlot_page_1.setAxisScale(self.uiplot.qwtPlot_page_1.yLeft, -100, self.amplitude * 1000)
         plot = self.uiplot
         
         for i in range(1,33):
