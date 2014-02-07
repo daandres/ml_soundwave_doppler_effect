@@ -21,7 +21,7 @@ import numpy
 #gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_3/1387647860_zimmer_left.txt")
 #gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_4/1387647860_zimmer_left.txt")
 #gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_6/gesture_6_zimmer_1.txt")
-
+print "start read in"
 gestures = classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_2/1391437451.txt")
 gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_2/1391437809.txt")
 #gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Annalena/gesture_2/1391615397.txt")
@@ -40,6 +40,8 @@ gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/g
 gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_6/gesture_6_zimmer_3.txt")
 #gestures += classifier.trees.ProcessData.getTestData("../../../gestures/Daniel/gesture_6/gesture_6_zimmer_3.txt")
 
+print "read in"
+
 #for i in range(150,200):
 counter = 0
 for i in range(len(gestures)):
@@ -52,7 +54,8 @@ for i in range(len(gestures)):
     featureVector.append(shifts_left)
     featureVector.append(shifts_right)
     
-    featureVector.extend(Feature().featureOrderOfShifts(gestures[i], 2))
+    featureVector.append(Feature().featureOrderOfShifts(gestures[i]))
+    featureVector.append(Feature().featureConcurrentShifts(gestures[i], 2))
     featureVector.append(Feature().featureAmplitudes(gestures[i]))
     
     distance_contrary, distance_equal = Feature().shiftDistance(gestures[i])
@@ -62,8 +65,8 @@ for i in range(len(gestures)):
     
     gestures[i].featureVector = featureVector
     #print featureVector
-    if( featureVector[3] == 0):
-        counter += 1
+    #if( featureVector[3] == 0):
+    #    counter += 1
 
 #print 100. / len(gestures) * counter
     
@@ -73,18 +76,18 @@ data = []
 data2 = []
 for gesture in gestures:
     data.append(gesture.featureVector)
-    l = []
+    #l = []
     #l.extend(gesture.bins_left_filtered)
     #l.extend(gesture.bins_right_filtered)
     #l.extend(gesture.featureVector)
-    data2.append(l)
+    #data2.append(l)
 
 targets = []
 for class_ in [2,2,3,3,4,4,0,0,1,1,6,6]:
     for frameIndex in range(50):
         targets.append(class_)
 
-
+print "targets"
 #X_train, X_test, y_train, y_test = cross_validation.train_test_split(data2, targets, test_size=0.4, random_state=0)
 X_train, X_test, y_train, y_test = cross_validation.train_test_split(data, targets, test_size=0.4, random_state=0)
 
@@ -105,10 +108,16 @@ X_train, X_test, y_train, y_test = cross_validation.train_test_split(data, targe
         #result = clf.predict(X_test) == y_test
         #rightPredicts = len([x for x in result if x == True])
         #print i, ",", learning/10., ",", 100. / len(result) * rightPredicts
-for crit in ["gini", "entropy"]:
-    for i in range(1,100):
-        clf = RandomForestClassifier(n_estimators=i, criterion= crit)
-        clf.fit(X_train, y_train)
-        result = clf.predict(X_test) == y_test
-        rightPredicts = len([x for x in result if x == True])
-        print crit, ",", i, ",", 100. / len(result) * rightPredicts
+#for crit in ["gini", "entropy"]:
+#    for i in range(1,100):
+#        clf = RandomForestClassifier(n_estimators=i, criterion= crit)
+#        clf.fit(X_train, y_train)
+#        result = clf.predict(X_test) == y_test
+#        rightPredicts = len([x for x in result if x == True])
+#        print crit, ",", i, ",", 100. / len(result) * rightPredicts
+for i in range(23,24):
+    clf = GradientBoostingClassifier(n_estimators=i, learning_rate = 0.2, max_depth = 2)
+    clf.fit(X_train, y_train)
+    result = clf.predict(X_test) == y_test
+    rightPredicts = len([x for x in result if x == True])
+    print i, ",", 100. / len(result) * rightPredicts

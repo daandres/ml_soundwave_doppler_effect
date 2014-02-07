@@ -58,7 +58,7 @@ class Trees(IClassifier):
     def __init__(self, recorder=None, n_est=5):
         self.name = "trees"
         self.maxlen = 32
-        self.clf = GradientBoostingClassifier(n_estimators=50, max_depth=2, random_state=0)
+        self.clf = GradientBoostingClassifier(n_estimators=15, max_depth=2, learning_rate=0.1)
         self.data = []
         self.queue = deque()
         self.temp = deque()
@@ -99,7 +99,7 @@ class Trees(IClassifier):
     def classify(self, data):
         if(len(self.queue) == self.maxlen):
             gestures = []
-            gesture = classifier.trees.ProcessData.makeGesture(list(self.queue))
+            gesture = GestureModel(list(self.queue))
             gestures.append(gesture)
             processedData = self.__preProcess(gestures)
             self.temp.append(processedData)
@@ -110,8 +110,8 @@ class Trees(IClassifier):
                     recognizedGestures.extend(prediction)
                 result = numpy.argmax(numpy.bincount(recognizedGestures))
                 if(result != 6):
-                    #print "Result: ", result
-                    self.signal.newGesture.emit(result)
+                    print "Result: ", result
+                    #self.signal.newGesture.emit(result)
                 
                 self.temp.clear()
             self.queue.popleft()
@@ -147,7 +147,8 @@ class Trees(IClassifier):
             featureVector.append(shifts_left)
             featureVector.append(shifts_right)
             
-            featureVector.extend(Feature().featureOrderOfShifts(gestures[i], 2))
+            featureVector.append(Feature().featureOrderOfShifts(gestures[i]))
+            featureVector.append(Feature().featureConcurrentShifts(gestures[i], 2))
             featureVector.append(Feature().featureAmplitudes(gestures[i]))
             
             distance_contrary, distance_equal = Feature().shiftDistance(gestures[i])
