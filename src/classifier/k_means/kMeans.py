@@ -44,8 +44,8 @@ class KMeans(IClassifier):
     def startGui(self, recorder, callback):
         self.kmeansGUI = True
         self.app = ViewUIKMeans(self, self.getName, self.cSignal)
-        self.app.start()
-        callback()
+        code = self.app.start()
+        callback(code)
         
         
     def getName(self):

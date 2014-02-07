@@ -791,9 +791,6 @@ class ViewUIKMeans:
         # ## DISPLAY WINDOWS
         self.win_plot.show()
         code = self.app.exec_()
-        self.applicationClose(code)
-       
-           
-        #sys.exit(code)
+        return code
 
     
