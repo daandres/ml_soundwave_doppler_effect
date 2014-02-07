@@ -24,7 +24,9 @@ class ViewUIKMeans:
 
         self.kmH = None 
         self.kmeans = None
+        self.kmeans_16N = None
         self.kmeansClusterCenters = None
+        self.kmeansClusterCenters_16N = None
         
         self.checkOnline = False
        
@@ -414,7 +416,7 @@ class ViewUIKMeans:
         k = self.uiplot.kNumber_sb.value()
         if self.uiplot.useInitCentroids_cb.isChecked() and self.kmeansClusterCenters is not None:
             self.kmeans = cluster.KMeans(k,  max_iter=maxIterations, n_init=nInit, init=self.kmeansClusterCenters)
-            # test halber
+
             self.learnArrayKMeans = self.kmeansClusterCenters
         else:
             self.kmeans = cluster.KMeans(k,  max_iter=maxIterations, n_init=nInit)
@@ -492,7 +494,9 @@ class ViewUIKMeans:
                     self.kmeansClusterCenters = self.kmeans.cluster_centers_
                     print 'currDistance : ', currDistance
         print 'endeeee !!!' 
-        print disIdxList          
+        print disIdxList    
+        
+              
     def testKMeans(self):
         class_  = self.kmeans.predict(self.learnArrayKMeans)
         print class_
@@ -561,11 +565,16 @@ class ViewUIKMeans:
         if self.kmeansClusterCenters is None:
             #default
             self.kmeansClusterCenters = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/cen_12N.kmeans")), delimiter=","))        
-            self.kmeansClusterCenters = np.asarray(self.noiseArray)
         print self.kmeansClusterCenters.shape     
+        
         self.kmeans = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters)
         cluster_ = self.kmeans.fit_predict(self.kmeansClusterCenters)
-        self.kMeansClassifier.setKMeans(self.kmeans)
+        
+        self.kmeansClusterCenters_16N = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/new/shape 24/c_12346N_f24_s2_std1a_perfecto_upDown.kmeans")), delimiter=","))               
+        self.kmeans_16N = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters_16N)
+        cluster_ = self.kmeans_16N.fit_predict(self.kmeansClusterCenters_16N)
+        
+        self.kMeansClassifier.setKMeans(self.kmeans, self.kmeans_16N)
         self.recordByRecorder()
         self.checkOnline = not self.checkOnline
         self.kMeansClassifier.checkKMeansOnline()    
@@ -782,9 +791,6 @@ class ViewUIKMeans:
         # ## DISPLAY WINDOWS
         self.win_plot.show()
         code = self.app.exec_()
-        self.applicationClose(code)
-       
-           
-        #sys.exit(code)
+        return code
 
     
