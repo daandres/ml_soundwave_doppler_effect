@@ -116,7 +116,7 @@ class GestureApplication():
         if state == 1:
             try:
                 ''' Load HMM Configurationfile to Classifiy '''
-                self.loadModels('classifier/hmm/data/config.cfg')
+                self.loadModels('classifier/hmm/data/default_config.cfg')
             except Exception:
                 ''' Create HMM Model based on all existing Gesture datasets '''
                 self.trainAndSave()
@@ -129,8 +129,8 @@ class GestureApplication():
         obs, test = u.loadSplitData(gesture)
             
         gesture = Gesture(className)
-        print "### building " + str(className) + " ###"
-        print " training " + str(len(obs)) + ", testing " + str(len(test)) 
+        #print "### building " + str(className) + " ###"
+        #print " training " + str(len(obs)) + ", testing " + str(len(test)) 
         hmm, logprob = mu.buildModel(obs, test)
         gesture.setHMM(hmm)
         
