@@ -252,16 +252,10 @@ Die charakteristischen Daten der Geste \glqq \acl{DPO}\grqq\ ist in Abbildung~\r
 \end{figure}
 
 \paragraph*{Nothing}
-Um später Gesten live zu erkennen, muss auch definiert sein, wann keine Geste auftritt. In diesem Fall ist in Abbildung~\ref{fig:nothing} keine Frequenzverschiebung zu erkennen. Der Graph zeigt keinen Ausschlag.
-
-\begin{figure}[htbp] \centering
-\includegraphics[height=60mm]{trees/nothing.png}
-\caption{Keine Geste}
-\label{fig:nothing}
-\end{figure}
+Um später Gesten live zu erkennen, muss auch definiert sein, welche Form die Daten haben, wenn keine Geste auftritt. In diesem Fall ist keine Frequenzverschiebung erkennbar, der Graph bleibt konstant bei einem Wert. 
 
 \subsubsection{??????}
-Durch die Filterung und Glättung können nun die einzelnen Frequenzverschiebungen eindeutig identifiziert werden. Zudem ist in Abschnitt~\ref{charakteristiken} beschrieben, welche typische Gestalten der Graph für die verschiedenen Gesten annimmt. So lassen sich durch die Anordnung, Ausprägung und Aufkommen der Frequenzverschiebungen die unterschiedlichen Charakteristiken der einzelnen Gesten erkennen. Wie jedoch auch ersichtlich wurde, ähneln sich einige Gesten sehr stark, sodass eine Unterscheidung zum Teil auch mit bloßem Auge schwer fällt. Hier kommt die Merkmalsextraktion zum Tragen, denn sie soll unterstützen feine Unterschiede besser zu erkennen, indem sie stärker gewichtet werden. Das Ziel der Merkmalsextraktion ist es, aus den 32 Datenpunkten weitere eindeutige Merkmale herauszuarbeiten um schließlich einen Merkmalsvektor mit überschaubarer Anzahl an Merkmalen zu generieren. Um dies zu realisieren, wurden folgende Eigenschaften der einzelnen Gesten untersucht:
+Durch die Filterung und Glättung können nun die einzelnen Frequenzverschiebungen eindeutig identifiziert werden. Zudem ist in Abschnitt~\ref{charakteristiken} beschrieben, welche typische Gestalten der Graph für die verschiedenen Gesten annimmt. So lassen sich durch die Anordnung, Ausprägung und Aufkommen der Frequenzverschiebungen die unterschiedlichen Charakteristiken der einzelnen Gesten erkennen. Wie jedoch auch ersichtlich wurde, ähneln sich einige Gesten sehr stark, sodass eine Unterscheidung zum Teil auch mit bloßem Auge schwer fällt. Hier kommt die Merkmalsextraktion zum Tragen, denn sie soll unterstützen, feine Unterschiede besser zu erkennen, indem sie stärker gewichtet werden. Das Ziel der Merkmalsextraktion ist es, aus den 32 Datenpunkten weitere eindeutige Merkmale herauszuarbeiten um schließlich einen Merkmalsvektor mit überschaubarer Anzahl an Merkmalen zu generieren. Um dies zu realisieren, wurden folgende Eigenschaften der einzelnen Gesten untersucht:
 
 \begin{itemize} 
 \item Anzahl der Frequenzverschiebungen
@@ -273,35 +267,45 @@ Durch die Filterung und Glättung können nun die einzelnen Frequenzverschiebung
 \paragraph*{Anzahl der Frequenzverschiebungen}
 Die Anzahl der Frequenzverschiebung sagt bereits einiges über die Geste aus, wobei auch wichtig ist, ob die Frequenzverschiebungen im höheren oder niedrigeren Frequenzbereich liegen. Wie bereits in Abschnitt~\ref{sect:Trees_Datenaufbereitung} erwähnt, erzeugt eine Bewegung auf die Schallquelle zu eine Frequenzverschiebung auf der rechten Seite, also eine Ausdehnung in Richtung der höheren Frequenzen. Durch das Bewegen von der Schallquelle weg, erfolgt eine Frequenzverschiebung zur linken Seite, bzw. in Richtung der niedrigeren Frequenzen. 
 
-Ein einfacher \glqq \acl{SPO}\grqq\ erzeugt deshalb im optimalen Fall eine Frequenzverschiebung auf der rechten Seite des Peaks. Wird die Hand wieder zurückgezogen, tritt auch eine Frequenzverschiebung auf der linken Seite auf. Klar davon abgegrenzt werden kann beispielsweise die Geste \glqq \acl{DPO}\grqq. Diese erzeugt mit dem Zurückziehen der Hand nach dem zweiten Push zwei Frequenzverschiebungen auf der linken und zwei auf der rechten Seite.
+Ein einfacher \glqq \acl{SPO}\grqq\ erzeugt deshalb im optimalen Fall eine Frequenzverschiebung auf der rechten Seite des Peaks. Wird die Hand wieder zurückgezogen, tritt auch eine Frequenzverschiebung auf der linken Seite auf. Klar davon abgegrenzt werden kann beispielsweise die Geste \glqq \acl{DPO}\grqq. Diese erzeugt mit dem Zurückziehen der Hand nach dem zweiten Push zwei Frequenzverschiebungen auf der linken und zwei auf der rechten Seite. Die Anzahl der Frequenzen ist somit zunächst wichtig zur Unterscheidung zwischen \glqq kurzen\grqq\ Gesten aus im optimalen Fall zwei Verschiebungen und \glqq längeren\grqq\ Gesten mit potentiell vier Verschiebungen. 
 
 \paragraph*{Zeitliche Abfolge der Frequenzverschiebungen}
-Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq \acl{SPO}\grqq\ erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die in Abbildung~\ref{fig:contrary} dargestellte Geste \glqq \acl{OT}\grqq beschreibt dagegen die gleichzeitige gegensätzliche Bewegungen in Richtung der Schallquelle und von diesem weg. Somit tritt in diesem Fall gleichzeitig je eine Verschiebung nach rechts und links auf. 
+Ein weiteres Merkmal einer Geste ist die zeitliche Abfolge der Frequenzverschiebungen. Ein \glqq \acl{SPO}\grqq\ erzeugt zeitlich hintereinander erst eine Verschiebung rechts und dann eine Verschiebung links. Die in Abbildung~\ref{fig:double_push} dargestellte Geste \glqq \acl{DPO}\grqq generiert dagegen ein Muster wie zwei \acl{SPO} hintereinander. Somit ist es zur Differenzierung hilfreich zu wissen, welche Verschiebungsrichtungen nacheinander auftreten.
 
 \paragraph*{Anzahl der gleichzeitigen Frequenzverschiebungen}
-Die beiden Gesten \glqq \acl{DPO}\grqq\ und \glqq \acl{OT}\grqq\ gehören zu den Gesten, die mehr Frequenzverschiebungen erzeugen als die häufige erst Rechts- dann Linksverschiebung. Dadurch sind sie sich ähnlich. Im optimalen Fall generiert Geste \glqq \acl{OT}\grqq\ gleichzeitige Frequenzverschiebungen auf beiden Seiten. Um die Anzahl der Falschklassifikationen zu verringern, werden die gleichzeitigen Frequenzverschiebungen gezählt und in den Merkmalsvektor aufgenommen. So wird die das Merkmal der Gleichzeitigkeit verstärkt.
+Die beiden Gesten \glqq \acl{DPO}\grqq\ und \glqq \acl{OT}\grqq\ gehören zu den Gesten, die mehr Frequenzverschiebungen erzeugen als die häufige erst Rechts- dann Linksverschiebung. Dadurch sind sie sich ähnlich. Im optimalen Fall generiert Geste \glqq \acl{OT}\grqq\ gleichzeitige Frequenzverschiebungen auf beiden Seiten. Die Anzahl der Vorkommen von gleichzeitigen Frequenzverschiebungen unterstützt die Abgrenzung von Geste \glqq \acl{OT}\grqq\ zu den anderen Gesten. Bei energischer Ausführung der Geste \acl{TBO} kann es ebenfalls zu gleichzeitigen Rechts-Links-Verschiebungen kommen, wobei auch hier deren Anzahl als Kriterium zur Abgrenzung von \acl{SPO} verstärkend wirkt.
 
 \paragraph*{Amplitudenunterschiede zwischen den Frequenzverschiebungen}
-Die Gesten \glqq \acl{SPO}\grqq\, \glqq \acl{TBO}\grqq\ und \glqq \acl{RLO}\grqq\ unterscheiden sich in der zeitlichen Abfolge der Verschiebungen nicht. In beiden Fällen tritt erst eine Verschiebung rechts, dann links auf. Jedoch unterscheiden sich die Verschiebungen an sich. Bei \glqq \acl{SPO}\grqq\ unterscheiden sich die beiden Verschiebungen im optimalen Fall nur dadurch, dass die eine Verschiebung links und die andere rechts vom Peak auftritt. Bei \glqq \acl{RLO}\grqq\ dagegen ist die Amplitude der zweiten Verschiebung, links vom Peak, schwächer als die andere.
+Die Gesten \glqq \acl{SPO}\grqq\, \glqq \acl{TBO}\grqq\ und \glqq \acl{RLO}\grqq\ unterscheiden sich in der zeitlichen Abfolge der Verschiebungen nicht. In allen Fällen tritt erst eine Verschiebung rechts, dann links auf. Jedoch unterscheiden sich die Verschiebungen an sich. Bei \glqq \acl{SPO}\grqq\ unterscheiden sich die beiden Verschiebungen im optimalen Fall nur dadurch, dass die eine Verschiebung links und die andere rechts vom Peak auftritt. Bei \glqq \acl{RLO}\grqq\  und \acl{TBO} dagegen ist die Amplitude der zweiten Verschiebung, links vom Peak, schwächer als die erste. Somit dient die Berechnung der Differenz der Amplituden von aufeinanderfolgenden Rechts-Links-Verschiebungen als Merkmal zur Unterscheidung dieser drei Gesten.
 
 
 \subsection{Implementierung}
 
-Für die Datenaufbereitung und Merkmalsextraktion wurden in den Modulen GestureModel.py und Feature.py verschiedene Datentransformationen vorgenommen. Für die Klassifikation wurde auf Klassen und Methoden des Moduls \textit{sklearn.ensemble}~\cite{sklearn.ensemble} der Bibliothek \textit{sklearn}~\cite{sklearn} zurückgegriffen.
+Für die Datenaufbereitung und Merkmalsextraktion wurden in den Modulen GestureModel.py und Feature.py verschiedene Datentransformationen vorgenommen. 
 
-. Datenaufbereitung
+Zunächst ... (Datenaufbereitung)
+Nachdem Einlesen der Eingabedaten wird aus jedem (32, 64) Datensatz ein \texttt{GestureModel} erstellt. Bei der Erstellung werden die Daten direkt wie in \autoref{sect:Trees_Datenaufbereitung} beschrieben gefiltert und geglättet, sowie anschließend transformiert. Ein \texttt{GestureModel} Objekt enthält demnach nur noch eine zweidimensionale Liste der Anzahl an Frequenzpunkten über dem Schwellwert. Des weiteren enthält das \texttt{GestureModel} Objekt einen Merkmalsvektor, welcher einzelne extrahierte Merkmale enthält. Das Modul \textit{Feature.py} stellt einige Funktionen zur Merkmalsextraktion bereit. In Abschnitt~\ref{subsec:featureextraction} sind die erkennbaren Charakteristiken der einzelnen Gesten und auch das Problem der Ähnlichkeit einiger Charakteristiken beschrieben. 
+Der Merkmalsvektor setzt sich folgendermaßen zusammen:
+$$ featureVector = [sl, sr, s, o, c, a, dc, de] $$
+\begin{align*}
+ featureVector = [sl, sr, s, o, c, a, dc, de]\\
+ && sl &= \text{Anzahl Linksverschiebungen} \\
+ && sr &= \text{Anzahl Rechtsverschiebungen} \\
+ && s &= \text{Anzahl aller Verschiebungen} \\
+ && o &= \text{Reihenfolge der Verschiebungen} \\
+ && c &= \text{Anzahl der gleichzeitigen Verschiebungen} \\
+ && a &= \text{Differenz der Amplituden} \\
+ && dc &= \text{Mittel der Abstände zwischen R-L- oder L-R-Verschiebungen} \\
+ && de &= \text{Mittel der Abstände zwischen R-R- oder L-L-Verschiebungen}
+\end{align*}
 
-. Merkmalsextraktion
+Anzahl der linken Frequenzverschiebungen
 
-Das Modul \textit{Feature.py} stellt einige Funktionen zur Merkmalsextraktion bereit. In Abschnitt~\ref{subsec:featureextraction} sind die erkennbaren Charakteristiken der einzelnen Gesten beschrieben und auch das Problem der Ähnlichkeit einiger Charakteristiken beschrieben. 
+Für die Klassifikation wurde auf Klassen und Methoden des Moduls \textit{sklearn.ensemble}~\cite{sklearn.ensemble} der Bibliothek \textit{sklearn}~\cite{sklearn} zurückgegriffen.
+
+
 
 \subsection{Evaluation}
 
 \subsection{Fazit}
 
-Die Klassifikation der Gesten anhand der extrahierten Merkmale lässt sich gut mit Entscheidungsbäumen realisieren, da sie im Vergleich zu anderen Klassifikatoren mit wenigen Trainingsdaten auskommen und sich daher relativ schnell trainieren lassen.
-Entscheidenden Einfluss auf die Richtigkeit der Klassifikation haben zum einen die Qualität der aufgenommenen Trainingsdaten und zum anderen die gleichförmig und korrekt ausgeführten Gesten bei der Live-Klassifikation.
-Mit geeigneter Hardware sowie Gesten, aus denen sich gut unterscheidbare Charakteristiken extrahieren lassen, können mit Entscheidungsbäumen bzw. Ensemble Learning Verfahren gute Ergebnisse erzielt werden.
-
-
-%Obwohl Boosing-Verfahren gerade für die Klassifikation von Daten mit ähnlichen Merkmalen gut geeignet sind, ließen sich insbesondere die Gesten 0 und 3 nur schwer unterscheiden. 
