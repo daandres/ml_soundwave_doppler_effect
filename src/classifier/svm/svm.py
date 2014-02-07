@@ -163,12 +163,12 @@ class SVM(IClassifier):
                             ''' get first 16 recordingframes which contain relevant gesture information '''
                             ''' if less than 16, append frames with zeros '''
                             current_frameset = [self.preprocess_frame(frame, self.ref_frequency_frame) for frame in gesture_framesets[frameset_nr] if np.amax(self.preprocess_frame(frame, self.ref_frequency_frame)) > 0]
-                            while len(current_frameset) < self.framerange/2:
+                            while len(current_frameset) < self.framerange:
                                 current_frameset.append(np.zeros(self.wanted_frames))
                             
                             ''' slice to two lists (even/odd) and sum every pair; reshape to 1d array '''
-                            relevant_frames = np.asarray(list(np.asarray(current_frameset[:self.framerange/2:2] ) + np.asarray(current_frameset[1:self.framerange/2:2])))
-                            normalised_gesture_frame = relevant_frames.reshape(self.wanted_frames*self.framerange/4,)
+                            relevant_frames = np.asarray(list(np.asarray(current_frameset[:self.framerange:2] ) + np.asarray(current_frameset[1:self.framerange:2])))
+                            normalised_gesture_frame = relevant_frames.reshape(self.wanted_frames*self.framerange/2,)
                         
                         # old second preprocess step
                         else:
