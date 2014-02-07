@@ -178,7 +178,7 @@ Gängige Kernfunktionen sind:
 
 \newpage
 
-\subsubsection{Klassifikation von merheren Klassen}
+\subsubsection{Klassifikation von mehreren Klassen}
 
 Da die SVM als binärer Klassifikator entwickelt wurde, müssen für eine Klassifikation von mehr als zwei Klassen Strategien entwickelt werden, um das Prinzip der SVM zu erweitern. 
 Ein Verfahren ist die "{}Einer gegen den Rest"{}-Klassifikation. 
@@ -187,7 +187,7 @@ Für jede SVM wird eine Klasse separiert, die anderen Klassen werden nicht unter
 Die Vorraussage eines Objektes ergibt sich aus der Auswertung aller SVMs. 
 Es ist nun möglich, dass mehrere SVMs eine positive Klassenzuordnung feststellen nicht die Restklasse klassifizieren. 
 In diesem Fall entscheidet sich das "{}Einer gegen den Rest"{}-Verfahren für die Klasse, dessen SVM die höchste Ausgabe erzeugt (winner-takes-all). 
-Als höchstes Ergebnis wird der weiteste Abstand zur Trennhyperebene angenommen. 
+Als höchstes Ergebnis wird der größte Abstand zur Trennhyperebene angenommen. 
 Offensichtlich erhöht sich die Laufzeit der Trainingsphase mit der Anzahl der Klassen $|\mathcal{C}|$. 
 Glücklicherweise beeinflusst das nicht die Laufzeitanalyse in der $\mathcal{O}$-Notation (\ref{eq:svm_winner_runtime}). 
 
@@ -203,11 +203,12 @@ Dies ermöglicht uns eine echtzeitnahe Gestenerkennung.
 
 \newpage 
 \subsection{Anwendung auf das Projekt}
-\begin{itemize}
-\item{normierung}
-\item{quantisierung}
-\item{transformation}
-\end{itemize}
+Für das Projekt wird eine \ac{SVM} trainiert, die mit nur geringfügig den Standardwerten des verwendeten Python-Moduls abweichenden Parametern trainiert wird. 
+Für das Training erwartet die \ac{SVM} neben einem Eingabevektor mit 400 Werten noch die dazugehörige Klasse; die Länge des Eingabevektors lässt sich allerdings über einen entsprechenden Parameter in einer separaten Konfigurationsdatei noch halbieren.
+Während der Live-Klassifikation von Gesten beziehungsweise deren Eingabevektoren wird die trainierte \ac{SVM} für die Erkennung verwendet.
+Natürlich müssen diese Eingabevektoren in ihrer Dimension den Trainingsdaten entsprechen.
+
+Der nächste Abschnitt widmet sich der Datenaufbereitung, insbesondere der Reduzierung der Dimension eines Eingabevektors und der entsprechenden Vorverarbeitung.
 
 \subsubsection{Datenaufbereitung}\label{sec:svm_data} 
 In \autoref{sec:intro} wurde die Aufnahme und die generelle Vorverarbeitung der Daten bereits erläutert, bevor diese an die entsprechenden Klassifikatoren weitergeleitet werden.
@@ -225,6 +226,12 @@ Im Anschluss erfolgt die Transformation in ein eindimensionales Array mit insges
 Gegenüber der ursprünglichen Gesamtanzahl von 2048 Werten pro Datensatz wurde mittels der Vorverarbeitung die Dimension eines Eingabevektors um den Faktor 5 verringert.
 Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite Wert der Einheitsgeste für das Training verwendet werden soll.
 
+\begin{figure*}[htbp] \centering
+    \includegraphics[width=0.65\textwidth]{svm/svm_preprocessing_steps.png}
+    \caption{Vorverarbeitungsschritte}
+    \label{fig:svm_preprocessing_steps}
+\end{figure*}
+
 \paragraph{Vorverarbeitung}\label{sec:svm_preprocess}$\;$ \\\\
 Die Reduzierung der Eingabevektordimension und die vorverarbeitenden Schritte sind zwei notwendige Handlungen, die sich in der Implementierung nicht trennen lassen, allerdings lassen sie sich in ihrer Beschreibung gut separieren.
 Unmittelbar nach dem ersten Reduzierungsschritt wird jeder einzelne Frame normalisiert und die Referenzfrequenz subtrahiert.
@@ -232,11 +239,7 @@ Da trotz Subtraktion der Referenzfrequenz teilweise noch sehr feines Rauschen in
 Die ersten 20 Frames, die relevante Informationen enthalten (Frame-Maximalwert > 0) werden für den dritten Reduzierungsschritt verwendet.
 Optional kann eine eindimensionale Gauß'sche Filterung zur Glättung der Werte als abschließender Vorverarbeitungsschritt angewandt werden.
 
-\begin{figure*}[htbp] \centering
-    \includegraphics[width=0.8\textwidth]{svm/svm_preprocessing_steps.png}
-    \caption{Vorverarbeitungsschritte}
-    \label{fig:svm_preprocessing_steps}
-\end{figure*}
+
 
 
 Die Klassifikatoren erhalten dabei jeweils einzelne Frames zu je 64 Werten, die sich innerhab des Frequenzbereichs um die Referenzfrequenz von $18\text{,}5\text{ kHz}$ befinden.
