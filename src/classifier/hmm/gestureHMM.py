@@ -45,8 +45,8 @@ class GestureHMM(GMMHMM):
                  startprob_prior=None, transmat_prior=None,
                  algorithm="viterbi", gmms=None, covariance_type='diag',
                  covars_prior=1e-2, random_state=None, n_iter=10, thresh=1e-2,
-                 params=string.ascii_letters,
-                 init_params=string.ascii_letters):
+                 params="",
+                 init_params=""):
 
         
 #         if random_state == None:
