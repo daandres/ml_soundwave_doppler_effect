@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import classifier.trees.ProcessData
-
+'''
+This class reads raw training data from local files and provide data and targets
+'''
 class TrainingData(object):
 
     def __init__(self):
@@ -21,7 +23,7 @@ class TrainingData(object):
         self.targets = []
        
         for class_ in [2,2,3,3,4,4,1,1,6,6]:
-            for frameIndex in range(50):
+            for _ in range(50):
                 self.targets.append(class_)
        
     def getRawData(self):
