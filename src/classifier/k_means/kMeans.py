@@ -81,7 +81,7 @@ class KMeans(IClassifier):
                 self.bufferArray[47] = self.kmH.normalizeSignalLevelSecond(data)
                 if self.checkOnline:
                     # es hal bei 16 staat 24 funktionietrt ?!?!?!?!
-                    result = self.kmH.segmentOneHandGesture(self.bufferArray, outArrayLength=24, leftMargin=8, oneSecPeak=True)
+                    result = self.kmH.segmentOneHandGesture(self.bufferArray, outArrayLength=24, leftMargin=8, oneSecPeak=False)
                     #print np.asarray(result).shape
                     if result is not None:
                         self.firstNoneResult = True
