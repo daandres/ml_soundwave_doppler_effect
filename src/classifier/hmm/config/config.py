@@ -1,4 +1,4 @@
-n_tries = 10
+n_tries = 1
 
 covariance_type=['tied'] #String describing the type of covariance parameters used by the model. Must be one of 'spherical', 'tied', 'diag', 'full'. 
 algorithm=['viterbi']#, 'map']
@@ -7,8 +7,8 @@ n_iter=5 # Number of iterations to perform.
 
 covariance_type_gmm='tied'
 n_iter_gmm=10
-n_components_gmm=4
+n_components_gmm=2
 n_mix=n_components
 n_init_gmm = 1
 algorithm_gmm='viterbi'
-logprobBound = -200
+logprobBound = -100
