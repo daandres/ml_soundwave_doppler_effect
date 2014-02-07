@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 import classifier.hmm.config.config as c
 
 from classifier.hmm.gestureGMM import GestureGMM
@@ -50,10 +51,28 @@ class GMM_Util():
         n_frames = len(data[0])
         cData = self._convertData(data)
         for i in range(n_frames):
-            gmm = GestureGMM(self.n_components, covariance_type=self.covariance_type, init_params='wmc', n_iter=self.n_iter, n_init=self.n_init)
-            gmm.fit(cData[i])
-            self._gmms.append(gmm)
+            self._gmms.append(self._train(cData[i]))
         return self._gmms
+
+    def _averageScore(self, gmm, test):
+        return np.average(gmm.score(test))
+
+    def _train(self, data):
+        logprob = -sys.maxint - 1
+        gmm = None
+        i = 0
+        while logprob < c.logprobBound_gmm:
+            g = GestureGMM(self.n_components, covariance_type=self.covariance_type, init_params='', n_iter=self.n_iter, n_init=self.n_init)
+            g.fit(data)
+            l = self._averageScore(g, data)
+            if 0 > l > logprob:
+                logprob = l
+                gmm = g
+            i += 1
+            if i >= c.n_tries_gmm:
+                break
+        return gmm
+        
 
     def testGmms(self, data):
         '''
