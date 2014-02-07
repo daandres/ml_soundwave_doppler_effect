@@ -289,10 +289,17 @@ Die Gesten \glqq \acl{SPO}\grqq\, \glqq \acl{TBO}\grqq\ und \glqq \acl{RLO}\grqq
 
 Für die Datenaufbereitung und Merkmalsextraktion wurden in den Modulen GestureModel.py und Feature.py verschiedene Datentransformationen vorgenommen. Für die Klassifikation wurde auf Klassen und Methoden des Moduls \textit{sklearn.ensemble}~\cite{sklearn.ensemble} der Bibliothek \textit{sklearn}~\cite{sklearn} zurückgegriffen.
 
->> Datenaufbereitung
->> Merkmalsextraktion
+. Datenaufbereitung
+
+. Merkmalsextraktion
 
 \subsection{Evaluation}
 
 \subsection{Fazit}
 
+Die Klassifikation der Gesten anhand der extrahierten Merkmale lässt sich gut mit Entscheidungsbäumen realisieren, da sie im Vergleich zu anderen Klassifikatoren mit wenigen Trainingsdaten auskommen und sich daher relativ schnell trainieren lassen.
+Entscheidenden Einfluss auf die Richtigkeit der Klassifikation haben zum einen die Qualität der aufgenommenen Trainingsdaten und zum anderen die gleichförmig und korrekt ausgeführten Gesten bei der Live-Klassifikation.
+Mit geeigneter Hardware sowie Gesten, aus denen sich gut unterscheidbare Charakteristiken extrahieren lassen, können mit Entscheidungsbäumen bzw. Ensemble Learning Verfahren gute Ergebnisse erzielt werden.
+
+
+%Obwohl Boosing-Verfahren gerade für die Klassifikation von Daten mit ähnlichen Merkmalen gut geeignet sind, ließen sich insbesondere die Gesten 0 und 3 nur schwer unterscheiden. 
