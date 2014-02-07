@@ -52,6 +52,19 @@ softmax&23,57\%&18,70\%&16,25\%\\\hline
 \label{tab:backproptests}
 \end{table}
 
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Rausch-} & keine & \textless 0,0125 & \textless 0,025\\
+\textbf{entfernung}&&&\\
+ \hline
+\textbf{Fehlerrate}&31,83\%&47,87\%&57,59\%\\\hline
+\end{tabular} 
+\caption[Tests für Rauschentfernung]{Tests um den Einfluss von Rauschentfernung zu untersuchen. Das Trainingsverfahren ist \texttt{RProp}. Die Anzahl der LSTM-Blöcke ist 16. Iterationen 100.}
+\label{tab:noiseremovingtests}
+\end{table}
+
 \begin{sidewaystable}[h]
 \centering
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
@@ -91,7 +104,7 @@ softmax&23,57\%&18,70\%&16,25\%\\\hline
   & & &18&31,85\%&30,99\%&30,34\%&28,71\%&28,91\%&27,95\%&\\
 \hline
 \end{tabular} 
-\caption[Tests für Daten und LSTM-Netz]{Tests um Parameter für Datenvorverarbeitung und LSTM-Netz zu finden. Werte geben Fehlerrate des Netzwerks an. Das Trainigsverfahren ist \texttt{RProp}. Outputlayerart ist \texttt{Softmax}. }
+\caption[Tests für Daten und LSTM-Netz]{Tests um Parameter für Datenvorverarbeitung und LSTM-Netz zu finden. Werte geben Fehlerrate des Netzwerks an. Das Trainigsverfahren ist \texttt{RProp}. Outputlayerart ist \texttt{Softmax}. ~3700 Beispielgesten.}
 \label{tab:inputtests}
 \end{sidewaystable}
 

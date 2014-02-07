@@ -1,3 +1,5 @@
+#angepasster Beispielcode von http://www.swharden.com/blog/2013-05-09-realtime-fft-audio-visualization-with-python/
+
 import matplotlib
 from numpy.lib.utils import deprecate
 matplotlib.use('TkAgg')  # <-- THIS MAKES IT FAST!

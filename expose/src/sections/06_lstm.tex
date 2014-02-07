@@ -22,14 +22,14 @@ werden bestimmte Erinnerungen, Gefühle, Aktionen oder anderes erlebt und
 ausgeführt. Jedoch sind sie nicht direkt an ein bestimmtes Ereignis geknüpft,
 sondern wurden durch verschiedene Erfahrungen verallgemeinert, um so
 verschiedenen Situationen gut verarbeiten zu können.
-
+ 
 \paragraph{Modelle von Neuronen und Synapsen}
 Im Bereich des maschinellen Lernen wird versucht die Funktionsweise eines
 Gehirns bzw. Netzes aus Neuronen und Synapsen nachzubilden. Dies wird durch
 vereinfachte Modelle von Neuronen und Synapsen erreicht. Ein einfaches Modell
 wird hier als Grundlage verwendet. Es ist das Modell von McCulloch und Pitts von
-1943 (vgl. \cite{Mcc43}) und modelliert ein Neuron mit $n$-vielen Eingabewerten
-($x_1,\ldots,x_n$) und einem Ausgabewert $y$. Die Eingabewerte entsprechen der
+1943 (vgl. \cite{Mcc43}) und modelliert ein Neuron mit $\bf n$-vielen Eingabewerten
+($\bf x_1,\ldots,x_n$) und einem Ausgabewert $\bf y$. Die Eingabewerte entsprechen der
 Aktivierung eines Vorgängerneurons und der Ausgabewert der Aktivierung des
 betrachteten Neurons.
 \begin{figure}[htbp]
@@ -42,7 +42,7 @@ Die \autoref{fig:neuron} zeigt den Aufbau eines solchen Neurons. Die Eingaben
 werden dabei zuerst im \textit{Addierer} summiert, eine Schwellwertfunktion (bzw.
 allgemeiner eine Aktivierungsfunktion) bestimmt dann mit der Summe den
 Ausgabewert (die Aktivierung) des Neurons. Des Weiteren werden auch die Synapsen
-nachgebildet in dem jeder Eingabewert bei der Summierung individuell mit $w_i$
+nachgebildet in dem jeder Eingabewert bei der Summierung individuell mit $\bf w_i$
 gewichtet wird. Die Gewichte entsprechen den unterschiedlich stark ausgeprägten
 Synapsen.
 Das klassische Modell erlaubt nur binäre Ein- und Ausgaben, dies kann jedoch auf
@@ -53,7 +53,7 @@ auch negative Werte (Hemmungen) zuzulassen.
 Einzelne Neuronen können allerdings kein Gehirn nachbilden. Aus diesem Grund ist
 die Kombination mehrerer Neuronen zu einem neuronalen Netz nötig. Im einfachsten
 Fall entsteht dabei ein \textit{Perzeptron} (vgl.
-\cite{rosenblatt58a,1165576}). Es werden $n$-viele Neuronen verwendet. Alle
+\cite{rosenblatt58a,1165576}). Es werden $\bf n$-viele Neuronen verwendet. Alle
 Eingaben werden von allen Neuronen verarbeitet und jedes Neuron hat eine eigene
 Aktivierung. Die Gewichte (Synapsen) sind individuell für jedes Neuron. Die
 Ausgaben ergeben den Ausgabevektor $\bf{y}$ des Netzwerkes. Um komplexere
@@ -65,7 +65,7 @@ einen Perzeptrons (ein Layer) die Eingabe des nächsten Perzeptrons ist (vgl.
 \begin{figure}[htbp]
     \centering
    \includegraphics[height=50mm]{lstm/mlp}
-\caption{MLP-Netz}
+\caption[\acs{MLP}-Netz]{MLP-Netz mit 3 Eingaben, 2 versteckten Neuronen und 2 Ausgabeneuronen}
 \label{fig:mlp}
 \end{figure}
 Lediglich die Ausgabe des letzten Perzeptrons ist die Ausgabe des Netzwerks.
@@ -114,7 +114,7 @@ Arten verwendet, z.B. lineare, sigmoidale oder Softmax-Layer.
 \begin{figure*}[htfp]
 	\begin{center}
 	\includegraphics[width=0.8\textwidth]{lstm/lstm_block_formulas}
-	\caption[\acs{LSTM} Block]{\acs{LSTM} Block mit einer Memoryzelle ohne
+	\caption[\acs{LSTM} Block]{\acs{LSTM} Block mit einer Memoryzelle und Forgetgate,  ohne
 	Peepholes} \tiny Quelle: \cite{Gers2002b}
 	\label{fig:lstm_block}
 	\end{center}
@@ -125,14 +125,14 @@ nach \cite{Gers2002b}. Der Block besteht dabei aus mehreren Komponenten. Diese
 werden anhand ihrer Berechnung bei einem \textit{vorwärts} Durchlauf der Daten
 erläutert.
 \begin{itemize}
-	\item Eingabewerte $y_m(t-1)$
-	\item Zelleingang $z_c$ berechnet durch \autoref{eq_lstm_in}
-	\item Inputgate $z_{in}$ berechnet nach \autoref{eq_lstm_gate}
-	\item Forgetgate $z_\varphi$ berechnet durch \autoref{eq_lstm_gate}
-	\item Memoryzelle mit dem aktuellen Wert $s_c$ berechnet durch
+	\item Eingabewerte $\bf y_m(t-1)$
+	\item Zelleingang $\bf z_c$ berechnet durch \autoref{eq_lstm_in}
+	\item Inputgate $\bf z_{in}$ berechnet nach \autoref{eq_lstm_gate}
+	\item Forgetgate $\bf z_\varphi$ berechnet durch \autoref{eq_lstm_gate}
+	\item Memoryzelle mit dem aktuellen Wert $\bf s_c$ berechnet durch
 	\autoref{eq_lstm_cs}
-	\item Outputgate $z_{out}$ berechnet nach \autoref{eq_lstm_gate}
-	\item Ausgabewert $y_m(t)$ berechnet durch \autoref{eq_lstm_out}
+	\item Outputgate $\bf z_{out}$ berechnet nach \autoref{eq_lstm_gate}
+	\item Ausgabewert $\bf y_m(t)$ berechnet durch \autoref{eq_lstm_out}
 \end{itemize}
 
 % Inputs
@@ -179,8 +179,8 @@ Teil, zweiter Summand), ob neue Werte die Memoryzelle erreichen, das Forgetgate
 bleibt oder nicht berücksichtigt wird und das Outputgate (\autoref{eq_lstm_out})
 wann ein Zustand der Memoryzelle ausgegeben wird. Grundsätzlich hat jeder
 Eingang in den \ac{LSTM}-Block inklusive der Eingänge der Gates ein eigenes
-Gewicht. Diese sind mit $w_{i,m}$ benannt, wobei $i$ der Eingang oder das Gate
-repräsentiert und $m$ der Index über die Eingabedimension ist. Daher hat ein
+Gewicht. Diese sind mit $\bf w_{i,m}$ benannt, wobei $\bf i$ der Eingang oder das Gate
+repräsentiert und $\bf m$ der Index über die Eingabedimension ist. Daher hat ein
 \ac{LSTM}-Block $4\cdot Eingabedimension$ viele Gewichte. 
 
 \acp{LSTM} werden durch ihre autorekurrente Verbindung der Memoryzelle zu
@@ -188,7 +188,7 @@ repräsentiert und $m$ der Index über die Eingabedimension ist. Daher hat ein
 Fehler nicht vor in die komplette Vergangenheit zurück propagiert. Erreicht wird
 das durch ein Gewicht der Verbindung von $1.0$ (\autoref{eq_lstm_cs}). Das zuvor
 beschriebene Forgetgate nimmt Einfluss auf dieses Gewicht. Soll der Wert
-$s_c(t-1)$ in der Berechnung nicht berücksichtigt werden, setzt das Gate das
+$\bf s_c(t-1)$ in der Berechnung nicht berücksichtigt werden, setzt das Gate das
 Gewicht auf $\approx0$ andernfalls behält es den aktuellen Wert des Gewichts mit
 $\approx1$ bei. 
 
@@ -207,7 +207,7 @@ z_{gate}(t) &= \sum \limits_{m} w_{gate,m}y_m(t-1) \\
 \end{equation}
 
 $w_{gate,c}$ ist dabei das Gewicht der rekurrenten Verbindung von der
-Memoryzelle zum Gate. Peepholeverbindung machen auf diese Art die Information
+Memoryzelle zum Gate. Peepholeverbindungen machen auf diese Art die Information
 der Memoryzelle den Gates verfügbar und können so das Netzwerk verbessern
 \cite{Gers2002b}. 
 
@@ -263,14 +263,14 @@ Time Recurrent Learning (RTRL)} sind in
 \cite{RainerSchmoll2006,Gers2002b,GERS2001} zu finden.
 
 \subparagraph{Evolutionsbasiertes Training}
-Die Idee des evolutionären Traiinigs ist wie neuronale Netze biologisch
+Die Idee des evolutionären Trainings ist wie neuronale Netze biologisch
 motiviert. Eine Population mutiert bzw. pflanzt sich fort (Kombination von
 spezifischen Eigenschaften, Genom). Dabei wird jedoch eine \textit{Fitness}
 Funktion angewendet, sodass die Fitness des Genoms mit jeder Generationsstufe
 (Veränderungsschritt) ein besseres Ergebnis liefert. \cite{Marsland} Dieser
 Mechanismus der Evolution eines Genoms wird mit Hilfe verschiedener Algorithmen
 wie dem \textit{Genetischen Algorithmus} versucht nachzuahmen. Wichtig ist
-dabei, dass eine geeignetete Repräsentation des Netzwerkes durch ein Genom
+dabei, dass eine geeignete Repräsentation des Netzwerkes durch ein Genom
 gefunden, eine problemspezifische Fitness Funktion genutzt und die Population
 sich in einer sinnvollen Art und Weise verändert. Dieser Ansatz wird in
 \cite{Schmidhuber05evolino:hybrid} mit dem \textit{Evolino} Algorithmus
@@ -280,11 +280,11 @@ Lernen wird hier nicht weiter betrachtet, da es nicht genutzt werden kann (vgl.
 
 
 \subsection{Anwendung auf Projekt}
-Für das Projekt wird ein LSTM-Netz erstellt welches aus folgenden Schichten besteht:
+Für das Projekt wird ein LSTM-Netz erstellt, welches aus folgenden Schichten besteht:
 
 \begin{itemize}
 \item \textbf{Input Layer} Für die Annahme der Daten.
-\item \textbf{Hidden Layer} Besteht aus LSTM-Neuronen.
+\item \textbf{Hidden-Layer} Besteht aus LSTM-Blöcken.
 \item \textbf{Output Layer} Das Output Layer besteht aus Neuronen, die die 
 Softmax Funktion als Aktivierungsfunktion verwenden.
 \end{itemize}
@@ -292,7 +292,7 @@ Softmax Funktion als Aktivierungsfunktion verwenden.
 \begin{figure}[htbp]
     \centering
    \includegraphics[height=50mm]{lstm/lstm_netz}
-\caption{LSTM-Netz}
+\caption[LSTM-Netz]{LSTM-Netz mit n Eingaben, 18 LSTM-Blöcken und 7 Ausgaben}
 \label{fig:lstm_netz}
 \end{figure}
 Die genaue Anzahl der Neuronen für das Input- und Hidden-Layer stand zu Beginn
@@ -308,7 +308,7 @@ In \autoref{sec:intro} wird beschrieben wie die Daten aufgenommen und im
 Allgemeinen verarbeitet werden, bevor sie den Klassifikatoren zur Verfügung
 gestellt werden. Diese erhalten jeweils einzelne Frames mit je 64 Daten. Die
 Daten entsprechen dem Frequenzspektrum im Umfeld der Referenzfrequenz von
-$18500\text{kHz}$. Eine Geste wurde mit 32 Frames aufgenommen. Für
+$18,5\text{kHz}$. Eine Geste wurde mit 32 Frames aufgenommen. Für
 \ac{LSTM}-Netzwerke sind diese rohen Daten eher ungeeignet. Die Netzwerke können
 zwar im Allgemeinen mit unverarbeiteten Daten umgehen, trotzdem ist ein
 Vorverarbeitung sinnvoll, da sich dadurch die Verallgemeinerung des Problems
@@ -340,7 +340,7 @@ dieses Intervalls keine große Bedeutung spielen. Aus diesem Grund ist eine
 Verkleinerung der Frame Größe in Betracht zu ziehen. Da jedoch eine manuelle
 Betrachtung aller Daten nicht möglich ist, lässt sich diese Beobachtung nicht
 manuell verifizieren. Daher werden mehrere \ac{LSTM}-Netze mit unterschiedlichen
-Inputframelängen trainiert und die Ergebnisse verglichen (vgl. Anhang
+Inputdimensionen trainiert und die Ergebnisse verglichen (vgl. Anhang
 \autoref{tab:inputtests}). Erstaunlicherweise ist die aufgestellte Vermutung falsch
 und die Netzwerke ohne zugeschnittenen Trainingsdaten klassifizieren besser.
 
@@ -359,20 +359,7 @@ betrachtet wurden. Darunter fällt u.a. die statische Eliminierung von Rauschen.
 Diese Methode setzt jeden Wert der unter einem bestimmten Schwellwert ist zu 0,
 da dies kein signifikanter Beitrag zur Geste ist sondern ein Rauschen. Das
 Ergebnis dieser Untersuchung zeigt jedoch keinen positiven Effekt auf die Fehlererkennungsrate, sodass die Idee nicht
-genutzt wird (vgl. \autoref{tab:noiseremovingtests}).
- 
-\begin{table}[h]
-\centering
-\begin{tabular}{|c|c|c|c|}
-\hline
-\textbf{Rausch-} & keine & \textless 0,0125 & \textless 0,025\\
-\textbf{entfernung}&&&\\
- \hline
-\textbf{Fehlerrate}&31,83\%&47,87\%&57,59\%\\\hline
-\end{tabular} 
-\caption[Tests für Rauschentfernung]{Tests um den Einfluss von Rauschentfernung zu untersuchen. Das Trainigsverfahren ist \texttt{RProp}. Die Anzahl der LSTM-Blöcke ist 16. Iterationen 100.}
-\label{tab:noiseremovingtests}
-\end{table}
+genutzt wird (vgl. Anhang \autoref{tab:noiseremovingtests}).
  
 \subsubsection{Anpassung des Klassifikators}
 Das \ac{LSTM}-Netz wird mit Hilfe der Python Bibliothek \texttt{PyBrain}
@@ -385,7 +372,7 @@ verwendet. Die verschiedenen Parameter zur Erstellung (Anzahl der
 \ac{LSTM}-Blöcke, Anzahl der Ausgabeneuronen, Nutzung von Peepholes, etc.) sowie
 die Parameter zur Vorverarbeitung (vgl. \autoref{sec:lstm_data}) werden anhand
 von Tests ermittelt, denn eine Berechnung der optimalen Parameter ist nicht
-möglich. In den eriteren Kapiteln wird auf die unterschiedlichen Parameter noch
+möglich. In den weiteren Kapiteln wird auf die unterschiedlichen Parameter noch
 einmal im Detail eingegangen. 
 
 
@@ -393,34 +380,45 @@ einmal im Detail eingegangen.
 Da es zum Ende des Projektes ein Programm geben soll, indem alle Klassifikatoren
 eingebunden sind, haben sich alle Teilnehmer auf ein Interface geeinigt, was
 jeder Klassifikator implementieren muss. Dies ist die abstrakte Klasse
-\texttt{IClassifier}. Die Implementatierung des \ac{LSTM}-Klassifikators ist in
+\texttt{IClassifier}. Die Implementierung des \ac{LSTM}-Klassifikators ist in
 der Klasse LSTM zu finden, diese dient als Wrapper-Klasse. Ein Klassendiagramm
 ist in \autoref{fig:lstm_class} dargestellt. Die \textit{LSTM}-Klasse enthält je eine Instanz von: 
 \begin{itemize}
 \item \textit{LSTMClassify}: Enthält die verschiedenen Methode für die Live-Klassifizierung.
 \item \textit{LSTMData}: Ist für das speichern und laden der Datensets zuständig.
 \item \textit{LSTMNet}: Erstellt, lädt, aktiviert oder speichert ein LSTM-Netz.
-\item \textit{LSTMTrain}: Trainiert ein mit verschiednen Algorithmen das LSTM-Netz.
+\item \textit{LSTMTrain}: Trainiert mit verschiedenen Algorithmen das LSTM-Netz.
 \end{itemize}
 Außerdem wurden in der Datei \texttt{util.py} verschiedene Hilfsfunktionen
 erstellt.
-Des weiteren werden Konfigurationseinstellungen in einer Datei gespeichert und
-zur Initialisierung der geladen.
+
+Des Weiteren werden Konfigurationseinstellungen in einer Datei gespeichert und
+zur Initialisierung der geladen. Durch diese Einstellungen ist das Verhalten des
+\ac{LSTM} Klassifikators steuerbar. Es sind verschiedene Parametr zu den
+netzwerkeigenschaften, zum Trainingsalgorithmus, aber auch zur
+Datenvorverarbeitung vorhanden. Ebenfalls sind Komforteigenschaften zum Laden
+und speichern von Netzwerken und vorverarbeiteten Daten in Datasets vorhanden.
+
 Da beabsichtigt ist mit dem Programm den PC zu steuern, wurde die Python
-Bibliothek \textit{Python-uinput} eingebunden. Mit dieser können
-Keycodes an den Kernel geschickt werden.
-Die Bibliothek funktioniert nur unter Linux und erfordert Root-Rechte.
+Bibliothek \textit{Python-uinput} (nur für Linux) eingebunden. Mit dieser können
+Keycodes an den Kernel geschickt werden. Dies simuliert Tastatureingaben. Die
+gesendeten Tasten sind konfigurierbar. Dadurch ist es möglich das Betriebssystem
+individuell durch Gesten zu steuern, z.B. kann die Geste \ac{RLO} mit der
+Leertaste verknüpft werden, um in einer Präsentation zur nächsten Folie zu
+springen.
 Im folgenden wird auf die Implementation der einzelnen Methoden der
 \textit{LSTM}-Klasse eingegangen.
 
-\subsubsection*{Live Klassifikation}
-Für die Live Klassifikation wurde verschiedene Ideen implementiert. 
-Bei allen wird zuerst die \textit{classify} Methode der LSTM-Klasse 
-aufgerufen. Diese bekommt den Datensatz der aktuellen Aufnahme übergeben. 
-Der Datensatz enthält ein Array mit 64-Datenpunkten. Die übergebenen Daten werden 
-Normalisiert und anschließend wird der Durchschnitt abgezogen, wie in Kapitel 
-\autoref{sec:lstm_data} beschrieben. Nachdem die Daten vorverarbeitet wurden, 
-werden diese einer der verschiedenen\textit{classify}-Methoden übergeben. 
+\subsubsection*{Live Klassifikation} 
+Für die Live Klassifikation wurde verschiedene Ideen implementiert.
+Bei allen wird zuerst die \textit{classify} Methode der LSTMClassify-Klasse aufgerufen.
+Diese bekommt den Datensatz der aktuellen Aufnahme übergeben.
+Der Datensatz enthält ein Array mit 64-Datenpunkten. Die übergebenen Daten
+werden Normalisiert und anschließend wird der Durchschnitt abgezogen, wie in
+Kapitel \autoref{sec:lstm_data} beschrieben. Nachdem die Daten vorverarbeitet
+wurden, werden diese einer der verschiedenen \textit{classify}-Methoden
+übergeben. Diese Methoden implementieren verschiedene Varianten der Live
+Klassifikation.
 
 Die Methode \textit{classify1} speichert so lange die übergebenen Datenwerte, 
 bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz 
@@ -428,24 +426,25 @@ bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz
 dass eine Geste nicht komplett in diesen 32-Werte enthalten ist, wurde ein zweite 
 Idee umgesetzt, welche in der Methode \textit{classify2} umgesetzt ist.
 
-Die Methode \textit{classify2} speichert so lange die übergebenen Datenwerte, 
-bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz 
-übergeben und eine Klassifikation gestartet. Die erkannte Geste wird in einer 
-Liste gespeichert. Von dieser Liste wird, mittels der Python-Funktion mode, 
-der Wert ermittelt der am häufigsten vorkommt. Ist dieser Wert größer als eine 
-definierte Schranke wird er in \textit{previouspredict} gespeichert. Wenn vier 
-mal hinter einander die gleiche Geste erkannt wurde, wird diese ausgegeben.
+Die Methode \textit{classify2} speichert so lange die übergebenen Datenwerte,
+bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz
+übergeben und eine Klassifikation gestartet. Die erkannte Geste wird in einer
+begrenzten Puffer der Länge 8 gespeichert. Von diesem Puffer wird, mittels der
+Python-Funktion \texttt{scipy.stats.mode}, der statistische Modus ermittelt
+(häufigster Wert). Ist dieser Wert größer als eine definierte Schranke wird er
+in \textit{previouspredict} gespeichert. Wenn vier mal hinter einander die
+gleiche Geste erkannt wurde, wird diese als \textit{erkannt} ausgegeben.
 
 Eine weitere Idee besteht darin, die Geste zwischen zwei mal der Geste 6 zu 
 suchen. Dies wird in \textit{classify3} versucht.
 
-Da von jedem Datensatz der Durchschnitt abgezogen wird, erscheint sobald eine 
-BEwegung statt findet, ein Ausschlag. Diesen zu erkennen wird in \textit{classify4} 
-vesucht. Bei dieser Implementaion muss der Auschlag einen bestimmten Schwellwert 
+Da von jedem Datensatz der Durchschnitt abgezogen wird, erscheint, sobald eine 
+Bewegung statt findet, ein Ausschlag. Diesen zu erkennen wird in \textit{classify4} 
+versucht. Bei dieser Implementierung muss der Ausschlag einen bestimmten Schwellwert 
 überschreiten und wird anschließend dem LSTM-Netz übergeben.
 
 Bei der Methode \textit{classify5} wird genau so vorgegangen wie bei der vierten 
-Idee, es werden aber nicht ab dem Beginn des Auschlags die Daten an das 
+Idee, es werden aber nicht ab dem Beginn des Ausschlags die Daten an das 
 Netz übergeben, sondern mit einem Puffer gearbeitet und wenn eine Ausschlag erkannt 
 werden die nächsten 22-Datensätze und 10-Datensätze aus dem Puffer übergeben.
 
@@ -464,7 +463,7 @@ nicht geeignet. Der Fokus des Trainings liegt deshalb auf den
 Gradientenabstiegsverfahren. Wie oben beschrieben ist \ac{RProp} eine
 Weiterentwicklung von Backpropagation, welche im Gegensatz zur Fehlerrückführung
 stabiles Konvergenzverhalten zeigt. Dies wurde mit einer kleinen Testreihe
-bestätigt, welche zeigt, dass Backpropagtaion schwankende Ergebnisse liefert
+bestätigt, welche zeigt, dass Backpropagation schwankende Ergebnisse liefert
 (vgl. \autoref{tab:backproptests}). Aus diesem Grund wird das Training nur mit
 \ac{RProp} durchgeführt.
  
@@ -472,34 +471,34 @@ Das Training eines \ac{LSTM}-Netzes ist in der Regel \texttt{supervised}.
 PyBrain bietet daher die Möglichkeit Datasets für die Klassifikation von
 Sequenzen an. Dieses wird mit den Daten und den zugehörigen Klassen erstellt.
 Die werden zuvor noch wie in \autoref{sec:lstm_data} beschrieben vorverarbeitet.
-Die Voerverarbeitung ist durch Parameter konfigurierbar. In Anhang
+Die Vorverarbeitung ist durch Parameter konfigurierbar. In Anhang
 \autoref{tab:inputtests} sind verschiedene Parameter im Training getestet
-worden. Es hat sich gezeigt, dass bereits nach wenigen Iterationen unbeschnitte
+worden. Es hat sich gezeigt, dass bereits nach wenigen Iterationen unbeschnittene
 Daten gut Netzwerke liefern. Die Datenseterzeugung berücksichtigt auch, ob die
 Klassen \ac{BNS} und \ac{BNN} als gemeinsame Klasse betrachtet werden sollen.
 Dies wird hier umgesetzt, da die Unterschiede zwischen beiden Klassen zu gering
 sind. 
 
-Das Training wird iterativ durchgeführt. Dabei wird eine Trainierinstanz pro
+Das Training wird iterativ durchgeführt. Dabei wird eine Trainerinstanz pro
 Programminstanz nur einmal erzeugt, um interne Zustände zu erhalten. Da die
-Trainingseinheiten relativ lange benötigen, ist eine Traininsplanung, um die
-Resourcen des Rechners optimal einsetzn zu können, notwendig. Dazu wird
+Trainingseinheiten relativ lange benötigen, ist eine Trainingsplanung, um die
+Ressourcen des Rechners optimal einsetzen zu können, notwendig. Dazu wird
 allerdings die Zeit für das Training benötigt. Daher wird die Gesamtzeit am Ende
 ausgegeben. Um den zeitlichen Fortschritt nachvollziehen zu können werden
-Zwischenzeiten nach jedem Zehntel der Trainngsiterationen berechnet. In
-\autoref{tab:inputtests} sind zusätzich zu den tests auch noch
+Zwischenzeiten nach jedem Zehntel der Trainingsiterationen berechnet. In
+\autoref{tab:inputtests} sind zusätzlich zu den Tests auch noch
 Durchschnittswerte von Zeiten enthalten. Die beiden Durchschnittszeiten von
-Minuten pro Iteration beziehen sich einersteits auf die Vorberechnung der Daten,
+Minuten pro Iteration beziehen sich einerseits auf die Vorberechnung der Daten,
 zum Anderen ist eine Differenz durch minimal unterschiedliche Taktfrequenzen der
-Prozessoren beim Training zu erkären.
+Prozessoren beim Training zu erklären.
 
 Es werden nicht alle Daten für das Training verwendet. Ein Teil wird als
 Testsatz vom Training ausgeschlossen. So kann eine unabhängige Validierung
 vorgenommen werden. Aufgrund der geringen Menge an Beispieldaten wird eine
-Teilung der Daten in 80\% Trainigsdaten und 20\% Validierungsdaten vorgenommen.
+Teilung der Daten in 80\% Trainingsdaten und 20\% Validierungsdaten vorgenommen.
 Nach \cite{NNFAQ} besagt eine Faustregel, dass in etwa 30 mal so viele Beispiele
 benötigt werden wie veränderbare Gewichte. In einem Netzwerk mit 64 Eingaben,
-zehn \ac{LSTM}-Blöcken (TGewichte für die EIngaben und jedes Gate) und sieben
+zehn \ac{LSTM}-Blöcken (Gewichte für die Eingaben und jedes Gate) und sieben
 Ausgaben gibt es $64\cdot(4\cdot10)+10\cdot7 = 2630$ Gewichte, die trainiert
 werden können, d.h. es werden etwa $26300$ Beispiele bzw. mehr bei mehr
 \ac{LSTM}-Blöcken zum Training benötigt. Diese hohe Anzahl an
@@ -507,22 +506,15 @@ Trainingsbeispielen ist nicht annähernd erreicht (es gibt ca. so viele Beispiel
 wie Gewichte). Daher wird das Verhältnis zwischen Trainings- und
 Validierungsdaten zugunsten der Trainingsdaten gesetzt.
 
-
-Für die Validierung des Netzes wird zum einen der mittlere quadratische Fehler
-berechnet und zur Veranschaulichung auch die Fehlerrate mit Hilfe einer
-Confusion Matrix dargestellt. An dieser lässt sich erkennen wie gut das Netz
-unbekannte Daten klassifiziert und welche Fehler dabei auftreten. Daraus kann
-z.B.
-abgeleitet werden, welche Klassen ähnlich zu einander sind (Klasse \ac{BNS} und
-\ac{BNN} werden ungefähr zur Hälfte auf die jeweils andere Klasse klassifiziert,
-dies macht deutlich, dass das Netz keinen Unterschied in den Klassen erkennt).
-
-
 \subsubsection{Evaluation}
-In \autoref{matrix_eval} ist die Evaluation-Matrix von einem Nezuwerk festgehalten. 
-Dieses wurde für 1500 Epochen trainiert. Es hat 64-Input-Neuronen, 18-LSTM-Neuronen 
-und 7-Output-Neuronen. Das Training dauerte ca. 21 Stunden. Die Spalten bilden die 
-ausgeführte Geste und die Zeilen die erkannten Gesten ab.
+Für die Validierung der Netzwerke werden eine Confusion Matrix gebildet und noch
+der mittlöere quadratische Fehler als Kenngröße angegeben. Anhand der Matrix
+lässt sich erkennen wie gut das Netz unbekannte Daten klassifiziert und welche
+Fehler dabei auftreten. Außerdem können klassenspezifische Fehlerraten berechnet
+werden. Daraus kann auch abgeleitet werden, welche Klassen ähnlich zu einander
+sind (Klasse \ac{BNS} und \ac{BNN} werden ungefähr zur Hälfte auf die jeweils
+andere Klasse klassifiziert, dies macht deutlich, dass das Netz keinen
+Unterschied in den Klassen erkennt).
 
 \begin{center}
 \begin{equation}
@@ -539,44 +531,80 @@ ausgeführte Geste und die Zeilen die erkannten Gesten ab.
 \end{equation}
 \end{center}
 
+In \autoref{matrix_eval} ist die Confusion-Matrix für ein Netzwerk festgehalten.
+Dieses wurde für 1500 Epochen trainiert. Es hat 64 Input-Neuronen, 18
+\ac{LSTM}-Blöcke und 7 Output-Neuronen. Das Training dauerte ca. 21 Stunden. Die
+Zeilen bilden die ausgeführte Geste und die Spalte die erkannten Gesten ab. Das
+Netzwerk wurde mit mit den Daten einer speziellen Hardwarekonfiguration
+trainiert. Dabei ist das Mikrofon unterhalb des Bildschirms und die Lautsprecher
+links und rechts neben der Tastatur. Es gibt 2800 Beispieldaten für diese Konfiguration. 
 In \autoref{tab:eval} sind die Erkennungsraten pro Geste dargestellt.
 
-\begin{table*}
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
+% \begin{table*}[h]
+% \begin{tabular}{|c|c|c|c|c|c|c|c|}
+% \hline
+%  \textbf{Geste} 		& 0 & 1 & 2 & 3 & 4 & 5 & 6\&7 \\
+%  \hline
+%  \textbf{Erkennungsrate}  &87,23\%&77,35\%&81,48\%&70,90\%&92,75\%&79,43\%&96,55\%		\\
+%  \hline
+% \end{tabular}
+% \caption[Evaluation eines LSTM-Netzes]{Evaluation eines LSTM-Netzes mit 18 LSTM-Blöcken und 1500 Trainingsepochen}
+% \label{tab:eval}
+% \end{table*}
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|}
 \hline
- Geste 		& 0 & 1 & 2 & 3 & 4 & 5 & 6\&7 \\
+ \textbf{Geste} & \textbf{Erkennungsrate} \\
  \hline
- Erkennungsrate  &87,23\%&77,35\%&81,48\%&70,90\%&92,75\%&79,43\%&96,55\%		\\
+  0 &87,23\% \\  
+  \hline
+  1 &77,35\% \\
+ \hline
+  2 &81,48\% \\
+ \hline
+  3 &70,90\% \\
+ \hline
+  4 &92,75\% \\
+ \hline
+  5 &79,43\% \\
+ \hline
+  6\&7&96,55\%\\
  \hline
 \end{tabular}
-\caption{Evaluation LSTM-Netz}
+\caption[Evaluation eines LSTM-Netzes]{Evaluation eines LSTM-Netzes mit 18 LSTM-Blöcken und 1500 Trainingsepochen}
 \label{tab:eval}
-\end{table*}
-
+\end{table}
 Wie man aus der Tabelle entnehmen kann, werden die Gesten \ac{BNS} \& \ac{BNN} sehr gut erkannt. 
 Auch die Gesten \ac{RLO} und \ac{DPO} werden sehr gut erkannt. Die Geste \ac{SPO} 
 wird häufig mit der Geste \ac{TBO} verwechselt.
-Insgesamt erkennt das Neuronale-Netz 13,77\% der Gesten niht korrekt. 
+Insgesamt erkennt das Neuronale-Netz 13,77\% der Gesten nicht korrekt. 
 
+Tests für Netzwerke mit allen Beispieldaten sind in den Tabellen im Anhang zu
+finden. Jedoch ist zu bemerken, dass durch die unterschiedlichen
+Hardwarekonfigurationen ds Ergebnis der Validierung schlechter ausfällt als bei
+einer Konfiguration.
 
 
 \subsection{Fazit}
 \ac{LSTM}-Netzwerke haben gezeigt, dass sie Potential haben die
 Klassifizierungsaufgabe von Gesten anhand des schallbasierten Dopplereffekts
-vorzunemen. Es sind dabei verschiedene Ergebnisse zu Tage gekommen die in dieser
+vorzunehmen. Es sind dabei verschiedene Ergebnisse zu Tage gekommen die in dieser
 Art nicht erwartet wurden. Zum Einen ist eine größere Vorverarbeitung der
-Datenin diesem konkreten Fall nicht notwendig. Ein Normalisierung und Differenz
+Daten in diesem konkreten Fall nicht notwendig. Ein Normalisierung und Differenz
 zur Referenzfrequenz ist ausreichend. Zum Anderen hat sich gezeigt, dass die
 \ac{LSTM}-Netzwerke einen hohen Trainingsaufwand haben. 
 
 Beides zeigt, dass neuronale Netze wie \ac{LSTM}-Netze viele
 \textit{Erfahrungen} verallgemeinern können und die Hauptmerkmale selbständig
 extrahieren und in ihren Parametern, den Gewichten, abspeichern. Dieses
-Verhalten steht in Realtion zum Verhalten des biologischen Vorbilds, dem
+Verhalten steht in Relation zum Verhalten des biologischen Vorbilds, dem
 \textit{Gehirn}. Auch wenn künstliche neuronale Netze ein formales Modell eines
 Gehirns sind, zeigen sich die Parallelen. Allerdings bestehen weiterhin noch
 Unterschiede. So arbeitet ein Gehirn nicht in synchronen Schritten wie das
-kpnstliche neuronale Netz, sondern asynchron. Das bedeutet Eingabewerte treffen
+künstliche neuronale Netz, sondern asynchron. Das bedeutet Eingabewerte treffen
 zu unterschiedlichen Zeitpunkten ein, Ausgabewerte werden unterschiedlich
 gefeuert. Dies wird im Modell nicht abgebildet, da dies die Komplexität erhöht.
 Ein weiterer Unterschied besteht in der Verknüpfung unter den Neuronen. ein

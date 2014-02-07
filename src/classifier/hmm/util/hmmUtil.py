@@ -60,7 +60,7 @@ class HMM_Util:
                     ### init HMM instance ###
                     gmms = self._createGMMS(obs)
                     #gmms = None
-                    m = GestureHMM(c.n_components, n_mix=c.n_mix, gmms=gmms, covariance_type=cov_type, algorithm=algo, n_iter=c.n_iter, params='stmc', thresh=1e-4)
+                    m = GestureHMM(c.n_components, n_mix=c.n_mix, gmms=gmms, covariance_type=cov_type, algorithm=algo, n_iter=c.n_iter, params='', thresh=1e-4)
                     ### fit the model ###        
                     m = m.fit(obs)
                     l = self._averageScore(m, test)
@@ -70,7 +70,7 @@ class HMM_Util:
                         logprob = l
                         model = m
                     i += 1
-                    if i > c.n_tries:
+                    if i >= c.n_tries:
                         break
         print "states: " + str(c.n_components) + "\tlikeli: " + str(round(logprob, 2))
         return model, logprob

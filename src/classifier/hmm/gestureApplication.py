@@ -12,11 +12,13 @@ import pickle
 from classifier.classifier import IClassifier
 from gestureFileIO import GestureFileIO
 import classifier.hmm.plot as plot
+import win32com.client
+import os
 
 NAME = "HiddenMarkovModel"
 GESTURE_PREFIX="gesture "
 
-CLASS_LIST = [0, 1, 5, 7]
+CLASS_LIST = [0, 1, 5, 6, 7]
 
 class HMM(IClassifier):
 
@@ -27,9 +29,13 @@ class HMM(IClassifier):
         self.classList = CLASS_LIST
         self.gestureApp = GestureApplication()
         self.fileIO = GestureFileIO()
-        self.gestureWindow1=[]
-        self.gestureWindow2=[]
-        self.isFirstRun = True
+        self.gestureWindows=[[],[]]
+        self.activeWindow = 0
+        if os.name == 'nt':
+            self.isWindows = True
+            
+        else:
+            self.isWindows = False
 
     def getName(self):
         return NAME
@@ -41,28 +47,34 @@ class HMM(IClassifier):
         return self.gestureApp.createGestures(self.classList)
 
     def classify(self, data):
-        if(len(self.gestureWindow1)==32):
-            seq = np.array([self.gestureWindow1])
-            self.startClassificationAction(seq)
-            self.gestureWindow1 = []
-        if self.isFirstRun:
-            if(len(self.gestureWindow1)==16):
-                self.gestureWindow2 = []
-                self.isFirstRun = False
-        if (len(self.gestureWindow2)==32):
-            seq = np.array([self.gestureWindow2])
-            self.startClassificationAction(seq)
-            self.gestureWindow2 = []
-        self.gestureWindow1.append(data)
-        self.gestureWindow2.append(data)
+        for i in range(2):
+            self.gestureWindows[i].append(data)
+            if (len(self.gestureWindows[i])==c.framesTotal):
+                seq = np.array([self.gestureWindows[i]])
+                self.startClassificationAction(seq)
+                self.gestureWindows[i] = []
+            if (len(self.gestureWindows[i])==(c.framesTotal-round((c.framesBefore+c.framesAfter+1))/2)) & (self.activeWindow == i):
+                self.gestureWindows[(i+1)%2] = []
+                self.activeWindow = (i+1)%2
+        
 
     def startClassificationAction(self,seq):
         seq = u.preprocessData(seq)
         if len(seq) != 0:
-            gesture, prob =  self.gestureApp.scoreSeq(seq[0])
-            if (gesture.className != 'gesture 6') & (gesture.className != 'gesture 7'):
+            gesture, prob =  self.gestureApp.scoreSeqLive(seq[0])
+            if gesture == None:
+                return
+            if (gesture.className != 'gesture 7'):
                 #if prob > -250.0:
                 print gesture, prob
+            if self.isWindows:
+                if (gesture.className == 'gesture 1'):
+                    shell = win32com.client.Dispatch("WScript.Shell")
+                    shell.SendKeys("{PGDN}",0)
+                if (gesture.className == 'gesture 5'):
+                    shell = win32com.client.Dispatch("WScript.Shell")
+                    shell.SendKeys("{PGUP}",0)
+                
                 
     def startValidation(self):
         ret = []
@@ -83,7 +95,6 @@ class HMM(IClassifier):
         gesture = int(filename)
         p = plot.Plot(gesture, gmms=self._getGMMDic())
         p.initPlot()
-        p.show()
         
     def _getGMMDic(self):
         dic = {}
@@ -94,7 +105,7 @@ class HMM(IClassifier):
         return dic
 
     def saveData(self, filename=""):
-        self.startTraining()
+        self.gestureApp.trainAndSave()
 
 
 
@@ -167,11 +178,28 @@ class GestureApplication():
             if  (g.className == 'gesture 2') | (g.className == 'gesture 4'):
                 continue
             l = g.score(seq)
-            
-            if 0 > l > logprob:
+            #print 'alle: '+str(l), g
+            if 0 > l >= logprob:
                 logprob = l
                 gesture = g 
         return gesture, logprob
+    
+    def scoreSeqLive(self, seq):
+        
+        ''' find most likely class '''
+        logprob1 = -sys.maxint - 1
+        logprob2 = -sys.maxint - 1
+        gesture = None
+        for g in self.gestures.values():
+            l = g.score(seq)
+            print ' '+str(l), g
+            if 0 > l >= logprob1:
+                logprob2 = logprob1
+                logprob1 = l
+                gesture = g 
+        if (logprob1*c.classificationTreshhold + logprob1) < logprob2:
+            return None, None
+        return gesture, logprob1
     
     def saveModels(self, filePath, configurationName='Default'):
         config = ConfigParser.RawConfigParser()
