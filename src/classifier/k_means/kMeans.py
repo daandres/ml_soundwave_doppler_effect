@@ -29,6 +29,11 @@ class KMeans(IClassifier):
         self.recorder.classifyStart(self)
         
         
+        self.startGesture = -2
+        self.firstNoneResult = False
+        self.currentClass = -3
+        
+        
     def startGui(self, recorder, callback):
         self.app = ViewUIKMeans(self, self.getName, self.cSignal)
         self.app.start()
@@ -63,20 +68,35 @@ class KMeans(IClassifier):
         if self.startBuffern:
             
             self.bufferArray = np.roll(self.bufferArray, -1, axis=0)
-            self.bufferArray[27] = self.kmH.normalizeSignalLevelSecond(data)
+            # war gut bei 47
+            self.bufferArray[25] = self.kmH.normalizeSignalLevelSecond(data)
             if self.checkOnline:
-            
-                result = self.kmH.segmentOneHandGesture(self.bufferArray, outArrayLength=24, leftMargin=4, oneSecPeak=False)
+                # es hal bei 16 staat 24 funktionietrt ?!?!?!?!
+                result = self.kmH.segmentOneHandGesture(self.bufferArray, outArrayLength=16, leftMargin=8, oneSecPeak=True)
+                #print np.asarray(result).shape
                 if result is not None:
+                    self.firstNoneResult = True
                     result = self.kmH.reduceDimensionality(result)
                     result = np.asarray(result)
-                    result = result.reshape(result.shape[0]*result.shape[1])
+                    #xxx
+                    #result = result.reshape(result.shape[0]*result.shape[1])
                     
                     if len(result) == self.kmeans.cluster_centers_.shape[1]:
-                        self.kMeansOnline(result)
+                        cluster_ = self.kMeansOnline(result)
+                        if self.currentClass != cluster_:
+                            self.cSignal.emitSignal(cluster_)
+                            self.currentClass = cluster_
+                            print result.shape
+                        else:
+                            self.cSignal.emitSignal(-2)
                     else:
                         print 'result length not matched !!!!  : ', len(result)
-
+                else:
+                    if self.firstNoneResult:
+                        self.cSignal.emitSignal(-2)
+                        self.firstNoneResult = False
+                    
+                    
     def startValidation(self):
         pass
 
@@ -105,7 +125,8 @@ class KMeans(IClassifier):
     def fillBuffer(self, bufferSize):
         self.bufferSize = bufferSize
         #self.bufferArray = np.zeros((self.bufferSize, 64))
-        self.bufferArray = np.zeros((28, 64))
+        #war gut bei 48
+        self.bufferArray = np.zeros((26, 64))
         self.startBuffern = True
         print 'fillBuffer'
         print self.bufferArray.shape
@@ -125,7 +146,7 @@ class KMeans(IClassifier):
         cluster =  self.kmH.checkClusterDistance(class_, self.percentRatio)
         self.setGestureArray(cluster)
         
-        self.cSignal.emitSignal(cluster)
+        #self.cSignal.emitSignal(cluster)
         
         if cluster == -1:
             print '-1'
@@ -146,6 +167,9 @@ class KMeans(IClassifier):
         elif cluster == 7:
             print '                                7'                                                
         
+        return cluster
+    
+    
     def setGestureArray(self, cluster):
         self.gestureIdx = self.gestureIdx+1 
         class_ = "-"
