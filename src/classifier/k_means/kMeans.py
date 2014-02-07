@@ -6,7 +6,7 @@ import clusterSignal as cSignal
 from PyQt4.QtCore import QObject, pyqtSlot, pyqtSignal
 from PyQt4 import QtGui
 import sys
-from src.view.ui_kmeans_visualizer import ViewUIKMeans
+from view.ui_kmeans_visualizer import ViewUIKMeans
 
 class KMeans(IClassifier):
     
