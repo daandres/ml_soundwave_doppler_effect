@@ -28,6 +28,7 @@ class LSTMClassify():
 
         # classify4
         self.start = 0
+        self.buffer = []
         self.liveData = []
         self.beginClassify = 0
         self.beginMax = 0
@@ -46,7 +47,7 @@ class LSTMClassify():
         preprocessedData = data / np.amax(data)
         preprocessedData = util.preprocessFrame(preprocessedData, self.net.datacut, self.net.datafold)
         # diffAvgData = preprocessedData - self.avg
-        self.__classify4(preprocessedData)
+        self.__classify5(preprocessedData)
 
     '''
     Gesten werden starr nach 32 frames erkannt
@@ -169,6 +170,60 @@ class LSTMClassify():
                     out = self.net._activateSequence(self.datalist)
                     print(str(out))
                     self.datalist = []
+                    self.datanum = 0
+                    self.start = 0
+                    return out
+
+        return -1
+
+    '''
+    Gesten werden anhand eines erkannten Starttresholds erkannt
+    '''
+    def __classify5(self, data):
+        if not self.beginClassify:
+            # collecting live data for avg
+            self.liveData.append(data)
+            if self.liveData.__len__() == 20:
+                self.beginClassify = 1
+                # print self.liveData
+                self.avg = np.mean(self.liveData, axis=0)
+                # print self.avg
+                self.beginMax = 1
+        # collecting data for maxValue
+        elif self.beginMax:
+            data = data - self.avg
+            self.maxValueList.append(data.max())
+            if self.maxValueList.__len__() == 30:
+                for a in self.maxValueList:
+                    if self.maxValue < a:
+                        self.maxValue = a
+                print self.maxValue
+                # maxValue ein bischen erhohen (steuert empfindlichkeit der erkennung)
+                self.maxValue = self.maxValue + 0.005
+                self.beginMax = 0
+        else:
+            data = data - self.avg
+            # print data.max()
+            if self.buffer.__len__() <= 10 and not self.start:
+                self.buffer.append(data)
+            elif self.buffer.__len__() == 11 and not self.start:
+                self.buffer.pop(0)
+                self.buffer.append(data)
+            if data.max() > self.maxValue and self.start == 0:
+                print "starting ..."
+                self.start = 1
+
+            if self.start:
+                self.datalist.append(data)
+                if(self.datalist.__len__() + self.buffer.__len__()) % 32 == 0:
+                    print "net ac"
+                    print "buffer: " + str(self.buffer.__len__())
+                    print "list: " + str(self.datalist.__len__())
+                    self.net.reset()
+                    out = self.net._activateSequence(self.datalist)
+                    print(str(out))
+                    self.datalist = []
+                    self.buffer = []
                     self.datanum = 0
                     self.start = 0
                     return out
