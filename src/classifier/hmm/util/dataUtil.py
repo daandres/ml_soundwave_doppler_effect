@@ -29,7 +29,7 @@ class DataUtil:
 
     def loadRaw3dGesture(self, recordClass, recordNames=None):
         if recordNames is None:
-            return self.fileIO.getGesture3D(recordClass, ["paul"]) # insert names here
+            return self.fileIO.getGesture3D(recordClass, ["Alex","Benjamin","Daniel","Frank","Manuel"]) # insert names here
         else:
             return self.fileIO.getGesture3D(recordClass, recordNames)
 
@@ -169,7 +169,7 @@ class DataUtil:
         data = self.reduceBins(data)
         data = self.normalize(data)
         data = self.cutThreshold(data)
-        data = self.cutRelevantAction(data)
+        #data = self.cutRelevantAction(data)
         data = self.round(data)
         return data
 

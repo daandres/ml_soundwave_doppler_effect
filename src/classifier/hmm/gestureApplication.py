@@ -115,7 +115,7 @@ class GestureApplication():
         if state == 1:
             try:
                 ''' Load HMM Configurationfile to Classifiy '''
-                self.loadModels('classifier/hmm/data/default_config.cfg')
+                self.loadModels('classifier/hmm/data/config_1391869940.cfg')
             except Exception:
                 ''' Create HMM Model based on all existing Gesture datasets '''
                 self.trainAndSave()
@@ -234,7 +234,7 @@ class GestureApplication():
             print className, accuracy, scores
         
         timestamp = str(int(time.time()))
-        self.saveModels('classifier/hmm/data/config_' + timestamp +'.cfg', '0, 1, 5, 7')
+        self.saveModels('classifier/hmm/data/config_' + timestamp +'.cfg', '0, 1, 2, 3, 4, 5, 6, 7')
         print "#### END ####"
 
 

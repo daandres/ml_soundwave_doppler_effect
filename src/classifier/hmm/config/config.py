@@ -1,5 +1,5 @@
 ### GESTURE CLASSES '''
-classList = [0, 1, 5, 6, 7]
+classList = [0, 1, 2, 3, 4, 5, 6, 7]
 
 
 ### DATA PREPROCESSING ###
@@ -16,7 +16,7 @@ bins_after = 7
 rightBorder = (binsTotal/2) + bins_after
 
 
-components =framesAfter+framesBefore+1
+components =32
 
 ### TRAIN GMM ###
 n_tries_gmm = 1
