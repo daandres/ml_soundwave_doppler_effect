@@ -125,7 +125,7 @@ class Plot():
         self.surf = self.ax.plot_surface(self.X, self.Y, self.data[self.index], rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
         self.ax.set_title(GESTURE_PREF + str(self.gesture) + ", " +self.name + ": " + str(self.index+1))
         if len(self.actionPoint) > 0:
-            self.ax.scatter(self.actionPoint[self.index],0,0,'0', c='r')
+            self.ax.scatter(self.actionPoint[self.index],0,0,'0', s= 100, c='r')
         self.ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
         self.fig.canvas.mpl_connect('scroll_event', self.onscroll)
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
@@ -141,7 +141,7 @@ class Plot():
         self.surf = self.ax.plot_surface(self.X, self.Y, self.data[self.index], rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
         self.ax.set_title(GESTURE_PREF + str(self.gesture) + ", " +self.name + ": " + str(self.index+1))
         if len(self.actionPoint) > 0:
-            self.ax.scatter(self.actionPoint[self.index],0,0,'0', c='r')
+            self.ax.scatter(self.actionPoint[self.index],0,0,'0', s= 100, c='r')
         self.ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
         self.fig.canvas.draw()
 
