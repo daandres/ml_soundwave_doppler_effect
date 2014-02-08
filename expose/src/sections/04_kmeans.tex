@@ -35,7 +35,7 @@ Ein Beispiel für einen Trainingsvorgang ist in \autoref{fig:lernenEinfach} darg
 %Um nun zu einem Objekt das passende Cluster-Zentrum zuzuordnen, wird der Abstand zwischen Objekt und den Cluster-Zentren berechnet. Das Objekt wird nun dem Cluster-Zentrum mit dem geringsten Abstand zugeordnet. 
 
 
-K-Means benötigt in der Regel beim Lernen mehr Zeit als bei der Benutzung, da im ersten Fall die Cluster-Zentren unter Umständen oft verschoben werden müssen und nach jeder Verschiebung erneut die Abstände zu allen dem Zentrum zugeordneten Punkten berechnet werden müssen. Bei der Benutzung hingegen genügt es, nur die Abstände des zu klassifizierenden Punkts zu allen Cluster-Zentren zu berechnen, um das passende Cluster zu bestimmen. Der Algorithmus arbeitet jedoch
+K-Means benötigt in der Regel beim Lernen mehr Zeit als bei der Benutzung, da im ersten Fall die Cluster-Zentren unter Umständen oft verschoben werden und nach jeder Verschiebung erneut die Abstände zu allen dem Zentrum zugeordneten Punkten berechnet werden müssen. Bei der Benutzung hingegen genügt es, nur die Abstände des zu klassifizierenden Punkts zu allen Cluster-Zentren zu berechnen, um das passende Cluster zu bestimmen. Der Algorithmus arbeitet jedoch
 in beiden Phasen verhältnismäßig schnell, da immer nur 
 der -- rechnerisch wenig aufwändige -- euklidische Abstand ermittelt wird.
 Weiterhin ist festzuhalten, dass k-Means anfällig für Ausreißer ist, d.h. einzelne falsche Daten wie beispielsweise Messfehler können ein Cluster-Zentrum unter Umständen stark verschieben.
@@ -72,7 +72,7 @@ Jeder Lautstärkewert entspricht dabei der Intensität des Tonsignals in dem jew
 %2048-dimensionalen 
 Eingabedaten lieferten eine korrekte Erkennungsrate von etwa 25 bis 30 Prozent bei 7 Klassen (6 Gesten sowie Grundrauschen ohne Geste). Lediglich das Grundrauschen kann so einigermaßen zuverlässig erkannt werden, eine korrekte Unterscheidung der einzelnen Gesten ist jedoch nicht möglich. Dies zeigt deutlich die Notwendigkeit einer Datenaufbereitung.
 
-Bei allen Aufnahmen der Gesten befindet sich die Amplitude bei 18500 Hz, da dies der abgespielten Referenzfrequenz entspricht. Durch den Doppler-Effekt entstehen bei der Ausführung der Gesten zusätzliche lokale Maxima, die Amplitude verschiebt sich jedoch nicht.
+Bei allen Aufnahmen der Gesten befindet sich die Amplitude bei 18,5 kHz, da dies der abgespielten Referenzfrequenz entspricht. Durch den Doppler-Effekt entstehen bei der Ausführung der Gesten zusätzliche lokale Maxima, die Amplitude verschiebt sich jedoch nicht.
 %Bei der Analyse der Frequenzspektren der einzelnen Gesten lassen sich folgende Besonderheiten erkennen:
 Die Analyse der Frequenzspektren der einzelnen Gesten zeigt folgende Besonderheiten:
 
@@ -136,13 +136,12 @@ Diese Bewegungsfolge sowie die entsprechenden Veränderungen des Frequenzspektru
 \item \ac{RO} Bei dieser Geste sind innerhalb des betrachteten Frequenzspektrums keine Unterschiede zum Hintergrundrauschen (\ac{BNS} und \ac{BNN}) zu erkennen.
 
 %6+7: Background-Noise-Silent und Background-Noise-Noisy
-\item \ac{BNS} und \ac{BNN} (\autoref{fig:kMeansGesten6und7}): Bei diesen beiden Klassen für das Hintergrundrauschen sind neben der Amplitude bei 18500 Hz keine weiteren Peaks vorhanden. Durch die Ungenauigkeit von Mikrofon und Lautsprecher entstehen lediglich geringe, kaum sichtbare Schwankungen der Lautstärkewerte. Zwischen dem Hintergrundrauschen in lauter und in leiser Umgebung sind innerhalb des betrachteten Frequenzbereichs keine Unterschiede zu erkennen.
+\item \ac{BNS} und \ac{BNN} (\autoref{fig:kMeansGesten6und7}): Bei diesen beiden Klassen für das Hintergrundrauschen sind neben der Amplitude bei 18,5 kHz keine weiteren Peaks vorhanden. Durch die Ungenauigkeit von Mikrofon und Lautsprecher entstehen lediglich geringe, kaum sichtbare Schwankungen der Lautstärkewerte. Zwischen dem Hintergrundrauschen in lauter und in leiser Umgebung sind innerhalb des betrachteten Frequenzbereichs keine Unterschiede zu erkennen.
 
 \end{itemize}
 
 Die Klassifizierung der Geste \ac{RLO} wurde nicht weiter verfolgt, da sie nicht zuverlässig von Geste \ac{SPO} unterschieden werden kann. Ebenso wird Geste \ac{RO} nicht weiter betrachtet, da sich diese nicht vom Hintergrundrauschen unterscheiden lässt.
 
-%TODO Bild Schritte bei der Vorverarbeitung
 \begin{figure*}[htbp]
     \centering
    \includegraphics[width=0.9\textwidth]{kmeans/Vorverarbeitung.pdf}
@@ -151,13 +150,11 @@ Die Klassifizierung der Geste \ac{RLO} wurde nicht weiter verfolgt, da sie nicht
 \end{figure*}
 
 %Norm. -> Segmentierung -> Reduzieren der Datenmenge
-Insgesamt ist erkennbar, dass bei den übrigen Gesten neben der Amplitude jeweils mindestens ein weiteres lokales Maximum existiert. Anhand dieser Maxima ist eine Unterscheidung vom Grundrauschen und somit auch eine Segmentierung der relevanten Frames aus einer Gesten-Aufnahme möglich.
-
-%Diese Idee wird bei der Segmentierung aufgegriffen. Vorher fidnet jedoch noch eine Normalisierung der Lautstärke statt
+Insgesamt ist erkennbar, dass bei den übrigen Gesten neben der Amplitude jeweils mindestens ein weiteres lokales Maximum existiert. Anhand dieser Maxima ist eine Unterscheidung vom Grundrauschen und somit auch eine Segmentierung der relevanten Frames aus einer Gestenaufnahme möglich.
 
 Die Datenaufbereitung erfolgt in der in \autoref{fig:kMeansVorverarbeitung} dargestellten Reihenfolge. 
 Zu Beginn wird eine Normalisierung der 
-Lautstärke durchgeführt. Dazu werden alle Lautstärkewerte in jedem einzelnen Frame so um den gleichen Prozentsatz erhöht beziehungsweise verringert, dass die Amplitude genau den vorher festgelegten Maximalwert annimmt. Dieser Schritt ist notwendig, da bei der verwendeten Hardware die Lautstärke der Aufnahmen stark schwankt.
+Lautstärke durchgeführt. Dazu werden alle Lautstärkewerte in jedem einzelnen Frame so um den gleichen Prozentsatz erhöht beziehungsweise verringert, dass die Amplitude jedes Frames einen vorher festgelegten Maximalwert annimmt. Dieser Schritt ist notwendig, da bei der verwendeten Hardware die Lautstärke der Aufnahmen stark schwankt.
 %Im Anschluss daran werden die Frames einer Aufnahme so segmentiert, dass 
 %sich der Beginn der Geste bei jeder Aufnahme an der gleichen Frame-Postion
 %möglichst nur die Frames übrig bleiben, bei denen die Geste ausgeführt wird.
@@ -165,27 +162,30 @@ Lautstärke durchgeführt. Dazu werden alle Lautstärkewerte in jedem einzelnen 
 Im Anschluss daran erfolgt die Segmentierung der Gesten. Dabei werden aus den Aufnahmen die nicht relevanten Frames vor und nach Ausführung der eigentlichen Geste entfernt. Diese Frames bestehen nur aus dem Grundrauschen und enthalten daher keine Informationen, die für die weitere Klassifikation hilfreich sind.
 % Diese bestehen eh nur aus Grundrauschen und sind daher für die weitere Klassifikation nicht weiter hilfreich / nicht nützlich. befindet.  
 Für diesen Bearbeitungsschritt muss erkannt werden, zu welchem Zeitpunkt eine Geste ausgeführt wird. Dazu werden bei allen Frames die lokalen Maxima des Frequenzspektrums ermittelt, da sich bei Ausführung einer Geste zusätzliche lokale Maxima bilden.
-Aus diesen lokalen Maxima wird anschließend der zweitgrößte Wert ermittelt. Der größte Wert wird nicht weiter verwendet, da sich dieser immer an der Stelle der Referenzfrequenz von 18500 Hz befindet. 
+Aus diesen lokalen Maxima wird anschließend der zweitgrößte Wert ermittelt. Der größte Wert wird nicht weiter verwendet, da sich dieser immer an der Stelle der Referenzfrequenz von 18,5 kHz befindet. 
 Der Frame, bei dem der zweitgrößte Wert der lokalen Maxima am größten ist, wird nun als Bestandteil der Geste erkannt. 
 Im folgenden Schritt werden die 24 Frames ermittelt, während denen die Geste ausgeführt wird. 
 %Ausgehend von diesem Frame werden 24 Frames der gesamten 48 Frames beibehalten.
 Dazu werden neben dem gefundenen Frame eine als Margin bezeichnete Anzahl von $m$ Frames davor sowie die $24-m-1$ nachfolgenden Frames beibehalten. Bei der Segmentierung ist die Wahl eines passenden Werts für $m$ sehr wichtig, damit die Geste vollständig erfasst wird. Ist $m$ zu klein, werden die Frames zu Beginn der Geste nicht gespeichert. Umgekehrt werden bei einem zu großen Wert für $m$ die Frames am Ende der Geste gelöscht. Eine Aufnahme hat nach diesem Vorverarbeitungsschritt grundsätzlich eine Länge von 24 Frames. Falls die Dauer der Geste unter 24 Frames liegt, ist in den restlichen hinteren Frames das Grundrauschen gespeichert.
 
-Nach Abschluss der Segmentierung hat sich die Datenmenge durch die Beschränkung auf 24 Frames bereits von 3072 auf 1536 Dimensionen halbiert. Um das Ergebnis der Klassifikation zu optimieren, erfolgt eine weitere Reduzierung der Dimensionen. Dazu werden die ersten und letzten 16 Lautstärkewerte jedes Frames entfernt, da die zur Gestenerkennung relevanten Frequenzverschiebungen nur in den 16 Frequenzbereichen unterhalb und oberhalb der Referenzfrequenz von 18500 Hz stattfinden. Somit verringert sich die Anzahl der Dimensionen auf 768. Zuletzt werden die nun vorhandenen Daten weiter reduziert, indem die Abtastrate innerhalb der einzelnen Frames mehrmals halbiert wird. Dazu werden je zwei aufeinanderfolgende Lautstärkewerte des Frames zu einem neuen Lautstärkewert zusammengefasst, der dem arithmetischen Mittel der beiden ursprünglichen Werte entspricht. Diese Halbierung wird pro Frame viermal durchgeführt.
+Nach Abschluss der Segmentierung hat sich die Datenmenge durch die Beschränkung auf 24 Frames bereits von 3072 auf 1536 Dimensionen halbiert. Um das Ergebnis der Klassifikation zu optimieren, erfolgt eine weitere Reduzierung der Dimensionen. Dazu werden die ersten und letzten 16 Lautstärkewerte jedes Frames entfernt, da die zur Gestenerkennung relevanten Frequenzverschiebungen nur in den 16 Frequenzbereichen unterhalb und oberhalb der Referenzfrequenz von 18,5 kHz stattfinden. Somit verringert sich die Anzahl der Dimensionen auf 768. Zuletzt werden die nun vorhandenen Daten weiter reduziert, indem die Abtastrate innerhalb der einzelnen Frames mehrmals halbiert wird. Dazu werden je zwei aufeinanderfolgende Lautstärkewerte des Frames zu einem neuen Lautstärkewert zusammengefasst, der dem arithmetischen Mittel der beiden ursprünglichen Werte entspricht. Diese Halbierung wird pro Frame viermal durchgeführt.
 Insgesamt reduziert sich somit die Anzahl der Dimensionen pro Geste nach dem vollständigen Durchlaufen der Vorverarbeitung von ursprünglich 3072 auf 96 Dimensionen. 
-
 %TODO wie oft, welche Dimension am Schluss?
 %TODO Wert Margin?
 
-%TODO Bild? 
-
+Es zeigte sich, dass die Geste \ac{OT} nach der Datenaufbereitung nicht zuverlässig von den übrigen Gesten unterscheiden lässt. Aus diesem Grund wird die Klassifizierung dieser Geste nicht weiter verfolgt. Zusätzlich kann jedoch eine Bewegung von unten nach oben (Bottom-To-Top-One-Hand, im Folgenden kurz BTO) erkannt werden, die daher bei der weiteren Klassifikation ebenfalls berücksichtigt wird. Insgesamt werden vom Klassifikator die Gesten \ac{TBO}, BTO, \ac{SPO}, \ac{DPO} sowie das Hintergrundrauschen (\ac{BNS} und \ac{BNN}) unterstützt.
 
 
 \subsubsection{Anpassung des Klassifikators}
 Der Klassifikator wurde nur geringfügig angepasst.
 In der Initialisierungsphase werden die Startpunkte der Cluster-Zentren nicht wie im ursprünglichen Algorithmus zufällig gewählt, sondern mithilfe des in \autoref{subsec:kMeansFunktionsweise} vorgestellten k-Means++ Algorithmus bestimmt. Die Trainingsphase läuft hingegen unverändert ab.
 Dadurch ergeben sich in der Regel eine schnellere Laufzeit in der Trainingsphase sowie bessere Ergebnisse bei der Klassifikation.
-Weiterhin gilt eine Geste als nicht eindeutig bestimmt, wenn der Abstand zum zweitnächsten Cluster-Zentrum nicht mindestens um einen bestimmten Prozentsatz $p$ größer ist als der Abstand zum nächsten Zentrum. Es hat sich dabei herausgestellt, dass 10\% ein geeigneter Wert für $p$ ist. %TODO Prozentsatz??
+Weiterhin gilt eine Geste als nicht eindeutig bestimmt, wenn der Abstand zum zweitnächsten Cluster-Zentrum nicht mindestens um einen bestimmten Prozentsatz $p$ größer ist als der Abstand zum nächsten Zentrum. Es hat sich dabei herausgestellt, dass 10\% ein geeigneter Wert für $p$ ist.
+
+Zur Klassifikation werden die Gesten in zwei Gruppen eingeteilt. 
+
+%TODO Prozentsatz??
+
 
 \begin{figure*}[htbp]
     \centering
@@ -195,26 +195,26 @@ Weiterhin gilt eine Geste als nicht eindeutig bestimmt, wenn der Abstand zum zwe
 \end{figure*}
 
 Ansonsten wurden keine Veränderungen am Algorithmus vorgenommen.
-Für die Qualität der Klassifikation ist weiterhin die Wahl eines geeigneten Werts für \emph{k} von Bedeutung. \autoref{fig:kMeansWertK} zeigt ein Beispiel, bei dem der k-Means Algorithmus bei zwei Gruppen von Daten mit einem Wert von k = 2 ein sehr ungenaues Ergebnis liefert. Für k=4 funktioniert das Clustering sehr gut, da 
+Für die Qualität der Klassifikation ist weiterhin die Wahl eines geeigneten Werts für \emph{k} von Bedeutung. \autoref{fig:kMeansWertK} zeigt ein Beispiel, bei dem der k-Means Algorithmus für zwei Gruppen von Daten mit einem Wert von k = 2 ein sehr ungenaues Ergebnis liefert. Für k=4 funktioniert das Clustering sehr gut, da 
 nun pro Gruppe je zwei Cluster-Zentren existieren.
 Zur Gestenerkennung muss \emph{k} mindestens um eins größer sein als die Anzahl der Gesten (da mindestens eine Klasse für das Grundrauschen benötigt wird),
 damit der Algorithmus in der Lage ist, die einzelnen Aufnahmen voneinander zu unterscheiden.  
 
 
-Grundsätzlich gibt es zur Ermittlung der Anzahl an Clustern in einem Datensatz viele verschiedene Ansätze, etwa die Faustregel $k \approx \sqrt{n/2}$ \cite{WikipediaKMeansKValue}, wobei \emph{n} der Anzahl der Datenpunkte entspricht. In Fall der hier beschriebenen Gestenerkennung kann der Wert für \emph{k} jedoch bereits grob abgeschätzt werden. 
+Grundsätzlich gibt es zur Ermittlung der Anzahl an Clustern in einem Datensatz viele verschiedene Ansätze, etwa die Faustregel $k \approx \sqrt{n/2}$ \cite{WikipediaKMeansKValue}, wobei \emph{n} der Anzahl der Datenpunkte entspricht. Im Fall der hier beschriebenen Gestenerkennung kann der Wert für \emph{k} jedoch bereits grob abgeschätzt werden. 
 Die untere Grenze ist wie bereits erwähnt um eins größer als die Anzahl der Gesten.
 Als obere Grenze lässt sich grob der fünffache Wert der unteren Grenze abschätzen, da davon auszugehen ist, dass es nur wenige Variationsmöglichkeiten beim Ausführen einer Geste gibt.
 %TODO fünffach??
 
-Nach der Lernphase ist es noch notwendig, dass den einzelnen Cluster-Zentren je eine Geste zugeordnet wird. Dazu wird ermittelt, welche Geste wie oft in die einzelnen Cluster-Zentren eingeordnet wird. Falls \emph{k} gleich dem oben genannten Minimalwert ist, reicht es aus, dem ersten Cluster die am häufigsten dort vorkommende Geste zuzuordnen, dem zweiten Cluster die häufigste vorkommende Geste der übrigen Gesten etc. 
+Nach der Lernphase ist es noch notwendig, dass den einzelnen Cluster-Zentren je eine Geste zugeordnet wird. Dazu wird ermittelt, welche Geste wie oft in die einzelnen Cluster-Zentren eingeordnet wird. Falls \emph{k} gleich dem oben genannten Minimalwert ist, reicht es aus, dem ersten Cluster die am häufigsten dort vorkommende Geste zuzuordnen, dem zweiten Cluster die häufigste vorkommende Geste der übrigen Gesten und so weiter.
 Somit ergibt sich der in 
 \autoref{lst:kmeans_zuordnung1}
 dargestellte Algorithmus.
 Als Ergebnis erhält man eine Menge von Zuordnungen von Cluster-Zentren zu Gesten. Die Anzahl dieser Zuordnungen entspricht der Anzahl der Gesten.
 
-\begin{lstlisting}[language=Python,caption={Pseudocode der Zuordnung von Cluster-Zentrum zu Geste, Variante 1},label={lst:kmeans_zuordnung1}]{lst:kmeans_zuordnung1}
+\begin{lstlisting}[language=Python,caption={Pseudocode der Zuordnung von Cluster-Zentren zu Gesten, Variante 1},label={lst:kmeans_zuordnung1}]{lst:kmeans_zuordnung1}
 for Geste in alleGesten:
-    suche aus der Liste der Cluster das Cluster, zu dem die Geste am häufigsten zugeordnet wird
+    suche aus der Liste der Cluster das Cluster, zu dem die Geste am      häufigsten zugeordnet wird
     speichere die Zuordnung des gefundenen Clusters zur Geste
     entferne das gefundene Cluster aus der Liste
 \end{lstlisting}
@@ -223,9 +223,9 @@ Ist \emph{k} größer als der Minimalwert, werden zuerst die \emph{k} Cluster, b
 \autoref{lst:kmeans_zuordnung1} durchlaufen und jedem dieser Cluster eine andere Geste zugeordnet. Anschließend wird jedem übrigen Cluster die Geste zugeordnet, die am häufigsten in das Cluster eingeordnet wurde.
 Insgesamt ergibt sich der in \autoref{lst:kmeans_zuordnung2} dargestellte Algorithmus.  Als Ergebnis erhält man eine Menge von Zuordnungen von Clustern zu Gesten. Die Anzahl dieser Zuordnungen entspricht der Anzahl an Clustern.
 
-\begin{lstlisting}[language=Python,caption={Pseudocode der Zuordnung von Cluster-Zentrum zu Geste, Variante 2},label={lst:kmeans_zuordnung2}]{lst:kmeans_zuordnung2}
+\begin{lstlisting}[language=Python,caption={Pseudocode der Zuordnung von Cluster-Zentren zu Gesten, Variante 2},label={lst:kmeans_zuordnung2}]{lst:kmeans_zuordnung2}
 Erstelle eine Zuordnung von Clustern zu Gesten mit dem Algorithmus aus Quelltext 4.1
-Erstelle eine Cluster-Liste, die alle noch nicht zugeordneten Cluster enthält
+Erstelle eine Cluster-Liste, die alle noch nicht zugeordneten Cluster       enthält
 for Cluster in alleCluster:
     suche aus der Liste der Gesten die Geste, die am häufigsten zu dem Cluster zugeordnet wird
     speichere Zuordnung von Cluster zu gefundener Geste
@@ -234,18 +234,76 @@ for Cluster in alleCluster:
 Die in \autoref{lst:kmeans_zuordnung1} und \autoref{lst:kmeans_zuordnung2} dargestellten Algorithmen arbeiten
 zuverlässig, wenn die Gesten -- bis auf wenige Ausnahmen -- eindeutig einem Cluster zugeordnet werden können. Ist dies nicht der Fall, kann keine akzeptable Gestenerkennung realisiert werden und die Vorverarbeitung und/oder der Wert von \emph{k} sollte angepasst werden.
 
+%TODO 2x k-Means
+Die unterstützten Gesten
+
 \subsubsection{Implementierung} \label{subsubsec:kMeansImpl}
-Die Implementierung erfolgt in der Programmiersprache Python unter Verwendung der Bibliothek skikit-learn (Version 0.14) \cite{sklearn}. Diese Bibliothek verwendet den beschriebenen k-Means Algorithmus von Lloyd. Außerdem bietet sie noch die Möglichkeit, dass die Startpunkte der Cluster-Zentren nicht wie im ursprünglichen Algorithmus vorgesehen zufällig gewählt werden, sondern stattdessen mit dem k-Means++ Algorithmus \cite{kMeans++} bestimmt werden. Zusätzlich können noch weitere 
+Die Implementierung erfolgt in der Programmiersprache Python unter Verwendung der Bibliothek skikit-learn (Version 0.14) \cite{sklearn}. Diese Bibliothek verwendet den beschriebenen k-Means Algorithmus von Lloyd. Außerdem bietet sie noch die Möglichkeit, dass die Startpunkte der Cluster-Zentren nicht wie im ursprünglichen Algorithmus vorgesehen zufällig gewählt, sondern stattdessen mit dem k-Means++ Algorithmus bestimmt werden. Zusätzlich können noch weitere 
 %kleine 
 Einstellungen vorgenommen werden, um den Klassifikator für den jeweiligen Anwendungsfall  zu optimieren. Dazu gehört beispielsweise eine Beschränkung der Iterationen beim Lernen auf einen bestimmten Maximalwert.
 Die Komplexität im ungünstigsten Fall liegt bei $O(n^{(k+2)/p})$ \cite{sklearn.kmeans, kMeansHowSlow}, wobei $n$ der Anzahl der Trainingsdaten und $p$ der Anzahl der Dimensionen entspricht.
 
 \subsubsection{Evaluation}
+%Da die Gesten ... nicht unterstützt werden, sind bei der Evaluation nur die Gesten
+Nicht vom Klassifikator unterstützt und daher nicht bei der Evaluation berücksichtigt werden die Gesten ... Zum Testen der Erkennungsrate wurden die übrigen Gesten sowie die eigene Geste ... jeweils XX mal ausgeführt. Die Ergebnisse der Klassifikation sind in  \autoref{matrix_kMeansEvaluation} als Wahrheitsmatrix dargestellt. Die Reihenfolge der Gesten ist dabei (von links nach rechts beziehungsweise von oben nach unten) ... (...)
+
+\begin{center}
+\begin{equation}
+\label{matrix_kMeansEvaluation}
+\begin{pmatrix}
+0 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0
+\end{pmatrix}
+\end{equation}
+\end{center}
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{0.17\textwidth}|c|}
+\hline
+ \textbf{Geste} & \textbf{Erkennungsrate} \\
+ \hline
+  \ac{TBO} &xx,xx \% \\
+ \hline
+  \ac{OT} &xx,xx \% \\
+ \hline
+  \ac{SPO} &xx,xx \% \\
+ \hline
+  \ac{DPO} &xx,xx \% \\
+ \hline
+ XXX (eigene Geste) &xx,xx \% \\
+ \hline
+  \ac{BNS} \& \ac{BNN} (Hintergrund\-rauschen) &xx,xx \%\\
+ \hline
+\end{tabular}
+\caption[Erkennungsraten beim k-Means Klassifikator]{Erkennungsraten beim k-Means Klassifikator}
+\label{tab:kMeansEvaluation}
+\end{table}
+
 Bei welchen Parameter-Werten werden die besten Ergebnisse erzielt?
-TODO: Confusion Matrix in lauter und leiser Umgebung für die verschiedenen Gesten. Welche Gesten werden sehr gut/gut/mittelmäßig oder gar nicht erkannt? Ist die Erkennungsrate praxistauglich?
+%Stark von Hardware abhängig
+
+%Geschwindigkeit, Training VS Erkennung
 
 \subsection{Fazit}
-Wie gut funktioniert die Erkennung? Welche Gesten werden gut, welche schlecht erkannt? Ausblick auf potentielle weiterführende Arbeiten.
+%Wie gut funktioniert die Erkennung? Welche Gesten werden gut, welche schlecht erkannt? Ausblick auf potentielle weiterführende Arbeiten.
+
+Mit dem implementierten k-Means Klassifikationssystem können die Gesten ... in Echtzeit erkannt und voneinander unterschieden werden.
+Die Geste ... wird nicht vom Klassifikator unterstützt, da sie sich nicht deutlich genug von der Geste .. unterscheidet. Weiterhin kann die Geste .. nicht erkannt werden, da sie keine erkennbaren Unterschiede zum Grundrauschen aufweist. Als zusätzliche Geste wird die Bewegung einer Hand von unten nach oben unterstützt.
+Am besten erkannt werden die Gesten ... mit einer Erkennungsrate von ... beziehungsweise .. Prozent. Weniger gut erkannt werden die Gesten ... (.. Prozent) und .. (.. Prozent). 
+
+Insgesamt liefert der Klassifikator gute Ergebnisse, eine weitere Optimierung der Erkennungsrate ist jedoch 
+für den praktischen Einsatz wünschenswert.
+%Die beste Erkennungsrate  
+%Das Ziel war, die Anwendung auf jedem Rechner mit Mikrofon und Lautsprecher ausführen zu können. Durch die starke Abhängigkeit von der Hardware ist dies nur eingeschränkt möglich. 
+Nicht betrachtet wurde die Möglichkeit, neben den vorgegebenen Gesten eigene Gesten zu definieren und zu erkennen. Eine denkbare Erweiterung ist es, als zusätzliches Eingabegerät die an Notebooks standardmäßig vorhandene Kamera bei der Gestenerkennung zu berücksichtigen. Dies ist insbesondere für Gesten interessant, die zu einer ähnlichen Frequenzverschiebung führen und daher anhand des Audiosignals nicht zuverlässig unterschieden werden können. 
+
 % Wie viel Einfluss hat die Hardware? Wie mit schwierigen Hardwarebedingungen wie Lausprecher nach unten umgehen?
 % Weitere, nicht fest vorgegebene Gesten
 % Möglichkeit, die sehr ähnlichen Gesten XXX und XXX zu unterscheiden?
