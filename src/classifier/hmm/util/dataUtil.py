@@ -35,14 +35,15 @@ class DataUtil:
 
     def reduceBins(self, data, leftBorder=c.leftBorder, rightBorder=c.rightBorder+1):
         ''' reduces array from 64 to 16 bins '''
-
-        data3dNew = np.zeros((data.shape[0], data.shape[1], rightBorder-leftBorder))
-
-        # use only the next 8 bins from the peak middle to left and right
-        for d in range(len(data)):
-            for dd in range(len(data[d])):
-                data3dNew[d][dd] = data[d][dd][leftBorder:rightBorder]
-        return data3dNew
+        return data[:, :, leftBorder:rightBorder]
+    
+#         data3dNew = np.zeros((data.shape[0], data.shape[1], rightBorder-leftBorder))
+# 
+#         # use only the next 8 bins from the peak middle to left and right
+#         for d in range(len(data)):
+#             for dd in range(len(data[d])):
+#                 data3dNew[d][dd] = data[d][dd][leftBorder:rightBorder]
+#         return data3dNew
 
     def normalize(self, data):
         ''' normalizes gesture between 0 and 1 '''
@@ -133,14 +134,12 @@ class DataUtil:
         #print np.shape(result[0:i])
         return result[0:i]
 
+    def amplifyFunction(self, x):
+        return x * (3 * ( x - 1 )**2 + 0.75)
+
     def amplifySignal(self, gesture):
-        
-#         l = [ 4.3*(x**3)- 8.6*(x**2) + 4.8*x for x in gesture ]
-#         return np.array(l)
-        gesture = np.where(gesture[:,:] < 0.2, gesture[:,:]*4.0, gesture[:,:] )
-        gesture = np.where(gesture[:,:] < 0.4, gesture[:,:]*2.0, gesture[:,:] )
-        gesture = np.where(gesture[:,:] > 0.8, gesture[:,:]*0.75, gesture[:,:] )
-        return gesture
+        l = [self.amplifyFunction(x) for x in gesture]
+        return np.array(l)
        
     def _getHighestSum(self, gesture):
         highestValue = 0
