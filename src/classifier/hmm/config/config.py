@@ -1,3 +1,7 @@
+### GESTURE CLASSES '''
+classList = [0, 1, 5, 6, 7]
+
+
 ### DATA PREPROCESSING ###
 framesTotal = 32
 binsTotal = 64
@@ -34,7 +38,7 @@ n_iter=5 # Number of iterations to perform.
 logprobBound = -100
 
 ### Live Classification ###
-classificationTreshhold = 0.1 #Percantage (0.1 = 10%)
+classificationTreshhold = 0.05 #Percantage (0.1 = 10%)
 
 
 

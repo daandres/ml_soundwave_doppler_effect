@@ -5,7 +5,6 @@ from sklearn.hmm import _BaseHMM
 import string
 
 import config.config as c
-import util.util as u
 
 import numpy as np
 from sklearn.mixture import GMM
@@ -105,13 +104,3 @@ class GestureHMM(GMMHMM):
             self._do_mstep(stats, self.params)
 
         return self
-
-if __name__ == "__main__":
-    print "#### START ####"
-    h = GMMHMM()
-    hmm = GestureHMM()
-    data = u.loadData(["../data/gesture_0.txt"])
-    
-    hmm.fit(data)
-    hmm.score(data[0])
-    print "#### END ####"

@@ -1,19 +1,12 @@
 import numpy as np
 from gestureFileIO import GestureFileIO
 import classifier.hmm.config.config as c
-np.set_printoptions(precision=2, linewidth=1000, threshold=5000)
 
 class DataUtil:
     
     def __init__(self, lowerBound=0.15):
         self.lowerBound=lowerBound
         self.fileIO = GestureFileIO(relative="")
-
-    def loadRaw3dGesture(self, recordClass, recordNames=None):
-        if recordNames is None:
-            return self.fileIO.getGesture3D(recordClass, ["paul"]) # insert names here
-        else:
-            return self.fileIO.getGesture3D(recordClass, recordNames)
 
     def _loadRaw2DArray(self, path="data/gesture_0.txt"):
         ''' get gesture as numpy 2D array '''
@@ -34,32 +27,12 @@ class DataUtil:
             data2d.append(np.ravel(gesture))
         return np.array(data2d)
 
-    def normalize(self, data):
-        ''' normalizes date between 0 and 1 '''
-        
-        result = []
-        for i in data:
-            aMax = np.amax(i)
-            result.append(i/aMax)
-        return np.array(result)
-    
-    def loadRaw3DArray(self, path=["data/gesture_0.txt"]):
-        ''' get gesture as numpy 3D array '''
-        
-        data3d = []
-        for p in path:
-            #p = "../" + p
-            data2d = self._loadRaw2DArray(p)
-            data3d.extend(self._convert2dTo3d(data2d))
-        return np.array(data3d)
-    
-    def splitData(self, data):
-        ''' splits data in 2/3 training, 1/3 test '''
-        
-        train, test = list(data[::4]) + list(data[1::4]) + list(data[2::4]), data[3::4]
-        return train, test
-    
-        
+    def loadRaw3dGesture(self, recordClass, recordNames=None):
+        if recordNames is None:
+            return self.fileIO.getGesture3D(recordClass, ["paul"]) # insert names here
+        else:
+            return self.fileIO.getGesture3D(recordClass, recordNames)
+
     def reduceBins(self, data, leftBorder=c.leftBorder, rightBorder=c.rightBorder+1):
         ''' reduces array from 64 to 16 bins '''
 
@@ -70,36 +43,30 @@ class DataUtil:
             for dd in range(len(data[d])):
                 data3dNew[d][dd] = data[d][dd][leftBorder:rightBorder]
         return data3dNew
+
+    def normalize(self, data):
+        ''' normalizes gesture between 0 and 1 '''
+        
+        result = []
+        for gesture in data:
+            aMax = np.amax(gesture)
+            result.append(gesture/aMax)
+        return np.array(result)
     
-    def normalizeBound(self, data, lowerBound=0.15, upperBound=None):
+    def splitData(self, data):
+        ''' splits data in 2/3 training, 1/3 test '''
+        
+        train, test = list(data[::4]) + list(data[1::4]) + list(data[2::4]), data[3::4]
+        return train, test
+    
+    def cutThreshold(self, data, lowerBound=0.15, upperBound=None):
         '''
         Uses normalized data and sets values under lowerBound to 0 
         and if set, above upperBound to 1
         '''
         
         result = np.where(data[:,:,:]<lowerBound, 0.0, data[:,:,:])
-            
-        if upperBound is not None:
-            result = np.where(result[:,:,:] > self.upperBound, 1.0, result[:,:,:])
-        
         return result
-
-    def normalizeBounds(self, data):
-        '''
-        Uses normalized data and sets values under lowerBound to 0
-        and above upperBound to 1
-        '''
-        lis = []
-        # gesture
-        for e in data:
-            maxi = np.max(e)
-            x = e / (maxi*1.0)
-            x = np.where(x[:,:]<self.lowerBound, 0, x[:,:])
-            if np.count_nonzero(x) > 59:
-                x = x * 700
-                lis.append(x)
-
-        return np.array(lis)
     
     def cutRelevantAction(self,data, framesBefore=c.framesBefore, framesAfter=c.framesAfter):
         ''' 
@@ -167,7 +134,9 @@ class DataUtil:
         return result[0:i]
 
     def amplifySignal(self, gesture):
-        #gest = np.where(gest[:,:] > 0.6, gest[:,:], gest[:,:]*0.75 )
+        
+#         l = [ 4.3*(x**3)- 8.6*(x**2) + 4.8*x for x in gesture ]
+#         return np.array(l)
         gesture = np.where(gesture[:,:] < 0.2, gesture[:,:]*4.0, gesture[:,:] )
         gesture = np.where(gesture[:,:] < 0.4, gesture[:,:]*2.0, gesture[:,:] )
         gesture = np.where(gesture[:,:] > 0.8, gesture[:,:]*0.75, gesture[:,:] )
@@ -193,75 +162,22 @@ class DataUtil:
         return position
         '''
 
-    def findAvg(self, data):
-
-        summe = []
-        
-        for gesture in data:
-            for frame in gesture:
-                su = np.sum(frame)
-                summe.append(su)
-        return np.average(np.array(summe))
-
-    def show(self, data):
-        for i in data:
-            for j in i:
-                print str(j) + " " + str(np.sum(j))
-            print "new Gesture"
-
-    def fillArray(self, data):
-        ''' fills data back to 64 bins for printing with bob_visualizer_2 '''
-        
-        result = np.zeros((np.shape(data)[0], 32, 64))
-        for i, gesture in enumerate(data):
-            for j, frame in enumerate(gesture):
-                result[i,j, :len(frame)] = frame
-        return result
-
-    def cutPeak(self, data):
-        '''
-        cuts peak signal for gesture
-        '''
-        l = len(data[0][0]) / 2
-        leftBound = l - 1
-        rightBound = l + 2
-        for i, gesture in enumerate(data):
-            for j, frame in enumerate(gesture):
-                data[i, j, leftBound:rightBound] = 0.0
-        return data
-
     def round(self, data):
         return np.round(data, 1)
 
-    def cutBad(self, data):
-        avgLis = []
-        for gesture in data:
-            avgLis.append(np.count_nonzero(gesture))
-        avg = np.average(avgLis)
-        
-        result = []
-        for gesture in data:
-            if np.count_nonzero(gesture) > avg-(0.05 * avg):
-                result.append(gesture)
-        return np.array(result)
-        
+    def preprocessData(self, data):
+        data = self.reduceBins(data)
+        data = self.normalize(data)
+        data = self.cutThreshold(data)
+        data = self.cutRelevantAction(data)
+        data = self.round(data)
+        return data
 
-if __name__ == "__main__":
-    print "#### START ####"
-    dp = DataUtil()
-    path=["../data/clean.txt"]
-    
-    data = dp.loadRaw3dGesture(0)
-    data = dp.reduceBins(data)
-    data = dp.normalize(data)
-    data = dp.normalizeBound(data)
-    data = dp.cutRelevantAction(data)
-    dp.cutBad(data)
-    
-#     y = dp.fillArray(data)
-#     y = dp.normalizeBounds(y)
-#     y = dp._convert3dTo2d(y)
-# 
-#     np.savetxt("../data/formated.txt", y, fmt='%1.2f', delimiter=",")
+    def loadData(self, gesture):
+        data= self.loadRaw3dGesture(gesture)
+        data = self.preprocessData(data)
+        return data
 
-    print "#### END ####"
+    def loadSplitData(self, gesture):
+        data = self.loadData(gesture)
+        return self.splitData(data)

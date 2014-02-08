@@ -6,7 +6,6 @@ import time
 import classifier.hmm.config.config as c
 import classifier.hmm.util.dataUtil as d
 import classifier.hmm.util.hmmUtil as h
-import classifier.hmm.util.util as u
 import ConfigParser
 import pickle
 from classifier.classifier import IClassifier
@@ -18,13 +17,13 @@ import os
 NAME = "HiddenMarkovModel"
 GESTURE_PREFIX="gesture "
 
-CLASS_LIST = [0, 1, 5, 6, 7]
 
 class HMM(IClassifier):
 
     def __init__(self, recorder=None, config=None, relative=""):
-        self.classList = CLASS_LIST
-        self.gestureApp = GestureApplication()
+        self.classList = c.classList
+        self.du = d.DataUtil()
+        self.gestureApp = GestureApplication(self.du)
         self.fileIO = GestureFileIO()
         self.gestureWindows=[[],[]]
         self.activeWindow = 0
@@ -58,7 +57,7 @@ class HMM(IClassifier):
         
 
     def startClassificationAction(self,seq):
-        seq = u.preprocessData(seq)
+        seq = self.du.preprocessData(seq)
         if len(seq) != 0:
             gesture, prob =  self.gestureApp.scoreSeqLive(seq[0])
             if gesture == None:
@@ -74,8 +73,8 @@ class HMM(IClassifier):
                 
     def startValidation(self):
         ret = []
-        for className, dataPath in classList:
-            obs, test = u.loadSplitData(dataPath)
+        for className, dataPath in self.classList:
+            obs, test = self.du.loadSplitData(dataPath)
             ret.append(GestureApplication.scoreClassData(test, className))
         return ret
 
@@ -107,8 +106,8 @@ class HMM(IClassifier):
 
 class GestureApplication():
     
-    def __init__(self):
-        self.dp = d.DataUtil()
+    def __init__(self, du=d.DataUtil()):
+        self.du = du
         self.gestures = {}
         self.fileIO = GestureFileIO()
         
@@ -126,7 +125,7 @@ class GestureApplication():
 
     def createGesture(self, gesture, className):
         mu = h.HMM_Util()
-        obs, test = u.loadSplitData(gesture)
+        obs, test = self.du.loadSplitData(gesture)
             
         gesture = Gesture(className)
         #print "### building " + str(className) + " ###"
@@ -222,14 +221,14 @@ class GestureApplication():
 
     def trainAndSave(self):
         print "#### START ####"
-        classList = CLASS_LIST
+        classList = c.classList
         
         self.createGestures(classList)
         cp = classList[:]
         for classNum in cp:
             # score it
             className = GESTURE_PREFIX + str(classNum)
-            obs, test = u.loadSplitData(classNum)
+            obs, test = self.du.loadSplitData(classNum)
             scores, accuracy, className = self.scoreClassData(test, className)
 
             print className, accuracy, scores
@@ -275,28 +274,5 @@ class Gesture():
 if __name__ == "__main__":
     print "#### START ####"
 
-    classList = [0, 1, 2, 3, 4, 5, 6, 7]
-    ga = GestureApplication()
-    ga.createGestures(classList)
-    cp = classList[:]
-    i = 0
-    while cp != []:
-        for classNum in cp:
-            # score it
-            className = GESTURE_PREFIX + str(classNum)
-            obs, test = u.loadSplitData(classNum)
-            scores, accuracy, className = ga.scoreClassData(test, className)
-            
-            #recreate it
-            if accuracy < 50:
-                ga.createGesture(classNum, className)
-            else:
-                cp.remove(classNum)
-                print className, accuracy, scores
-        i += 1
-        print i
-        if i > 25:
-            print "\n SHIAT \n"
-            break
 
     print "#### END ####"
