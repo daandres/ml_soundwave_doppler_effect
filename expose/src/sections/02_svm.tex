@@ -9,24 +9,24 @@ In der Grundversion besteht ein Perzeptron aus einem einzigen Neuron.
 Es verarbeitet einen Eingabevektor zu einer Ausgabe. 
 Anhand eines Schwellwertes wird entschieden, ob das Neuron "{}feuert"{} oder nicht. 
 Bei der Verarbeitung des Eingabevektors wird für jede Komponente eine Gewichtung berücksichtigt, sodass die Ausgabe auf gewisse Eingaben eingestellt werden kann. 
-Mehrlagige Perzeptronen (MLP) sind in der Lage, Eingabevektoren in Ausgabevektoren umzuwandeln. 
+Mehrlagige Perzeptronen (\ac{MLP}) sind in der Lage, Eingabevektoren in Ausgabevektoren umzuwandeln. 
 
 \begin{figure}[htbp] \centering
-    \subfigure[Pezeptron mit einem Neuron]{\includegraphics[width=0.22\textwidth]{svm/svm_perceptron.png}}
-    \subfigure[Klassentrennung im Koordinatensystem]{\includegraphics[width=0.22\textwidth]{svm/svm_and.png}}
+    \subfigure[AND-Pezeptron mit einem Neuron]{\includegraphics[width=0.22\textwidth]{svm/svm_perceptron.png}}
+    \subfigure[AND linear separierbar in $\mathbb{R}^2$]{\includegraphics[width=0.22\textwidth]{svm/svm_and.png}}
     \caption{AND-Perzeptron}
     \label{fig:perceptron_and}
 \end{figure}
 
 Die jeweiligen Gewichtungen können so eingestellt werden, dass der Eingabevektor in einen bestimmten Ausgabevektor umgewandelt wird. 
-Abb. \ref{fig:perceptron_and} zeigt, wie ein einfaches Perzeptron die UND-Funktion realisiert und visualisiert die Klassifizierungsentscheidung in einem Koordinatensystem. 
+Abb. \ref{fig:perceptron_and} zeigt, wie ein einfaches Perzeptron die AND-Funktion realisiert und visualisiert die Klassifizierungsentscheidung in einem Koordinatensystem. 
 
 Einlagige Perzeptronen sind beschränkt auf die Lösung linear separierbarer Probleme. 
 Ein einfaches XOR kann also nicht realisiert werden (Abb. \ref{fig:perceptron_xor}). 
 
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.22\textwidth]{svm/svm_xor.png}
-    \caption{nichtlinear separierbares XOR}
+    \caption{XOR nichtlinear separierbar in $\mathbb{R}^2$}
     \label{fig:perceptron_xor}
 \end{figure}
 
@@ -39,14 +39,14 @@ Um dennoch eine Problemlösung zu modellieren, die Eingaben richtig klassifizier
 Dieser Algorithmus setzt eine Trainingsmenge voraus, für dessen Eingabevektoren die zugehörigen Klassen bekannt sind. 
 Durch Fehlerrückführung kann ein MLP trainiert werden und das Netz kann die gewünschten Muster nach einer kontrollierten Trainingsphase klassifizieren.
 
-Knapp 40 Jahre Jahre später veröffentliche der sowjetisch-amerikanische Mathematiker Wladimir Wapnik \cite{Vapnik} das Prinzip der Support-Vector-Machines (SVM).
+Knapp 40 Jahre Jahre später veröffentliche der sowjetisch-amerikanische Mathematiker Wladimir Wapnik \cite{Vapnik} das Prinzip der Support-Vector-Machines (\ac{SVM}).
 
-Im Gegensatz zu MLPs wird die Anpassung der Trennung nicht empirisch durch Trainingsmethoden, sondern durch die Datengrundlage mathematisch optimal ermittelt. 
+Im Gegensatz zu \ac{MLP}s wird die Anpassung der Trennung nicht empirisch durch Trainingsmethoden, sondern durch die Datengrundlage mathematisch optimal ermittelt. 
 Eine Erhöhung der Dimension ist nicht möglich, dennoch können SVMs auch nichtlinear separierbare Probleme lösen. 
 Die Hauptidee dabei ist die Repräsentation der Daten zu verändern. 
 Mit Hilfe des sogenannten Kernel-Tricks werden die Daten in einen höherdimensionalen Raum transformiert. 
 
-Support Vector Machines erfreuen sich großer Beliebtheit, da sie in der Regel wesentlich performanter vernünftige Vorhersagen treffen können. Lediglich durch die Lokalisierung des Objekts im Koordinatensystem wird klassifiziert. Dadurch, dass eine trainierte SVM eine Trenngerade generiert, kann durch einfache Hilfsmittel aus der linearen Algebra die Position bestimmt werden. Es wird also entschieden, ob das zu klassifizierende Objekt "{}oberhalb"{} oder "{}unterhalb"{} der Trenngeraden liegt. Allerdings ist zu beachten, dass für sehr große Datenmengen die SVM eine sehr lange Trainingsphase benötigt, da der Algorithmus die Inversion der Eingabematrix benutzt. Das Bilden der inversen Matrix hat eine Laufzeit zwischen $\mathcal O(n^2)$ und $\mathcal O(n^3)$ und ist damit sehr aufwändig.
+Support Vector Machines erfreuen sich großer Beliebtheit, da sie in der Regel wesentlich performanter vernünftige Vorhersagen treffen können. Lediglich durch die Lokalisierung des Objekts im Koordinatensystem wird klassifiziert. Dadurch, dass eine trainierte SVM eine Trenngerade generiert, kann durch einfache Hilfsmittel aus der linearen Algebra die Position bestimmt werden. Es wird also entschieden, ob das zu klassifizierende Objekt "{}oberhalb"{} oder "{}unterhalb"{} der Trenngeraden liegt. Allerdings ist zu beachten, dass für sehr große Datenmengen die \ac{SVM} eine sehr lange Trainingsphase benötigt, da der Algorithmus die Inversion der Eingabematrix benutzt. Das Bilden der inversen Matrix hat eine Laufzeit zwischen $\mathcal O(n^2)$ und $\mathcal O(n^3)$ und ist damit sehr aufwändig.
 
 
 \subsection{Funktionsweise der SVM}
@@ -88,7 +88,7 @@ Das macht die \ac{SVM} zu einem sehr transparenten und performantent Klassifikat
 \subsubsection{Kernel-Trick}
 Es ergeben sich Unregelmäßigkeiten bei der Lösung von nichtlinear separierbaren Probleme und der Klassifikation von mehr als 2 Klassen.
 Im Gegensatz zu den MLPs kann man mit der Erhöhung der Dimension diesen Umstand nicht umgehen. 
-Die \ac{SVMs} setzen in diesem Falle auf die Transformation der Datenrepräsentation. 
+Die \ac{SVM}s setzen in diesem Falle auf die Transformation der Datenrepräsentation. 
 Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren in dem sie linear separierbar erscheinen (Abb. \ref{fig:svm_kernel}). 
 
 \begin{equation}
@@ -100,8 +100,8 @@ Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten vo
 \end{equation}
 
 \begin{figure}[htbp] \centering
-    \subfigure[Datenpunkte $x$ nichtlinear separierbar]{\includegraphics[width=0.22\textwidth]{svm/svm_fitting-line.png}}
-    \subfigure[transformtierte Datenpunkte $\phi(x)$ linear sepraierbar]{\includegraphics[width=0.22\textwidth]{svm/svm_linear-fitting.png}}
+    \subfigure[$x$ nichtlinear separierbar in $\mathbb{R}^n$]{\includegraphics[width=0.22\textwidth]{svm/svm_fitting-line.png}}
+    \subfigure[Transformation $\phi(x)$ linear sepraierbar in $\mathbb{R}^h, h>n$]{\includegraphics[width=0.22\textwidth]{svm/svm_linear-fitting.png}}
     \caption{Kernfunktion $\phi$}
     \label{fig:svm_kernel}
 \end{figure}
@@ -125,7 +125,15 @@ Kernfunktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle 
 \end{equation}
 
 Es kann also das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ in $\mathbb{R}^h$ ausgerechnet werden, ohne die Daten mittles $\phi$ zu transformieren. 
-Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion:
+Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion.
+
+Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
+Gängige Kernfunktionen sind \cite[]{Marsland}:
+\begin{itemize}
+\item{linear: $\mathcal{K}(w,x) = \langle w,x \rangle$}
+\item{polynomiell: $\mathcal{K}(w,x) = (\gamma\langle w,x \rangle+c_0)^d$}
+\item{rbf: $\mathcal{K}(w,x) = exp(- \gamma \|w - x \| ^2)$}
+\end{itemize}
 
 \renewcommand{\figurename}{Bsp.}
 \begin{figure}[htbp]
@@ -157,43 +165,33 @@ Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  a
     \end{pmatrix} \rangle \\
     \\
     = & \:w_1^2x_1^2 + 2 w_1x_1w_2x_2 + w_2^2x_2^2 \\
-    \\
     = & \:(w_1x_1 + w_2x_2)^2 \\
-    \\
     = & \:\langle w,x \rangle^2 \overset{\text{(def)}}= \mathcal{K}(w,x)
 \end{split}
 \end{equation*}
-    \caption{Beispiel einer Kernfunktion}
+    \caption{Beispiel einer polynomiellen Kernfunktion}
     \label{fig:ex_kernel}
 \end{figure}
 \renewcommand{\figurename}{Abb.}
 
-Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
-Gängige Kernfunktionen sind:
-\begin{itemize}
-\item{linear: $\mathcal{K}(w,x) = \langle w,x \rangle$}
-\item{polynomiell: $\mathcal{K}(w,x) = (\gamma\langle w,x \rangle+c_0)^d$}
-\item{radial basis function: $\mathcal{K}(w,x) = exp(- \gamma \|w - x \| ^2)$}
-\end{itemize}
-
-\newpage
+%\newpage
 
 \subsubsection{Klassifikation von mehreren Klassen}
 
 Da die \ac{SVM} als binärer Klassifikator entwickelt wurde, müssen für eine Klassifikation von mehr als zwei Klassen Strategien entwickelt werden, um das Prinzip der \ac{SVM} zu erweitern. 
-Ein Verfahren ist die "{}Einer gegen den Rest"{}-Klassifikation. 
-Bei dieser Technik wird für jedes zu klassifizierende Objekt eine binäre \ac{SVM} trainiert. 
+Ein Verfahren ist die \textit{Einer gegen den Rest}-Klassifikation. 
+Bei dieser Technik wird für jedes zu klassifizierende Objekt eine binäre \ac{SVM}-Instanz trainiert. 
 Für jede \ac{SVM} wird eine Klasse separiert, die anderen Klassen werden nicht unterschieden und als negative Beispiele zu einer Restklasse definiert. 
-Die Vorraussage eines Objektes ergibt sich aus der Auswertung aller \ac{SVMs}. 
-Es ist nun möglich, dass mehrere \ac{SVMs} eine positive Klassenzuordnung feststellen nicht die Restklasse klassifizieren. 
-In diesem Fall entscheidet sich das "{}Einer gegen den Rest"{}-Verfahren für die Klasse, dessen \ac{SVM} die höchste Ausgabe erzeugt (winner-takes-all). 
+Die Vorraussage eines Objektes ergibt sich aus der Auswertung aller \ac{SVM}-Instanzen. 
+Es ist nun möglich, dass mehrere Instanzen eine positive Klassenzuordnung feststellen nicht die Restklasse klassifizieren. 
+In diesem Fall entscheidet sich das \textit{Einer gegen den Rest}-Verfahren für die Klasse, dessen \ac{SVM} die höchste Ausgabe erzeugt (\textit{winner-takes-all}). 
 Als höchstes Ergebnis wird der größte Abstand zur Trennhyperebene angenommen. 
 Offensichtlich erhöht sich die Laufzeit der Trainingsphase mit der Anzahl der Klassen $|\mathcal{C}|$. 
 Glücklicherweise beeinflusst das nicht die Laufzeitanalyse in der $\mathcal{O}$-Notation (\ref{eq:svm_winner_runtime}). 
 
 \begin{equation}
 \label{eq:svm_winner_runtime}
-    |\mathcal{C}| \cdot \mathcal{O}(n) = \mathcal{O}(|\mathcal{C}| \cdot n) =  \mathcal{O}(n)
+    \underbrace{\mathcal{O}(n) + ... + \mathcal{O}(n)}_{|\mathcal{C}|-mal} = |\mathcal{C}| \cdot \mathcal{O}(n) = \mathcal{O}(n)
 \end{equation}
 
 Sind die SVMs trainiert, beeindrucken sie durch rasante Klassifikation. 
