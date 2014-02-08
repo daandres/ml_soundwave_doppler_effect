@@ -29,7 +29,6 @@ class Preprocessor():
             normalized_data_with_ref_frequency = frame_data / np.amax(frame_data)
             normalized_data = normalized_data_with_ref_frequency - ref_frequency_frame
             
-            #print np.amax(normalized_data)
             ''' set small noisy data to 0 '''
             frame = normalized_data
             irrelevant_samples = np.where(frame <= threshold)
