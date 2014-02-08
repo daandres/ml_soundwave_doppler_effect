@@ -10,13 +10,13 @@ import numpy as np
 import pandas as pd
 
 ''' explicit imports '''
-from svm_preprocesser import Preprocesser
+from svm_preprocessor import Preprocessor
 
 
 class Dataloader():
     
     def __init__(self):
-        self.preprocesser = Preprocesser()
+        self.preprocessor = Preprocessor()
     
     
     def load_framesets(self, textfile, samples_per_frame):
@@ -40,12 +40,12 @@ class Dataloader():
                     ''' load and reshape textfile with gesture data '''
                     text_file_with_path = os.path.join(gestures_path, subdir, 'gesture_' + str(gesture_nr), textfile)
                     gesture_framesets_plain = self.load_framesets(text_file_with_path, samples_per_frame)
-                    gesture_framesets = self.preprocesser.slice_framesets(gesture_framesets_plain, slice_left, slice_right, samples_per_frame)
+                    gesture_framesets = self.preprocessor.slice_framesets(gesture_framesets_plain, slice_left, slice_right, samples_per_frame)
                     
                     ''' create one gesture frame from relevant frames '''
                     for frameset_nr in range(gesture_framesets.shape[0]):
                         ''' start preprocessing of frameset '''
-                        normalised_gesture_frame = self.preprocesser.preprocess_frames(gesture_framesets[frameset_nr], ref_frequency_frame, framerange, new_preprocess, threshold, wanted_frames)
+                        normalised_gesture_frame = self.preprocessor.preprocess_frames(gesture_framesets[frameset_nr], ref_frequency_frame, framerange, new_preprocess, threshold, wanted_frames)
                         
                         ''' append gestureframe and targetclass to their corresponding arrays '''
                         gestures.append(normalised_gesture_frame)
@@ -65,10 +65,10 @@ class Dataloader():
         ref_frequency_framesets_plain = self.load_framesets(ref_frequency_txt_file, samples_per_frame)
         
         ''' normalse referencefrequency datadarames '''
-        ref_frequency_framesets = self.preprocesser.normalise_framesets(ref_frequency_framesets_plain, 0)
+        ref_frequency_framesets = self.preprocessor.normalise_framesets(ref_frequency_framesets_plain, 0)
         
         ''' reduce to one single average referencefrequency frame and slice to 40 datavalues '''
         ref_frequency_avg_frameset = np.mean(ref_frequency_framesets, axis=1)
-        ref_frequency_frame = self.preprocesser.slice_frame(np.mean(ref_frequency_avg_frameset, axis=0), slice_left, slice_right, samples_per_frame)
+        ref_frequency_frame = self.preprocessor.slice_frame(np.mean(ref_frequency_avg_frameset, axis=0), slice_left, slice_right, samples_per_frame)
         print ref_frequency_frame
         return ref_frequency_frame
