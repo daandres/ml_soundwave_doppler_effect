@@ -9,6 +9,7 @@ from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
 from pybrain.optimization import GA, HillClimber, MemeticSearch, NelderMead, CMAES, OriginalNES, ES, MultiObjectiveGA
 import numpy as np
 from gestureFileIO import GestureFileIO
+import properties.config as c
 import time
 '''
 saves network to file. If no name is provided current timestamp is used
@@ -86,7 +87,8 @@ Loads data from sample files, preprocesses data and creates a PyBrain DataSet
 '''
 def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="false", merge67="false", cut=0, fold=1):
     def __loadDataFromFile(merge67="false"):
-        g = GestureFileIO(relative=relative)
+        gesturepath = c.getInstance().getPathsConfig()['gesturepath']
+        g = GestureFileIO(gesturePath=gesturepath, relative=relative)
         data = [0] * nClasses
         getData = None
         if(average == "false"):
@@ -186,7 +188,8 @@ avg = None
 def getAverage(cut, fold):
     global avg
     if avg == None:
-        g = GestureFileIO()
+        gesturepath = c.getInstance().getPathsConfig()['gesturepath']
+        g = GestureFileIO(gesturePath=gesturepath)
         avg = g.getAvgFrequency()
         avg = preprocessFrame(avg, cut, fold)
     return avg

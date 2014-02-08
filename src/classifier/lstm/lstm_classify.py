@@ -17,10 +17,13 @@ class LSTMClassify():
         self.datalist = []
         self.datanum = 0
         self.has32 = False
+
+        # Classify2
         self.previouspredict = 6
         self.predcounter = 0
         self.predHistSize = 8
         self.predHistHalfUpper = 5
+        self.predcountertreshold = 5
         self.predHistory = util.createArraySix(self.predHistSize,)
 
         # Classify3 method
@@ -34,6 +37,8 @@ class LSTMClassify():
         self.beginMax = 0
         self.maxValue = 0
         self.maxValueList = []
+
+        # For interacting with OS
         self.outkeys = None
         if(c.getInstance().getOSConfig()['type'] == "posix"):
             from systemkeys import SystemKeys
@@ -47,7 +52,11 @@ class LSTMClassify():
         preprocessedData = data / np.amax(data)
         preprocessedData = util.preprocessFrame(preprocessedData, self.net.datacut, self.net.datafold)
         # diffAvgData = preprocessedData - self.avg
-        self.__classify5(preprocessedData)
+        out = self.__classify2(preprocessedData)
+        if(out != -1):
+            print("Gesture " + str(out) + " detected")
+            if(self.outkeys != None):
+                self.outkeys.outForClass(out)
 
     '''
     Gesten werden starr nach 32 frames erkannt
@@ -59,7 +68,6 @@ class LSTMClassify():
         if(self.datanum % 32 == 0):
             self.net.reset()
             out = self.net._activateSequence(self.datalist)
-            print(str(out))
             self.datalist = []
             self.datanum = 0
             return out
@@ -81,26 +89,30 @@ class LSTMClassify():
         if(self.datanum % 32 == 0):
             self.has32 = True
         if(self.has32):
+            # Activate for 32 Frames
             self.net.reset()
             Y_pred = self.net._activateSequence(self.datalist)
             del self.datalist[0]
+
+            # Save network output in list
             self.predHistory[0] = Y_pred
             self.predHistory = np.roll(self.predHistory, -1)
+
+            # Get Mode of list
             expected = stats.mode(self.predHistory, 0)
+
+            # Check if Mode count is greater than self.predHistHalfUpper
             if(expected[1][0] >= self.predHistHalfUpper):
+                # If current mode is not the most one, change it and reset counter
                 if(int(expected[0][0]) != self.previouspredict):
-                    oldPrevious, oldPredCounter = self.previouspredict, self.previouspredict
                     self.previouspredict = int(expected[0][0])
                     self.predcounter = 1
-                    return oldPrevious, oldPredCounter
+                # else increase counter and return class if counter is greater then
                 else:
                     self.predcounter += 1
-                    if(self.predcounter == 4):
-                        print(str(self.previouspredict))
-                        if(self.outkeys != None):
-                            self.outkeys.outForClass(self.previouspredict)
-                    return self.previouspredict, self.predcounter
-        return -1, -1
+                    if((self.predcounter == self.predcountertreshold)):
+                        return self.previouspredict
+        return -1
 
 
     '''
@@ -109,15 +121,15 @@ class LSTMClassify():
     '''
     def __classify3(self, data):
         data = data - self.avg
-        pred, predcounter = self.__classifiy2(data)
-        if(pred != -1 and predcounter >= 4):
+        pred = self.__classify2(data)
+        if(pred != -1 and self.predcounter >= 4):
             try:
                 prevpred, prevpredcounter = self.predhistoryforclassify3.pop()
                 if(prevpred != pred):
                     self.predhistoryforclassify3.append([prevpred, prevpredcounter])
             except IndexError:
                 pass
-            self.predhistoryforclassify3.append([pred, predcounter])
+            self.predhistoryforclassify3.append([pred, self.predcounter])
             if(pred == 6 and len(self.predhistoryforclassify3) <= 1):
                 pass
             else:
@@ -126,7 +138,8 @@ class LSTMClassify():
                     classes[pred] += count
                 classes.pop(6)
                 classifiedclass = stats.mode(np.asarray(classes.values()), 0)
-                print(str(classifiedclass))
+                return classifiedclass
+        return -1
 
 
     '''
