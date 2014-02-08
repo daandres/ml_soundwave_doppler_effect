@@ -112,19 +112,18 @@ class ViewUIKMeans:
     
     @pyqtSlot(int)
     def setGestureTrigger(self, gesture):
-        #print 'gesture : ', gesture
-        #self.uiplot.scrollArea.setVertical(float(gesture))
-        if gesture == 5:
-            self.rightPage.moveCursor(QtGui.QTextCursor.Up)
-        if gesture == 0:
-            self.rightPage.moveCursor(QtGui.QTextCursor.Down)#moveCursor(QtGui.QTextCursor.Down)
+        if gesture == -10:
+            self.uiplot.qwtPlot_page_1.setCanvasBackground(Qt.Qt.white)
+        if gesture == 10:
+            self.uiplot.qwtPlot_page_1.setCanvasBackground(Qt.Qt.red)
+        
 
         if gesture == 3:
             #print 'gesture ', gesture
             if self.akt < 5:
                 self.akt +=1
             akt = str(self.akt) + '. Akt::'
-            self.rightPage.scrollToAnchor('2. Akt::')
+            self.rightPage.scrollToAnchor('2')
             print akt
         if gesture == 4:
             #print 'gesture ', gesture
@@ -145,13 +144,15 @@ class ViewUIKMeans:
         if data == None:
             return
         xs, ys = data
-        
+
+        self.curve_page_1.setData(xs, ys) 
+        self.uiplot.qwtPlot_page_1.replot()
+                
         ys = ys[self.idxLeft:self.idxRight]
         xs = self.xPoints[self.idxLeft:self.idxRight]
         
   
-        self.curve_page_1.setData(xs, ys) 
-        self.uiplot.qwtPlot_page_1.replot()
+
         
         
         if not self.showRecords:
@@ -564,14 +565,19 @@ class ViewUIKMeans:
         #self.kMeansClassifier.startTraining
         if self.kmeansClusterCenters is None:
             #default
-            self.kmeansClusterCenters = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/cen_12N.kmeans")), delimiter=","))        
+            self.kmeansClusterCenters = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/data/c_34N_k5_m4.kmeans")), delimiter=","))        
         print self.kmeansClusterCenters.shape     
-        
+        text=open("../gestures/Robert/Centroids/data/othello.kmeans").read()
+        self.rightPage.setPlainText(text)        
         self.kmeans = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters)
         cluster_ = self.kmeans.fit_predict(self.kmeansClusterCenters)
         
+        classArray = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/data/classArray_34N.kmeans")), delimiter=","))
+        print 'classArray.shape ', classArray.shape
+        self.kMeansClassifier.setClassArray(classArray)
+                
         #self.kmeansClusterCenters_16N = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/new/shape 24/c_12346N_f24_s2_std1a_perfecto_upDown.kmeans")), delimiter=","))               
-        self.kmeansClusterCenters_16N = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/new/shape 24/samstag 24/c_16N_m12_k3__.kmeans")), delimiter=","))
+        self.kmeansClusterCenters_16N = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/data/c_16N_m12_k3__.kmeans")), delimiter=","))
         self.kmeans_16N = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters_16N)
         cluster_ = self.kmeans_16N.fit_predict(self.kmeansClusterCenters_16N)
         
@@ -725,6 +731,9 @@ class ViewUIKMeans:
             return self.t.is_alive()
         return False
    
+    def setGesturePixmap(self):
+        self.uiplot.singlePush_lb.setPixmap(QtGui.QPixmap("../gestures/Robert/Centroids/data/Untitled.jpg")) 
+    
     def end(self):
         self.uiplot.timer.Stop(self.guiIntervall)
    
@@ -787,7 +796,7 @@ class ViewUIKMeans:
         self.idxRight = self.sampleRate - self.arraySidesCut
         
 
-        
+        self.setGesturePixmap()
         self.bindButtons()
         self.kmH = kmHelper.kMeansHepler()
         self.loadDefaultNoiseFile()
@@ -797,6 +806,7 @@ class ViewUIKMeans:
         self.rightPage = QtGui.QTextEdit()
         self.rightPage.setFont(QtGui.QFont ("Courier", 16));
         self.uiplot.rightPage_sa.setWidget(self.rightPage)
+        
 
         # ## DISPLAY WINDOWS
         self.win_plot.show()
