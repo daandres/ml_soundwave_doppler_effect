@@ -4,16 +4,13 @@ Created on 07/02/2014
 @author: Benny, Manuel
 '''
 
-'''general imports '''
-import svm as svm
-
 ''' custom imports '''
 import properties.config as c
-
+from svm import SVM
 
 def show_confusion_matrix():
     svmConfig = c.getInstance('../../').getConfig("svm")
-    svm = svm.SVM(None, svmConfig)
+    svm = SVM(None, svmConfig)
     svm.show_confusion_matrix()
 
 
