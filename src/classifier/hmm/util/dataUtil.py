@@ -29,21 +29,18 @@ class DataUtil:
 
     def loadRaw3dGesture(self, recordClass, recordNames=None):
         if recordNames is None:
-            return self.fileIO.getGesture3D(recordClass, ["Alex","Benjamin","Daniel","Frank","Manuel"]) # insert names here
+            return self.fileIO.getGesture3D(recordClass, c.names)
         else:
             return self.fileIO.getGesture3D(recordClass, recordNames)
+
+
 
     def reduceBins(self, data, leftBorder=c.leftBorder, rightBorder=c.rightBorder+1):
         ''' reduces array from 64 to 16 bins '''
         return data[:, :, leftBorder:rightBorder]
-    
-#         data3dNew = np.zeros((data.shape[0], data.shape[1], rightBorder-leftBorder))
-# 
-#         # use only the next 8 bins from the peak middle to left and right
-#         for d in range(len(data)):
-#             for dd in range(len(data[d])):
-#                 data3dNew[d][dd] = data[d][dd][leftBorder:rightBorder]
-#         return data3dNew
+
+    def amplifyFunction(self, x):
+        return x * (2.8 * ( x - 1.15 )**2 + 0.75)
 
     def normalize(self, data):
         ''' normalizes gesture between 0 and 1 '''
@@ -66,9 +63,32 @@ class DataUtil:
         and if set, above upperBound to 1
         '''
         
-        result = np.where(data[:,:,:]<lowerBound, 0.0, data[:,:,:])
+        result = np.where(data[:,:,:]<lowerBound, 0.0, self.amplifyFunction(data[:,:,:]))
         return result
     
+    def round(self, data):
+        return np.round(data, 1)
+
+    def preprocessData(self, data):
+        data = self.reduceBins(data)
+        data = self.normalize(data)
+        data = self.cutThreshold(data)
+        #data = self.cutRelevantAction(data)
+        data = self.round(data)
+        return data
+
+    def loadData(self, gesture):
+        data= self.loadRaw3dGesture(gesture)
+        data = self.preprocessData(data)
+        return data
+
+    def loadSplitData(self, gesture):
+        data = self.loadData(gesture)
+        return self.splitData(data)
+
+
+
+
     def cutRelevantAction(self,data, framesBefore=c.framesBefore, framesAfter=c.framesAfter):
         ''' 
         extracts relevant actions from data 
@@ -134,14 +154,7 @@ class DataUtil:
         #print np.shape(result[0:i])
         return result[0:i]
 
-    def amplifyFunction(self, x):
-        return x * (3 * ( x - 1 )**2 + 0.75)
 
-    def amplifySignal(self, gesture):
-        #TODO in cut Threshold integrieren
-        l = [self.amplifyFunction(x) for x in gesture]
-        return np.array(l)
-       
     def _getHighestSum(self, gesture):
         highestValue = 0
         position = 0
@@ -161,23 +174,3 @@ class DataUtil:
                 position = i
         return position
         '''
-
-    def round(self, data):
-        return np.round(data, 1)
-
-    def preprocessData(self, data):
-        data = self.reduceBins(data)
-        data = self.normalize(data)
-        data = self.cutThreshold(data)
-        #data = self.cutRelevantAction(data)
-        data = self.round(data)
-        return data
-
-    def loadData(self, gesture):
-        data= self.loadRaw3dGesture(gesture)
-        data = self.preprocessData(data)
-        return data
-
-    def loadSplitData(self, gesture):
-        data = self.loadData(gesture)
-        return self.splitData(data)

@@ -52,9 +52,9 @@ class HMM_Util:
         model = None
 
         for cov_type in c.covariance_type:
-            print "cov_type: " + cov_type
+            #print "cov_type: " + cov_type
             for algo in c.algorithm:
-                print "  algo: " + algo
+                #print "  algo: " + algo
                 i = 0
                 while logprob < c.logprobBound:
                     ### init HMM instance ###
@@ -64,8 +64,6 @@ class HMM_Util:
                     ### fit the model ###        
                     m = m.fit(obs)
                     l = self._averageScore(m, test)
-                    d = self._averageDecode(m, test)
-                    print "    " + str(i+1) + ") "+ str(l)
                     if 0 > l > logprob:
                         logprob = l
                         model = m
