@@ -42,7 +42,7 @@ class Sound:
             self.isWindows = False
 
     def startPlaying(self, frequency=440.0, amplitude=0.5, framerate=48000, duration=60, bufsize=1024):
-        '''
+
         if self.isWindows:
             while True:
                 try:
@@ -67,7 +67,7 @@ class Sound:
                 self.audioStream.stopIt()
                 self.audioDev.terminate()
             return
-        '''
+
         
     def stopPlaying(self):
         self.play = False
