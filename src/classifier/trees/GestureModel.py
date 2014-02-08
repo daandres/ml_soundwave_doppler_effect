@@ -31,6 +31,7 @@ class GestureModel(object):
         
         self.shifts_left = []
         self.shifts_right = []
+        self.shifts = []
         
         self.featureVector = []
         
@@ -82,6 +83,13 @@ class GestureModel(object):
             self.bins_right_filtered.append(numBinsFiltered)
             self.amplitudes_right.append(amp_left)
             self.amplitudes_right_filtered.append(amp_left_filtered)
+            
+        # set shifts
+        self.shifts_left = self.findShifts(self.bins_left_filtered, 'left')
+        self.shifts_right = self.findShifts(self.bins_right_filtered, 'right')
+        self.shifts = sorted(self.shifts_left + self.shifts_right,key=lambda x: x[1])
+        
+        # set shift orderlist
     
 
     '''
@@ -237,4 +245,32 @@ class GestureModel(object):
         #right
         counts_right = np.bincount(self.bins_right_filtered)
         return (np.argmax(counts_left), np.argmax(counts_right))
+    
+    '''
+    The function finds shifts and returns a list of shifts of given direction. A shift is a 
+    tuple of the direction (is it a left or right shift?), startSample, stopSample, max bin count 
+    '''
+    def findShifts(self, values, direction):
+        commonValue = np.argmax(np.bincount(values))
+        found = False
+        tempStart = 0
+        tempStop = 0
+        tempMax = 0
+        shifts = []
+        for i in range(len(values)):
+            value = values[i]
+            if(value > commonValue and found == False):
+                tempStart = i
+                tempMax = value
+                found = True
+            elif(value > commonValue and found == True):
+                if(value > tempMax):
+                    tempMax = value
+            elif(value <= commonValue and found == True):
+                tempStop = i
+                shift = (direction, tempStart, tempStop, tempMax)
+                shifts.append(shift)
+                tempStart, tempStop, tempMax = 0,0,0
+                found = False
+        return shifts
         

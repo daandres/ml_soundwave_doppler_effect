@@ -4,9 +4,6 @@ import classifier.hmm.config.config as c
 
 from classifier.hmm.gestureGMM import GestureGMM
 
-import util as u
-
-
 class GMM_Util():
     '''
     class for training gmms
@@ -117,31 +114,6 @@ class GMM_Util():
         return np.array(cData)
 
 
-    def sample(self, dataPath = None, data=None):
-        if data == None:
-            if dataPath==None:
-                data = u.loadData()
-            else:
-                data = u.loadData(dataPath)
+    def sample(self, data):
         self.trainGmms(data)
         return self._gmms
-    
-
-
-if __name__ == "__main__":
-    mg = GMM_Util()
-    
-    print "train"
-    data = u.loadData(["../data/gesture_0.txt"])
-    gmms = mg.trainGmms(data)
-
-    print "0"
-    print mg.testGmms(data)
-    
-    print "5"
-    data = u.loadData(["../data/gesture_5.txt"])
-    print mg.testGmms(data)
-    
-    print "clean"
-    data = u.loadData(["../data/clean.txt"])
-    print mg.testGmms(data)

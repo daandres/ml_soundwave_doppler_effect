@@ -5,7 +5,6 @@ from sklearn.hmm import _BaseHMM
 import string
 
 import config.config as c
-import util.util as u
 
 import numpy as np
 from sklearn.mixture import GMM
@@ -46,11 +45,6 @@ class GestureHMM(GMMHMM):
                  covars_prior=1e-2, random_state=None, n_iter=10, thresh=1e-2,
                  params="",
                  init_params=""):
-
-        
-#         if random_state == None:
-#             random_state = random_state = RandomState([1, 3, 5, 7, 11, 13])
-            
 
         GMMHMM.__init__(self, n_components, n_mix, startprob, transmat,
                  startprob_prior, transmat_prior,
@@ -110,13 +104,3 @@ class GestureHMM(GMMHMM):
             self._do_mstep(stats, self.params)
 
         return self
-
-if __name__ == "__main__":
-    print "#### START ####"
-    h = GMMHMM()
-    hmm = GestureHMM()
-    data = u.loadData(["../data/gesture_0.txt"])
-    
-    hmm.fit(data)
-    hmm.score(data[0])
-    print "#### END ####"

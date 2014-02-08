@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_kmeans.ui'
 #
-# Created: Fri Feb 07 01:26:38 2014
+# Created: Fri Feb 07 16:30:15 2014
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -35,24 +35,28 @@ class Ui_MainWindow(object):
         self.tab = QtGui.QWidget()
         self.tab.setObjectName(_fromUtf8("tab"))
         self.groupBox = QtGui.QGroupBox(self.tab)
-        self.groupBox.setGeometry(QtCore.QRect(530, 89, 771, 521))
+        self.groupBox.setGeometry(QtCore.QRect(340, 89, 961, 521))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.rightPage_sa = QtGui.QScrollArea(self.groupBox)
-        self.rightPage_sa.setGeometry(QtCore.QRect(390, 20, 351, 491))
+        self.rightPage_sa.setGeometry(QtCore.QRect(510, 20, 441, 491))
         self.rightPage_sa.setWidgetResizable(True)
         self.rightPage_sa.setObjectName(_fromUtf8("rightPage_sa"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 349, 489))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 439, 489))
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.rightPage_sa.setWidget(self.scrollAreaWidgetContents_2)
         self.textEdit = QtGui.QTextEdit(self.groupBox)
-        self.textEdit.setGeometry(QtCore.QRect(30, 20, 361, 491))
+        self.textEdit.setGeometry(QtCore.QRect(30, 20, 481, 491))
         self.textEdit.setObjectName(_fromUtf8("textEdit"))
+        self.qwtPlot_page_1 = Qwt5.QwtPlot(self.groupBox)
+        self.qwtPlot_page_1.setEnabled(False)
+        self.qwtPlot_page_1.setGeometry(QtCore.QRect(40, 30, 461, 481))
+        self.qwtPlot_page_1.setObjectName(_fromUtf8("qwtPlot_page_1"))
         self.openLoadCentroids_bt = QtGui.QPushButton(self.tab)
-        self.openLoadCentroids_bt.setGeometry(QtCore.QRect(130, 310, 211, 41))
+        self.openLoadCentroids_bt.setGeometry(QtCore.QRect(80, 310, 211, 41))
         self.openLoadCentroids_bt.setObjectName(_fromUtf8("openLoadCentroids_bt"))
         self.startRecognition_bt = QtGui.QPushButton(self.tab)
-        self.startRecognition_bt.setGeometry(QtCore.QRect(130, 408, 211, 41))
+        self.startRecognition_bt.setGeometry(QtCore.QRect(80, 408, 211, 41))
         self.startRecognition_bt.setObjectName(_fromUtf8("startRecognition_bt"))
         self.tabWidget.addTab(self.tab, _fromUtf8(""))
         self.tab_2 = QtGui.QWidget()

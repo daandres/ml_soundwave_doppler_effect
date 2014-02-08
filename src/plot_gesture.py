@@ -112,7 +112,7 @@ def main():
 #===============================================================================
     
     g = 5
-    for gesture in range(0,1): #0+g,1+g):
+    for gesture in range(2,3): #0+g,1+g):
         ''' get preprocessed data '''
         nn_avg, gn = preprocess(gesture)
         
@@ -132,14 +132,23 @@ def main():
                 if numpy.amax(gn[i][rf]) > 0:
                     temp.append(gn[i][rf])
             
-            while len(temp) < 16:
+            while len(temp) < 20:
                 temp.append(numpy.zeros(40))
             #print len(temp)
             
-            even = temp[:16:2] 
-            odd = temp[1:16:2]
+            even = temp[:20:2] 
+            odd = temp[1:20:2]
             
-            test = numpy.asarray(list(numpy.asarray(even) + numpy.asarray(odd)))/2.0
+            test = gaussian_filter1d(numpy.asarray(list(numpy.asarray(even) + numpy.asarray(odd))), 1.5)
+            print test.shape
+            ax = pylab.subplot(1,1,0)
+            ax.set_ylim([-0.1,1.1])
+            scaling = numpy.arange(400)
+            pylab.plot(scaling, test.reshape(400,), "g")
+            
+            #figure = pylab.gcf()
+            #figure.set_size_inches(60, 3)
+            '''
 
             for rf in range(0,len(test)):
                 #print numpy.amax(test[rf])
@@ -159,7 +168,7 @@ def main():
                 else:
                     pylab.plot(scaling,p,"g")
             
-            '''return
+            
             for rf in range(0,len(temp[:16]),2):
                 ax = pylab.subplot(4,4,rf)
                 ax.set_ylim([-0.1,1])

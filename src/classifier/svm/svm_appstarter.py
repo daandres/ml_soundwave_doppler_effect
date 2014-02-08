@@ -23,7 +23,7 @@ class Starter():
                          3: {"program": "taskmanager", "number": 2},
                          4: {"program": "calculator", "started": False, "processname": "calc"},
                          5: {"program": "calculator", "number": 4}}
-        print "Application-Starter loaded"
+
     
     def controlProgram(self, number):
         ''' wrapper method which will be called from svm classifier '''

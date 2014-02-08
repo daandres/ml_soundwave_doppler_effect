@@ -33,9 +33,9 @@
      <widget class="QGroupBox" name="groupBox">
       <property name="geometry">
        <rect>
-        <x>530</x>
+        <x>340</x>
         <y>89</y>
-        <width>771</width>
+        <width>961</width>
         <height>521</height>
        </rect>
       </property>
@@ -45,9 +45,9 @@
       <widget class="QScrollArea" name="rightPage_sa">
        <property name="geometry">
         <rect>
-         <x>390</x>
+         <x>510</x>
          <y>20</y>
-         <width>351</width>
+         <width>441</width>
          <height>491</height>
         </rect>
        </property>
@@ -59,7 +59,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>349</width>
+          <width>439</width>
           <height>489</height>
          </rect>
         </property>
@@ -70,8 +70,21 @@
         <rect>
          <x>30</x>
          <y>20</y>
-         <width>361</width>
+         <width>481</width>
          <height>491</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QwtPlot" name="qwtPlot_page_1">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>30</y>
+         <width>461</width>
+         <height>481</height>
         </rect>
        </property>
       </widget>
@@ -79,7 +92,7 @@
      <widget class="QPushButton" name="openLoadCentroids_bt">
       <property name="geometry">
        <rect>
-        <x>130</x>
+        <x>80</x>
         <y>310</y>
         <width>211</width>
         <height>41</height>
@@ -92,7 +105,7 @@
      <widget class="QPushButton" name="startRecognition_bt">
       <property name="geometry">
        <rect>
-        <x>130</x>
+        <x>80</x>
         <y>408</y>
         <width>211</width>
         <height>41</height>

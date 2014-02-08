@@ -27,18 +27,9 @@ class ViewUIKMeans:
         self.kmeans_16N = None
         self.kmeansClusterCenters = None
         self.kmeansClusterCenters_16N = None
-        
+        self.arraySignal = np.array([]) 
         self.checkOnline = False
-       
-        self.toogleClass0 = False
-        self.toogleClass1 = False
-        self.toogleClass2 = False
-        self.toogleClass3 = False
-        self.toogleClass4 = False
-        self.toogleClass5 = False
-        self.toogleClass6 = False
-        self.toogleClass7 = False
-        
+
         self.idxLeft = 20
         self.idxRight = 44
 
@@ -48,6 +39,9 @@ class ViewUIKMeans:
        
         self.showRecords = False
         self.recordFramesCount = 32
+    
+    
+    
     
         self.noiseArray = []
         self.arrayFromFile = []
@@ -59,6 +53,8 @@ class ViewUIKMeans:
         
         self.textEdit = None
         self.rightPage = None
+        self.textBeginn = True
+        self.akt = 1
         self.globalLabelText = 'Init!\n'
         self.segNormArray = []
         
@@ -121,13 +117,27 @@ class ViewUIKMeans:
         if gesture == 5:
             self.rightPage.moveCursor(QtGui.QTextCursor.Up)
         if gesture == 0:
-            self.rightPage.moveCursor(QtGui.QTextCursor.Down)
-            #self.uiplot.rightPage_sa.verticalScrollBar(QtGui.QScrollBar.setSingleStep(10))
-            #vbar = self.uiplot.rightPage_sa.verticalScrollBar()
-            #vbar.setValue(10)
+            self.rightPage.moveCursor(QtGui.QTextCursor.Down)#moveCursor(QtGui.QTextCursor.Down)
+
+        if gesture == 3:
+            print 'gesture ', gesture
+            if self.akt < 5:
+                self.akt +=1
+            akt = str(self.akt) + '. Akt::'
+            self.rightPage.scrollToAnchor(akt)
+        if gesture == 4:
+            print 'gesture ', gesture
+            if self.textBeginn:
+                self.textBeginn = False
+                self.rightPage.scrollToAnchor('FINALE')
+            else:
+                self.textBeginn = True
+                self.rightPage.scrollToAnchor('WILLIAM')
+                self.akt = 1
         else:
-            pass#self.rightPage.setText('-')
-            
+            pass
+
+
     def plotSignal(self):
 
         data = self.recorder.getTransformedData()
@@ -137,6 +147,11 @@ class ViewUIKMeans:
         
         ys = ys[self.idxLeft:self.idxRight]
         xs = self.xPoints[self.idxLeft:self.idxRight]
+        
+  
+        self.curve_page_1.setData(xs, ys) 
+        self.uiplot.qwtPlot_page_1.replot()
+        
         
         if not self.showRecords:
        
@@ -152,24 +167,8 @@ class ViewUIKMeans:
                 self.plot_id = 1
         
         if self.checkOnline:
-            #self.toogleForClass()
-              
-            #text = self.recorder.getGestureArray()
-            #self.textEdit.setText(text.tostring())
-            #self.textEdit.moveCursor(QtGui.QTextCursor.End)
-            text = np.array(['\ta\n','b\n','\tc\n'])
-            self.textEdit.setText(text.tostring())
+            pass
             
-   
-    def toogleForClass(self):
-        for x in xrange(8):
-            classBool = self.recorder.toogleClassList[x]
-            classButton = getattr(self.uiplot,'class%d_bt' %x)  
-            if classBool:
-                classButton.setStyleSheet(self.getButtonColor(x))
-            else:
-                classButton.setStyleSheet('QPushButton {color: black; background-color: grey; font: bold;}')
- 
             
     def getButtonColor(self, classNumber, button=True):
         startString = 'QPushButton {color: black; background-color:'
@@ -556,7 +555,7 @@ class ViewUIKMeans:
     
     def initializeKMeans(self):
         self.loadCentroids()
-        text=open("../gestures/Robert/Centroids/shakespeare.kmeans").read()
+        text=open("../gestures/Robert/gesture_7/othello.kmeans").read()
         self.rightPage.setPlainText(text)
         
     
@@ -610,7 +609,7 @@ class ViewUIKMeans:
         self.uiplot.class4_bt.clicked.connect(partial(self.segmentClasses, 4))
         self.uiplot.class5_bt.clicked.connect(partial(self.segmentClasses, 5))
         self.uiplot.class6_bt.clicked.connect(partial(self.segmentClasses, 6))
-        self.uiplot.class7_bt.clicked.connect(partial(self.segmentClasses, 7))
+        self.uiplot.class7_bt.clicked.connect(self.loadClassArray)
         
         self.uiplot.cutSides_sb.valueChanged.connect(self.setArarySidesCut)
         self.uiplot.mulFiles_cb.stateChanged.connect(self.setMultipleFiles)       
@@ -624,7 +623,11 @@ class ViewUIKMeans:
         self.uiplot.perRatio_sb.valueChanged.connect(self.setPercentRatio)
         
         
-    
+    def loadClassArray(self):
+        classArray = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/class arrays/test_array.kmeans")), delimiter=","))
+        print 'classArray.shape ', classArray.shape
+        self.kMeansClassifier.setClassArray(classArray)
+        
     def setPercentRatio(self, value):
         self.kMeansClassifier.setPercentRatio(value)
         
@@ -671,7 +674,7 @@ class ViewUIKMeans:
             arrayToReduce =  self.kmH.reshapeArray2DTo3D64(arrayToReduce) 
             self.learnArrayKMeans = []
             for gesture in arrayToReduce:
-                result = self.kmH.reduceDimensionality(gesture)
+                result = self.kmH.reduceDimensionality(gesture, std='cut')
                 if result is not None:
                     #print result.shape
                     result = np.asarray(result)
@@ -737,9 +740,14 @@ class ViewUIKMeans:
         self.curve_tab1 = Qwt.QwtPlotCurve()
         self.curve_2_tab1 = Qwt.QwtPlotCurve()
         
+        
+        
         self.win_plot.setGeometry(18, 33, 1366, 780)
         
-                
+        
+        self.curve_page_1 = Qwt.QwtPlotCurve()
+        self.curve_page_1.attach(self.uiplot.qwtPlot_page_1)       
+        self.uiplot.qwtPlot_page_1.setAxisScale(self.uiplot.qwtPlot_page_1.yLeft, -100, self.amplitude * 1000)
         plot = self.uiplot
         
         for i in range(1,33):

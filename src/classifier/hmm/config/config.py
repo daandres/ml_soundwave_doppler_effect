@@ -1,17 +1,47 @@
-n_tries = 1
-
-covariance_type=['tied']#, 'tied', 'diag', 'full'] #String describing the type of covariance parameters used by the model. Must be one of 'spherical', 'tied', 'diag', 'full'. 
-algorithm=['viterbi']#, 'map']
-n_components=13 # Number of states in the model.
-n_iter=5 # Number of iterations to perform.
-logprobBound = -100
+### GESTURE CLASSES '''
+classList = [0, 1, 5, 6, 7]
 
 
+### DATA PREPROCESSING ###
+framesTotal = 32
+binsTotal = 64
+# cut frames
+framesBefore = 7
+framesAfter = 8
+
+# cut bins
+bins_before = 8
+leftBorder = (binsTotal/2) - bins_before # 
+bins_after = 7
+rightBorder = (binsTotal/2) + bins_after
+
+
+components =framesAfter+framesBefore+1
+
+### TRAIN GMM ###
 n_tries_gmm = 1
 covariance_type_gmm='tied'
 n_iter_gmm=10
-n_components_gmm=2
-n_mix=n_components
+n_components_gmm=4 # representation of 
+n_mix=components
 n_init_gmm = 1
 algorithm_gmm='viterbi'
 logprobBound_gmm = -100
+
+
+### TRAIN HMM ###
+n_tries = 1
+covariance_type=['tied']#, 'tied', 'diag', 'full'] #String describing the type of covariance parameters used by the model. Must be one of 'spherical', 'tied', 'diag', 'full'. 
+algorithm=['viterbi']#, 'map']
+n_components=components # Number of frames
+n_iter=5 # Number of iterations to perform.
+logprobBound = -100
+
+### Live Classification ###
+classificationTreshhold = 0.05 #Percantage (0.1 = 10%)
+
+
+
+
+
+

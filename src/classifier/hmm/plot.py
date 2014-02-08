@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 import config.config as c
-import util.util as u
 import util.dataUtil as d
 import util.hmmUtil as h
 import util.gmmUtil as g
@@ -25,14 +24,13 @@ class Plot():
     
     def __init__(self, gesture=0, index=0, gmms = {}):
         self.gesture = gesture
-        self.dp = d.DataUtil()
+        self.du = d.DataUtil()
         self.mu = h.HMM_Util()
         self.gmms = gmms
         self.surf = None
-        self.name = PRE_DATA
+        self.name = RAW_DATA
         self.index = index
         self.dClass = 1
-        self.data = u.loadData(gesture)
         self.actionPoint = []
         self.X = []
         self.Y = []
@@ -42,14 +40,14 @@ class Plot():
         ''' handling click event '''
         if event.button == 3:
             if self.dClass == 0:
-                self.name = PRE_DATA
-                self.actionPoint=[]
-                self.plotPreprocData()
-                self.dClass += 1
-            elif self.dClass == 1:
                 self.name = RAW_DATA
                 self.actionPoint=[]
                 self.plotRaw()
+                self.dClass += 1
+            elif self.dClass == 1:
+                self.name = PRE_DATA
+                self.actionPoint=[]
+                self.plotPreprocData()
                 self.dClass += 1
             elif self.dClass == 2:
                 self.name = GMM_DATA
@@ -74,7 +72,7 @@ class Plot():
                     self.index = 0
                     self.dClass = 1
                     self.gesture = gesture
-                    self.plotPreprocData()
+                    self.plotRaw()
             if key == 'down':
                 self.index -= 1
             if key == 'up':
@@ -116,19 +114,23 @@ class Plot():
     def initPlot(self):
         ''' init figure, surface and plot '''
         self.fig = plt.figure()
+        self.data = self.du.loadRaw3dGesture(self.gesture)
+        
+        self.actionPoint = []
+        for da in self.data:
+            self.actionPoint.append(self.du._getHighestSum(da))
+
         self.initAxis()
         self.ax = self.fig.add_subplot(111, projection='3d')
-        self.surf = self.ax.plot_surface(self.X, self.Y, self.Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-        self.ax.set_zlim(-0.03, 1.03)
+        self.surf = self.ax.plot_surface(self.X, self.Y, self.data[self.index], rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
         self.ax.set_title(GESTURE_PREF + str(self.gesture) + ", " +self.name + ": " + str(self.index+1))
+        if len(self.actionPoint) > 0:
+            self.ax.scatter(self.actionPoint[self.index],0,0,'0', c='r')
         self.ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-        self.fig.colorbar(self.surf, shrink=0.5, aspect=5)
         self.fig.canvas.mpl_connect('scroll_event', self.onscroll)
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
         self.fig.canvas.mpl_connect('key_press_event', self.onpress)
-
-    def show(self):
-        ''' show plot '''
+        
         plt.show()
 
     def plot(self):
@@ -145,18 +147,20 @@ class Plot():
 
     def plotPreprocData(self):
         ''' plot preprocessed data '''
-        self.data = u.loadData(self.gesture)
+        self.data = self.du.loadData(self.gesture)
         self.index = 0
         self.initAxis()
         self.plot()
 
     def plotRaw(self):
         ''' plot raw data '''
-        self.data = u.loadRaw(self.gesture)
-        
+        try:
+            self.data = self.du.loadRaw3dGesture(self.gesture)
+        except Exception:
+            return
         self.actionPoint = []
         for d in self.data:
-            self.actionPoint.append(self.dp._getHighestSum(d))
+            self.actionPoint.append(self.du._getHighestSum(d))
         self.index = 0
         self.initAxis()
         self.plot()
@@ -170,7 +174,8 @@ class Plot():
     def plotGestureGmms(self):
         ''' plot gmm-sample data '''
         mg = g.GMM_Util()
-        gmms = mg.sample(self.gesture)
+        data = self.du.loadData(self.gesture)
+        gmms = mg.sample(data)
         data = []
         for i in range(13):
             lis = []
@@ -193,7 +198,8 @@ class Plot():
             print "no trained gmm found"
             self.name = GMM_DATA
             mg = g.GMM_Util()
-            gmms = mg.sample(self.gesture)
+            data = self.du.loadData(self.gesture)
+            gmms = mg.sample(data)
         data = []
         for i in range(13):
             lis = []

@@ -37,6 +37,7 @@ class KMeans(IClassifier):
         self.percentRatio = 0.0
 
           
+        self.classArray = None
         self.recorder.classifyStart(self)
         
 
@@ -57,6 +58,7 @@ class KMeans(IClassifier):
 
  
     def classify(self, data):
+        #self.cSignal.emitFrame(np.array())
         if self.kmeansGUI:
             '''
             if self.startBuffern:  
@@ -75,17 +77,19 @@ class KMeans(IClassifier):
                         
             '''            
             if self.startBuffern:
-             
+                
+                
+                
                 self.bufferArray = np.roll(self.bufferArray, -1, axis=0)
                 # war gut bei 47
-                self.bufferArray[47] = self.kmH.normalizeSignalLevelSecond(data)
+                self.bufferArray[27] = self.kmH.normalizeSignalLevelSecond(data)
                 if self.checkOnline:
-                    # es hal bei 16 staat 24 funktionietrt ?!?!?!?!
-                    result = self.kmH.segmentOneHandGesture(self.bufferArray, outArrayLength=24, leftMargin=8, oneSecPeak=False)
+                    # es hal bei 16 staat 24 funktionietrt ?!?!?!?! self.bufferArray[0:24,::]
+                    result = self.kmH.segmentOneHandGesture(self.bufferArray, outArrayLength=24, leftMargin=4, oneSecPeak=False)
                     #print np.asarray(result).shape
                     if result is not None:
                         self.firstNoneResult = True
-                        result = self.kmH.reduceDimensionality(result, setAxisTo=1)
+                        result = self.kmH.reduceDimensionality(result, setAxisTo=1, std='cut')
                         result = np.asarray(result)
                         #xxx
                         #result = result.reshape(result.shape[0]*result.shape[1])
@@ -93,9 +97,12 @@ class KMeans(IClassifier):
                         if len(result) == self.kmeans.cluster_centers_.shape[1]:
                             cluster_ = self.kMeansOnline(result)
                             if self.currentClass != cluster_:
-                                #self.cSignal.emitSignal(cluster_)
-                                self.currentClass = cluster_
-                                print result.shape
+                                #print 'cluster_ ', cluster_
+                                if cluster_ == 3 or cluster_ == 4:
+                                    #print 'cluster_ ', cluster_
+                                    self.cSignal.emitSignal(cluster_)
+                                    self.currentClass = cluster_
+                                #print result.shape
                             else:
                                 pass
                                 #self.cSignal.emitSignal(-2)
@@ -108,36 +115,40 @@ class KMeans(IClassifier):
                 
                 
                 
-                
-                self.bufferArray_16N = np.roll(self.bufferArray_16N, -1, axis=0)
-                # war gut bei 47
-                self.bufferArray_16N[25] = self.kmH.normalizeSignalLevelSecond(data)
-                if self.checkOnline:
-                    # es hal bei 16 staat 24 funktionietrt ?!?!?!?!
-                    result = self.kmH.segmentOneHandGesture(self.bufferArray_16N, outArrayLength=16, leftMargin=8, oneSecPeak=True)
-                    #print np.asarray(result).shape
-                    if result is not None:
-                        self.firstNoneResult_16N = True
-                        result = self.kmH.reduceDimensionality(result, setAxisTo=0)
-                        result = np.asarray(result)
-                        #xxx
-                        #result = result.reshape(result.shape[0]*result.shape[1])
-                        
-                        if len(result) == self.kmeans_16N.cluster_centers_.shape[1]:
-                            cluster_ = self.kMeansOnline_16N(result)
-                            if self.currentClass_16N != cluster_:
-                                self.cSignal.emitSignal(cluster_)
-                                self.currentClass_16N = cluster_
-                                print result.shape
+                if self.kmeans_16N is not None:
+                    self.bufferArray_16N = np.roll(self.bufferArray_16N, -1, axis=0)
+                    # war gut bei 47
+                    self.bufferArray_16N[25] = self.kmH.normalizeSignalLevelSecond(data)
+                    if self.checkOnline:
+                        # es hal bei 16 staat 24 funktionietrt ?!?!?!?!
+                        result = self.kmH.segmentOneHandGesture(self.bufferArray_16N, outArrayLength=16, leftMargin=8, oneSecPeak=True)
+                        #print np.asarray(result).shape
+                        if result is not None:
+                            self.firstNoneResult_16N = True
+                            result = self.kmH.reduceDimensionality(result, sidesCut=20, setAxisTo=0)
+                            result = np.asarray(result)
+                            #xxx
+                            #result = result.reshape(result.shape[0]*result.shape[1])
+                            
+                            if len(result) == self.kmeans_16N.cluster_centers_.shape[1]:
+                                cluster_ = self.kMeansOnline_16N(result)
+                                if self.currentClass_16N != cluster_:
+                                    self.cSignal.emitSignal(cluster_)
+                                    self.currentClass_16N = cluster_
+                                    #print result.shape
+                                else:
+                                    self.cSignal.emitSignal(-2)
                             else:
-                                self.cSignal.emitSignal(-2)
+                                print 'result length not matched 16N !!!!  : ', len(result)
                         else:
-                            print 'result length not matched !!!!  : ', len(result)
-                    else:
-                        if self.firstNoneResult_16N:
-                            self.cSignal.emitSignal(-2)
-                            self.firstNoneResult_16N = False            
+                            if self.firstNoneResult_16N:
+                                self.cSignal.emitSignal(-2)
+                                self.firstNoneResult_16N = False            
                     
+    def setClassArray(self, cArray):
+        self.classArray = cArray
+    
+    
     def startValidation(self):
         pass
 
@@ -166,7 +177,7 @@ class KMeans(IClassifier):
         self.bufferSize = bufferSize
         #self.bufferArray = np.zeros((self.bufferSize, 64))
         #war gut bei 48
-        self.bufferArray = np.zeros((48, 64))
+        self.bufferArray = np.zeros((28, 64))
         self.bufferArray_16N = np.zeros((26, 64))
         self.startBuffern = True
         print 'fillBuffer'
@@ -177,35 +188,41 @@ class KMeans(IClassifier):
         return self.bufferArray
 
 
-    def setKMeans(self, kMeans, kMeans_16N):
+    def setKMeans(self, kMeans, kMeans_16N=None):
         self.kmeans = kMeans
         self.kmeans_16N = kMeans_16N     
         
         
     def kMeansOnline(self, checkArray):
         class_  = self.kmeans.transform(checkArray)
-        cluster =  self.kmH.checkClusterDistance(class_, self.percentRatio)
+        cluster_ =  self.kmH.checkClusterDistance(class_, self.percentRatio)
         
-        if cluster == -1:
-            print '-1'
-        elif cluster == 0:
-            print '    0'
-        elif cluster == 1:
-            print '        1'
-        elif cluster == 2:
-            print '            2'
-        elif cluster == 3:
-            print '                3'
-        elif cluster == 4:
-            print '                    4'
-        elif cluster == 5:
-            print '                        5'
-        elif cluster == 6:
-            print '                            6'
-        elif cluster == 7:
-            print '                                7'                                                
         
-        return cluster
+        if self.classArray is not None:
+            clusterArray = np.where(self.classArray==cluster_)[0]
+            if clusterArray.size == 1:
+                cluster = clusterArray[0] 
+                cluster_ = cluster
+                if cluster == -1:
+                    print '-1'
+                elif cluster == 0:
+                    pass#print '    0'
+                elif cluster == 1:
+                    print '        1'
+                elif cluster == 2:
+                    print '            2'
+                elif cluster == 3:
+                    print '                3'
+                elif cluster == 4:
+                    print '                    4'
+                elif cluster == 5:
+                    print '                        5'
+                elif cluster == 6:
+                    print '                            6'
+                elif cluster == 7:
+                    print '                                7'                                                
+                
+        return cluster_
     
     
     def kMeansOnline_16N(self, checkArray):

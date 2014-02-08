@@ -254,226 +254,247 @@ class kMeansHepler():
         return np.asarray(result)
     
     
-    #16 / try with side cut equal 20
-    def reduceDimensionality(self, inArray, sidesCut=20, manyTimes=4, setAxisTo=0):
+    #16 / try with side cut equal 20 changed to 24
+    def reduceDimensionality(self, inArray, sidesCut=24, manyTimes=4, setAxisTo=0, std='a1'):
+        
+        if std=='a1':
+            #standard 1a
+            sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
+            return np.average(sidesCutedArray, axis=setAxisTo)
+        
+        elif std=='b1':
+            sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
+            return sidesCutedArray.reshape(sidesCutedArray.shape[0]*sidesCutedArray.shape[1],)
+        
+        elif std=='c1':
+            sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
+            return sidesCutedArray.reshape(sidesCutedArray.shape[0]*sidesCutedArray.shape[1],)
+      
+        elif std=='1b':
+            sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
+            halfAve = sidesCutedArray.reshape(2,sidesCutedArray.shape[0]/2, sidesCutedArray.shape[0])
+            halfAve = np.average(halfAve, axis=0)
+            ave1 = np.average(halfAve, axis=0)
+            halfAve1 = ave1.reshape(2,ave1.shape[0]/2)
+            return np.average(halfAve1, axis=0)
+        
+        elif std=='1c':
+            sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
+            halfAve = sidesCutedArray.reshape(2,sidesCutedArray.shape[0]/2, sidesCutedArray.shape[0])
+            halfAve = np.average(halfAve, axis=0)
+            ave1 = np.average(halfAve, axis=0)
+            halfAve1 = ave1.reshape(2,ave1.shape[0]/2)
+            halfAve1 = np.average(halfAve1, axis=0)
+            halfAve2 = halfAve1.reshape(2,halfAve1.shape[0]/2)
+            return np.average(halfAve2, axis=0)
+       
+        elif std=='1d':
+            sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
+            oneFrame = np.average(sidesCutedArray, axis=0)
+            oneFrame4D = oneFrame.reshape(8,oneFrame.shape[0]/8)
+            return np.average(oneFrame4D, axis=0)
+        
+        elif std=='cut':
+            sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
+            result = []
+            for x in xrange(0,sidesCutedArray.shape[0]-1,2):
+                arrTMP = []
+                arrTMP.append(sidesCutedArray[x])
+                arrTMP.append(sidesCutedArray[x+1])
+                #print 'arrTMP.shape ', np.asarray(arrTMP).shape
+                ave = np.average(arrTMP, axis=0)
+                result.append(ave)
+            result = np.asarray(result)
+            result_2 = []
+            for x in xrange(0,result.shape[0]-1,2):
+                arrTMP = []
+                arrTMP.append(result[x])
+                arrTMP.append(result[x+1])
+                #print 'arrTMP.shape ', np.asarray(arrTMP).shape
+                ave = np.average(arrTMP, axis=0)
+                result_2.append(ave)
+            result_2 = np.asarray(result_2)            
+            return result_2.reshape(result_2.shape[0]*result_2.shape[1],)
         
         
-        #standard 1a
-        sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
-        return np.average(sidesCutedArray, axis=setAxisTo)
-        
-        '''
-        #standard 1b
-        sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
-        halfAve = sidesCutedArray.reshape(2,sidesCutedArray.shape[0]/2, sidesCutedArray.shape[0])
-        halfAve = np.average(halfAve, axis=0)
-        ave1 = np.average(halfAve, axis=0)
-        halfAve1 = ave1.reshape(2,ave1.shape[0]/2)
-        return np.average(halfAve1, axis=0)
-        '''
-        '''
-        #standard 1c
-        sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
-        halfAve = sidesCutedArray.reshape(2,sidesCutedArray.shape[0]/2, sidesCutedArray.shape[0])
-        halfAve = np.average(halfAve, axis=0)
-        ave1 = np.average(halfAve, axis=0)
-        halfAve1 = ave1.reshape(2,ave1.shape[0]/2)
-        halfAve1 = np.average(halfAve1, axis=0)
-        halfAve2 = halfAve1.reshape(2,halfAve1.shape[0]/2)
-        return np.average(halfAve2, axis=0)
-        '''
-        '''
-        #standard 1d
-        sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
-        oneFrame = np.average(sidesCutedArray, axis=0)
-        oneFrame4D = oneFrame.reshape(8,oneFrame.shape[0]/8)
-        return np.average(oneFrame4D, axis=0)
-        '''
-        '''
-        #standard 0
-        result = []
-        for x in xrange(0,inArray.shape[0]-1,2):
-            arrTMP = []
-            arrTMP.append(inArray[x][sidesCut:(inArray.shape[1]-sidesCut)])
-            arrTMP.append(inArray[x+1][sidesCut:(inArray.shape[1]-sidesCut)])
-            #print 'arrTMP.shape ', np.asarray(arrTMP).shape
-            ave = np.average(arrTMP, axis=0)
-            #print 'ave.shape ', np.asarray(ave).shape
-            
-            if manyTimes > 1:
-                ave2 = np.asarray(ave)
-                ave = ave2.reshape(2,ave2.shape[0]/2) 
-                #print 'ave2.reshape', np.asarray(ave.shape)  
-                ave = np.average(ave, axis=0)
-                #print 'ave.shape', np.asarray(ave.shape)
-            if manyTimes > 2:
-                ave2 = np.asarray(ave)
-                ave = ave2.reshape(2,ave2.shape[0]/2) 
-                #print 'ave2.reshape', np.asarray(ave.shape)  
-                ave = np.average(ave, axis=0)
-                #print 'ave.shape', np.asarray(ave.shape)
-            if manyTimes > 3:
-                ave2 = np.asarray(ave)
-                ave = ave2.reshape(2,ave2.shape[0]/2) 
-                #print 'ave2.reshape', np.asarray(ave.shape)  
-                ave = np.average(ave, axis=0)
-                #print 'ave.shape', np.asarray(ave.shape)                                
-            result.append(ave)
-
-
-
-        result = np.asarray(result)
-        res3DArray = result.reshape(2, result.shape[0]/2, 3 )
-        #print res3DArray.shape
-    
-        ave1 = np.average(res3DArray, axis=0)
-        #print ave1.shape
-        
-        
-        return np.asarray(ave1)            
-        '''
-        '''
-        #standard 1
-        sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
-        #print sidesCutedArray.shape
-        
-        
-        res3DArray = sidesCutedArray.reshape(2, sidesCutedArray.shape[0]/ 2, 24)
-        #print res3DArray.shape
-    
-        ave1 = np.average(res3DArray, axis=0)
-        #print ave1.shape
-        
-        res3DArray = ave1.reshape(ave1.shape[0], 2, 12)
-        #print res3DArray .shape
-    
-        ave1 = np.average(res3DArray, axis=1)
-        #print ave1.shape
-        
-        res3DArray = ave1.reshape(ave1.shape[0], 2, 6)
-        #print res3DArray .shape
-    
-        ave1 = np.average(res3DArray, axis=1)
-        #print ave1.shape   
-                 
-        res3DArray = ave1.reshape(2, ave1.shape[0]/2, 6 )
-        #print res3DArray.shape
-    
-        ave1 = np.average(res3DArray, axis=0)
-        #print ave1.shape
-        
-        
-        return np.asarray(ave1)
-        '''
-        '''
-        #standard 2
-        sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
-        print sidesCutedArray.shape
-        
-        res3DArray = sidesCutedArray.reshape(sidesCutedArray.shape[0], 2, 12)
-        #print res3DArray.shape
-    
-        ave1 = np.average(res3DArray, axis=1)
-        #print ave1.shape
-        
-        res3DArray = ave1.reshape(ave1.shape[0], 2, 6)
-        #print res3DArray .shape
-    
-        ave1 = np.average(res3DArray, axis=1)
-        #print ave1.shape
-        
-        res3DArray = ave1.reshape(ave1.shape[0], 2, 3)
-        #print res3DArray .shape
-    
-        ave1 = np.average(res3DArray, axis=1)
-        #print ave1.shape   
-                 
-        res3DArray = ave1.reshape(2, ave1.shape[0]/2,  3)
-        #print res3DArray.shape
-    
-        ave1 = np.average(res3DArray, axis=0)
-        #print ave1.shape
-    
-        
-        return np.asarray(ave1)
-        '''
-        '''
-        #standard 3
-        #print 'inArray.shape ', inArray.shape
-        result = []
-        for x in xrange(0,inArray.shape[0]-1,2):
-            arrTMP = []
-            arrTMP.append(inArray[x][sidesCut:(inArray.shape[1]-sidesCut)])
-            arrTMP.append(inArray[x+1][sidesCut:(inArray.shape[1]-sidesCut)])
-            #print 'arrTMP.shape ', np.asarray(arrTMP).shape
-            ave = np.average(arrTMP, axis=0)
-            #print 'ave.shape ', np.asarray(ave).shape
-            
-            if manyTimes > 1:
-                ave2 = np.asarray(ave)
-                ave = ave2.reshape(2,ave2.shape[0]/2) 
-                #print 'ave2.reshape', np.asarray(ave.shape)  
-                ave = np.average(ave, axis=0)
-                #print 'ave2.shape', np.asarray(ave.shape)
+        elif std=='0':
+            result = []
+            for x in xrange(0,inArray.shape[0]-1,2):
+                arrTMP = []
+                arrTMP.append(inArray[x][sidesCut:(inArray.shape[1]-sidesCut)])
+                arrTMP.append(inArray[x+1][sidesCut:(inArray.shape[1]-sidesCut)])
+                #print 'arrTMP.shape ', np.asarray(arrTMP).shape
+                ave = np.average(arrTMP, axis=0)
+                #print 'ave.shape ', np.asarray(ave).shape
                 
-            result.append(ave)
+                if manyTimes > 1:
+                    ave2 = np.asarray(ave)
+                    ave = ave2.reshape(2,ave2.shape[0]/2) 
+                    #print 'ave2.reshape', np.asarray(ave.shape)  
+                    ave = np.average(ave, axis=0)
+                    #print 'ave.shape', np.asarray(ave.shape)
+                if manyTimes > 2:
+                    ave2 = np.asarray(ave)
+                    ave = ave2.reshape(2,ave2.shape[0]/2) 
+                    #print 'ave2.reshape', np.asarray(ave.shape)  
+                    ave = np.average(ave, axis=0)
+                    #print 'ave.shape', np.asarray(ave.shape)
+                if manyTimes > 3:
+                    ave2 = np.asarray(ave)
+                    ave = ave2.reshape(2,ave2.shape[0]/2) 
+                    #print 'ave2.reshape', np.asarray(ave.shape)  
+                    ave = np.average(ave, axis=0)
+                    #print 'ave.shape', np.asarray(ave.shape)                                
+                result.append(ave)
+
+
+
+            result = np.asarray(result)
+            return result.reshape(result.shape[0]*result.shape[1],)
+            '''
+            res3DArray = result.reshape(2, result.shape[0]/2, 3 )
+            #print res3DArray.shape
         
-        if manyTimes > 2:
-            ave3 = np.asarray(result)
-            #print 'ave3.shape ', ave3 
-            ave3 = ave3.reshape(ave3.shape[0]/2,2,ave3.shape[1])
-            #print 'ave3.shape', np.asarray(ave3.shape)
-            result = np.average(ave3, axis=1)
-        
-        if manyTimes > 3:
-            ave4 = np.asarray(result)
-            #print 'ave3.shape ', ave3.shape 
-            ave4 = ave4.reshape(ave4.shape[0]/2,2,ave4.shape[1])
-            #print 'ave3.shape', np.asarray(ave3.shape)
-            result = np.average(ave4, axis=1)
-        if manyTimes > 4:
-            ave5 = np.asarray(result)
-            print 'ave5.shape ', ave5.shape 
-            ave5 = ave5.reshape(ave5.shape[0]/2,2,ave5.shape[1])
-            #print 'ave3.shape', np.asarray(ave3.shape)
-            result = np.average(ave5, axis=1)
-                        
-        return np.asarray(result)
-        '''       
-        #standard 4
-        '''          
-        result = []
-        for x in xrange(0,inArray.shape[0]-1,2):
-            arrTMP = []
-            arrTMP.append(inArray[x][sidesCut:(inArray.shape[1]-sidesCut)])
-            arrTMP.append(inArray[x+1][sidesCut:(inArray.shape[1]-sidesCut)])
-            #print 'arrTMP.shape ', np.asarray(arrTMP).shape
-            ave = np.average(arrTMP, axis=0)
-            #print 'ave.shape ', np.asarray(ave).shape
+            ave1 = np.average(res3DArray, axis=0)
+            #print ave1.shape
             
-            if manyTimes > 1:
-                ave2 = np.asarray(ave)
-                ave = ave2.reshape(2,ave2.shape[0]/2) 
-                #print 'ave2.reshape', np.asarray(ave.shape)  
-                ave = np.average(ave, axis=0)
-                #print 'ave.shape', np.asarray(ave.shape)
-            if manyTimes > 2:
-                ave2 = np.asarray(ave)
-                ave = ave2.reshape(2,ave2.shape[0]/2) 
-                #print 'ave2.reshape', np.asarray(ave.shape)  
-                ave = np.average(ave, axis=0)
-                #print 'ave.shape', np.asarray(ave.shape)
-            if manyTimes > 3:
-                ave2 = np.asarray(ave)
-                ave = ave2.reshape(2,ave2.shape[0]/2) 
-                #print 'ave2.reshape', np.asarray(ave.shape)  
-                ave = np.average(ave, axis=0)
-                #print 'ave.shape', np.asarray(ave.shape)                                
-            result.append(ave)
-
-
-
-        return np.asarray(result)
-        '''
+            
+            return np.asarray(ave1)            
+            '''
+        elif std=='1':
+            sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
+            #print sidesCutedArray.shape
+            
+            
+            res3DArray = sidesCutedArray.reshape(2, sidesCutedArray.shape[0]/ 2, 16)#24
+            #print res3DArray.shape
         
-   
+            ave1 = np.average(res3DArray, axis=0)
+            #print ave1.shape
+            
+            res3DArray = ave1.reshape(ave1.shape[0], 2, 8)#12
+            #print res3DArray .shape
+        
+            ave1 = np.average(res3DArray, axis=1)
+            #print ave1.shape
+            
+            res3DArray = ave1.reshape(ave1.shape[0], 2, 6)
+            #print res3DArray .shape
+        
+            ave1 = np.average(res3DArray, axis=1)
+            #print ave1.shape   
+                     
+            res3DArray = ave1.reshape(2, ave1.shape[0]/2, 6 )
+            #print res3DArray.shape
+        
+            ave1 = np.average(res3DArray, axis=0)
+            #print ave1.shape
+            
+            
+            return np.asarray(ave1)
+        elif std=='2':
+            sidesCutedArray = inArray[:,sidesCut:(inArray.shape[1]-sidesCut)]
+            print sidesCutedArray.shape
+            
+            res3DArray = sidesCutedArray.reshape(sidesCutedArray.shape[0], 2, 12)
+            #print res3DArray.shape
+        
+            ave1 = np.average(res3DArray, axis=1)
+            #print ave1.shape
+            
+            res3DArray = ave1.reshape(ave1.shape[0], 2, 6)
+            #print res3DArray .shape
+        
+            ave1 = np.average(res3DArray, axis=1)
+            #print ave1.shape
+            
+            res3DArray = ave1.reshape(ave1.shape[0], 2, 3)
+            #print res3DArray .shape
+        
+            ave1 = np.average(res3DArray, axis=1)
+            #print ave1.shape   
+                     
+            res3DArray = ave1.reshape(2, ave1.shape[0]/2,  3)
+            #print res3DArray.shape
+        
+            ave1 = np.average(res3DArray, axis=0)
+            #print ave1.shape
+        
+            
+            return np.asarray(ave1)
+        
+        elif std=='3':
+            #print 'inArray.shape ', inArray.shape
+            result = []
+            for x in xrange(0,inArray.shape[0]-1,2):
+                arrTMP = []
+                arrTMP.append(inArray[x][sidesCut:(inArray.shape[1]-sidesCut)])
+                arrTMP.append(inArray[x+1][sidesCut:(inArray.shape[1]-sidesCut)])
+                #print 'arrTMP.shape ', np.asarray(arrTMP).shape
+                ave = np.average(arrTMP, axis=0)
+                #print 'ave.shape ', np.asarray(ave).shape
+                
+                if manyTimes > 1:
+                    ave2 = np.asarray(ave)
+                    ave = ave2.reshape(2,ave2.shape[0]/2) 
+                    #print 'ave2.reshape', np.asarray(ave.shape)  
+                    ave = np.average(ave, axis=0)
+                    #print 'ave2.shape', np.asarray(ave.shape)
+                    
+                result.append(ave)
+            
+            if manyTimes > 2:
+                ave3 = np.asarray(result)
+                #print 'ave3.shape ', ave3 
+                ave3 = ave3.reshape(ave3.shape[0]/2,2,ave3.shape[1])
+                #print 'ave3.shape', np.asarray(ave3.shape)
+                result = np.average(ave3, axis=1)
+            
+            if manyTimes > 3:
+                ave4 = np.asarray(result)
+                #print 'ave3.shape ', ave3.shape 
+                ave4 = ave4.reshape(ave4.shape[0]/2,2,ave4.shape[1])
+                #print 'ave3.shape', np.asarray(ave3.shape)
+                result = np.average(ave4, axis=1)
+            if manyTimes > 4:
+                ave5 = np.asarray(result)
+                print 'ave5.shape ', ave5.shape 
+                ave5 = ave5.reshape(ave5.shape[0]/2,2,ave5.shape[1])
+                #print 'ave3.shape', np.asarray(ave3.shape)
+                result = np.average(ave5, axis=1)
+                            
+            return np.asarray(result)
+        
+        elif std=='4':        
+            result = []
+            for x in xrange(0,inArray.shape[0]-1,2):
+                arrTMP = []
+                arrTMP.append(inArray[x][sidesCut:(inArray.shape[1]-sidesCut)])
+                arrTMP.append(inArray[x+1][sidesCut:(inArray.shape[1]-sidesCut)])
+                #print 'arrTMP.shape ', np.asarray(arrTMP).shape
+                ave = np.average(arrTMP, axis=0)
+                #print 'ave.shape ', np.asarray(ave).shape
+                
+                if manyTimes > 1:
+                    ave2 = np.asarray(ave)
+                    ave = ave2.reshape(2,ave2.shape[0]/2) 
+                    #print 'ave2.reshape', np.asarray(ave.shape)  
+                    ave = np.average(ave, axis=0)
+                    #print 'ave.shape', np.asarray(ave.shape)
+                if manyTimes > 2:
+                    ave2 = np.asarray(ave)
+                    ave = ave2.reshape(2,ave2.shape[0]/2) 
+                    #print 'ave2.reshape', np.asarray(ave.shape)  
+                    ave = np.average(ave, axis=0)
+                    #print 'ave.shape', np.asarray(ave.shape)
+                if manyTimes > 3:
+                    ave2 = np.asarray(ave)
+                    ave = ave2.reshape(2,ave2.shape[0]/2) 
+                    #print 'ave2.reshape', np.asarray(ave.shape)  
+                    ave = np.average(ave, axis=0)
+                    #print 'ave.shape', np.asarray(ave.shape)                                
+                result.append(ave)
+    
+    
+    
+            return np.asarray(result)

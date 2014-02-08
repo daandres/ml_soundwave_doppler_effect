@@ -178,213 +178,142 @@ Gängige Kernfunktionen sind:
 
 \newpage
 
-\subsubsection{Klassifikation von merheren Klassen}
+\subsubsection{Klassifikation von mehreren Klassen}
 
-Die SVM ist ein binärer Klassifikator, d. h. er kann eine Objektzuordnung nur zwischen zwei Klassen durchführen. 
-In der Regel will man ...
+Da die SVM als binärer Klassifikator entwickelt wurde, müssen für eine Klassifikation von mehr als zwei Klassen Strategien entwickelt werden, um das Prinzip der SVM zu erweitern. 
+Ein Verfahren ist die "{}Einer gegen den Rest"{}-Klassifikation. 
+Bei dieser Technik wird für jedes zu klassifizierende Objekt eine binäre SVM trainiert. 
+Für jede SVM wird eine Klasse separiert, die anderen Klassen werden nicht unterschieden und als negative Beispiele zu einer Restklasse definiert. 
+Die Vorraussage eines Objektes ergibt sich aus der Auswertung aller SVMs. 
+Es ist nun möglich, dass mehrere SVMs eine positive Klassenzuordnung feststellen nicht die Restklasse klassifizieren. 
+In diesem Fall entscheidet sich das "{}Einer gegen den Rest"{}-Verfahren für die Klasse, dessen SVM die höchste Ausgabe erzeugt (winner-takes-all). 
+Als höchstes Ergebnis wird der größte Abstand zur Trennhyperebene angenommen. 
+Offensichtlich erhöht sich die Laufzeit der Trainingsphase mit der Anzahl der Klassen $|\mathcal{C}|$. 
+Glücklicherweise beeinflusst das nicht die Laufzeitanalyse in der $\mathcal{O}$-Notation (\ref{eq:svm_winner_runtime}). 
 
+\begin{equation}
+\label{eq:svm_winner_runtime}
+    |\mathcal{C}| \cdot \mathcal{O}(n) = \mathcal{O}(|\mathcal{C}| \cdot n) =  \mathcal{O}(n)
+\end{equation}
 
-\newpage
+Sind die SVMs trainiert, beeindrucken sie durch rasante Klassifikation. 
+Dies ermöglicht uns eine echtzeitnahe Gestenerkennung.
 
-\subsection{Implementierung}
-
-Das “scikit-learn”-Paket von den “scikit-learn developers” steht frei unter BSD License für Python zur Verfügung. 
-Es beinhaltet viele komfortable Bibliotheken zum Thema Machine Learning. 
-Für unsere Zwecke benutzen wir die vorgefertigten SVM-Algorithmen. 
-Diese berücksichtigen freundlicherweise bereits die Features für die Klassifizierung mehrerer Klassen sowie den Kernel-Trick. Eine SVM wird folgendermaßen trainiert:
-
-\begin{lstlisting}
-import numpy as np#
-from sklearn import svm#
-
-X = np.array([[-1,1],[1,1],[1,-1],[-1,-1]])
-y = [1,-1,1,-1]
-
-#Train SVM
-clf = svm.SVC(kernel='linear')
-clf.fit(X, y)#
-
-#Predict
-print clf.predict([0.2,0.2])#
-print clf.predict([-0.2,0.2])#
-print clf.predict([-0.2,-0.2])#
-print clf.predict([0.2,-0.2])#
-\end{lstlisting}
-
-
-\subsection{Vorverarbeitung der Eingabedaten}
-
-Kernpunkt der Gestenerkennung ist die anliegende Grundfrequenz von 18 kHz. 
-Die aktuelle Implementierung der Gestenerkennung setzt ein Audiosignal mit einer Länge von 320 ms voraus. 
-Innerhalb dieser 320 ms werden 32 Merkmalsvektoren mit einer zeitlichen Dauer von 1 ms gespeichert in einem Intervall von je 10 ms. 
-Diese zeitlich versetzten 32 Merkmalsvektoren mit je 64 Datenpunkten einer Geste werden vor der Eingabe in eine trainierte SVM zuerst normalisiert. 
-Dazu gibt es zwei grundlegende Ansätze:
-
-- alle 32 Merkmalsvektoren werden mit einem “globalen” Maximalwert über alle 32 Datensätze in den Bereich zwischen 0 und 1 normalisiert\newline
-
-- alle 32 Merkmalsvektoren werden mit ihrem jeweiligen Maximalwert in den Bereich zwischen 0 und 1 normalisiert
-
-Letztere Methode sorgt dafür, dass die Grundfrequenz der Gestenerkennung von 18 kHz in allen Merkmalsvektoren in einem Maximalwert von 1 resultiert. 
-In einem nächsten Schritt bietet es sich an, diese Grundfrequenz, die ebenfalls nach der gleichen Methode normalisiert wurde, von den Merkmalsvektoren abzuziehen. 
-Dadurch wird die reine Frequenzverschiebung der Geste gut sichtbar und man erhält eine sehr gute Eliminierung von Stördaten. 
-Anschließend bietet es sich allerdings an, die Merkmalsvektoren erneut in den Bereich zwischen [0, 1] zu skalieren, da durch die Subtraktion der Grundfrequenz negative Werte entstehen können.
-
-
-\subsection{Eingabe in die SVM}
-
-Die zeitlich versetzten 32 Merkmalsvektoren mit je 64 Datenpunkten einer Geste können für die Eingabe in eine trainierte SVM linear aneinandergehängt werden, so dass ein einziger Eingabevektor mit 32*64 = 2048 Elementen entsteht. 
-Dieses Vorgehen ist nicht kritisch, da wir die Zeitkomponente bei einer SVM nicht näher betrachten müssen. 
-Sie wird indirekt durch die Position in unserem Eingabevektor berücksichtigt.
-
-Im folgenden ist eine geplottete Aufnahmen einer Gesten zu erkennen. 
-Die oberen vier Zeilen zu je acht Graphen sind die zeitlich aufeinanderfolgenden 32 Merkmalsvektoren. 
-Der blaue Graph hierbei ist der normalisierte Merkmalsvektor, während die roten Graphen jeweils das Ergebnis von Merkmalsvektor - Grundfrequenz beinhalten. 
-Die Grundfrequenz wurde aus insgesamt 12 verschiedenen Aufnahmen zu je 32 Merkmalsvektoren (insgesamt 384 Merkmalsvektoren) gemittelt. 
-Sie ist als grüner Graph in den Bildern zu sehen.
-
-\begin{figure}[h!]
-  \centering
-    \includegraphics[width=0.8\textwidth]{svm/svm_data_1.png}
-  \caption{Ausgabe der (transformierten) Merkmalsvektoren}
-\end{figure}
 
 
 \newpage 
 \subsection{Anwendung auf das Projekt}
-\begin{itemize}
-\item{normierung}
-\item{quantisierung}
-\item{transformation}
-\end{itemize}
+Für das Projekt wird eine \ac{SVM} trainiert, die mit nur geringfügig den Standardwerten des verwendeten Python-Moduls abweichenden Parametern trainiert wird. 
+Für das Training erwartet die \ac{SVM} neben einem Eingabevektor mit 400 Werten noch die dazugehörige Klasse; die Länge des Eingabevektors lässt sich allerdings über einen entsprechenden Parameter in einer separaten Konfigurationsdatei noch halbieren.
+Während der Live-Klassifikation von Gesten beziehungsweise deren Eingabevektoren wird die trainierte \ac{SVM} für die Erkennung verwendet.
+Natürlich müssen diese Eingabevektoren in ihrer Dimension den Trainingsdaten entsprechen.
 
-% UND-Perzeptron
+Der nächste Abschnitt widmet sich der Datenaufbereitung, insbesondere der Reduzierung der Dimension eines Eingabevektors und der entsprechenden Vorverarbeitung.
 
-\subsubsection{Datenaufbereitung}
-In Kapitel \ref{Kapitel 1 TODO} wurde die Aufnahme und die generelle Vorverarbeitung der Daten bereits erläutert, bevor diese an die entsprechenden Klassifikatoren weitergeleitet werden.
-Die Klassifikatoren erhalten dabei jeweils einzelne Frames mit bereits normalisierten 64 Werten, die sich innerhab des Frequenzbereichs um die Referenzfrequenz von $18500\text{kHz}$ befinden  \{Bild einfügen\}. 
+\subsubsection{Datenaufbereitung}\label{sec:svm_data} 
+In \autoref{sec:intro} wurde die Aufnahme und die generelle Vorverarbeitung der Daten bereits erläutert, bevor diese an die entsprechenden Klassifikatoren weitergeleitet werden.
 Da jeder Klassifikator aufgrund seiner Funktionsweise unterschiedlich mit den Eingabedaten arbeitet, ist eine entsprechende und auf den jeweiligen Klassifikator angepasste Datenaufbereitung notwendig.
-
+Gleichzeitig kann durch eine entsprechende Vorverarbeitung gegenüber unverarbeiteten Daten das Problem der Klassifikation von unterschiedlichen Datensätzen verallgemeinert und somit die Trainingszeit verringert werden.
 Dieser Abschnitt befasst sich mit der spezifischen Datenaufbereitung für den Support Vector Machine Klassifikator.
 
-[..]
-Bei der Betrachtung der Trainingsdaten beziehungsweise -Gesten fällt auf, dass die durch den Dopper-Effekt verursachten Frequenzverschiebungen in einem relativ kleinen Bereich um die Referenzfrequenz herum sattfinden.
-Zudem wird offensichtlich, dass nur ein Bruchteil der ursprünglich veranschlagten 32 Frames pro Geste relevante Informationen enthalten, da eine ausgeführte Geste meist zwischen 8 und 16 Frames lang ist beziehungsweise nur innerhalb dieser Frame-Anzahl Frequenzverschiebungen verursacht.
-Um diesen Overhead an nicht nutzbaren Daten zu beseitigen, wird die zu betrachtende Frame-Anzahl bei der Live-Klassifikation auf 20 festgelegt.
-Der verwendete Wertebereich eines Frames wird sowohl in der Trainingsphase, als auch in der Live-Klassifikation, von 64 auf 40 verkleinert \{Bild einfügen\}. 
+\paragraph{Eingabevektordimensionsreduzierung}\label{sec:svm_reduce}$\;$ \\
+Bei der Betrachtung der Trainingsdaten, die jeweils aus insgesamt 32 Frames zu je 64 Werten bestehen, wird offensichtlich, dass die durch den Doppler-Effekt verursachten Frequenzverschiebungen in einem begrenzten Umfeld der Referenzfrequenz von $18\text{,}5\text{ kHz}$ herum sattfinden.
+Zudem stellt sich heraus, dass nur ein Bruchteil der ursprünglich veranschlagten 32 Frames pro Geste relevante Informationen enthalten, da die Ausführung einer Geste meist zwischen 8 und 20 Frames dauert und nur innerhalb dieser Frame-Anzahl Frequenzverschiebungen verursacht.
+Aufgrund dieser beiden Gründe werden im ersten Schritt der Reduzierung der verwendete Wertebereich eines Frames von 64 auf 40 verkleinert und im nächsten Reduzierungsschritt sowohl für das Training der \ac{SVM}, als auch für die Live-Klassifikation, nur 16 Frames pro Geste verwendet. 
 
-Da nach der Vorverarbeitung der Daten (\ref{Kapitel 1 TODO} trotz Subtraktion der Referenzfrequenz teilweise noch sehr feines Rauschen in den Daten vorhanden sein kann, werden Werte unterhalb eines festgelegten Schwellenwerts (Threshold) auf 0 gesetzt.
-Ein Aufsummieren aller Frames mit anschließender Normalisierung liefert ein ''Gesamtergebnis'' einer Geste, in der sich alle relevanten Merkmale befinden.
+Die dritte Reduzierung wird mittels der Addition benachbarter Frames erzielt, so dass letztlich nur noch jeweils 8 Frames zu je 40 Werten pro Datensatz/Geste existieren.
+Im Anschluss erfolgt die Transformation in ein eindimensionales Array mit insgesamt 320 Werten, welches als Eingabevektor für die \ac{SVM} dient.
+Gegenüber der ursprünglichen Gesamtanzahl von 2048 Werten pro Datensatz wurde mittels der Vorverarbeitung die Dimension eines Eingabevektors um etwa den Faktor $6\text{,}5$ verringert.
+Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite Wert der Einheitsgeste für das Training verwendet werden soll.
 
-Durch die Reduzierung des Wertebereichs auf 40 Werte pro Frame und durch das Aufsummieren zu einer Einheitsgeste wird eine Problemdimensionsreduzierung beim Training einer SVM um den Faktor ~51 erzielt.
-Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite Wert der Einheitsgeste für das Training verwendet wird.
+\begin{figure*}[htbp] \centering
+    \includegraphics[width=0.65\textwidth]{svm/svm_preprocessing_steps.png}
+    \caption{Vorverarbeitungsschritte}
+    \label{fig:svm_preprocessing_steps}
+\end{figure*}
 
-
-\subsubsection{Anpassung des Klassifikators}
-- Ergebnisorientoiert
+\paragraph{Vorverarbeitung}\label{sec:svm_preprocess}$\;$ \\\\
+Die Reduzierung der Eingabevektordimension und die vorverarbeitenden Schritte sind zwei notwendige Handlungen, die sich in der Implementierung nicht trennen lassen, allerdings lassen sie sich in ihrer Beschreibung gut separieren.
+Unmittelbar nach dem ersten Reduzierungsschritt wird jeder einzelne Frame normalisiert und die Referenzfrequenz subtrahiert.
+Da trotz Subtraktion der Referenzfrequenz teilweise noch sehr feines Rauschen in den Daten vorhanden sein kann, werden Werte unterhalb eines festgelegten Schwellenwerts auf 0 gesetzt.
+Die ersten 16 Frames, die relevante Informationen enthalten (Frame-Maximalwert > 0), werden für den dritten Reduzierungsschritt verwendet.
+Optional und standardmäßig aktiviert wird eine eindimensionale Gauß'sche Filterung zur Glättung der Werte als abschließender Vorverarbeitungsschritt angewandt.
 
 \subsubsection{Implementierung}
 Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Interface für alle Klassifikatoren vorhanden, welches von jedem Klassifikator -- allerdings unterschiedlich -- implementiert ist. 
-Dabei handelt es sich um die abstrakte Klasse \textit{IClassifier}.
+Dabei handelt es sich um die abstrakte Klasse \textit{IClassifier}, die von der \ac{SVM}--Klasse im Modul \textit{svm.py}  implementiert werden muss.
 
-Für die Implementierung des \ac{SVM}-Klassifikators innerhalb der Klasse SVM wird die Python-Bibliothek \cite{scikit-learn} verwendet. 
-Die Bibliothek stellt neben einer Vielzahl von weiteren Modulen und Klassen unter anderem auch eine Implementierung einer SVM zur Verfügung.
-Für grundlegende Matrizenberechnungen wird die Python-Bibliothekt \cite{NumPy} verwendet. \cite{NumPy} zeichnet sich vor allem durch effiziente Berechnungsoperationen und eine Vielzahl an nützlicher Funktionen aus.
-Zusätzlich findet das in der Python-Installation enthaltene \cite{subprocess}-Modul Einsatz, um mittels erkannter Gesten verschiedene Programme starten und beenden zu können.
+\begin{lstlisting}[float=*,language=Python,caption={classify},label={lst:svm_classify}]{lst:svm_classify}
+import numpy as np
+import svm_appstarter as Starter
+appstarter = Starter()
 
-Die Methode \textit{classify} führt die entsprechenden Vorverarbeitungsschritte pro übergebenem Frame aus und speichert diesen in einer globalen Liste \textit{self.datalist}. 
-Mittels einer Abfrage, ob der Frame überhaupt relevante Informationen besitzt, wird der Gestenanfang erkannt und der entsprechende Index der Liste \textit{self.datalist} gespeichert.
-Sobald 20 weitere Frames in dieser Liste abgespeichert worden sind, startet zunächst ein weiterer Vorverarbeitungsschritt, in dem alle Frames zu einer Einheitsgeste aufsummiert werden.
-Die normalisierte Einheitsgeste ist das finale Ergebnis der Vorverarbeitung der Live-Klassifikation und dient dem SVM-Klassifikator als Eingabedatum.
-Als Rückgabewert liefert der Klassifikator die entsprechende Gestennummer, die er dem Eingabedatum zugeordnet hat.
-Mittels dieser Nummer wird eine Methode aufgerufen, in der jeder Nummer eine entsprechende Funktion zugeordnet ist.
-
-\begin{lstlisting}[language=Python,caption={Classify},label={lst:svm_classify}]{lst:svm_classify}
-def classify(self, data):
-	# init num samples per frame and borders
-	sliced_num_samples_per_frame = SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT - SVM.SLICE_RIGHT
-	left_border = SVM.SLICE_LEFT
-	right_border = SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT
-
-	normalized_data_with_noise = data / np.amax(data)
-	normalized_data = normalized_data_with_noise[left_border:right_border] - self.noise_frame[
-																			 left_border:right_border]
-
-	frame = normalized_data
-	irrelevant_samples = np.where(frame <= 0.025)
-	frame[irrelevant_samples] = 0.0
-
-	rr = 20  # whats that?!?
-	self.datalist.append(frame)
-	self.datanum += 1
-
-	if np.amax(frame) > 0.0 and self.found == False:
-		self.index = self.datanum
-		self.found = True
-
-	if self.index + rr == self.datanum and self.found == True:
-		self.index = 0
-		self.found = False
-
-		current_frameset = np.asarray(self.datalist[-rr:])
+def classify(data):
+	frame = preprocess_frame(slice_frame(data),ref_frequency_frame)
+	datalist.append(frame)
+	datanum += 1
 	
-		gesture_frame = current_frameset.sum(axis=0)
-
-		try:
-			normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
-			if not np.isnan(np.sum(normalised_gesture_frame)):
-				target_prediction = self.classifier.predict(normalised_gesture_frame[::2])[0]  # only each second?!?
-				self.executeCommand(target_prediction)
-		except:
-			print "error =("
-
-	if self.datanum > sliced_num_samples_per_frame:
-		del self.datalist[0]
+	if timeout < framerange/2:
+		timeout += 1
+		if timeout == framerange/2:
+			print "..."
+	
+	if np.amax(frame) > 0.0 and gesturefound == 0 and timeout == framerange/2:
+		gestureindex = datanum
+		gesturefound = 1
+		
+	if gestureindex + ramerange == datanum and gesturefound == 1:
+		gesturefound, gestureindex, timeout = 0, 0, 0
+		if new_preprocess:
+			current_frameset = [frame for frame in datalist[-framerange:] if np.amax(frame) > 0]
+			while len(current_frameset) < framerange/2:
+				current_frameset.append(np.zeros(wanted_frames))
+			current_frameset = np.asarray(current_frameset)
+			relevant_frames = np.asarray(list(current_frameset[:framerange/2:2] + current_frameset[1:framerange/2:2])).reshape(wanted_frames*framerange/4,)
+			if smooth:
+				if use_each_second:
+					normalised_gesture_frame = gaussian_filter1d(relevant_frames, 1.5)[::2]
+				else:
+					normalised_gesture_frame = gaussian_filter1d(relevant_frames, 1.5)
+			else:
+				normalised_gesture_frame = relevant_frames
+			
+			try:
+				appstarter.controlProgram(classifier.predict(normalised_gesture_frame)[0])
+			except:
+				print "some error occured =("
+			
+	if datanum > framerange:
+		del datalist[0]
 \end{lstlisting}
 
 
-\begin{lstlisting}[language=Python,caption={Start Programms},label={lst:svm_startprogramms}]{lst:svm_startprogramms}
-def executeCommand(self, number):
-	print number,
+Für die Implementierung der \ac{SVM}--Klasse wird die Python-Bibliothek scikit-learn verwendet. 
+Die Bibliothek stellt neben einer Vielzahl von weiteren Modulen und Klassen unter anderem auch eine Implementierung einer \ac{SVM} zur Verfügung.
+Für grundlegende Matrizenberechnungen wird die Python-Bibliothekt NumPy verwendet. NumPy zeichnet sich vor allem durch effiziente Berechnungsoperationen und eine Vielzahl an nützlicher Funktionen aus.
+Das Erweiterungsmodul SciPy für NumPy wird ebenfalls verwendet.
+Zusätzlich findet das in der Python-Installation enthaltene \textit{subprocess}-Modul Einsatz, um mittels erkannter Gesten verschiedene Programme starten und beenden zu können.
 
-	if number == 0 and self.executed["notepad"] == False:
-		print "starting notepad"
-		proc = sp.Popen("notepad")
-		self.executed["notepad"] = proc.pid
 
-	elif number == 1 and self.executed["notepad"] != False:
-		sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["notepad"]))
-		print "terminating notepad"
-		self.executed["notepad"] = False
+Die Methode \textit{classify} erhält von dem Hauptprogramm jeweils einzelne Frames zu je 64 Werten, die sich innerhab des Frequenzbereichs um die Referenzfrequenz von $18\text{,}5\text{ kHz}$ befinden.
+Anschließend wird direkt der erste beschriebene Vorverarbeitungsschritt pro übergebenem Frame ausgeführt, die in einer globalen Liste \textit{datalist} abgespeichert werden.
+Mittels einer Abfrage, ob der Frame überhaupt relevante Informationen besitzt, wird der Gestenanfang erkannt und der entsprechende Index der Liste \textit{datalist} gespeichert.
+Sobald 32 weitere Frames in dieser Liste abgespeichert worden sind, werden die 16 relevanten Frames herausgesucht und mittels der weiteren Vorverarbeitungsschritte zu einem Eingabevektor mit 320 Werten transformiert.
+Der Eingabevektor wird dem Klassifikator übergeben, welcher als Rückgabewert die entsprechende Gestennummer zurückliefert, die er dem Eingabedatum zugeordnet hat.
+Gleichzeitig dient diese Nummer zur Steuerung von diversen Programmen.
+So kann mittels der Geste 0 der Notepad-Editor geöffnet und mittels der Geste 1 wieder beendet werden.
+Diese Funktionalität ist einem separaten Modul \textit{svm\_appstarter.py} ausgelagert.
 
-	elif number == 2 and self.executed["taskmgr"] == False:
-		print "starting taskmanager"
-		proc = sp.Popen("taskmgr")
-		self.executed["taskmgr"] = proc.pid
 
-	elif number == 3 and self.executed["taskmgr"] != False:
-		sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["taskmgr"]))
-		print "terminating taskmanager"
-		self.executed["taskmgr"] = False
-
-	elif number == 4 and self.executed["calc"] == False:
-		print "starting calculator"
-		proc = sp.Popen("calc")
-		self.executed["calc"] = proc.pid
-
-	elif number == 5 and self.executed["calc"] != False:
-		sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["calc"]))
-		print "terminating calculator"
-		self.executed["calc"] = False
-
-	elif number == 6:
-		print "noise, do nothing ..."
-
-	print ""
-\end{lstlisting}
 
 
 \subsubsection{Training}
-- Trainingsmethode
+Die Trainingsmethode greift auf die eingelesenen und vorverarbeiteten Datensätze und die entsprechenden Klassenzugehörigkeiten zu und übergibt sie der \textit{fit()}-Methode der \ac{SVM}-Klassifikatorimplementierung von scikit-klearn.
+Dieser Klassifikator wurde davor bereits mit den in der Konfigurationsdatei festgelegten Parametern initialisiert.
+Nach dem Training wird eine globale Referenz auf die trainierte \ac{SVM} gespeichert.
+Gleichzeitig wird die trainierte \ac{SVM} auf der Festplatte für spätere Aufrufe komprimiert gespeichert, so dass nach einem Neustart des Programms das Training nicht erneut ausgeführt werden muss.
+
+
 
 \subsubsection{Fazit}
 - Training geht relativ flott, so dass unterschiedliche Parameterkombinationen zügig ausprobiert werden können (allerdings sollte man die Standardwerte für die Parameter benutzen, da sie meistens bereits zu guten Ergebnissen führen)
