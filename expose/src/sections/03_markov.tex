@@ -20,9 +20,12 @@ Er führte eine statistische Analyse der Buchstabenfolge des Textes ``Eugen Oneg
 Pushkin.
 
 Eine \acl{MK} beschreibt einen zeit-diskreten Prozess \((X_t)_{t\in\mathbb{N}_0}\) mit einem abzählbaren Zustandsraum \(S\) \cite{stochMod}.
-Für eine Markov-Kette 1. Ordnung gilt die Markov Eigenschaft: \\
+Da die Verteilung der Zufallsvariable \( S(t)\) nur von den vergangenen Zuständen abhängt gilt sie als kausal. \cite[48]{mmmFink}
+Für eine Markov-Kette 1. Ordnung gilt die Markov Eigenschaft, dann wird sie auch als ``einfach'' bezeichnet: \\
 \( \forall t \in \mathbb{N} : P (X_{t+1} = s_{t+1} | X_0 = s_0, \ldots , X_{t-1} = s_{t-1}, X_{t} = s_{t}) = P ( X_{t+1} = s_{t+1} | X_{t} = s_{t} ) \) \\
 Dies beschreibt die Gedächtnislosigkeit des Prozesses und bedeutet, dass der nächste Zustand nur vom direkten Vorgänger abhängt.
+Weiterhin wird eine \acl{MK} als stationär bezeichnet, wenn alle Wahrscheinlichkeiten unabhängig von der Zeit sind.
+
 Als Übergangswahrscheinlichkeit bezeichnte man die bedingte Wahrscheinlichkeit \(P ( X_{t+1} = s_{t+1} | X_{t} = s_{t} ) \), dass auf 
 \( s_{n}\) der Nachfolgezustand \( s_{n+1}\) folgt. Diese Wahrscheinlichkeiten werden üblicherweise zu einer Übergangsmatrix zusammengefasst: \\
 \( A = [a_{ij}] = [ P (X_t = j) | P (X_{t-1} = i) ] \)
@@ -31,9 +34,12 @@ Weiterhin benötigt der Prozess einen Vektor für den Anfangzustand \( t = 0 \):
 \( \Pi = [ \pi_i] = [ P (X_0 = i) ] , i \in S \)
 
 So lässt sich eine Markov-Kette durch Zustandsraum \(S\), den Übergangsmatrix \( A \) und einen Anfangszustand \( \Pi \) definieren.
- 
-Veranschaulichen lässt sich eine Markov Kette als gerichtetes Zustandsdiagram
-
+Veranschaulichen lässt sich eine Markov Kette als gerichtetes Zustandsdiagramm (Abb. \ref{fig:simple_mc})
+\begin{figure}[htbp] \centering
+    \includegraphics[width=0.33\textwidth]{markov/simple_mc.png}
+    \caption{Einfaches Zustandsdiagramm einer \acl{MK} (de.wikipedia.org/wiki/Markow-Kette)}
+    \label{fig:simple_mc}
+\end{figure}
 
 
 
@@ -42,23 +48,6 @@ der aufgrund der Vorgeschichte, Aussagen über die Zukunft machen kann.
 Eine \acl{MK} kann als Gerichteter Graph mit Zuständen \(S\) und mit Übergangswahrscheinlichkeiten \(X_i\) an den Kanten beschrieben werden. 
 
 Sie ist definiert durch eine endlich Menge an Zuständen \( S = \{ s | 1 <= s <= N \} \) und der diskreten Zeit \( t = 0, 1, 2, \ldots \) \\
-
-\textbf{1. Markov Eigenschaft: } \\
-\( \forall t \in \mathbb{N} : P (X_t = x_t | X_1 = x_1 ; \ldots ; X_{t-1} = x_{t-1} ; Y_1 = y_1 ; \ldots ; Y_{t-1} = y_{t-1} ) = P (X_t = x_t | X_{t-1} ) \) \\
-Dies bedeutet, dass die \acl{MK} Gedächtnislos ist!
-
-
-Eine \acl{MK} ist \cite[48]{mmmFink}:
-\begin{itemize}
-     \item \textit{stationär} \\
-           Die Wahrscheinlichkeiten sind unabhängig von der Zeit
-     \item \textit{kausal} \\
-           Die Verteilung der Zufallsvariable \( S(t)\) hängt nur von den vergangenen Zuständen ab
-     \item \textit{einfach} \\
-           Die Abhängigkeiten der Prozesseingenschaften beschränken sich nur auf den unmittelbaren Vorgänger (1. Markov Eigenschaft) 
-\end{itemize}
-Bei einer \acl{MK} 1. Ordnung benötigt man für diese Aussagen nur den gegenwärtigen Zustand, um auf den nächsten Schritt zu schließen.
-
 
 
   %%%%%%%%%%%%%%%%%%
@@ -123,6 +112,23 @@ und das Maximum als Mittelpunkt der Geste genutzt. Von diesem Gestenhöhepunkt w
 
 So wird aus einem 32 x 64 Array pro Geste ein 13x13 Array.
 
+\begin{figure}[htbp] \centering
+    \includegraphics[width=0.4\textwidth]{markov/data_raw.png}
+    \caption{Rohdaten direkt vom Recorder (\acl{RLO} Geste) mit gefundener Gestenmitte (Roter Punkt)}
+    \label{fig:data_raw}
+\end{figure}
+
+\begin{figure}[htbp] \centering
+    \includegraphics[width=0.4\textwidth]{markov/data_preproc.png}
+    \caption{Daten nach der Vorverarbeitung (\acl{RLO} Geste)}
+    \label{fig:data_preproc}
+\end{figure}
+
+\begin{figure}[htbp] \centering
+    \includegraphics[width=0.4\textwidth]{markov/data_gmm.png}
+    \caption{Sampledaten aus dem trainierten \acl{GMM} (\acl{RLO} Geste)}
+    \label{fig:data_gmm}
+\end{figure}
 
   %%%%%%%%%%%%%%%%%%%%%
   %  IMPLEMENTIERUNG  % 
