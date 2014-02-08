@@ -1,7 +1,7 @@
 '''
 Created on 06/02/2014
 
-@author: Benny
+@author: Benny, Manuel
 '''
 
 ''' general imports '''
