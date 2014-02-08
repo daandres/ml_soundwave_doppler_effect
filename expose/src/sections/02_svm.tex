@@ -218,12 +218,12 @@ Dieser Abschnitt befasst sich mit der spezifischen Datenaufbereitung für den Su
 
 \paragraph{Eingabevektordimensionsreduzierung}\label{sec:svm_reduce}$\;$ \\
 Bei der Betrachtung der Trainingsdaten, die jeweils aus insgesamt 32 Frames zu je 64 Werten bestehen, wird offensichtlich, dass die durch den Doppler-Effekt verursachten Frequenzverschiebungen in einem begrenzten Umfeld der Referenzfrequenz von $18\text{,}5\text{ kHz}$ herum sattfinden.
-Zudem stellt sich heraus, dass nur ein Bruchteil der ursprünglich veranschlagten 32 Frames pro Geste relevante Informationen enthalten, da die Ausführung einer Geste meist zwischen 8 und 16 Frames dauert und nur innerhalb dieser Frame-Anzahl Frequenzverschiebungen verursacht (Bild).
-Aufgrund dieser beiden Gründe werden im ersten Schritt der Reduzierung der verwendete Wertebereich eines Frames von 64 auf 40 verkleinert und im nächsten Reduzierungsschritt sowohl für das Training der \ac{SVM}, als auch für die Live-Klassifikation, nur 20 Frames pro Geste verwendet (Bild). 
+Zudem stellt sich heraus, dass nur ein Bruchteil der ursprünglich veranschlagten 32 Frames pro Geste relevante Informationen enthalten, da die Ausführung einer Geste meist zwischen 8 und 20 Frames dauert und nur innerhalb dieser Frame-Anzahl Frequenzverschiebungen verursacht.
+Aufgrund dieser beiden Gründe werden im ersten Schritt der Reduzierung der verwendete Wertebereich eines Frames von 64 auf 40 verkleinert und im nächsten Reduzierungsschritt sowohl für das Training der \ac{SVM}, als auch für die Live-Klassifikation, nur 16 Frames pro Geste verwendet. 
 
-Die dritte Reduzierung wird mittels der Addition benachbarter Frames erzielt, so dass letztlich nur noch jeweils 10 Frames zu je 40 Werten pro Datensatz/Geste existieren.
-Im Anschluss erfolgt die Transformation in ein eindimensionales Array mit insgesamt 400 Werten, welches als Eingabevektor für die \ac{SVM} dient.
-Gegenüber der ursprünglichen Gesamtanzahl von 2048 Werten pro Datensatz wurde mittels der Vorverarbeitung die Dimension eines Eingabevektors um den Faktor 5 verringert.
+Die dritte Reduzierung wird mittels der Addition benachbarter Frames erzielt, so dass letztlich nur noch jeweils 8 Frames zu je 40 Werten pro Datensatz/Geste existieren.
+Im Anschluss erfolgt die Transformation in ein eindimensionales Array mit insgesamt 320 Werten, welches als Eingabevektor für die \ac{SVM} dient.
+Gegenüber der ursprünglichen Gesamtanzahl von 2048 Werten pro Datensatz wurde mittels der Vorverarbeitung die Dimension eines Eingabevektors um etwa den Faktor $6\text{,}5$ verringert.
 Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite Wert der Einheitsgeste für das Training verwendet werden soll.
 
 \begin{figure*}[htbp] \centering
@@ -236,112 +236,100 @@ Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite W
 Die Reduzierung der Eingabevektordimension und die vorverarbeitenden Schritte sind zwei notwendige Handlungen, die sich in der Implementierung nicht trennen lassen, allerdings lassen sie sich in ihrer Beschreibung gut separieren.
 Unmittelbar nach dem ersten Reduzierungsschritt wird jeder einzelne Frame normalisiert und die Referenzfrequenz subtrahiert.
 Da trotz Subtraktion der Referenzfrequenz teilweise noch sehr feines Rauschen in den Daten vorhanden sein kann, werden Werte unterhalb eines festgelegten Schwellenwerts auf 0 gesetzt.
-Die ersten 20 Frames, die relevante Informationen enthalten (Frame-Maximalwert > 0) werden für den dritten Reduzierungsschritt verwendet.
-Optional kann eine eindimensionale Gauß'sche Filterung zur Glättung der Werte als abschließender Vorverarbeitungsschritt angewandt werden.
-
-
-
-
-Die Klassifikatoren erhalten dabei jeweils einzelne Frames zu je 64 Werten, die sich innerhab des Frequenzbereichs um die Referenzfrequenz von $18\text{,}5\text{ kHz}$ befinden.
+Die ersten 16 Frames, die relevante Informationen enthalten (Frame-Maximalwert > 0), werden für den dritten Reduzierungsschritt verwendet.
+Optional und standardmäßig aktiviert wird eine eindimensionale Gauß'sche Filterung zur Glättung der Werte als abschließender Vorverarbeitungsschritt angewandt.
 
 \subsubsection{Implementierung}
 Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Interface für alle Klassifikatoren vorhanden, welches von jedem Klassifikator -- allerdings unterschiedlich -- implementiert ist. 
-Dabei handelt es sich um die abstrakte Klasse \textit{IClassifier}.
+Dabei handelt es sich um die abstrakte Klasse \textit{IClassifier}, die von der \ac{SVM}--Klasse im Modul \textit{svm.py}  implementiert werden muss.
 
-Für die Implementierung des \ac{SVM}-Klassifikators innerhalb der Klasse SVM wird die Python-Bibliothek \cite{scikit-learn} verwendet. 
-Die Bibliothek stellt neben einer Vielzahl von weiteren Modulen und Klassen unter anderem auch eine Implementierung einer SVM zur Verfügung.
+Für die Implementierung der \ac{SVM}--Klasse wird die Python-Bibliothek \cite{scikit-learn} verwendet. 
+Die Bibliothek stellt neben einer Vielzahl von weiteren Modulen und Klassen unter anderem auch eine Implementierung einer \ac{SVM} zur Verfügung.
 Für grundlegende Matrizenberechnungen wird die Python-Bibliothekt \cite{NumPy} verwendet. \cite{NumPy} zeichnet sich vor allem durch effiziente Berechnungsoperationen und eine Vielzahl an nützlicher Funktionen aus.
+Das Erweiterungsmodul \cite[SciPy} für \cite{NumPy} wird ebenfalls verwendet.
 Zusätzlich findet das in der Python-Installation enthaltene \cite{subprocess}-Modul Einsatz, um mittels erkannter Gesten verschiedene Programme starten und beenden zu können.
 
-Die Methode \textit{classify} führt die entsprechenden Vorverarbeitungsschritte pro übergebenem Frame aus und speichert diesen in einer globalen Liste \textit{self.datalist}. 
+
+Die Methode \textit{classify} erhält von dem Hauptprogramm jeweils einzelne Frames zu je 64 Werten, die sich innerhab des Frequenzbereichs um die Referenzfrequenz von $18\text{,}5\text{ kHz}$ befinden.
+Anschließend wird direkt der erste beschriebene Vorverarbeitungsschritt pro übergebenem Frame ausgeführt, die in einer globalen Liste \textit{self.datalist} abgespeichert werden.
 Mittels einer Abfrage, ob der Frame überhaupt relevante Informationen besitzt, wird der Gestenanfang erkannt und der entsprechende Index der Liste \textit{self.datalist} gespeichert.
-Sobald 20 weitere Frames in dieser Liste abgespeichert worden sind, startet zunächst ein weiterer Vorverarbeitungsschritt, in dem alle Frames zu einer Einheitsgeste aufsummiert werden.
-Die normalisierte Einheitsgeste ist das finale Ergebnis der Vorverarbeitung der Live-Klassifikation und dient dem SVM-Klassifikator als Eingabedatum.
-Als Rückgabewert liefert der Klassifikator die entsprechende Gestennummer, die er dem Eingabedatum zugeordnet hat.
-Mittels dieser Nummer wird eine Methode aufgerufen, in der jeder Nummer eine entsprechende Funktion zugeordnet ist.
+Sobald 32 weitere Frames in dieser Liste abgespeichert worden sind, werden die 16 relevanten Frames herausgesucht und mittels der weiteren Vorverarbeitungsschritte zu einem Eingabevektor mit 320 Werten transformiert.
+Der Eingabevektor wird dem Klassifikator übergeben, welcher als Rückgabewert die entsprechende Gestennummer zurückliefert, die er dem Eingabedatum zugeordnet hat.
+Gleichzeitig dient diese Nummer zur Steuerung von diversen Programmen.
+So kann mittels der Geste 0 der Notepad-Editor geöffnet und mittels der Geste 1 wieder beendet werden.
+Diese Funktionalität ist einem separaten Modul \textit{svm_appstarter.py} ausgelagert.
 
 \begin{lstlisting}[language=Python,caption={Classify},label={lst:svm_classify}]{lst:svm_classify}
 def classify(self, data):
-	# init num samples per frame and borders
-	sliced_num_samples_per_frame = SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT - SVM.SLICE_RIGHT
-	left_border = SVM.SLICE_LEFT
-	right_border = SVM.NUM_SAMPLES_PER_FRAME - SVM.SLICE_RIGHT
-
-	normalized_data_with_noise = data / np.amax(data)
-	normalized_data = normalized_data_with_noise[left_border:right_border] - self.noise_frame[
-																			 left_border:right_border]
-
-	frame = normalized_data
-	irrelevant_samples = np.where(frame <= 0.025)
-	frame[irrelevant_samples] = 0.0
-
-	rr = 20  # whats that?!?
+	''' start first preprocessing of framedata '''
+	frame = self.preprocess_frame(self.slice_frame(data),self.ref_frequency_frame)
+	
+	''' store frame in datalist and increment running index '''
 	self.datalist.append(frame)
 	self.datanum += 1
-
-	if np.amax(frame) > 0.0 and self.found == False:
-		self.index = self.datanum
-		self.found = True
-
-	if self.index + rr == self.datanum and self.found == True:
-		self.index = 0
-		self.found = False
-
-		current_frameset = np.asarray(self.datalist[-rr:])
 	
-		gesture_frame = current_frameset.sum(axis=0)
+	''' increment timeout value to allow user to move his hand without any classification after one gesture '''
+	if self.timeout < self.framerange/2:
+		self.timeout += 1
+		if self.timeout == self.framerange/2:
+			print "..."
+	
+	''' check if frame has some relevant information and store this running index '''
+	if np.amax(frame) > 0.0 and self.gesturefound == False and self.timeout == self.framerange/2:
+		self.gestureindex = self.datanum
+		self.gesturefound = True
+		
+	''' check if framerange is reached and gesturefound is true '''
+	if self.gestureindex + self.framerange == self.datanum and self.gesturefound == True:
+		self.gestureindex = 0
+		self.gesturefound = False
+		self.timeout = 0
+		
+		# new second preprocess step
+		if self.new_preprocess:
+			''' get first 16 recordingframes which contain relevant gesture information '''
+			''' if less than 16, append frames with zeros '''
+			current_frameset = [frame for frame in self.datalist[-self.framerange:] if np.amax(frame) > 0]
+			while len(current_frameset) < self.framerange/2:
+				current_frameset.append(np.zeros(self.wanted_frames))
 
-		try:
-			normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
-			if not np.isnan(np.sum(normalised_gesture_frame)):
-				target_prediction = self.classifier.predict(normalised_gesture_frame[::2])[0]  # only each second?!?
-				self.executeCommand(target_prediction)
-		except:
-			print "error =("
+			''' slice to two lists (even/odd) and sum every pair; reshape to 1d array '''
+			relevant_frames = np.asarray(list(np.asarray(current_frameset[:self.framerange/2:2] ) + np.asarray(current_frameset[1:self.framerange/2:2])))
+			if self.smooth:
+				if self.use_each_second:
+					normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), 1.5)[::2]
+				else:
+					normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), 1.5)
+			else:
+				normalised_gesture_frame = relevant_frames.reshape(self.wanted_frames*self.framerange/4,)
+			
+			try:
+				''' start actual classification and applicationstarter '''
+				target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
+				self.appstarter.controlProgram(target_prediction)
+			except:
+				print "some error occured =("
+			
+		# old second preprocess step
+		else:
+			''' sum up all wanted frames to one gestureframe '''
+			current_frameset = np.asarray(self.datalist[-self.framerange:])
+			gesture_frame = current_frameset.sum(axis=0)
+			
+			try:
+				''' normalise gestureframe '''
+				normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
+				if not np.isnan(np.sum(normalised_gesture_frame)):
+					
+					''' start actual classification and applicationstarter '''
+					target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
+					self.starter.controlProgram(target_prediction)
+			except:
+				print "some error occured =("
 
-	if self.datanum > sliced_num_samples_per_frame:
+	''' delete unneeded frames from datalist '''
+	if self.datanum > self.framerange:
 		del self.datalist[0]
-\end{lstlisting}
-
-
-\begin{lstlisting}[language=Python,caption={Start Programms},label={lst:svm_startprogramms}]{lst:svm_startprogramms}
-def executeCommand(self, number):
-	print number,
-
-	if number == 0 and self.executed["notepad"] == False:
-		print "starting notepad"
-		proc = sp.Popen("notepad")
-		self.executed["notepad"] = proc.pid
-
-	elif number == 1 and self.executed["notepad"] != False:
-		sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["notepad"]))
-		print "terminating notepad"
-		self.executed["notepad"] = False
-
-	elif number == 2 and self.executed["taskmgr"] == False:
-		print "starting taskmanager"
-		proc = sp.Popen("taskmgr")
-		self.executed["taskmgr"] = proc.pid
-
-	elif number == 3 and self.executed["taskmgr"] != False:
-		sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["taskmgr"]))
-		print "terminating taskmanager"
-		self.executed["taskmgr"] = False
-
-	elif number == 4 and self.executed["calc"] == False:
-		print "starting calculator"
-		proc = sp.Popen("calc")
-		self.executed["calc"] = proc.pid
-
-	elif number == 5 and self.executed["calc"] != False:
-		sp.Popen("TASKKILL /F /PID {pid} /T".format(pid=self.executed["calc"]))
-		print "terminating calculator"
-		self.executed["calc"] = False
-
-	elif number == 6:
-		print "noise, do nothing ..."
-
-	print ""
 \end{lstlisting}
 
 

@@ -4,14 +4,15 @@ Created on 14/01/2014
 @author: Benny, Manuel
 '''
 
+
 ''' general imports '''
 import os
 import numpy as np
-import subprocess as sp
 import pylab as pl
 import warnings
 
 ''' explicit imports '''
+from scipy.ndimage.filters import gaussian_filter1d
 from sklearn.externals import joblib
 from sklearn import svm
 from sklearn.cross_validation import train_test_split
@@ -21,7 +22,7 @@ from sklearn.metrics import classification_report
 ''' custom imports '''
 from gestureFileIO import GestureFileIO
 from classifier.classifier import IClassifier
-from starter import Starter
+from svm_appstarter import Starter
 
 ''' catch warnings as error '''
 np.set_printoptions(precision=4, suppress=True, threshold='nan')
@@ -41,7 +42,7 @@ class SVM(IClassifier):
 
     def __init__(self, recorder=None, config=None, relative=""):
         self.config = config
-        self.starter = Starter()
+        self.appstarter = Starter()
         
         ''' general settings '''
         self.subdirs = eval(self.config['used_gestures'])
@@ -54,6 +55,8 @@ class SVM(IClassifier):
         self.wanted_frames = self.samples_per_frame - self.slice_left - self.slice_right
         self.framerange = int(self.config['framerange'])
         self.timeout = int(self.config['timeout'])
+        self.smooth = int(self.config['smooth'])
+        self.use_each_second = int(self.config['use_each_second'])
         self.threshold = float(self.config['threshold'])
         self.new_preprocess = self.config['new_preprocess']
         
@@ -78,7 +81,7 @@ class SVM(IClassifier):
         self.classifier = self.load(self.path)
         self.ref_frequency_frame = self.load_ref_frequency_frame()
         #self.X_train, self.X_test, self.Y_train, self.Y_test = self.loadData()
-        self.X_train, self.Y_train = self.loadData()
+        self.X_train, self.Y_train = None, None #self.loadData()
         self.X_test, self.Y_test = self.X_train, self.Y_train
         
 
@@ -146,7 +149,7 @@ class SVM(IClassifier):
     def loadData(self, filename=""):
         gestures = []
         targets = []
-        for gesture_nr in range(self.nClasses):
+        for gesture_nr in range(2,self.nClasses):
             print "load gesture", gesture_nr
             for subdir in self.subdirs:
                 files = [c for a,b,c in os.walk(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))][0]
@@ -156,19 +159,36 @@ class SVM(IClassifier):
                     gesture_framesets = self.slice_framesets(gesture_framesets_plain)
                     
                     ''' create one gesture frame from relevant frames '''
-                    for frameset_nr in range(gesture_framesets.shape[0]):
+                    for frameset_nr in range(1,gesture_framesets.shape[0]):
                         
                         # new second preprocess step
                         if self.new_preprocess:
                             ''' get first 16 recordingframes which contain relevant gesture information '''
                             ''' if less than 16, append frames with zeros '''
                             current_frameset = [self.preprocess_frame(frame, self.ref_frequency_frame) for frame in gesture_framesets[frameset_nr] if np.amax(self.preprocess_frame(frame, self.ref_frequency_frame)) > 0]
-                            while len(current_frameset) < self.framerange:
+                            while len(current_frameset) < self.framerange/2:
                                 current_frameset.append(np.zeros(self.wanted_frames))
-                            
+                            current_frameset = np.asarray(current_frameset[:self.framerange/2])
+
                             ''' slice to two lists (even/odd) and sum every pair; reshape to 1d array '''
-                            relevant_frames = np.asarray(list(np.asarray(current_frameset[:self.framerange:2] ) + np.asarray(current_frameset[1:self.framerange:2])))
-                            normalised_gesture_frame = relevant_frames.reshape(self.wanted_frames*self.framerange/2,)
+                            relevant_frames = np.asarray(list(current_frameset[:self.framerange/2:2] + current_frameset[1:self.framerange/2:2]))
+                            if self.smooth:
+                                if self.use_each_second:
+                                    normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), 1.5)[::2]
+                                else:
+                                    normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), 1.5)
+                            else:
+                                normalised_gesture_frame = relevant_frames.reshape(self.wanted_frames*self.framerange/4,)
+                            #===================================================
+                            # ax = pl.subplot(1,1,0)
+                            # ax.set_xlim([0,8*40])
+                            # ax.set_ylim([-0.1,1.1])
+                            # scaling = np.arange(8*40)
+                            # pl.plot(scaling, normalised_gesture_frame, "g")
+                            # pl.show()
+                            # return
+                            #===================================================
+                            
                         
                         # old second preprocess step
                         else:
@@ -205,13 +225,13 @@ class SVM(IClassifier):
         self.datanum += 1
         
         ''' increment timeout value to allow user to move his hand without any classification after one gesture '''
-        if self.timeout < self.framerange:
+        if self.timeout < self.framerange/2:
             self.timeout += 1
-            if self.timeout == self.framerange:
+            if self.timeout == self.framerange/2:
                 print "..."
         
         ''' check if frame has some relevant information and store this running index '''
-        if np.amax(frame) > 0.0 and self.gesturefound == False and self.timeout == self.framerange:
+        if np.amax(frame) > 0.0 and self.gesturefound == False and self.timeout == self.framerange/2:
             self.gestureindex = self.datanum
             self.gesturefound = True
             
@@ -228,15 +248,21 @@ class SVM(IClassifier):
                 current_frameset = [frame for frame in self.datalist[-self.framerange:] if np.amax(frame) > 0]
                 while len(current_frameset) < self.framerange/2:
                     current_frameset.append(np.zeros(self.wanted_frames))
-                
+
                 ''' slice to two lists (even/odd) and sum every pair; reshape to 1d array '''
                 relevant_frames = np.asarray(list(np.asarray(current_frameset[:self.framerange/2:2] ) + np.asarray(current_frameset[1:self.framerange/2:2])))
-                normalised_gesture_frame = relevant_frames.reshape(self.wanted_frames*self.framerange/4,)
+                if self.smooth:
+                    if self.use_each_second:
+                        normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), 1.5)[::2]
+                    else:
+                        normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), 1.5)
+                else:
+                    normalised_gesture_frame = relevant_frames.reshape(self.wanted_frames*self.framerange/4,)
                 
                 try:
                     ''' start actual classification and applicationstarter '''
                     target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
-                    self.starter.controlProgram(target_prediction)
+                    self.appstarter.controlProgram(target_prediction)
                 except:
                     print "some error occured =("
                 
@@ -274,6 +300,8 @@ class SVM(IClassifier):
 
 
     def startTraining(self, args=[]):
+        self.X_train, self.Y_train = self.loadData()
+        
         ''' start training '''
         classifier = svm.SVC(kernel=self.kernel, C=self.c, gamma=self.gamma, degree=self.degree, coef0=self.coef0)
         classifier.fit(self.X_train, self.Y_train)
@@ -307,7 +335,6 @@ class SVM(IClassifier):
         error = sumWrong / sumAll
         print(confmat)
         print("error: " + str(100. * error) + "%")
-        print self.classifier
 
 
     def save(self, filename=""):
@@ -320,6 +347,7 @@ class SVM(IClassifier):
 
     def printClassifier(self):
         print self.path
+        print self.classifier
         
         
     def show_confusion_matrix(self):
