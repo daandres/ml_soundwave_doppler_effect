@@ -204,8 +204,8 @@ Dies ermöglicht uns eine echtzeitnahe Gestenerkennung.
 \newpage 
 \subsection{Anwendung auf das Projekt}
 Für das Projekt wird eine \ac{SVM} trainiert, die mit nur geringfügig den Standardwerten des verwendeten Python-Moduls abweichenden Parametern trainiert wird. 
-Für das Training erwartet die \ac{SVM} neben einem Eingabevektor mit 400 Werten noch die dazugehörige Klasse; die Länge des Eingabevektors lässt sich allerdings über einen entsprechenden Parameter in einer separaten Konfigurationsdatei noch halbieren.
-Während der Live-Klassifikation von Gesten beziehungsweise deren Eingabevektoren wird die trainierte \ac{SVM} für die Erkennung verwendet.
+Für das Training erwartet die \ac{SVM} neben einem Eingabevektor mit 320 Werten noch die dazugehörige Klasse; die Länge des Eingabevektors lässt sich allerdings über einen entsprechenden Parameter in einer separaten Konfigurationsdatei noch halbieren.
+Während der Live-Klassifikation von Gesten, beziehungsweise deren Eingabevektoren, wird die trainierte \ac{SVM} für die Erkennung verwendet.
 Natürlich müssen diese Eingabevektoren in ihrer Dimension den Trainingsdaten entsprechen.
 
 Der nächste Abschnitt widmet sich der Datenaufbereitung, insbesondere der Reduzierung der Dimension eines Eingabevektors und der entsprechenden Vorverarbeitung.
@@ -224,7 +224,7 @@ Aufgrund dieser beiden Gründe werden im ersten Schritt der Reduzierung der verw
 Die dritte Reduzierung wird mittels der Addition benachbarter Frames erzielt, so dass letztlich nur noch jeweils 8 Frames zu je 40 Werten pro Datensatz/Geste existieren.
 Im Anschluss erfolgt die Transformation in ein eindimensionales Array mit insgesamt 320 Werten, welches als Eingabevektor für die \ac{SVM} dient.
 Gegenüber der ursprünglichen Gesamtanzahl von 2048 Werten pro Datensatz wurde mittels der Vorverarbeitung die Dimension eines Eingabevektors um etwa den Faktor $6\text{,}5$ verringert.
-Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite Wert der Einheitsgeste für das Training verwendet werden soll.
+Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite Wert des Eingabevektors verwendet werden soll.
 
 \begin{figure*}[htbp] \centering
     \includegraphics[width=0.65\textwidth]{svm/svm_preprocessing_steps.png}
@@ -299,7 +299,7 @@ Die Methode \textit{classify} erhält von dem Hauptprogramm jeweils einzelne Fra
 Anschließend wird direkt der erste beschriebene Vorverarbeitungsschritt pro übergebenem Frame ausgeführt, die in einer globalen Liste \textit{datalist} abgespeichert werden.
 Mittels einer Abfrage, ob der Frame überhaupt relevante Informationen besitzt, wird der Gestenanfang erkannt und der entsprechende Index der Liste \textit{datalist} gespeichert.
 Sobald 32 weitere Frames in dieser Liste abgespeichert worden sind, werden die 16 relevanten Frames herausgesucht und mittels der weiteren Vorverarbeitungsschritte zu einem Eingabevektor mit 320 Werten transformiert.
-Der Eingabevektor wird dem Klassifikator übergeben, welcher als Rückgabewert die entsprechende Gestennummer zurückliefert, die er dem Eingabedatum zugeordnet hat.
+Der Eingabevektor wird dem Klassifikator übergeben, welcher als Rückgabewert die entsprechende Gestennummer zurückliefert, die er dem Eingabevektor zugeordnet hat.
 Gleichzeitig dient diese Nummer zur Steuerung von diversen Programmen.
 So kann mittels der Geste 0 der Notepad-Editor geöffnet und mittels der Geste 1 wieder beendet werden.
 Diese Funktionalität ist einem separaten Modul \textit{svm\_appstarter.py} ausgelagert.

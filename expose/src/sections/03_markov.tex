@@ -15,10 +15,27 @@ evaluiert und ein Fazit mit Ausblick gezogen.
 \subsection{\acl{MK}} \label{sec:chain}
 Grundlage des \acl{HMM} war die vom russischen Mathematiker Andrej Andrejewitsch Markov 
 (1856 - 1922, siehe \cite{markov1913}) entwickelte \acl{MK}. Zu Beginn des
-20.
-Jahrhunderts beschäftigte er sich als erster mit einer statistischen Beschreibung von Zustands- und Symbolfolgen. 
+20. Jahrhunderts beschäftigte er sich als erster mit einer statistischen Beschreibung von Zustands- und Symbolfolgen. 
 Er führte eine statistische Analyse der Buchstabenfolge des Textes ``Eugen Onegin'' von Alexander 
 Pushkin.
+
+Eine \acl{MK} beschreibt einen zeit-diskreten Prozess \((X_t)_{t\in\mathbb{N}_0}\) mit einem abzählbaren Zustandsraum \(S\) \cite{stochMod}.
+Für eine Markov-Kette 1. Ordnung gilt die Markov Eigenschaft: \\
+\( \forall t \in \mathbb{N} : P (X_{t+1} = s_{t+1} | X_0 = s_0, \ldots , X_{t-1} = s_{t-1}, X_{t} = s_{t}) = P ( X_{t+1} = s_{t+1} | X_{t} = s_{t} ) \) \\
+Dies beschreibt die Gedächtnislosigkeit des Prozesses und bedeutet, dass der nächste Zustand nur vom direkten Vorgänger abhängt.
+Als Übergangswahrscheinlichkeit bezeichnte man die bedingte Wahrscheinlichkeit \(P ( X_{t+1} = s_{t+1} | X_{t} = s_{t} ) \), dass auf 
+\( s_{n}\) der Nachfolgezustand \( s_{n+1}\) folgt. Diese Wahrscheinlichkeiten werden üblicherweise zu einer Übergangsmatrix zusammengefasst: \\
+\( A = [a_{ij}] = [ P (X_t = j) | P (X_{t-1} = i) ] \)
+\( \forall i, j \in S, \sum_{j \in S} p_{ij} = 1 \) \\
+Weiterhin benötigt der Prozess einen Vektor für den Anfangzustand \( t = 0 \):
+\( \Pi = [ \pi_i] = [ P (X_0 = i) ] , i \in S \)
+
+So lässt sich eine Markov-Kette durch Zustandsraum \(S\), den Übergangsmatrix \( A \) und einen Anfangszustand \( \Pi \) definieren.
+ 
+Veranschaulichen lässt sich eine Markov Kette als gerichtetes Zustandsdiagram
+
+
+
 
 Eine \acl{MK} ist eine Sequenz von Zufallsvariablen \( X_1, x_2, X_3, \ldots\) und beschreibt einen speziellen stochastischen Prozess, 
 der aufgrund der Vorgeschichte, Aussagen über die Zukunft machen kann. 

@@ -22,6 +22,8 @@ from sklearn.metrics import classification_report
 ''' custom imports '''
 from gestureFileIO import GestureFileIO
 from classifier.classifier import IClassifier
+from svm_dataloader import Dataloader
+from svm_preprocessor import Preprocessor
 from svm_appstarter import Starter
 
 ''' catch warnings as error '''
@@ -43,9 +45,11 @@ class SVM(IClassifier):
     def __init__(self, recorder=None, config=None, relative=""):
         self.config = config
         self.appstarter = Starter()
-        
+        self.dataloader = Dataloader()
+        self.preprocessor = Preprocessor()
+                
         ''' general settings '''
-        self.subdirs = eval(self.config['used_gestures'])
+        self.subdirs = self.config['used_gestures'].split(',')
         self.nClasses = int(self.config['used_classes'])
         
         ''' preprocessing settings '''
@@ -149,17 +153,17 @@ class SVM(IClassifier):
     def loadData(self, filename=""):
         gestures = []
         targets = []
-        for gesture_nr in range(2,self.nClasses):
+        for gesture_nr in range(0,self.nClasses):
             print "load gesture", gesture_nr
             for subdir in self.subdirs:
-                files = [c for a,b,c in os.walk(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))][0]
+                files = [allfiles for path,subdirs,allfiles in os.walk(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))][0]
                 for textfile in files:
                     ''' load and reshape textfile with gesture data '''
                     gesture_framesets_plain = self.load_gesture_framesets(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr), textfile))
                     gesture_framesets = self.slice_framesets(gesture_framesets_plain)
                     
                     ''' create one gesture frame from relevant frames '''
-                    for frameset_nr in range(1,gesture_framesets.shape[0]):
+                    for frameset_nr in range(0,gesture_framesets.shape[0]):
                         
                         # new second preprocess step
                         if self.new_preprocess:
