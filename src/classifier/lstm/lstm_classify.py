@@ -2,6 +2,7 @@ import classifier.lstm.util as util
 import numpy as np
 from scipy import stats as stats
 import properties.config as c
+import operator
 
 '''
 LSTMCLassify class provides different methods for live/online classification with the LSTM Module. 
@@ -27,7 +28,8 @@ class LSTMClassify():
         self.predHistory = util.createArraySix(self.predHistSize,)
 
         # Classify3 method
-        self.predhistoryforclassify3 = []
+        self.predhistoryforclassify3 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+        self.classify3start = False
 
         # classify4
         self.start = 0
@@ -52,7 +54,7 @@ class LSTMClassify():
         preprocessedData = data / np.amax(data)
         preprocessedData = util.preprocessFrame(preprocessedData, self.net.datacut, self.net.datafold)
         # diffAvgData = preprocessedData - self.avg
-        out = self.__classify2(preprocessedData)
+        out = self.__classify3(preprocessedData)
         if(out != -1):
             print("Gesture " + str(out) + " detected")
             if(self.outkeys != None):
@@ -117,30 +119,25 @@ class LSTMClassify():
 
     '''
     Gesten werden innerhalb von der Geste 6 gesucht
-    TODO not finished yet
     '''
     def __classify3(self, data):
-        data = data - self.avg
         pred = self.__classify2(data)
-        if(pred != -1 and self.predcounter >= 4):
-            try:
-                prevpred, prevpredcounter = self.predhistoryforclassify3.pop()
-                if(prevpred != pred):
-                    self.predhistoryforclassify3.append([prevpred, prevpredcounter])
-            except IndexError:
-                pass
-            self.predhistoryforclassify3.append([pred, self.predcounter])
-            if(pred == 6 and len(self.predhistoryforclassify3) <= 1):
-                pass
-            else:
-                classes = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
-                for pred, count in self.predhistoryforclassify3:
-                    classes[pred] += count
-                classes.pop(6)
-                classifiedclass = stats.mode(np.asarray(classes.values()), 0)
-                return classifiedclass
-        return -1
+        if(pred == 6):
+            # check for most classified class
+            if(not self.classify3start):
+                self.classify3start = True
+                return -1
+            print self.predhistoryforclassify3
+            highestkey = 6
+            highestkey = max(self.predhistoryforclassify3.iteritems(), key=operator.itemgetter(1))[0]
+            self.predhistoryforclassify3 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+            return highestkey
 
+        if(self.classify3start):
+            if(pred != -1 and self.predcounter >= 4):
+                self.predhistoryforclassify3[pred] += self.predcounter
+
+        return -1
 
     '''
     Gesten werden anhand eines erkannten Starttresholds erkannt
@@ -212,7 +209,7 @@ class LSTMClassify():
                         self.maxValue = a
                 print self.maxValue
                 # maxValue ein bischen erhohen (steuert empfindlichkeit der erkennung)
-                self.maxValue = self.maxValue + 0.005
+                self.maxValue = self.maxValue + 0.05
                 self.beginMax = 0
         else:
             data = data - self.avg
