@@ -138,6 +138,7 @@ class DataUtil:
         return x * (3 * ( x - 1 )**2 + 0.75)
 
     def amplifySignal(self, gesture):
+        #TODO in cut Threshold integrieren
         l = [self.amplifyFunction(x) for x in gesture]
         return np.array(l)
        
