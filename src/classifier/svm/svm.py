@@ -153,17 +153,17 @@ class SVM(IClassifier):
     def loadData(self, filename=""):
         gestures = []
         targets = []
-        for gesture_nr in range(2,self.nClasses):
+        for gesture_nr in range(0,self.nClasses):
             print "load gesture", gesture_nr
             for subdir in self.subdirs:
-                files = [c for a,b,c in os.walk(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))][0]
+                files = [allfiles for path,subdirs,allfiles in os.walk(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))][0]
                 for textfile in files:
                     ''' load and reshape textfile with gesture data '''
                     gesture_framesets_plain = self.load_gesture_framesets(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr), textfile))
                     gesture_framesets = self.slice_framesets(gesture_framesets_plain)
                     
                     ''' create one gesture frame from relevant frames '''
-                    for frameset_nr in range(1,gesture_framesets.shape[0]):
+                    for frameset_nr in range(0,gesture_framesets.shape[0]):
                         
                         # new second preprocess step
                         if self.new_preprocess:
