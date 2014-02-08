@@ -44,8 +44,14 @@ class Preprocessor():
     
     def preprocess_frame(self, frame_data):
         try:
-            ''' normalise and slice dataframe '''
-            normalized_data_with_ref_frequency = frame_data / np.amax(frame_data)
+            ''' slice frame data if necessary '''
+            if frame_data.shape[0] == self.wanted_frames:
+                frame = frame_data
+            else:
+                frame = self.slice_frame(frame_data)
+                
+            ''' normalise frame '''
+            normalized_data_with_ref_frequency = frame / np.amax(frame)
             normalized_data = normalized_data_with_ref_frequency - self.ref_frequency_frame
             
             ''' set small noisy data to 0 '''

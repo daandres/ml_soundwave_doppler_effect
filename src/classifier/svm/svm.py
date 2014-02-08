@@ -160,7 +160,46 @@ class SVM(IClassifier):
         
         return ref_frequency_frame
     """
+    def classify(self, data):
+        ''' start first preprocessing of framedata '''
+        frame = self.preprocessor.preprocess_frame(data)
+        
+        ''' store frame in datalist and increment running index '''
+        self.datalist.append(frame)
+        self.datanum += 1
+        
+        ''' increment timeout value to allow user to move his hand without any classification after one gesture '''
+        if self.timeout < self.framerange/2:
+            self.timeout += 1
+            if self.timeout == self.framerange/2:
+                print "..."
+        
+        ''' check if frame has some relevant information and store this running index '''
+        if np.amax(frame) > 0.0 and self.gesturefound == False and self.timeout == self.framerange/2:
+            self.gestureindex = self.datanum
+            self.gesturefound = True
+            
+        ''' check if framerange is reached and gesturefound is true '''
+        if self.gestureindex + self.framerange == self.datanum and self.gesturefound == True:
+            self.gestureindex = 0
+            self.gesturefound = False
+            self.timeout = 0
+            
+            normalised_gesture_frame = self.preprocessor.preprocess_frames(self.datalist[-self.framerange:])
+            
+            try:
+                ''' start actual classification and applicationstarter '''
+                target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
+                self.appstarter.controlProgram(target_prediction)
+            except:
+                print "some error occured =("
+            
 
+        ''' delete unneeded frames from datalist '''
+        if self.datanum > self.framerange:
+            del self.datalist[0]
+            
+    
     def loadData(self, filename=""):
         data, targets = self.dataloader.load_gesture_framesets()
         return data, targets
@@ -216,7 +255,7 @@ class SVM(IClassifier):
         """
     
 
-    def classify(self, data):
+    def classify_old(self, data):
         ''' start first preprocessing of framedata '''
         frame = self.preprocess_frame(self.slice_frame(data),self.ref_frequency_frame)
         
