@@ -7,7 +7,7 @@ Created on 07/02/2014
 '''general imports '''
 import os
 import numpy as np
-import pandas as pd
+#import pandas as pd
 
 ''' custom imports '''
 from svm_preprocessor import Preprocessor
@@ -33,8 +33,8 @@ class Dataloader():
         
     
     def load_framesets(self, textfile):
-        frames_plain = np.asarray(pd.read_csv(textfile, sep=',', header=None))
-        #frames_plain = np.loadtxt(textfile, delimiter=",")
+        #frames_plain = np.asarray(pd.read_csv(textfile, sep=',', header=None))
+        frames_plain = np.loadtxt(textfile, delimiter=",")
         num_framesets = frames_plain.shape[0]
         num_samples_total = frames_plain.shape[1]
         num_frames_per_frameset = num_samples_total / self.samples_per_frame

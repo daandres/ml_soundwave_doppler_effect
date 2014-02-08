@@ -313,7 +313,13 @@ Insgesamt ließ sich feststellen, dass die Anzahl der Lernrate in Zusammenhang z
 Je kleiner die Lernrate, desto mehr Schätzer wurden für ein gleichwertiges Ergebnis benötigt. 
 Ohne die Geste \acl{RLO} konnte die Erfolgsrate auf 75\% erhöht werden.
 Das Ergebnis lässt sich dadurch erklären, dass sich die beiden Gesten \acl{RLO} und \acl{SPO} in ihrer Charakteristik sehr ähnlich sind. 
-Auch unter Berücksichtigung der Amplitudenwerte als zusätzliches Entscheidungskriterium konnte die Erfolgsrate bei der Klassifikation aller Gesten nicht wesentlich verbessert werden. 
+Auch unter Berücksichtigung der Amplitudenwerte als zusätzliches Entscheidungskriterium konnte die Erfolgsrate bei der Klassifikation aller Gesten nicht wesentlich verbessert werden. Der Vergleich der Erfolgsrate des GradientBoostingClassifiers bei 4 und 5 Gesten ist in Abbildung~\ref{fig:vgl_gradientboosting} dargestellt. Bei beiden Tests wurde die Lernrate auf 0,2 und die maximale Baumtiefe auf 2 gesetzt, da mit dieser Konfiguration im Schnitt die besten Ergebnisse erzielt werden konnten. 
+
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/vgl_gradientboosting.jpg}
+\caption{Erfolgsrate beim GradientBoostingClassifier für 4 Gesten (rot) und 5 Gesten (blau)}
+\label{fig:vgl_gradientboosting}
+\end{figure}
 
 
 \subsection{Fazit}

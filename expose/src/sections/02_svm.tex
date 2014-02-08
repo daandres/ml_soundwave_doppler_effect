@@ -65,7 +65,7 @@ Intuitiv ist klar, dass alle Punkte auf der Hyperebene selbst keinen Abstand hab
     \mathcal{H}: \{ x \,|\, \langle w,x \rangle + b = 0 \}
 \end{equation}
  
-Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die SVM die Eingabe einr Klasse zu. Dabei können nur zwei Klassen  prognostiziert werden. Die Klasse gehört also entweder zur Klassenmenge \ref{eq:svm_decision0} oder zu \ref{eq:svm_decision1}.
+Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die \ac{SVM} die Eingabe einr Klasse zu. Dabei können nur zwei Klassen  prognostiziert werden. Die Klasse gehört demnach entweder zur Klassenmenge \ref{eq:svm_decision0} oder zu \ref{eq:svm_decision1}.
 
 \begin{eqnarray}
     \mathcal{C}_{-1}: \{ c \,|\, sign(\langle w,x \rangle + b) = -1 \} \label{eq:svm_decision0} \\
@@ -75,20 +75,20 @@ Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die SVM die Eingabe
 Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. \ref{fig:svm_separator}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.22\textwidth]{svm/svm_overview.png}
+    \includegraphics[width=0.3\textwidth]{svm/svm_overview.png}
     \caption{Trenngerade einer SVM}
     \label{fig:svm_separator}
 \end{figure}
 
 Die Stützvektoren bilden das tragende Konstrukt der Entscheidungsfunktion. 
 Alle andere Merkmalsvektoren haben keinen Einfluss auf die Trennung, was die Namensgebung der Stützvektoren begründet. 
-Das macht die SVM zu einem sehr transparenten und performantent Klassifikator. 
+Das macht die \ac{SVM} zu einem sehr transparenten und performantent Klassifikator. 
 
 
 \subsubsection{Kernel-Trick}
 Es ergeben sich Unregelmäßigkeiten bei der Lösung von nichtlinear separierbaren Probleme und der Klassifikation von mehr als 2 Klassen.
 Im Gegensatz zu den MLPs kann man mit der Erhöhung der Dimension diesen Umstand nicht umgehen. 
-Die SVMs setzen in diesem Falle auf die Transformation der Datenrepräsentation. 
+Die \ac{SVMs} setzen in diesem Falle auf die Transformation der Datenrepräsentation. 
 Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren in dem sie linear separierbar erscheinen (Abb. \ref{fig:svm_kernel}). 
 
 \begin{equation}
@@ -180,13 +180,13 @@ Gängige Kernfunktionen sind:
 
 \subsubsection{Klassifikation von mehreren Klassen}
 
-Da die SVM als binärer Klassifikator entwickelt wurde, müssen für eine Klassifikation von mehr als zwei Klassen Strategien entwickelt werden, um das Prinzip der SVM zu erweitern. 
+Da die \ac{SVM} als binärer Klassifikator entwickelt wurde, müssen für eine Klassifikation von mehr als zwei Klassen Strategien entwickelt werden, um das Prinzip der \ac{SVM} zu erweitern. 
 Ein Verfahren ist die "{}Einer gegen den Rest"{}-Klassifikation. 
-Bei dieser Technik wird für jedes zu klassifizierende Objekt eine binäre SVM trainiert. 
-Für jede SVM wird eine Klasse separiert, die anderen Klassen werden nicht unterschieden und als negative Beispiele zu einer Restklasse definiert. 
-Die Vorraussage eines Objektes ergibt sich aus der Auswertung aller SVMs. 
-Es ist nun möglich, dass mehrere SVMs eine positive Klassenzuordnung feststellen nicht die Restklasse klassifizieren. 
-In diesem Fall entscheidet sich das "{}Einer gegen den Rest"{}-Verfahren für die Klasse, dessen SVM die höchste Ausgabe erzeugt (winner-takes-all). 
+Bei dieser Technik wird für jedes zu klassifizierende Objekt eine binäre \ac{SVM} trainiert. 
+Für jede \ac{SVM} wird eine Klasse separiert, die anderen Klassen werden nicht unterschieden und als negative Beispiele zu einer Restklasse definiert. 
+Die Vorraussage eines Objektes ergibt sich aus der Auswertung aller \ac{SVMs}. 
+Es ist nun möglich, dass mehrere \ac{SVMs} eine positive Klassenzuordnung feststellen nicht die Restklasse klassifizieren. 
+In diesem Fall entscheidet sich das "{}Einer gegen den Rest"{}-Verfahren für die Klasse, dessen \ac{SVM} die höchste Ausgabe erzeugt (winner-takes-all). 
 Als höchstes Ergebnis wird der größte Abstand zur Trennhyperebene angenommen. 
 Offensichtlich erhöht sich die Laufzeit der Trainingsphase mit der Anzahl der Klassen $|\mathcal{C}|$. 
 Glücklicherweise beeinflusst das nicht die Laufzeitanalyse in der $\mathcal{O}$-Notation (\ref{eq:svm_winner_runtime}). 
@@ -214,7 +214,7 @@ Der nächste Abschnitt widmet sich der Datenaufbereitung, insbesondere der Reduz
 In \autoref{sec:intro} wurde die Aufnahme und die generelle Vorverarbeitung der Daten bereits erläutert, bevor diese an die entsprechenden Klassifikatoren weitergeleitet werden.
 Da jeder Klassifikator aufgrund seiner Funktionsweise unterschiedlich mit den Eingabedaten arbeitet, ist eine entsprechende und auf den jeweiligen Klassifikator angepasste Datenaufbereitung notwendig.
 Gleichzeitig kann durch eine entsprechende Vorverarbeitung gegenüber unverarbeiteten Daten das Problem der Klassifikation von unterschiedlichen Datensätzen verallgemeinert und somit die Trainingszeit verringert werden.
-Dieser Abschnitt befasst sich mit der spezifischen Datenaufbereitung für den Support Vector Machine Klassifikator.
+Dieser Abschnitt befasst sich mit der spezifischen Datenaufbereitung für den \ac{SVM} Klassifikator.
 
 \paragraph{Eingabevektordimensionsreduzierung}\label{sec:svm_reduce}$\;$ \\
 Bei der Betrachtung der Trainingsdaten, die jeweils aus insgesamt 32 Frames zu je 64 Werten bestehen, wird offensichtlich, dass die durch den Doppler-Effekt verursachten Frequenzverschiebungen in einem begrenzten Umfeld der Referenzfrequenz von $18\text{,}5\text{ kHz}$ herum sattfinden.
@@ -239,9 +239,9 @@ Da trotz Subtraktion der Referenzfrequenz teilweise noch sehr feines Rauschen in
 Die ersten 16 Frames, die relevante Informationen enthalten (Frame-Maximalwert > 0), werden für den dritten Reduzierungsschritt verwendet.
 Optional und standardmäßig aktiviert wird eine eindimensionale Gauß'sche Filterung zur Glättung der Werte als abschließender Vorverarbeitungsschritt angewandt.
 
-\subsubsection{Implementierung}
+\subsubsection{Implementierung}\label{sec:svm_implementation}
 Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Interface für alle Klassifikatoren vorhanden, welches von jedem Klassifikator -- allerdings unterschiedlich -- implementiert ist. 
-Dabei handelt es sich um die abstrakte Klasse \textit{IClassifier}, die von der \ac{SVM}--Klasse im Modul \textit{svm.py}  implementiert werden muss.
+Dabei handelt es sich um die abstrakte Klasse \texttt{IClassifier}, die von der \ac{SVM}--Klasse im Modul \texttt{svm.py}  implementiert werden muss.
 
 \begin{lstlisting}[float=*,language=Python,caption={classify},label={lst:svm_classify}]{lst:svm_classify}
 import numpy as np
@@ -288,32 +288,76 @@ def classify(data):
 \end{lstlisting}
 
 
-Für die Implementierung der \ac{SVM}--Klasse wird die Python-Bibliothek scikit-learn verwendet. 
+Für die Implementierung der \ac{SVM}--Klasse wird die Python-Bibliothek \textit{scikit-learn} verwendet. 
 Die Bibliothek stellt neben einer Vielzahl von weiteren Modulen und Klassen unter anderem auch eine Implementierung einer \ac{SVM} zur Verfügung.
-Für grundlegende Matrizenberechnungen wird die Python-Bibliothekt NumPy verwendet. NumPy zeichnet sich vor allem durch effiziente Berechnungsoperationen und eine Vielzahl an nützlicher Funktionen aus.
-Das Erweiterungsmodul SciPy für NumPy wird ebenfalls verwendet.
-Zusätzlich findet das in der Python-Installation enthaltene \textit{subprocess}-Modul Einsatz, um mittels erkannter Gesten verschiedene Programme starten und beenden zu können.
+Für grundlegende Matrizenberechnungen in den Modulen \texttt{svm\_dataloader.py} und \texttt{svm\_preprocessor.py} werden die Python-Bibliotheken \textit{NumPy} und \textit{SciPy} verwendet. 
+\textit{NumPy} zeichnet sich vor allem durch effiziente Berechnungsoperationen und eine Vielzahl an nützlicher Funktionen aus, die durch das Erweiterungsmodul \textit{SciPy} um weitere sinnvolle Methoden ergänzt werden.
+Zusätzlich findet das in der Python-Installation enthaltene \textit{os}-Modul Einsatz, um grundlegende Dateipfadkonkatenationen zu bewerkstelligen.
+Letztendlich wird das ebenfalls standardmäßig in der Python-Installation enthaltene \textit{subprocess}-Modul verwendet, um mittels erkannter Gesten verschiedene Programme starten und beenden zu können.
 
 
 Die Methode \textit{classify} erhält von dem Hauptprogramm jeweils einzelne Frames zu je 64 Werten, die sich innerhab des Frequenzbereichs um die Referenzfrequenz von $18\text{,}5\text{ kHz}$ befinden.
-Anschließend wird direkt der erste beschriebene Vorverarbeitungsschritt pro übergebenem Frame ausgeführt, die in einer globalen Liste \textit{datalist} abgespeichert werden.
-Mittels einer Abfrage, ob der Frame überhaupt relevante Informationen besitzt, wird der Gestenanfang erkannt und der entsprechende Index der Liste \textit{datalist} gespeichert.
+Anschließend wird direkt der erste beschriebene Vorverarbeitungsschritt pro übergebenem Frame ausgeführt, die in einer globalen Liste \texttt{datalist} abgespeichert werden.
+Mittels einer Abfrage, ob der Frame überhaupt relevante Informationen besitzt, wird der Gestenanfang erkannt und der entsprechende Index der Liste \texttt{datalist} gespeichert.
 Sobald 32 weitere Frames in dieser Liste abgespeichert worden sind, werden die 16 relevanten Frames herausgesucht und mittels der weiteren Vorverarbeitungsschritte zu einem Eingabevektor mit 320 Werten transformiert.
 Der Eingabevektor wird dem Klassifikator übergeben, welcher als Rückgabewert die entsprechende Gestennummer zurückliefert, die er dem Eingabevektor zugeordnet hat.
-Gleichzeitig dient diese Nummer zur Steuerung von diversen Programmen.
+Gleichzeitig dient diese Gestennummer zur Steuerung von diversen Programmen.
 So kann mittels der Geste 0 der Notepad-Editor geöffnet und mittels der Geste 1 wieder beendet werden.
-Diese Funktionalität ist einem separaten Modul \textit{svm\_appstarter.py} ausgelagert.
+Diese Funktionalität ist einem separaten Modul \texttt{svm\_appstarter.py} ausgelagert.
 
 
 
 
 \subsubsection{Training}
-Die Trainingsmethode greift auf die eingelesenen und vorverarbeiteten Datensätze und die entsprechenden Klassenzugehörigkeiten zu und übergibt sie der \textit{fit()}-Methode der \ac{SVM}-Klassifikatorimplementierung von scikit-klearn.
+Die Trainingsmethode greift auf die eingelesenen und vorverarbeiteten Datensätze und die entsprechenden Klassenzugehörigkeiten zu und übergibt sie der \texttt{fit()}-Methode der \ac{SVM}-Klassifikatorimplementierung.
 Dieser Klassifikator wurde davor bereits mit den in der Konfigurationsdatei festgelegten Parametern initialisiert.
 Nach dem Training wird eine globale Referenz auf die trainierte \ac{SVM} gespeichert.
 Gleichzeitig wird die trainierte \ac{SVM} auf der Festplatte für spätere Aufrufe komprimiert gespeichert, so dass nach einem Neustart des Programms das Training nicht erneut ausgeführt werden muss.
 
 
+
+\subsubsection{Evaluation}
+Für das Training werden ausschließlich die Datensätze aller Gesten von zwei Personen verwendet.
+Dadurch ergibt sich eine relativ geringe Gesamtanzahl der Datensätze von etwa 1200.
+Der Grund für das Nichtverwenden aller Daten liegt in der Qualität der Trainingsdaten, die durch verschiedene Hardwarekonfigurationen der einzelnen Laptops in Bezug auf Lautsprecher und Mikrofon oder auch durch das unkorrekten Ausführung der Gesten teilweise nicht sehr gut ist.
+Mit der Entscheidung, nur Datensätze von zwei Personen zu verwenden, ergibt sich automatisch die Chance zu mehr Übereinstimmungen.
+Durch das Festlegen entsprechender Parameter lässt sich eine \ac{SVM} einfach auf die gegebenen Trainingsdaten trainieren, so dass gute Ergebnisse in Bezug auf die Genauigkeit (engl. Precision) und die Trefferquote (engl. Recall) erzielt werden können.
+Für die Evaluation wurde der komplette Datensatzumfang in zwei Teile unterteilt im Verhältnis $\frac{2}{3}$ zu $\frac{1}{3}$.
+Mit dem knapp 800 Datensätze fassenden ersten Teil wurde die \ac{SVM} trainiert und mittels des zweiten Teils auf ihre Performance getestet.
+\begin{figure}[htbp] \centering
+    \includegraphics[width=0.3\textwidth]{svm/svm_confusion_matrix.png}
+    \caption{Visuelle Darstellung einer Confusion Matrix}
+    \label{fig:svm_confusion_matrix}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrr}
+\hline
+ \multicolumn{1}{c}{\textbf{Gesture}} & \multicolumn{1}{c}{\textbf{Prec.}} & \multicolumn{1}{c}{\textbf{Recall}} \\
+ \hline
+  0: \ac{RLO} & 87\% & 92\% \\
+ \hline
+  1: \ac{TBO} & 97\% & 97\% \\
+ \hline
+  2: \ac{OT} & 100\% & 92\% \\
+ \hline
+  3: \ac{SPO} & 93\% & 83\% \\
+ \hline
+  4: \ac{DPO} & 93\% & 93\% \\
+ \hline
+  5: \ac{RO} & 77\% & 88\% \\
+ \hline
+  6: \ac{BNS} \& \ac{BNN} & 96\% & 100\% \\
+ \hline
+  Average & 92\% & 92\% \\
+ \hline
+\end{tabular}
+\caption[Erkennungsraten einer SVM]{Erkennungsraten einer SVM}
+\label{tab:svm_performance}
+\end{table}
+
+Parameter erläutern...
 
 \subsubsection{Fazit}
 Dann fangen wir mal an:
