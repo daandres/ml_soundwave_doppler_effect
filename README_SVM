@@ -1,0 +1,43 @@
+### Readme for the SVM classifier in the gesture recognition application
+
+The SVM module uses optimal separation by hyperplanes between the classes. For SVM training is necessary.
+The module provides both the classification with a SVM and the training itself. Additionally some
+functions for better handling are provided.
+
+### Features:
+- create a svm with different input dimension size.
+Many optimizations are provided by config parameters:
+- slice_left: For a better performance this parameter slices a given number of samples in each frame at beginning, because they seems to be irrelevant
+- slice_left: For a better performance this parameter slices a given number of samples in each frame at ending, because they seems to be irrelevant
+- samples_per_frame:
+- used_classes:
+- new_preprocess: indicator for using the newer better preprocess algorithm
+- framerange = 32
+- timeout = 0
+- threshold: all samples under this value are ignored
+- smooth: value for the gaussche
+- use_each_second: indicator for using only each second sample for a better performance
+- kernel: svm kernel, can be rbf, linear, poly. rbf is recommended
+- c:
+- gamma:
+- degree:
+- coef0:
+- used_gestures:  comma-separated folder names for the used gestures
+
+### Usage:
+Config parameters are explained in config/default.cfg. On first start a config/personal.cfg file is created. Changes can be made here.
+An already trained svm is provided and specified in default.cfg.
+
+some commands for console:
+u svm 				- loads SVM module
+v					- validates network against the testset and prints the error and a confmat
+t					- trains the network with the number of configured epochs
+p					- prints the modules and weight of the network to console
+c					- start classification
+
+# Use these commands with care as some states checks and parsing functions are not compatible to customnames
+l <svmpath>      	- load network from this file (.xml will be appended automatically)
+s <svmpath>		    - saves the current network to this path (.xml will be appended automatically)
+l ds <svmpath> 	    - load dataset from this file (.data will be appended automatically)
+s ds <svmpath>	    - saves the current dataset to this path (.data will be appended automatically)
+
