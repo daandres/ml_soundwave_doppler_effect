@@ -243,99 +243,75 @@ Optional und standardmäßig aktiviert wird eine eindimensionale Gauß'sche Filt
 Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Interface für alle Klassifikatoren vorhanden, welches von jedem Klassifikator -- allerdings unterschiedlich -- implementiert ist. 
 Dabei handelt es sich um die abstrakte Klasse \textit{IClassifier}, die von der \ac{SVM}--Klasse im Modul \textit{svm.py}  implementiert werden muss.
 
-Für die Implementierung der \ac{SVM}--Klasse wird die Python-Bibliothek \cite{scikit-learn} verwendet. 
+\begin{lstlisting}[float=*,language=Python,caption={classify},label={lst:svm_classify}]{lst:svm_classify}
+import numpy as np
+import svm_appstarter as Starter
+appstarter = Starter()
+
+def classify(data):
+	frame = preprocess_frame(slice_frame(data),ref_frequency_frame)
+	datalist.append(frame)
+	datanum += 1
+	
+	if timeout < framerange/2:
+		timeout += 1
+		if timeout == framerange/2:
+			print "..."
+	
+	if np.amax(frame) > 0.0 and gesturefound == 0 and timeout == framerange/2:
+		gestureindex = datanum
+		gesturefound = 1
+		
+	if gestureindex + ramerange == datanum and gesturefound == 1:
+		gesturefound, gestureindex, timeout = 0, 0, 0
+		if new_preprocess:
+			current_frameset = [frame for frame in datalist[-framerange:] if np.amax(frame) > 0]
+			while len(current_frameset) < framerange/2:
+				current_frameset.append(np.zeros(wanted_frames))
+			current_frameset = np.asarray(current_frameset)
+			relevant_frames = np.asarray(list(current_frameset[:framerange/2:2] + current_frameset[1:framerange/2:2])).reshape(wanted_frames*framerange/4,)
+			if smooth:
+				if use_each_second:
+					normalised_gesture_frame = gaussian_filter1d(relevant_frames, 1.5)[::2]
+				else:
+					normalised_gesture_frame = gaussian_filter1d(relevant_frames, 1.5)
+			else:
+				normalised_gesture_frame = relevant_frames
+			
+			try:
+				appstarter.controlProgram(classifier.predict(normalised_gesture_frame)[0])
+			except:
+				print "some error occured =("
+			
+	if datanum > framerange:
+		del datalist[0]
+\end{lstlisting}
+
+
+Für die Implementierung der \ac{SVM}--Klasse wird die Python-Bibliothek scikit-learn verwendet. 
 Die Bibliothek stellt neben einer Vielzahl von weiteren Modulen und Klassen unter anderem auch eine Implementierung einer \ac{SVM} zur Verfügung.
-Für grundlegende Matrizenberechnungen wird die Python-Bibliothekt \cite{NumPy} verwendet. \cite{NumPy} zeichnet sich vor allem durch effiziente Berechnungsoperationen und eine Vielzahl an nützlicher Funktionen aus.
-Das Erweiterungsmodul \cite{SciPy} für \cite{NumPy} wird ebenfalls verwendet.
-Zusätzlich findet das in der Python-Installation enthaltene \cite{subprocess}-Modul Einsatz, um mittels erkannter Gesten verschiedene Programme starten und beenden zu können.
+Für grundlegende Matrizenberechnungen wird die Python-Bibliothekt NumPy verwendet. NumPy zeichnet sich vor allem durch effiziente Berechnungsoperationen und eine Vielzahl an nützlicher Funktionen aus.
+Das Erweiterungsmodul SciPy für NumPy wird ebenfalls verwendet.
+Zusätzlich findet das in der Python-Installation enthaltene \textit{subprocess}-Modul Einsatz, um mittels erkannter Gesten verschiedene Programme starten und beenden zu können.
 
 
 Die Methode \textit{classify} erhält von dem Hauptprogramm jeweils einzelne Frames zu je 64 Werten, die sich innerhab des Frequenzbereichs um die Referenzfrequenz von $18\text{,}5\text{ kHz}$ befinden.
-Anschließend wird direkt der erste beschriebene Vorverarbeitungsschritt pro übergebenem Frame ausgeführt, die in einer globalen Liste \textit{self.datalist} abgespeichert werden.
-Mittels einer Abfrage, ob der Frame überhaupt relevante Informationen besitzt, wird der Gestenanfang erkannt und der entsprechende Index der Liste \textit{self.datalist} gespeichert.
+Anschließend wird direkt der erste beschriebene Vorverarbeitungsschritt pro übergebenem Frame ausgeführt, die in einer globalen Liste \textit{datalist} abgespeichert werden.
+Mittels einer Abfrage, ob der Frame überhaupt relevante Informationen besitzt, wird der Gestenanfang erkannt und der entsprechende Index der Liste \textit{datalist} gespeichert.
 Sobald 32 weitere Frames in dieser Liste abgespeichert worden sind, werden die 16 relevanten Frames herausgesucht und mittels der weiteren Vorverarbeitungsschritte zu einem Eingabevektor mit 320 Werten transformiert.
 Der Eingabevektor wird dem Klassifikator übergeben, welcher als Rückgabewert die entsprechende Gestennummer zurückliefert, die er dem Eingabedatum zugeordnet hat.
 Gleichzeitig dient diese Nummer zur Steuerung von diversen Programmen.
 So kann mittels der Geste 0 der Notepad-Editor geöffnet und mittels der Geste 1 wieder beendet werden.
 Diese Funktionalität ist einem separaten Modul \textit{svm\_appstarter.py} ausgelagert.
 
-\begin{lstlisting}[language=Python,caption={Classify},label={lst:svm_classify}]{lst:svm_classify}
-def classify(self, data):
-	''' start first preprocessing of framedata '''
-	frame = self.preprocess_frame(self.slice_frame(data),self.ref_frequency_frame)
-	
-	''' store frame in datalist and increment running index '''
-	self.datalist.append(frame)
-	self.datanum += 1
-	
-	''' increment timeout value to allow user to move his hand without any classification after one gesture '''
-	if self.timeout < self.framerange/2:
-		self.timeout += 1
-		if self.timeout == self.framerange/2:
-			print "..."
-	
-	''' check if frame has some relevant information and store this running index '''
-	if np.amax(frame) > 0.0 and self.gesturefound == False and self.timeout == self.framerange/2:
-		self.gestureindex = self.datanum
-		self.gesturefound = True
-		
-	''' check if framerange is reached and gesturefound is true '''
-	if self.gestureindex + self.framerange == self.datanum and self.gesturefound == True:
-		self.gestureindex = 0
-		self.gesturefound = False
-		self.timeout = 0
-		
-		# new second preprocess step
-		if self.new_preprocess:
-			''' get first 16 recordingframes which contain relevant gesture information '''
-			''' if less than 16, append frames with zeros '''
-			current_frameset = [frame for frame in self.datalist[-self.framerange:] if np.amax(frame) > 0]
-			while len(current_frameset) < self.framerange/2:
-				current_frameset.append(np.zeros(self.wanted_frames))
 
-			''' slice to two lists (even/odd) and sum every pair; reshape to 1d array '''
-			relevant_frames = np.asarray(list(np.asarray(current_frameset[:self.framerange/2:2] ) + np.asarray(current_frameset[1:self.framerange/2:2])))
-			if self.smooth:
-				if self.use_each_second:
-					normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), 1.5)[::2]
-				else:
-					normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), 1.5)
-			else:
-				normalised_gesture_frame = relevant_frames.reshape(self.wanted_frames*self.framerange/4,)
-			
-			try:
-				''' start actual classification and applicationstarter '''
-				target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
-				self.appstarter.controlProgram(target_prediction)
-			except:
-				print "some error occured =("
-			
-		# old second preprocess step
-		else:
-			''' sum up all wanted frames to one gestureframe '''
-			current_frameset = np.asarray(self.datalist[-self.framerange:])
-			gesture_frame = current_frameset.sum(axis=0)
-			
-			try:
-				''' normalise gestureframe '''
-				normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
-				if not np.isnan(np.sum(normalised_gesture_frame)):
-					
-					''' start actual classification and applicationstarter '''
-					target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
-					self.starter.controlProgram(target_prediction)
-			except:
-				print "some error occured =("
-
-	''' delete unneeded frames from datalist '''
-	if self.datanum > self.framerange:
-		del self.datalist[0]
-\end{lstlisting}
 
 
 \subsubsection{Training}
-- Trainingsmethode
-asdasdasd
+Die Trainingsmethode greift auf die eingelesenen und vorverarbeiteten Datensätze und die entsprechenden Klassenzugehörigkeiten zu und übergibt sie der \textit{fit()}-Methode der \ac{SVM}-Klassifikatorimplementierung von scikit-klearn.
+Dieser Klassifikator wurde davor bereits mit den in der Konfigurationsdatei festgelegten Parametern initialisiert.
+Nach dem Training wird eine globale Referenz auf die trainierte \ac{SVM} gespeichert.
+Gleichzeitig wird die trainierte \ac{SVM} auf der Festplatte für spätere Aufrufe komprimiert gespeichert, so dass nach einem Neustart des Programms das Training nicht erneut ausgeführt werden muss.
 
 
 
