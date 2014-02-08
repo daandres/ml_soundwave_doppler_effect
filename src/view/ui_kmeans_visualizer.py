@@ -40,6 +40,9 @@ class ViewUIKMeans:
         self.showRecords = False
         self.recordFramesCount = 32
     
+    
+    
+    
         self.noiseArray = []
         self.arrayFromFile = []
         self.globalViewArray = []
@@ -50,6 +53,8 @@ class ViewUIKMeans:
         
         self.textEdit = None
         self.rightPage = None
+        self.textBeginn = True
+        self.akt = 1
         self.globalLabelText = 'Init!\n'
         self.segNormArray = []
         
@@ -112,23 +117,27 @@ class ViewUIKMeans:
         if gesture == 5:
             self.rightPage.moveCursor(QtGui.QTextCursor.Up)
         if gesture == 0:
-            self.rightPage.moveCursor(QtGui.QTextCursor.Down)
-            #self.uiplot.rightPage_sa.verticalScrollBar(QtGui.QScrollBar.setSingleStep(10))
-            #vbar = self.uiplot.rightPage_sa.verticalScrollBar()
-            #vbar.setValue(10)
+            self.rightPage.moveCursor(QtGui.QTextCursor.Down)#moveCursor(QtGui.QTextCursor.Down)
+
+        if gesture == 3:
+            print 'gesture ', gesture
+            if self.akt < 5:
+                self.akt +=1
+            akt = str(self.akt) + '. Akt::'
+            self.rightPage.scrollToAnchor(akt)
+        if gesture == 4:
+            print 'gesture ', gesture
+            if self.textBeginn:
+                self.textBeginn = False
+                self.rightPage.scrollToAnchor('FINALE')
+            else:
+                self.textBeginn = True
+                self.rightPage.scrollToAnchor('WILLIAM')
+                self.akt = 1
         else:
-            pass#self.rightPage.setText('-')
-    '''
-       
-    @pyqtSlot(np.array([]))       
-    def setCurveFromIClassifier(self, frame):
-        ys = frame[self.idxLeft:self.idxRight]
-        xs = self.xPoints[self.idxLeft:self.idxRight]
-        print '132132132'
-        self.curve_page_1.setData(xs, ys) 
-        self.uiplot.qwtPlot_page_1.replot()
-    '''  
-           
+            pass
+
+
     def plotSignal(self):
 
         data = self.recorder.getTransformedData()
@@ -546,7 +555,7 @@ class ViewUIKMeans:
     
     def initializeKMeans(self):
         self.loadCentroids()
-        text=open("../gestures/Robert/Centroids/shakespeare.kmeans").read()
+        text=open("../gestures/Robert/gesture_7/othello.kmeans").read()
         self.rightPage.setPlainText(text)
         
     
@@ -600,7 +609,7 @@ class ViewUIKMeans:
         self.uiplot.class4_bt.clicked.connect(partial(self.segmentClasses, 4))
         self.uiplot.class5_bt.clicked.connect(partial(self.segmentClasses, 5))
         self.uiplot.class6_bt.clicked.connect(partial(self.segmentClasses, 6))
-        self.uiplot.class7_bt.clicked.connect(partial(self.segmentClasses, 7))
+        self.uiplot.class7_bt.clicked.connect(self.loadClassArray)
         
         self.uiplot.cutSides_sb.valueChanged.connect(self.setArarySidesCut)
         self.uiplot.mulFiles_cb.stateChanged.connect(self.setMultipleFiles)       
@@ -614,7 +623,11 @@ class ViewUIKMeans:
         self.uiplot.perRatio_sb.valueChanged.connect(self.setPercentRatio)
         
         
-    
+    def loadClassArray(self):
+        classArray = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/class arrays/test_array.kmeans")), delimiter=","))
+        print 'classArray.shape ', classArray.shape
+        self.kMeansClassifier.setClassArray(classArray)
+        
     def setPercentRatio(self, value):
         self.kMeansClassifier.setPercentRatio(value)
         

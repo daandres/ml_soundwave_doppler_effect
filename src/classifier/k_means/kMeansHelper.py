@@ -305,7 +305,16 @@ class kMeansHepler():
                 ave = np.average(arrTMP, axis=0)
                 result.append(ave)
             result = np.asarray(result)
-            return result.reshape(result.shape[0]*result.shape[1],)
+            result_2 = []
+            for x in xrange(0,result.shape[0]-1,2):
+                arrTMP = []
+                arrTMP.append(result[x])
+                arrTMP.append(result[x+1])
+                #print 'arrTMP.shape ', np.asarray(arrTMP).shape
+                ave = np.average(arrTMP, axis=0)
+                result_2.append(ave)
+            result_2 = np.asarray(result_2)            
+            return result_2.reshape(result_2.shape[0]*result_2.shape[1],)
         
         
         elif std=='0':
