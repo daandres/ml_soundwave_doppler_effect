@@ -10,6 +10,7 @@ import os
 import numpy as np
 import pylab as pl
 import warnings
+import re
 
 ''' explicit imports '''
 from scipy.ndimage.filters import gaussian_filter1d
@@ -82,21 +83,17 @@ class SVM(IClassifier):
         
         ''' initialization methods '''
         self.classifier = self.load(self.path)
+        
         # create dataloader instance
         self.dataloader = Dataloader(self.config)
         self.ref_frequency_frame = self.dataloader.load_ref_frequency_frame()
-        print "1"
-        
         self.dataloader.updatePreprocessorInstance(self.ref_frequency_frame)
-        print "2"
-        
+
         # create preprocessor instance
         self.preprocessor = Preprocessor(self.config, self.ref_frequency_frame)
-        print "3"
-        
+
         # create appstarter instance
         self.appstarter = Starter()
-        print "4"
 
 
 
@@ -336,7 +333,8 @@ class SVM(IClassifier):
 
 
     def startTraining(self, args=[]):
-        self.X_train, self.Y_train = self.loadData()
+        if self.X_train == None or self.Y_train == None:
+            self.X_train, self.Y_train = self.loadData()
         
         ''' start training '''
         classifier = svm.SVC(kernel=self.kernel, C=self.c, gamma=self.gamma, degree=self.degree, coef0=self.coef0)
@@ -348,6 +346,9 @@ class SVM(IClassifier):
 
 
     def startValidation(self):
+        if self.X_train == None or self.Y_train == None:
+            self.X_train, self.Y_train = self.loadData()
+        
         ''' own implementation of confusion matrix '''
         l = len(self.Y_train) / 10
         p = 0
@@ -382,19 +383,32 @@ class SVM(IClassifier):
 
 
     def printClassifier(self):
-        print self.path
-        print self.classifier
+        pattern = re.compile(r'\s+')
+        classifierinfo = [re.sub(pattern, '', part).replace("SVC(","").replace(")","").replace("="," : ") for part in str(self.classifier).split(',')]
+        print 100*"="
+        print "Path to saved classifier:\n\t",self.path,"\n"
+        print "Information about saved classifier:"
+        for i in classifierinfo:
+            print "\t",i
+        print 100*"="
         
         
     def show_confusion_matrix(self):
         ''' method for creating confusion matrix with graphical visualization '''
-        ''' callable from separate svm_conf.py module '''
+        ''' callable from separate svm_confusion.py module '''
+        
+        x, y = self.loadData()
+        
+        a_train, a_test, b_train, b_test = train_test_split(x, y, test_size=0.33, random_state=42) 
+        ''' start training '''
+        classifier = svm.SVC(kernel=self.kernel, C=self.c, gamma=self.gamma, degree=self.degree, coef0=self.coef0)
+        classifier.fit(a_train, b_train)
         
         target_names = ["gesture 0","gesture 1","gesture 2","gesture 3","gesture 4","gesture 5","gesture 6"]
-        self.Y_pred = self.classifier.predict(self.X_test)
-        cm = confusion_matrix(self.Y_test, self.Y_pred)
+        b_pred = self.classifier.predict(a_test)
+        cm = confusion_matrix(b_test, b_pred)
         print(cm)
-        print(classification_report(self.Y_test, self.Y_pred, target_names=target_names))
+        print(classification_report(b_test, b_pred, target_names=target_names))
         
         definition = '''
 The precision is the ratio tp / (tp + fp) where tp is the number of true positives and fp the number of false positives.
