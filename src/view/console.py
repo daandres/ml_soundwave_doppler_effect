@@ -179,7 +179,6 @@ class Console:
     def view(self, command):
         if(self.classificator != None):
             try:
-                print(self.classificator.getName() + " has GUI")
                 self.classificator.startGui(self.recorder, self.viewCallback)
             except NotImplementedError:
                 print(self.classificator.getName() + " has no GUI, use default one")
