@@ -43,23 +43,21 @@ warnings.simplefilter("error", RuntimeWarning)
 class SVM(IClassifier):
 
     def __init__(self, recorder=None, config=None, relative=""):
+        ''' initialization '''
         self.config = config
-        self.appstarter = Starter()
-        self.dataloader = Dataloader()
-        self.preprocessor = Preprocessor()
                 
         ''' general settings '''
         self.subdirs = self.config['used_gestures'].split(',')
         self.nClasses = int(self.config['used_classes'])
+        self.samples_per_frame = int(self.config['samples_per_frame'])
         
         ''' preprocessing settings '''
         self.slice_left = int(self.config['slice_left'])
         self.slice_right = int(self.config['slice_right'])
-        self.samples_per_frame = int(self.config['samples_per_frame'])
         self.wanted_frames = self.samples_per_frame - self.slice_left - self.slice_right
         self.framerange = int(self.config['framerange'])
         self.timeout = int(self.config['timeout'])
-        self.smooth = int(self.config['smooth'])
+        self.smooth = float(self.config['smooth'])
         self.use_each_second = int(self.config['use_each_second'])
         self.threshold = float(self.config['threshold'])
         self.new_preprocess = self.config['new_preprocess']
@@ -79,18 +77,31 @@ class SVM(IClassifier):
         self.datanum = 0
         self.gesturefound = 0
         self.gestureindex = 0
-        self.executed = {"notepad": False, "taskmgr": False, "calc": False}
         
-        ''' initial methods '''
+        self.X_train, self.Y_train = None, None
+        
+        ''' initialization methods '''
         self.classifier = self.load(self.path)
-        self.ref_frequency_frame = self.load_ref_frequency_frame()
-        #self.X_train, self.X_test, self.Y_train, self.Y_test = self.loadData()
-        self.X_train, self.Y_train = None, None #self.loadData()
-        self.X_test, self.Y_test = self.X_train, self.Y_train
+        # create dataloader instance
+        self.dataloader = Dataloader(self.config)
+        self.ref_frequency_frame = self.dataloader.load_ref_frequency_frame()
+        print "1"
         
+        self.dataloader.updatePreprocessorInstance(self.ref_frequency_frame)
+        print "2"
+        
+        # create preprocessor instance
+        self.preprocessor = Preprocessor(self.config, self.ref_frequency_frame)
+        print "3"
+        
+        # create appstarter instance
+        self.appstarter = Starter()
+        print "4"
 
-    @staticmethod
-    def normalise_framesets(framesets, ref_frequency_frame):
+
+
+    """
+    def normalise_framesets(self, framesets, ref_frequency_frame):
         ''' normalise framesets and substract ref_frequencyframe '''
         for frameset_nr in range(len(framesets)):
             for frame_nr in range(len(framesets[frameset_nr])):
@@ -148,64 +159,44 @@ class SVM(IClassifier):
         ref_frequency_frame = self.slice_frame(np.mean(ref_frequency_avg_frameset, axis=0))
         
         return ref_frequency_frame
-
+    """
 
     def loadData(self, filename=""):
+        data, targets = self.dataloader.load_gesture_framesets()
+        return data, targets
+        
+        """
         gestures = []
         targets = []
         for gesture_nr in range(0,self.nClasses):
             print "load gesture", gesture_nr
             for subdir in self.subdirs:
-                files = [allfiles for path,subdirs,allfiles in os.walk(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))][0]
+                files = [allfiles for root, dirs, allfiles in os.walk(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))][0]
                 for textfile in files:
                     ''' load and reshape textfile with gesture data '''
-                    gesture_framesets_plain = self.load_gesture_framesets(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr), textfile))
+                    text_file_with_path = os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr), textfile)
+                    gesture_framesets_plain = self.load_gesture_framesets(text_file_with_path)
+                    
+                    ''' reduce each framewindow from 64 to 40 values '''
                     gesture_framesets = self.slice_framesets(gesture_framesets_plain)
                     
                     ''' create one gesture frame from relevant frames '''
                     for frameset_nr in range(0,gesture_framesets.shape[0]):
-                        
-                        # new second preprocess step
-                        if self.new_preprocess:
-                            ''' get first 16 recordingframes which contain relevant gesture information '''
-                            ''' if less than 16, append frames with zeros '''
-                            current_frameset = [self.preprocess_frame(frame, self.ref_frequency_frame) for frame in gesture_framesets[frameset_nr] if np.amax(self.preprocess_frame(frame, self.ref_frequency_frame)) > 0]
-                            while len(current_frameset) < self.framerange/2:
-                                current_frameset.append(np.zeros(self.wanted_frames))
-                            current_frameset = np.asarray(current_frameset[:self.framerange/2])
+                        ''' get first 16 recordingframes which contain relevant gesture information '''
+                        ''' if less than 16, append frames with zeros '''
+                        current_frameset = [self.preprocess_frame(frame, self.ref_frequency_frame) for frame in gesture_framesets[frameset_nr] if np.amax(self.preprocess_frame(frame, self.ref_frequency_frame)) > 0]
+                        while len(current_frameset) < self.framerange/2:
+                            current_frameset.append(np.zeros(self.wanted_frames))
 
-                            ''' slice to two lists (even/odd) and sum every pair; reshape to 1d array '''
-                            relevant_frames = np.asarray(list(current_frameset[:self.framerange/2:2] + current_frameset[1:self.framerange/2:2]))
-                            if self.smooth:
-                                if self.use_each_second:
-                                    normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), 1.5)[::2]
-                                else:
-                                    normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), 1.5)
-                            else:
-                                normalised_gesture_frame = relevant_frames.reshape(self.wanted_frames*self.framerange/4,)
-                            #===================================================
-                            # ax = pl.subplot(1,1,0)
-                            # ax.set_xlim([0,8*40])
-                            # ax.set_ylim([-0.1,1.1])
-                            # scaling = np.arange(8*40)
-                            # pl.plot(scaling, normalised_gesture_frame, "g")
-                            # pl.show()
-                            # return
-                            #===================================================
-                            
+                        ''' slice to two lists (even/odd) and sum every pair; reshape to 1d array '''
+                        current_frameset = np.asarray(current_frameset[:self.framerange/2])
+                        relevant_frames = np.asarray(list(current_frameset[:self.framerange/2:2] + current_frameset[1:self.framerange/2:2]))
                         
-                        # old second preprocess step
+                        if self.use_each_second:
+                            normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), self.smooth)[::2]
                         else:
-                            ''' sum up all wanted frames to one gestureframe '''
-                            current_frameset = [self.preprocess_frame(frame, self.ref_frequency_frame) for frame in gesture_framesets[frameset_nr]]
-                            gesture_frame = np.asarray(current_frameset).sum(axis=0)
-    
-                            ''' normalise summed gesture frame '''
-                            try:
-                                normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
-                            except RuntimeWarning:
-                                normalised_gesture_frame = np.zeros(gesture_frame.shape[0])
-                        
+                            normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), self.smooth)
+
                         ''' append gestureframe and targetclass to their corresponding arrays '''
                         gestures.append(normalised_gesture_frame)
                         targets.append(gesture_nr)
@@ -215,9 +206,14 @@ class SVM(IClassifier):
         targets = np.array(targets)
         print data.shape, targets.shape
         
+        
+        print np.array_equal(data,data1)
+        print np.array_equal(targets,targets1)
+        
         #return train_test_split(data, targets, random_state=0)
     
         return data, targets
+        """
     
 
     def classify(self, data):
@@ -255,14 +251,11 @@ class SVM(IClassifier):
 
                 ''' slice to two lists (even/odd) and sum every pair; reshape to 1d array '''
                 relevant_frames = np.asarray(list(np.asarray(current_frameset[:self.framerange/2:2] ) + np.asarray(current_frameset[1:self.framerange/2:2])))
-                if self.smooth:
-                    if self.use_each_second:
-                        normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), 1.5)[::2]
-                    else:
-                        normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), 1.5)
+                if self.use_each_second:
+                    normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), self.smooth)[::2]
                 else:
-                    normalised_gesture_frame = relevant_frames.reshape(self.wanted_frames*self.framerange/4,)
-                
+                    normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), self.smooth)
+
                 try:
                     ''' start actual classification and applicationstarter '''
                     target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
