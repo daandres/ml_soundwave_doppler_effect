@@ -10,9 +10,9 @@ import os
 import numpy as np
 import pylab as pl
 import warnings
+import re
 
 ''' explicit imports '''
-from scipy.ndimage.filters import gaussian_filter1d
 from sklearn.externals import joblib
 from sklearn import svm
 from sklearn.cross_validation import train_test_split
@@ -20,7 +20,6 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 
 ''' custom imports '''
-from gestureFileIO import GestureFileIO
 from classifier.classifier import IClassifier
 from svm_dataloader import Dataloader
 from svm_preprocessor import Preprocessor
@@ -82,143 +81,23 @@ class SVM(IClassifier):
         
         ''' initialization methods '''
         self.classifier = self.load(self.path)
+        
         # create dataloader instance
         self.dataloader = Dataloader(self.config)
         self.ref_frequency_frame = self.dataloader.load_ref_frequency_frame()
-        print "1"
-        
         self.dataloader.updatePreprocessorInstance(self.ref_frequency_frame)
-        print "2"
-        
+
         # create preprocessor instance
         self.preprocessor = Preprocessor(self.config, self.ref_frequency_frame)
-        print "3"
-        
+
         # create appstarter instance
         self.appstarter = Starter()
-        print "4"
 
 
-
-    """
-    def normalise_framesets(self, framesets, ref_frequency_frame):
-        ''' normalise framesets and substract ref_frequencyframe '''
-        for frameset_nr in range(len(framesets)):
-            for frame_nr in range(len(framesets[frameset_nr])):
-                current_frameset = framesets[frameset_nr][frame_nr]
-                framesets[frameset_nr][frame_nr] = (current_frameset / np.amax(current_frameset)) - ref_frequency_frame
-        return framesets
-    
-    
-    def preprocess_frame(self, dataframe, ref_frequency):
-        try:
-            ''' normalise and slice dataframe '''
-            normalized_data_with_ref_frequency = dataframe / np.amax(dataframe)
-            normalized_data = normalized_data_with_ref_frequency - ref_frequency
-            
-            ''' set small noisy data to 0 '''
-            frame = normalized_data
-            irrelevant_samples = np.where(frame <= self.threshold)
-            frame[irrelevant_samples] = 0.0
-        except:
-            frame = np.zeros(self.wanted_frames)
-
-        return frame
-    
-    
-    def slice_frame(self, frame):
-        ''' slice one single 1d-frame from 64 to 40 datavalues '''
-        return frame[self.slice_left:(self.samples_per_frame - self.slice_right)]
-    
-    
-    def slice_framesets(self, framesets):
-        ''' slice 3d-framesets from 64 to 40 datavalues '''
-        return framesets[:, :, self.slice_left:(self.samples_per_frame - self.slice_right)]
-
-    
-    def load_gesture_framesets(self, txt_file):
-        ''' load gesture training datasets ''' 
-        gesture_plain = np.loadtxt(txt_file, delimiter=",")
-        num_framesets = gesture_plain.shape[0]
-        num_samples_total = gesture_plain.shape[1]
-        num_frames_per_frameset = num_samples_total / self.samples_per_frame
-        gesture_framesets_plain = gesture_plain.reshape(num_framesets, num_frames_per_frameset, self.samples_per_frame)
-        
-        return gesture_framesets_plain
-
-    
-    def load_ref_frequency_frame(self):
-        ref_frequency_txt_file = os.path.join(self.gestures_path, 'Benjamin', 'gesture_6', '1389637026.txt')
-
-        ''' load and reshape referencefrequency data with 18500Hz '''
-        ref_frequency_framesets_plain = self.load_gesture_framesets(ref_frequency_txt_file)
-        ref_frequency_framesets = self.normalise_framesets(ref_frequency_framesets_plain, 0)
-        
-        ''' reduce to one single average referencefrequency frame and slice to 40 datavalues '''
-        ref_frequency_avg_frameset = np.mean(ref_frequency_framesets, axis=1)
-        ref_frequency_frame = self.slice_frame(np.mean(ref_frequency_avg_frameset, axis=0))
-        
-        return ref_frequency_frame
-    """
-
-    def loadData(self, filename=""):
-        data, targets = self.dataloader.load_gesture_framesets()
-        return data, targets
-        
-        """
-        gestures = []
-        targets = []
-        for gesture_nr in range(0,self.nClasses):
-            print "load gesture", gesture_nr
-            for subdir in self.subdirs:
-                files = [allfiles for root, dirs, allfiles in os.walk(os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr)))][0]
-                for textfile in files:
-                    ''' load and reshape textfile with gesture data '''
-                    text_file_with_path = os.path.join(self.gestures_path, subdir, 'gesture_' + str(gesture_nr), textfile)
-                    gesture_framesets_plain = self.load_gesture_framesets(text_file_with_path)
-                    
-                    ''' reduce each framewindow from 64 to 40 values '''
-                    gesture_framesets = self.slice_framesets(gesture_framesets_plain)
-                    
-                    ''' create one gesture frame from relevant frames '''
-                    for frameset_nr in range(0,gesture_framesets.shape[0]):
-                        ''' get first 16 recordingframes which contain relevant gesture information '''
-                        ''' if less than 16, append frames with zeros '''
-                        current_frameset = [self.preprocess_frame(frame, self.ref_frequency_frame) for frame in gesture_framesets[frameset_nr] if np.amax(self.preprocess_frame(frame, self.ref_frequency_frame)) > 0]
-                        while len(current_frameset) < self.framerange/2:
-                            current_frameset.append(np.zeros(self.wanted_frames))
-
-                        ''' slice to two lists (even/odd) and sum every pair; reshape to 1d array '''
-                        current_frameset = np.asarray(current_frameset[:self.framerange/2])
-                        relevant_frames = np.asarray(list(current_frameset[:self.framerange/2:2] + current_frameset[1:self.framerange/2:2]))
-                        
-                        if self.use_each_second:
-                            normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), self.smooth)[::2]
-                        else:
-                            normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), self.smooth)
-
-                        ''' append gestureframe and targetclass to their corresponding arrays '''
-                        gestures.append(normalised_gesture_frame)
-                        targets.append(gesture_nr)
-        
-        ''' convert to numpy array '''
-        data = np.array(gestures)
-        targets = np.array(targets)
-        print data.shape, targets.shape
-        
-        
-        print np.array_equal(data,data1)
-        print np.array_equal(targets,targets1)
-        
-        #return train_test_split(data, targets, random_state=0)
-    
-        return data, targets
-        """
-    
 
     def classify(self, data):
         ''' start first preprocessing of framedata '''
-        frame = self.preprocess_frame(self.slice_frame(data),self.ref_frequency_frame)
+        frame = self.preprocessor.preprocess_frame(data)
         
         ''' store frame in datalist and increment running index '''
         self.datalist.append(frame)
@@ -241,48 +120,24 @@ class SVM(IClassifier):
             self.gesturefound = False
             self.timeout = 0
             
-            # new second preprocess step
-            if self.new_preprocess:
-                ''' get first 16 recordingframes which contain relevant gesture information '''
-                ''' if less than 16, append frames with zeros '''
-                current_frameset = [frame for frame in self.datalist[-self.framerange:] if np.amax(frame) > 0]
-                while len(current_frameset) < self.framerange/2:
-                    current_frameset.append(np.zeros(self.wanted_frames))
-
-                ''' slice to two lists (even/odd) and sum every pair; reshape to 1d array '''
-                relevant_frames = np.asarray(list(np.asarray(current_frameset[:self.framerange/2:2] ) + np.asarray(current_frameset[1:self.framerange/2:2])))
-                if self.use_each_second:
-                    normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), self.smooth)[::2]
-                else:
-                    normalised_gesture_frame = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), self.smooth)
-
-                try:
-                    ''' start actual classification and applicationstarter '''
-                    target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
-                    self.appstarter.controlProgram(target_prediction)
-                except:
-                    print "some error occured =("
-                
-            # old second preprocess step
-            else:
-                ''' sum up all wanted frames to one gestureframe '''
-                current_frameset = np.asarray(self.datalist[-self.framerange:])
-                gesture_frame = current_frameset.sum(axis=0)
-                
-                try:
-                    ''' normalise gestureframe '''
-                    normalised_gesture_frame = gesture_frame / np.amax(gesture_frame)
-                    if not np.isnan(np.sum(normalised_gesture_frame)):
-                        
-                        ''' start actual classification and applicationstarter '''
-                        target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
-                        self.starter.controlProgram(target_prediction)
-                except:
-                    print "some error occured =("
+            normalised_gesture_frame = self.preprocessor.preprocess_frames(self.datalist[-self.framerange:])
+            
+            try:
+                ''' start actual classification and applicationstarter '''
+                target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
+                self.appstarter.controlProgram(target_prediction)
+            except:
+                print "some error occured =("
+            
 
         ''' delete unneeded frames from datalist '''
         if self.datanum > self.framerange:
             del self.datalist[0]
+            
+    
+    def loadData(self, filename=""):
+        data, targets = self.dataloader.load_gesture_framesets()
+        return data, targets
 
 
     def load(self, filename=""):
@@ -297,7 +152,8 @@ class SVM(IClassifier):
 
 
     def startTraining(self, args=[]):
-        self.X_train, self.Y_train = self.loadData()
+        if self.X_train == None or self.Y_train == None:
+            self.X_train, self.Y_train = self.loadData()
         
         ''' start training '''
         classifier = svm.SVC(kernel=self.kernel, C=self.c, gamma=self.gamma, degree=self.degree, coef0=self.coef0)
@@ -309,6 +165,9 @@ class SVM(IClassifier):
 
 
     def startValidation(self):
+        if self.X_train == None or self.Y_train == None:
+            self.X_train, self.Y_train = self.loadData()
+        
         ''' own implementation of confusion matrix '''
         l = len(self.Y_train) / 10
         p = 0
@@ -343,19 +202,35 @@ class SVM(IClassifier):
 
 
     def printClassifier(self):
-        print self.path
-        print self.classifier
+        pattern = re.compile(r'\s+')
+        classifierinfo = [re.sub(pattern, '', part).replace("SVC(","").replace(")","").replace("="," : ") for part in str(self.classifier).split(',')]
+        print 100*"="
+        print "Path to saved classifier:\n\t",self.path,"\n"
+        print "Information about saved classifier:"
+        for i in classifierinfo:
+            print "\t",i
+        print 100*"="
         
         
     def show_confusion_matrix(self):
         ''' method for creating confusion matrix with graphical visualization '''
-        ''' callable from separate svm_conf.py module '''
+        ''' callable from separate svm_confusion.py module '''
+        
+        x, y = self.loadData()
+        
+        a_train, a_test, b_train, b_test = train_test_split(x, y, test_size=0.33, random_state=42) 
+        ''' start training '''
+        classifier = svm.SVC(kernel=self.kernel, C=self.c, gamma=self.gamma, degree=self.degree, coef0=self.coef0)
+        classifier.fit(a_train, b_train)
         
         target_names = ["gesture 0","gesture 1","gesture 2","gesture 3","gesture 4","gesture 5","gesture 6"]
-        self.Y_pred = self.classifier.predict(self.X_test)
-        cm = confusion_matrix(self.Y_test, self.Y_pred)
+        b_pred = self.classifier.predict(a_test)
+        cm = confusion_matrix(b_test, b_pred)
+        print 100*"="
+        print "Confusion matrix:\n"
         print(cm)
-        print(classification_report(self.Y_test, self.Y_pred, target_names=target_names))
+        print "\nReport:\n"
+        print(classification_report(b_test, b_pred, target_names=target_names))
         
         definition = '''
 The precision is the ratio tp / (tp + fp) where tp is the number of true positives and fp the number of false positives.
@@ -372,8 +247,9 @@ beta == 1.0 means recall and precision are equally important.
 
 The support is the number of occurrences of each class in y_true.
         '''
-        
+        print "\nDefinition:"
         print definition
+        print 100*"="
         
         ''' plot confusion matrix in a separate window '''
         pl.matshow(cm)

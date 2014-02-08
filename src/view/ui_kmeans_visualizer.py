@@ -120,19 +120,20 @@ class ViewUIKMeans:
             self.rightPage.moveCursor(QtGui.QTextCursor.Down)#moveCursor(QtGui.QTextCursor.Down)
 
         if gesture == 3:
-            print 'gesture ', gesture
+            #print 'gesture ', gesture
             if self.akt < 5:
                 self.akt +=1
             akt = str(self.akt) + '. Akt::'
-            self.rightPage.scrollToAnchor(akt)
+            self.rightPage.scrollToAnchor('2. Akt::')
+            print akt
         if gesture == 4:
-            print 'gesture ', gesture
+            #print 'gesture ', gesture
             if self.textBeginn:
                 self.textBeginn = False
                 self.rightPage.scrollToAnchor('FINALE')
             else:
                 self.textBeginn = True
-                self.rightPage.scrollToAnchor('WILLIAM')
+                self.rightPage.scrollToAnchor('William Shakespeare:')
                 self.akt = 1
         else:
             pass
@@ -569,7 +570,8 @@ class ViewUIKMeans:
         self.kmeans = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters)
         cluster_ = self.kmeans.fit_predict(self.kmeansClusterCenters)
         
-        self.kmeansClusterCenters_16N = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/new/shape 24/c_12346N_f24_s2_std1a_perfecto_upDown.kmeans")), delimiter=","))               
+        #self.kmeansClusterCenters_16N = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/new/shape 24/c_12346N_f24_s2_std1a_perfecto_upDown.kmeans")), delimiter=","))               
+        self.kmeansClusterCenters_16N = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/new/shape 24/samstag 24/c_16N_m12_k3__.kmeans")), delimiter=","))
         self.kmeans_16N = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters_16N)
         cluster_ = self.kmeans_16N.fit_predict(self.kmeansClusterCenters_16N)
         
