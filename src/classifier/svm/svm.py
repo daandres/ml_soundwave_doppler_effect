@@ -22,6 +22,8 @@ from sklearn.metrics import classification_report
 ''' custom imports '''
 from gestureFileIO import GestureFileIO
 from classifier.classifier import IClassifier
+from svm_dataloader import Dataloader
+from svm_preprocessor import Preprocessor
 from svm_appstarter import Starter
 
 ''' catch warnings as error '''
@@ -43,9 +45,11 @@ class SVM(IClassifier):
     def __init__(self, recorder=None, config=None, relative=""):
         self.config = config
         self.appstarter = Starter()
-        
+        self.dataloader = Dataloader()
+        self.preprocessor = Preprocessor()
+                
         ''' general settings '''
-        self.subdirs = eval(self.config['used_gestures'])
+        self.subdirs = self.config['used_gestures'].split(',')
         self.nClasses = int(self.config['used_classes'])
         
         ''' preprocessing settings '''

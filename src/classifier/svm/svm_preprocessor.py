@@ -11,7 +11,7 @@ import numpy as np
 from scipy.ndimage import gaussian_filter1d
 
 
-class Preprocesser():
+class Preprocessor():
 
     @staticmethod
     def normalise_framesets(framesets, ref_frequency_frame):
