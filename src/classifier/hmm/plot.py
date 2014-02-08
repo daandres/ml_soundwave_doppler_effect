@@ -201,7 +201,7 @@ class Plot():
             data = self.du.loadData(self.gesture)
             gmms = mg.sample(data)
         data = []
-        for i in range(13):
+        for i in range(c.framesTotal):
             lis = []
             for gmm in gmms:
                 sample = gmm.sample(50)

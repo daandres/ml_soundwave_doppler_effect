@@ -96,46 +96,48 @@ class SVM(IClassifier):
 
 
     def classify(self, data):
-        ''' start first preprocessing of framedata '''
-        frame = self.preprocessor.preprocess_frame(data)
-        
-        ''' store frame in datalist and increment running index '''
-        self.datalist.append(frame)
-        self.datanum += 1
-        
-        ''' increment timeout value to allow user to move his hand without any classification after one gesture '''
-        if self.timeout < self.framerange/2:
-            self.timeout += 1
-            if self.timeout == self.framerange/2:
-                print "..."
-        
-        ''' check if frame has some relevant information and store this running index '''
-        if np.amax(frame) > 0.0 and self.gesturefound == False and self.timeout == self.framerange/2:
-            self.gestureindex = self.datanum
-            self.gesturefound = True
-            
-        ''' check if framerange is reached and gesturefound is true '''
-        if self.gestureindex + self.framerange == self.datanum and self.gesturefound == True:
-            self.gestureindex = 0
-            self.gesturefound = False
-            self.timeout = 0
-            
-            normalised_gesture_frame = self.preprocessor.preprocess_frames(self.datalist[-self.framerange:])
-            
-            try:
-                ''' start actual classification and applicationstarter '''
-                target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
-                self.appstarter.controlProgram(target_prediction)
-            except:
-                print "some error occured =("
-            
+		if self.classifier != None:
+			''' start first preprocessing of framedata '''
+			frame = self.preprocessor.preprocess_frame(data)
+			
+			''' store frame in datalist and increment running index '''
+			self.datalist.append(frame)
+			self.datanum += 1
+			
+			''' increment timeout value to allow user to move his hand without any classification after one gesture '''
+			if self.timeout < self.framerange/2:
+				self.timeout += 1
+				if self.timeout == self.framerange/2:
+					print "..."
+			
+			''' check if frame has some relevant information and store this running index '''
+			if np.amax(frame) > 0.0 and self.gesturefound == False and self.timeout == self.framerange/2:
+				self.gestureindex = self.datanum
+				self.gesturefound = True
+				
+			''' check if framerange is reached and gesturefound is true '''
+			if self.gestureindex + self.framerange == self.datanum and self.gesturefound == True:
+				self.gestureindex = 0
+				self.gesturefound = False
+				self.timeout = 0
+				
+				normalised_gesture_frame = self.preprocessor.preprocess_frames(self.datalist[-self.framerange:])
+				
+				try:
+					''' start actual classification and applicationstarter '''
+					target_prediction = self.classifier.predict(normalised_gesture_frame)[0]  # only each second?!?
+					self.appstarter.controlProgram(target_prediction)
+				except:
+					print "some error occured =("
+				
 
-        ''' delete unneeded frames from datalist '''
-        if self.datanum > self.framerange:
-            del self.datalist[0]
+			''' delete unneeded frames from datalist '''
+			if self.datanum > self.framerange:
+				del self.datalist[0]
             
     
     def loadData(self, filename=""):
+        ''' delegate the task of loading the data to the specific module instance dataloader '''
         data, targets = self.dataloader.load_gesture_framesets()
         return data, targets
 
@@ -145,6 +147,7 @@ class SVM(IClassifier):
             return joblib.load(filename)
         except:
             print "file does not exist"
+            return None
 
 
     def getName(self):
@@ -152,6 +155,7 @@ class SVM(IClassifier):
 
 
     def startTraining(self, args=[]):
+        ''' load training data if necessary '''
         if self.X_train == None or self.Y_train == None:
             self.X_train, self.Y_train = self.loadData()
         
@@ -202,14 +206,15 @@ class SVM(IClassifier):
 
 
     def printClassifier(self):
-        pattern = re.compile(r'\s+')
-        classifierinfo = [re.sub(pattern, '', part).replace("SVC(","").replace(")","").replace("="," : ") for part in str(self.classifier).split(',')]
-        print 100*"="
-        print "Path to saved classifier:\n\t",self.path,"\n"
-        print "Information about saved classifier:"
-        for i in classifierinfo:
-            print "\t",i
-        print 100*"="
+        if self.classifier != None:
+            pattern = re.compile(r'\s+')
+            classifierinfo = [re.sub(pattern, '', part).replace("SVC(","").replace(")","").replace("="," : ") for part in str(self.classifier).split(',')]
+            print 100*"="
+            print "Path to saved classifier:\n\t",self.path,"\n"
+            print "Information about saved classifier:"
+            for i in classifierinfo:
+                print "\t",i
+            print 100*"="
         
         
     def show_confusion_matrix(self):
