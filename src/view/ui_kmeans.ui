@@ -92,8 +92,8 @@
      <widget class="QPushButton" name="openLoadCentroids_bt">
       <property name="geometry">
        <rect>
-        <x>80</x>
-        <y>310</y>
+        <x>30</x>
+        <y>20</y>
         <width>211</width>
         <height>41</height>
        </rect>
@@ -105,14 +105,66 @@
      <widget class="QPushButton" name="startRecognition_bt">
       <property name="geometry">
        <rect>
-        <x>80</x>
-        <y>408</y>
+        <x>30</x>
+        <y>120</y>
         <width>211</width>
         <height>41</height>
        </rect>
       </property>
       <property name="text">
        <string>start recognition</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="topToBottom_lb">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>190</y>
+        <width>81</width>
+        <height>81</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="bottomToTop_lb">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>290</y>
+        <width>81</width>
+        <height>81</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="doublePush_lb">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>490</y>
+        <width>81</width>
+        <height>81</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="singlePush_lb">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>390</y>
+        <width>81</width>
+        <height>81</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
       </property>
      </widget>
     </widget>

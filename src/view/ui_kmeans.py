@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_kmeans.ui'
 #
-# Created: Fri Feb 07 16:30:15 2014
+# Created: Sat Feb 08 19:10:38 2014
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -53,11 +53,23 @@ class Ui_MainWindow(object):
         self.qwtPlot_page_1.setGeometry(QtCore.QRect(40, 30, 461, 481))
         self.qwtPlot_page_1.setObjectName(_fromUtf8("qwtPlot_page_1"))
         self.openLoadCentroids_bt = QtGui.QPushButton(self.tab)
-        self.openLoadCentroids_bt.setGeometry(QtCore.QRect(80, 310, 211, 41))
+        self.openLoadCentroids_bt.setGeometry(QtCore.QRect(30, 20, 211, 41))
         self.openLoadCentroids_bt.setObjectName(_fromUtf8("openLoadCentroids_bt"))
         self.startRecognition_bt = QtGui.QPushButton(self.tab)
-        self.startRecognition_bt.setGeometry(QtCore.QRect(80, 408, 211, 41))
+        self.startRecognition_bt.setGeometry(QtCore.QRect(30, 120, 211, 41))
         self.startRecognition_bt.setObjectName(_fromUtf8("startRecognition_bt"))
+        self.topToBottom_lb = QtGui.QLabel(self.tab)
+        self.topToBottom_lb.setGeometry(QtCore.QRect(30, 190, 81, 81))
+        self.topToBottom_lb.setObjectName(_fromUtf8("topToBottom_lb"))
+        self.bottomToTop_lb = QtGui.QLabel(self.tab)
+        self.bottomToTop_lb.setGeometry(QtCore.QRect(30, 290, 81, 81))
+        self.bottomToTop_lb.setObjectName(_fromUtf8("bottomToTop_lb"))
+        self.doublePush_lb = QtGui.QLabel(self.tab)
+        self.doublePush_lb.setGeometry(QtCore.QRect(30, 490, 81, 81))
+        self.doublePush_lb.setObjectName(_fromUtf8("doublePush_lb"))
+        self.singlePush_lb = QtGui.QLabel(self.tab)
+        self.singlePush_lb.setGeometry(QtCore.QRect(30, 390, 81, 81))
+        self.singlePush_lb.setObjectName(_fromUtf8("singlePush_lb"))
         self.tabWidget.addTab(self.tab, _fromUtf8(""))
         self.tab_2 = QtGui.QWidget()
         self.tab_2.setObjectName(_fromUtf8("tab_2"))
@@ -489,6 +501,10 @@ class Ui_MainWindow(object):
         self.groupBox.setTitle(_translate("MainWindow", "GroupBox", None))
         self.openLoadCentroids_bt.setText(_translate("MainWindow", "open & load centroids", None))
         self.startRecognition_bt.setText(_translate("MainWindow", "start recognition", None))
+        self.topToBottom_lb.setText(_translate("MainWindow", "TextLabel", None))
+        self.bottomToTop_lb.setText(_translate("MainWindow", "TextLabel", None))
+        self.doublePush_lb.setText(_translate("MainWindow", "TextLabel", None))
+        self.singlePush_lb.setText(_translate("MainWindow", "TextLabel", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1", None))
         self.openFile_bt.setText(_translate("MainWindow", "open file", None))
         self.c7_cb.setText(_translate("MainWindow", "7", None))
