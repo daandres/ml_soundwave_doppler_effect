@@ -321,20 +321,20 @@ Für das Training werden ausschließlich die Datensätze aller Gesten von zwei P
 Dadurch ergibt sich eine relativ geringe Gesamtanzahl der Datensätze von etwa 1200.
 Der Grund für das Nichtverwenden aller Daten liegt in der Qualität der Trainingsdaten, die durch verschiedene Hardwarekonfigurationen der einzelnen Laptops in Bezug auf Lautsprecher und Mikrofon oder auch durch das unkorrekten Ausführung der Gesten teilweise nicht sehr gut ist.
 Mit der Entscheidung, nur Datensätze von zwei Personen zu verwenden, ergibt sich automatisch die Chance zu mehr Übereinstimmungen.
-Durch das Festlegen entsprechender Parameter lässt sich eine \ac{SVM} einfach auf die gegebenen Trainingsdaten trainieren, so dass gute Ergebnisse in Bezug auf die Genauigkeit und die Trefferquote erzielt werden können.
+Durch das Festlegen entsprechender Parameter lässt sich eine \ac{SVM} einfach auf die gegebenen Trainingsdaten trainieren, so dass gute Ergebnisse in Bezug auf die Genauigkeit (engl. Precision) und die Trefferquote (engl. Recall) erzielt werden können.
 Für die Evaluation wurde der komplette Datensatzumfang in zwei Teile unterteilt im Verhältnis $\frac{2}{3}$ zu $\frac{1}{3}$.
 Mit dem knapp 800 Datensätze fassenden ersten Teil wurde die \ac{SVM} trainiert und mittels des zweiten Teils auf ihre Performance getestet.
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.3\textwidth]{svm/svm_confusion_matrix.png}
-    \caption{Confusion Matrix}
+    \caption{Visuelle Darstellung einer Confusion Matrix}
     \label{fig:svm_confusion_matrix}
 \end{figure}
 
 \begin{table}[h]
 \centering
-\begin{tabular}{ccc}
+\begin{tabular}{lrr}
 \hline
- \textbf{Gesture} &\textbf{Prec.} & \textbf{Recall} \\
+ \multicolumn{1}{c}{\textbf{Gesture}} & \multicolumn{1}{c}{\textbf{Prec.}} & \multicolumn{1}{c}{\textbf{Recall}} \\
  \hline
   0: \ac{RLO} & 87\% & 92\% \\
  \hline
@@ -356,6 +356,8 @@ Mit dem knapp 800 Datensätze fassenden ersten Teil wurde die \ac{SVM} trainiert
 \caption[Erkennungsraten einer SVM]{Erkennungsraten einer SVM}
 \label{tab:svm_performance}
 \end{table}
+
+Parameter erläutern...
 
 \subsubsection{Fazit}
 Dann fangen wir mal an:
