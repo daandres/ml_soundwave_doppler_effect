@@ -9,7 +9,6 @@ import classifier.hmm.util.hmmUtil as h
 import ConfigParser
 import pickle
 from classifier.classifier import IClassifier
-from gestureFileIO import GestureFileIO
 import classifier.hmm.plot as plot
 import win32com.client
 import os
@@ -24,7 +23,6 @@ class HMM(IClassifier):
         self.classList = c.classList
         self.du = d.DataUtil()
         self.gestureApp = GestureApplication(self.du)
-        self.fileIO = GestureFileIO()
         self.gestureWindows=[[],[]]
         self.activeWindow = 0
         self.framesCut = round((c.framesBefore+c.framesAfter+1))/2
@@ -110,7 +108,6 @@ class GestureApplication():
     def __init__(self, du=d.DataUtil()):
         self.du = du
         self.gestures = {}
-        self.fileIO = GestureFileIO()
         
         state = 1
         if state == 1:
