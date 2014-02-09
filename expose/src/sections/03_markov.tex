@@ -45,7 +45,7 @@ So lässt sich eine Markov-Kette durch Zustandsraum \(S\), den Übergangsmatrix 
 Veranschaulichen lässt sich eine Markov Kette als gerichtetes Zustandsdiagramm (Abb. \ref{fig:simple_mc}) mit den Zuständen \(S\) und 
 mit den Übergangswahrscheinlichkeiten \(X_i\) an den Kanten
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.33\textwidth]{markov/simple_mc.png}
+    \includegraphics[width=0.5\textwidth]{markov/simple_mc.png}
     \caption{Einfaches Zustandsdiagramm einer \acl{MK} (Quelle: \url{de.wikipedia.org/wiki/Markow-Kette})}
     \label{fig:simple_mc}
 \end{figure}
@@ -61,7 +61,7 @@ Das Wetter kann entweder ``sunny'' oder ``rainy'' sein, zu Beginn (Tag 0, \( t =
 Die Wahrscheinlichkeit, dass auf ``sunny'' wieder ``sunny'' folgt, liegt bei 90\% (``rainy'' = 1 - ``sunny'' = 10\%). 
 Nach ``rainy'' liegt die Wahrscheinlichkeit jeweils bei 50\%.  
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.4\textwidth]{markov/simple_mc_example.png}
+    \includegraphics[width=0.5\textwidth]{markov/simple_mc_example.png}
     \caption{ Gerichteter Zustandsgraph der modellierten Wetter-\acl{MK} }
     \label{fig:simple_mc_example}
 \end{figure}
@@ -274,7 +274,7 @@ Eine Aufnahme wird beschrieben durch ein zwei-dimensionales Array aus 32 Frames 
 Im Ruhezustand bildet sich ein Normalsignal mit einem Peak um die ausgesendete Frequenz (18.500hz, siehe Abb. \ref{fig:data_raw}).
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.4\textwidth]{markov/data_raw.png}
+    \includegraphics[width=0.5\textwidth]{markov/data_raw.png}
     \caption{Rohdaten direkt vom Recorder (\acl{RLO} Geste)}
     \label{fig:data_raw}
 \end{figure}
@@ -293,7 +293,7 @@ Darum wird werden niedrige Amplitudenwerte \( x \) verstärkt und hohe abgeschw�
 Folgende Funktion wird auf alle Werte angewendet  (Verlauf siehe Abb. \ref{fig:funktion}): \\
 \[ f(x) = 2.8 \cdot ( x - 1.15 )^2 + 0.75 \]
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.4\textwidth]{markov/funktion.png}
+    \includegraphics[width=0.5\textwidth]{markov/funktion.png}
     \caption{Kubische Parabel zur Verstärkung / Abschwächung der Amplitude}
     \label{fig:funktion}
 \end{figure}
@@ -302,7 +302,7 @@ Nach der Vorverarbeitung sind die schwächeren Frequenzbereiche links und rechts
 herausgearbeitet (Siehe Abb. \ref{fig:data_preproc}).  
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.4\textwidth]{markov/data_preproc.png}
+    \includegraphics[width=0.5\textwidth]{markov/data_preproc.png}
     \caption{Daten nach der Vorverarbeitung (\acl{RLO} Geste)}
     \label{fig:data_preproc}
 \end{figure}
@@ -313,7 +313,7 @@ Diese mitteln alle eingegebenen Trainingsdaten und erstellen pro Frame ein \acl{
 \ref{sec:impl}). So wird eine Geste mit n-Frames durch n-\acl{GMM}s repräsentiert.
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.4\textwidth]{markov/data_gmm.png}
+    \includegraphics[width=0.5\textwidth]{markov/data_gmm.png}
     \caption{Sampledaten aus dem trainierten \acl{GMM} (\acl{RLO} Geste)}
     \label{fig:data_gmm}
 \end{figure}
@@ -334,16 +334,9 @@ Diese Vorverarbeitung wird in der Klasse \texttt{DataUtil} durchgeführt und nut
 
 
 Die \texttt{HMM}-Klasse implementiert das Interface \texttt{IClassifier} und bildet die Schnittstelle zur Hauptapplikation. Sie nutzt \texttt{DataUtil}
- für alle Dateizugriffe und die \texttt{Plot}-Klasse, um diese Daten als Graphen darzustellen. Herzstück der HMM-Package-Logik für das erstellen eines
-  \acl{HMM} ist die \texttt{GestureApllication}-Klasse, welche eine Liste von \texttt{Gesture}-Beans vorhält. Diese Beans repräsentieren alle Daten die für 
- die Klassifizierung notwendig sind. Für das Training nutzt \texttt{GestureApplication} die \texttt{HMM\_Util}-Klasse.
+ für alle Dateizugriffe und die \texttt{Plot}-Klasse, um diese Daten als Graphen darzustellen. 
+Für das \acl{HMM} werden Objekte der Klassen \texttt{sklearn.hmm.GMMHMM} und \texttt{sklearn.mixture.GMM} aus \texttt{scikit-learn}-Bibliothek \url{scikit-learn.org} verwendet.
 
-Verwendet werden Objekte der Klassen \texttt{sklearn.hmm.GMMHMM} und \texttt{sklearn.mixture.GMM} aus \texttt{scikit-learn}-Bibliothek \url{scikit-learn.org}.
-\texttt{HMM\_Util} erstellt mit Hilfe der \texttt{GMM\_Util}-Klasse zuallererst eine List von trainierten \acl{GMM}s. Dazu werden die eingehenden Daten 
-neu transformiert und nach Frames sortiert (siehe Abb. \ref{fig:data_gmm}). Somit repräsentiert ein \acl{GMM} einen Zeitpunkt während der Aufnahme 
-(siehe Abb. \ref{fig:gmm_data}). Die trainierten \acl{GMM}s werden nun für das Training eines \acl{HMM} genutzt. Um beim Trainingsprozess eingreifen zu können
-wurden die \texttt{sklearn}-Klassen erweitert, so entstehen die Klassen \texttt{GestureHMM} und \texttt{GestureGMM}. Dies ist notwendig, da die fertig trainierten
-\acl{GMM}s während des \acl{HMM} Trainings noch einmal verändert werden - was allerdings unerwünscht ist. 
 
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.5\textwidth]{markov/gmm_data.png}
@@ -352,9 +345,20 @@ wurden die \texttt{sklearn}-Klassen erweitert, so entstehen die Klassen \texttt{
 \end{figure}
 
 \textbf{Das Training} \\
+Herzstück der HMM-Package-Logik für das Training eines \acl{HMM} ist die \texttt{GestureApllication}-Klasse, welche eine Liste von \texttt{Gesture}-Beans vorhält. 
+Diese Beans repräsentieren alle Daten die für 
+ die Klassifizierung notwendig sind. Für das Training nutzt \texttt{GestureApplication} die \texttt{HMM\_Util}-Klasse.
+\texttt{HMM\_Util} erstellt mit Hilfe der \texttt{GMM\_Util}-Klasse zuallererst eine List von trainierten \acl{GMM}s. Dazu werden die eingehenden Daten 
+neu transformiert und nach Frames sortiert (siehe Abb. \ref{fig:data_gmm}). Somit repräsentiert ein \acl{GMM} einen Zeitpunkt während der Aufnahme 
+(siehe Abb. \ref{fig:gmm_data}). Die trainierten \acl{GMM}s werden nun für das Training eines \acl{HMM} genutzt. Um beim Trainingsprozess eingreifen zu können
+wurden die \texttt{sklearn}-Klassen erweitert, so entstehen die Klassen \texttt{GestureHMM} und \texttt{GestureGMM}. Dies ist notwendig, da die fertig trainierten
+\acl{GMM}s während des \acl{HMM} Trainings noch einmal verändert werden - was allerdings unerwünscht ist. 
 
 
 \textbf{Klassifizierung} \\
+Wird die \texttt{classify}-Methode der \texttt{HMM}-Klasse getriggert, werden die eingehenden Frames in zwei versetzten Containern (Windows) gesammelt.
+Ist eines dieser Windows voll (bei 32 Frames) wird die Klassifizierung in der \texttt{GestuerApplication} ausgelöst. Dort wird die Geste allen \acl{HMM}s übergeben und
+bewertet (score) mit welcher Wahrscheinlichkeit es sich um diese Geste handelt.
 
   %%%%%%%%%%%%
   %  RESULT  % 
