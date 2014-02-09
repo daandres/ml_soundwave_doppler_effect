@@ -46,15 +46,16 @@ Veranschaulichen lässt sich eine Markov Kette als gerichtetes Zustandsdiagramm 
 mit den Übergangswahrscheinlichkeiten \(X_i\) an den Kanten
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.33\textwidth]{markov/simple_mc.png}
-    \caption{Einfaches Zustandsdiagramm einer \acl{MK} (de.wikipedia.org/wiki/Markow-Kette)}
+    \caption{Einfaches Zustandsdiagramm einer \acl{MK} (Quelle: \url{de.wikipedia.org/wiki/Markow-Kette})}
     \label{fig:simple_mc}
 \end{figure}
+
 Die Wahrschinlichkeit für \( k \)-Schritte lässt sich so ausrechnen: 
 \[ X_k = X_{k-1} A = X_0 A^k \] 
 
 
-\textbf{Beispiel} \acl{MK} für die Wahrscheinlichkeit des Wetters \\
-(Quelle: en.wikipedia.org/wiki/Examples\_of\_Markov\_chains) \\
+\textbf{Beispiel} \\
+\acl{MK} für die Wahrscheinlichkeit des Wetters \footnote{Quelle: \url{en.wikipedia.org/wiki/Examples_of_Markov_chains}} \\
 Im folgenden Beispiel soll aufgrund des aktuellen Wetters auf das Wetter der folgenden Tage geschlossen werden.
 Das Wetter kann entweder ``sonnig'' oder ``regnerisch'' sein, zu Beginn (Tag 0, \( t = 0 \)) des Experiments ist es ``sonnig''.
 Die Wahrscheinlichkeit, dass auf ``sonnig'' wieder ``sonnig'' folgt, liegt bei 90\% (``regnerisch'' = 1 - ``sonnig'' = 10\%). 
@@ -67,7 +68,7 @@ Nach ``regnerisch'' liegt die Wahrscheinlichkeit jeweils bei 50\%.
 
 Zustände \( S = [``sonnig'', ``regnerisch'']\) \\
 Anfangszustand ``sonnig'' \( \Pi = X_0 = [1 , 0] \) \\
-Übergangsmatrix \( \begin {bmatrix} 0.9&0.1\\0.5&0.5 \end {bmatrix} \)
+Übergangsmatrix \( A = \begin {bmatrix} 0.9&0.1\\0.5&0.5 \end {bmatrix} \)
 
 Nun kann die Wahrscheinlichkeit für das Wetter an Tag 1 berechnet werden über: \\
 \[ X_1 = X_0 * A = [ 1, 0 ] \begin {bmatrix} 0.9&0.1\\0.5&0.5 \end {bmatrix} = [ 0.9, 0.1] \]
@@ -134,7 +135,7 @@ Im Ruhezustand bildet sich ein Normalsignal mit einem Peak um die ausgesendete F
 
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.4\textwidth]{markov/data_raw.png}
-    \caption{Rohdaten direkt vom Recorder (\acl{RLO} Geste) mit gefundener Gestenmitte (Roter Punkt)}
+    \caption{Rohdaten direkt vom Recorder (\acl{RLO} Geste)}
     \label{fig:data_raw}
 \end{figure}
 
@@ -177,6 +178,15 @@ Aus den Vorverarbeiteten Daten werden Gauß’sche Mixtur Modelle berrechnet
   %  IMPLEMENTIERUNG  % 
   %%%%%%%%%%%%%%%%%%%%%
 \subsection{Implementierung}  \label{sec:impl}
+Wie im vorherigen Abschnitte erläutert, wird vor dem Training und der Klassifizierung eine Vorverabreitung der Daten durchgeführt \ref{fig:uml}.
+Diese Vorverarbeitung wird in der Klasse .
+
+\begin{figure*}[htbp] \centering
+    \includegraphics[width=0.9\textwidth]{markov/uml.png}
+    \caption{Klassendiagram und Abhängigkeiten des \acl{HMM} Klassifikators}
+    \label{fig:uml}
+\end{figure*}
+
 Wir haben uns für die scipy HMM implementierung entschieden. 
 Genutzt wird ein \acl{HMM} mit \acl{GMM} entschieden.
 
