@@ -11,19 +11,6 @@ from sklearn import cross_validation
 from PyQt4 import Qt, QtCore, QtGui
 import sys
 
-
-'''
-QObject for signal
-'''
-class Signal(QtCore.QObject):
-    
-    newGesture = QtCore.pyqtSignal(int)
-    def __init__(self, view):
-        super(Signal, self).__init__()
-        self.view = view # trees gui
-        self.newGesture.connect(view._receiveGesture)
-
-
 '''
 Implementation of tree classifier
 '''
@@ -87,11 +74,23 @@ class Trees(IClassifier):
                 # calculate the frequent prediction
                 result = numpy.argmax(numpy.bincount(recognizedGestures))
                 if(result != 6):
-                    print "Result: ", result
+                    self.printGesture(result)
                 
                 self.data_buffer.clear()
             self.frame_buffer.popleft()
         self.frame_buffer.append(data)
+
+    def printGesture(self, gesture_id):
+        if gesture_id == 0:
+            print "Right-To-Left-One-Hand"
+        elif gesture_id == 1:
+            print "Top-To-Bottom-One-Hand"
+        elif gesture_id == 2:
+            print "Opposed-With-Two-Hands"
+        elif gesture_id == 3:
+            print "Single-Push-One-Hand"
+        elif gesture_id == 4:
+            print "Double-Push-One-Hand"
 
     def startValidation(self):
         result = self.clf.predict(self.X_test) == self.y_test
