@@ -2,9 +2,16 @@
 
 The trees module implements the ensemble learning gradient boosting classifier based on decision trees.
 
+### Configutation:
+The following parameters can be set in config/personal.cfg to configure the classifiert
+estimators          - (int) number of estimators
+learning-rate       - (float) learning rate
+max-depth           - max depth of decision tree
+gestures            - gestures to train with comma separated, for insctance 1,2,3,4,5
+
 ### Usage:
 start main application and use the following commands
 u trees             - load tree classifier
-t                   - training of the gradient boosting classifier
-c                   - start classification
+t                   - training of the gradient boosting classifier with specified congig
+c                   - start live classification
 

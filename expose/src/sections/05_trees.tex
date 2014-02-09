@@ -283,7 +283,6 @@ Die Gesten \glqq \acl{SPO}\grqq\, \glqq \acl{TBO}\grqq\ und \glqq \acl{RLO}\grqq
 
 Für die Datenaufbereitung und Merkmalsextraktion wurden in den Modulen GestureModel.py und Feature.py verschiedene Datentransformationen vorgenommen. 
 
-Zunächst ... (Datenaufbereitung)
 Nachdem Einlesen der Eingabedaten wird aus jedem (32, 64) Datensatz ein \texttt{GestureModel} erstellt. Bei der Erstellung werden die Daten direkt wie in \autoref{sect:Trees_Datenaufbereitung} beschrieben gefiltert und geglättet, sowie anschließend transformiert. Ein \texttt{GestureModel} Objekt enthält demnach nur noch eine zweidimensionale Liste der Anzahl an Frequenzpunkten über dem Schwellwert. Des weiteren enthält das \texttt{GestureModel} Objekt einen Merkmalsvektor, welcher einzelne extrahierte Merkmale enthält. Das Modul \textit{Feature.py} stellt einige Funktionen zur Merkmalsextraktion bereit. In Abschnitt~\ref{subsec:featureextraction} sind die erkennbaren Charakteristiken der einzelnen Gesten und auch das Problem der Ähnlichkeit einiger Charakteristiken beschrieben. 
 Der Merkmalsvektor setzt sich folgendermaßen zusammen:
 $$ featureVector = [sl, sr, s, o, c, a, dc, de] $$
@@ -311,8 +310,6 @@ mit
 %dc &= \text{Mittel der Abstände zwischen R-L- oder L-R-Verschiebungen} \\
 %de &= \text{Mittel der Abstände zwischen R-R- oder L-L-Verschiebungen}
 %\end{align*}
-
-Anzahl der linken Frequenzverschiebungen
 
 Für die Klassifikation wurde auf Klassen und Methoden des Moduls \textit{sklearn.ensemble}~\cite{sklearn.ensemble} der Bibliothek \textit{sklearn}~\cite{sklearn} zurückgegriffen.
 
