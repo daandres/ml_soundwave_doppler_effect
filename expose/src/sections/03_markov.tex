@@ -1,4 +1,4 @@
-﻿\section{\acl{HMM}}
+﻿﻿\section{\acl{HMM}}
 \label{mainsec:hmm}
 \textit{Paul Pasler, Sebastian Rieder}
 
@@ -59,7 +59,7 @@ Die Wahrscheinlichkeit für \( k \)-Schritte lässt sich so ausrechnen:
 Im folgenden Beispiel soll aufgrund des aktuellen Wetters auf das Wetter der folgenden Tage geschlossen werden.
 Das Wetter kann entweder ``sunny'' oder ``rainy'' sein, zu Beginn (Tag 0, \( t = 0 \)) des Experiments ist es ``sunny''.
 Die Wahrscheinlichkeit, dass auf ``sunny'' wieder ``sunny'' folgt, liegt bei 90\% (``rainy'' = 1 - ``sunny'' = 10\%). 
-Nach ``rainy'' liegt die Wahrscheinlichkeit jeweils bei 50\%.  
+Nach ``rainy'' liegt die Wahrscheinlichkeit jeweils bei 50\% (siehe Abb. \ref{fig:simple_mc_example}).  
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.5\textwidth]{markov/simple_mc_example.png}
     \caption{ Gerichteter Zustandsgraph der modellierten Wetter-\acl{MK} }
