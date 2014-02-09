@@ -132,19 +132,20 @@ def main():
                 if numpy.amax(gn[i][rf]) > 0:
                     temp.append(gn[i][rf])
             
-            while len(temp) < 20:
+            while len(temp) < 16:
                 temp.append(numpy.zeros(40))
             #print len(temp)
             
-            even = temp[:20:2] 
-            odd = temp[1:20:2]
+            even = temp[:16:2] 
+            odd = temp[1:16:2]
             
-            test = gaussian_filter1d(numpy.asarray(list(numpy.asarray(even) + numpy.asarray(odd))), 1.5)
+            test = gaussian_filter1d(numpy.asarray(list(numpy.asarray(even) + numpy.asarray(odd))), 0)
             print test.shape
             ax = pylab.subplot(1,1,0)
             ax.set_ylim([-0.1,1.1])
-            scaling = numpy.arange(400)
-            pylab.plot(scaling, test.reshape(400,), "g")
+            ax.set_xlim([0,320])
+            scaling = numpy.arange(320)
+            pylab.plot(scaling, test.reshape(320,), "g")
             
             #figure = pylab.gcf()
             #figure.set_size_inches(60, 3)

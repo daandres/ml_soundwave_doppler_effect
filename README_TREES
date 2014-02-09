@@ -18,8 +18,9 @@ gestures = 1,2,3,4,6
 queue_buffer_len = 32
 
 ### Usage:
-Start main application and use the following commands
+Go to folder src and start main application with 'python senseGesture.py'. Then use the following commands
 u trees             - load tree classifier (if not specified by config file)
 t                   - training of the gradient boosting classifier with specified config
 v                   - validation of training, prints percentage of correct classified data
 c                   - start live classification
+e                   - exit application

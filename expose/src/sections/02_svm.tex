@@ -175,10 +175,8 @@ Gängige Kernfunktionen sind:
 \end{figure}
 \renewcommand{\figurename}{Abb.}
 
-%\newpage
 
 \subsubsection{Klassifikation von mehreren Klassen}
-
 Da die \ac{SVM} als binärer Klassifikator entwickelt wurde, müssen für eine Klassifikation von mehr als zwei Klassen Strategien entwickelt werden, um das Prinzip der \ac{SVM} zu erweitern. 
 Ein Verfahren ist die \textit{Einer gegen den Rest}-Klassifikation. 
 Bei dieser Technik wird für jedes zu klassifizierende Objekt eine binäre \ac{SVM}-Instanz trainiert. 
@@ -199,13 +197,15 @@ Sind die SVMs trainiert, beeindrucken sie durch rasante Klassifikation.
 Dies ermöglicht uns eine echtzeitnahe Gestenerkennung.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newpage 
 \subsection{Anwendung auf das Projekt}
-Für das Projekt wird eine \ac{SVM} benutzt, die mit nur geringfügig den Standardwerten des verwendeten Python-Moduls abweichenden Parametern trainiert wird. 
-Für das Training erwartet die \ac{SVM} neben einem Eingabevektor mit 320 Werten noch die dazugehörige Klasse; die Länge des Eingabevektors lässt sich allerdings über einen entsprechenden Parameter in einer separaten Konfigurationsdatei noch halbieren.
+Zur Klassifikation der Gesten wird eine \ac{SVM} benutzt, die mit geringfügig angepassten und von den Standards des verwendeten Python-Moduls abweichenden Werten der entsprechenden Parameter trainiert wird. 
+Für das Training erwartet die \ac{SVM} neben einem Eingabevektor mit 320 Werten noch die dazugehörige Klasse.
 Während der Live-Klassifikation von Gesten, beziehungsweise deren Eingabevektoren, wird die trainierte \ac{SVM} für die Erkennung verwendet.
-Natürlich müssen diese Eingabevektoren in ihrer Dimension den Trainingsdaten entsprechen.
+Die Eingabevektoren müssen dabei in ihrer Dimension den Trainingsdaten entsprechen.
 
 Der nächste Abschnitt widmet sich der Datenaufbereitung, insbesondere der Reduzierung der Dimension eines Eingabevektors und der entsprechenden Vorverarbeitung.
 
@@ -235,7 +235,7 @@ Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite W
 Die Reduzierung der Eingabevektordimension und die vorverarbeitenden Schritte sind zwei notwendige Handlungen, die sich in der Implementierung nicht trennen lassen, allerdings sind sie in ihrer Beschreibung gut zu separieren.
 Unmittelbar nach dem ersten Reduzierungsschritt wird jeder einzelne Frame normalisiert und die Referenzfrequenz subtrahiert.
 Da trotz Subtraktion der Referenzfrequenz teilweise noch sehr feines Rauschen in den Daten vorhanden sein kann, werden Werte unterhalb eines festgelegten Schwellenwerts auf 0 gesetzt.
-Die ersten 16 Frames, die relevante Informationen enthalten (Frame-Maximalwert > 0), werden für den dritten Reduzierungsschritt verwendet.
+Die ersten 16 Frames, die nach diesem Verarbeitungsschritt relevante Informationen enthalten (Frame-Maximalwert \textgreater 0), werden für den dritten Reduzierungsschritt verwendet.
 Optional und standardmäßig aktiviert wird eine eindimensionale Gauß'sche Filterung zur Glättung der Werte als abschließender Vorverarbeitungsschritt angewandt.
 
 \subsubsection{Implementierung}\label{sec:svm_implementation}
@@ -261,6 +261,42 @@ def loadData(filename=""):
 	''' specific module instance dataloader '''
 	data, targets = dataloader.load_gesture_framesets()
 	return data, targets
+	
+def classify(data):
+	if classifier != None:
+		''' start first preprocessing of framedata '''
+		frame = preprocessor.preprocess_frame(data)
+
+		''' store frame in datalist and increment running index '''
+		datalist.append(frame)
+		datanum += 1
+
+		''' increment timeout value to allow user to move his hand '''
+		''' without any classification after one gesture '''
+		if timeout < framerange / 2:
+			timeout += 1
+			if timeout == framerange / 2:
+				print "..."
+
+		''' has frame relevant information - store this index '''
+		if np.amax(frame) > 0.0 and gesturefound == False and timeout == framerange / 2:
+			gestureindex = datanum
+			gesturefound = True
+
+		''' check if framerange is reached and gesturefound is true '''
+		if gestureindex + framerange == datanum and gesturefound == True:
+			gestureindex, gesturefound, timeout = 0, 0, 0
+
+			normalised_gesture_frame = preprocessor.preprocess_frames(datalist[-framerange:])
+			try:
+				''' start actual classification and applicationstarter '''
+				appstarter.controlProgram(classifier.predict(normalised_gesture_frame)[0])
+			except:
+				print "some error occured =("
+
+		''' delete unneeded frames from datalist '''
+		if datanum > framerange:
+			del datalist[0]
 \end{lstlisting}
 
 
@@ -270,36 +306,57 @@ Für grundlegende Matrizenberechnungen in den Modulen \texttt{svm\_dataloader.py
 \textit{NumPy} zeichnet sich vor allem durch effiziente Berechnungsoperationen und eine Vielzahl an nützlichen Funktionen aus, die durch das Erweiterungsmodul \textit{SciPy} um weitere sinnvolle Methoden ergänzt werden.
 Zusätzlich findet das in der Python-Installation enthaltene \textit{os}-Modul Einsatz, um grundlegende Dateipfadkonkatenationen zu bewerkstelligen.
 Letztendlich wird das ebenfalls standardmäßig in der Python-Installation enthaltene \textit{subprocess}-Modul verwendet, um mittels erkannter Gesten verschiedene Programme starten und beenden zu können.
+Diese Funktionalität ist in einem separaten Modul \texttt{svm\_appstarter.py} ausgelagert.
+Grundlegende Konfigurationseinstellungen, die das Verhalten der \ac{SVM} oder die Vorverarbeitung steuern, sind in einer separaten Konfigurationsdatei ausgelagert und werden bei der Initialisierung des Programms bzw. der Klassifikatormodule geladen.
 
+Die Trainingsmethode \texttt{startTraining} ruft zuerst die \texttt{loadData}-Methode auf, um die Datensätze zu laden und entsprechend vorzuverarbeiten.
+Das Einlesen übernimmt dabei eine entsprechende Methode der \texttt{Dataloader}-Instanz und die vorverarbeitenden Schritte die \texttt{Preprocessor}-Instanz.
+Diese Datensätze werden inklusive den entsprechenden Klassenzugehörigkeiten der \texttt{fit()}-Methode der \ac{SVM}-Klassifikatorimplementierung zum Training übergeben.
+Dieser Klassifikator wurde davor bereits mit den in der Konfigurationsdatei festgelegten Parametern initialisiert.
+Nach dem Training wird eine globale Referenz auf die trainierte \ac{SVM} gespeichert.
+Gleichzeitig wird die trainierte \ac{SVM} auf der Festplatte für spätere Aufrufe komprimiert gespeichert, so dass nach einem Neustart des Programms das Training nicht erneut ausgeführt werden muss.
 
-Die Methode \texttt{classify} erhält von dem Hauptprogramm jeweils einzelne Frames zu je 64 Werten, die sich innerhab des Frequenzbereichs um die Referenzfrequenz von $18\text{,}5\text{ kHz}$ befinden.
+Die Klassifikationsmethode \texttt{classify} erhält von dem Hauptprogramm jeweils einzelne Frames zu je 64 Werten, die sich innerhab des Frequenzbereichs um die Referenzfrequenz von $18\text{,}5\text{ kHz}$ befinden.
 Anschließend wird direkt der erste beschriebene Vorverarbeitungsschritt pro übergebenem Frame ausgeführt, die in einer globalen Liste \texttt{datalist} abgespeichert werden.
 Mittels einer Abfrage, ob der Frame überhaupt relevante Informationen besitzt, wird der Gestenanfang erkannt und der entsprechende Index der Liste \texttt{datalist} gespeichert.
 Sobald 32 weitere Frames in dieser Liste abgespeichert worden sind, werden 16 relevanten Frames ab dem Startpunkt -Index herausgesucht und mittels der weiteren Vorverarbeitungsschritte zu einem Eingabevektor mit 320 Werten transformiert.
 Der Eingabevektor wird dem Klassifikator übergeben, welcher als Rückgabewert die entsprechende Gestennummer zurückliefert, die er dem Eingabevektor zugeordnet hat.
 Gleichzeitig dient diese Gestennummer zur Steuerung von diversen Programmen.
-So kann mittels der Geste 0 der Notepad-Editor geöffnet und mittels der Geste 1 wieder beendet werden.
-Diese Funktionalität ist in einem separaten Modul \texttt{svm\_appstarter.py} ausgelagert.
-
-
-
+So kann mittels dem entsprechenden Methodenaufruf der \texttt{Appstarter}-Instanz und der beispielsweise übergebenenen Gestennummer 0 der Notepad-Editor geöffnet und mittels der Gestennummer 1 wieder beendet werden.
 
 \subsubsection{Training}
-Die Trainingsmethode greift auf die eingelesenen und vorverarbeiteten Datensätze und die entsprechenden Klassenzugehörigkeiten zu und übergibt sie der \texttt{fit()}-Methode der \ac{SVM}-Klassifikatorimplementierung.
-Dieser Klassifikator wurde davor bereits mit den in der Konfigurationsdatei festgelegten Parametern initialisiert.
-Nach dem Training wird eine globale Referenz auf die trainierte \ac{SVM} gespeichert.
-Gleichzeitig wird die trainierte \ac{SVM} auf der Festplatte für spätere Aufrufe komprimiert gespeichert, so dass nach einem Neustart des Programms das Training nicht erneut ausgeführt werden muss.
-
-
-
-\subsubsection{Evaluation}
-Für das Training werden ausschließlich die Datensätze aller Gesten von zwei Personen verwendet.
+Für das Training werden die Datensätze aller Gesten von zwei Personen verwendet.
 Dadurch ergibt sich eine relativ geringe Gesamtanzahl der Datensätze von etwa 1200.
-Der Grund für das Nichtverwenden aller Daten liegt in der Qualität der Trainingsdaten, die durch verschiedene Hardwarekonfigurationen der einzelnen Laptops in Bezug auf Lautsprecher und Mikrofon oder auch durch das inkorrekte Ausführung der Gesten teilweise nicht sehr gut ist.
-Mit der Entscheidung, nur Datensätze von zwei Personen zu verwenden, ergibt sich automatisch die Chance zu mehr Übereinstimmungen.
-Durch das Festlegen entsprechender Parameter lässt sich eine \ac{SVM} einfach auf die gegebenen Trainingsdaten trainieren, so dass gute Ergebnisse in Bezug auf die Genauigkeit (engl. Precision) und die Trefferquote (engl. Recall) erzielt werden können.
-Für die Evaluation wurde der komplette Datensatzumfang in zwei Teile unterteilt, im Verhältnis $\frac{2}{3}$ zu $\frac{1}{3}$.
-Mit dem knapp 800 Datensätze fassenden ersten Teil wurde die \ac{SVM} trainiert und mittels des zweiten Teils auf ihre Performance getestet.
+Der Grund für das Nichtverwenden aller Daten liegt in der Qualität der Trainingsdaten, die durch verschiedene Hardwarekonfigurationen der einzelnen Laptops in Bezug auf Lautsprecher und Mikrofon oder auch durch die inkorrekte Ausführung der Gesten teilweise nicht sehr gut ist.
+Mit der Entscheidung, nur Datensätze von zwei Personen zu verwenden, ergibt sich allerdings automatisch die Chance zu mehr Übereinstimmungen.
+Das Training wird aufgrund der geringen Anzahl von Trainingsdaten und der reduzierten Eingabevektordimension in kurzer Zeit ausgeführt.
+Dabei wird durch das Festlegen entsprechender Parameter in der Konfigurationsdatei das Training maßgeblich beeinflusst. 
+Die standardmäßigen Werte in der Konfigurationsdatei sind für eine geringe Überanpassung (engl. Overfitting) der \ac{SVM} an die Trainingsdaten bekannt und sind in folgender Tabelle aufgelistet.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrr}
+\hline
+   & \multicolumn{1}{c}{\textbf{C}} & \multicolumn{1}{c}{\textbf{gamma}} & \multicolumn{1}{c}{\textbf{degree}} & \multicolumn{1}{c}{\textbf{coef0}} \\
+ \hline
+  Def. & 1.0 & 0.00 & 3 & 0.0 \\
+ \hline
+  Cust. & 10.0 & 0.25 & 3 & 0.0 \\
+\hline
+\end{tabular}
+\caption[Parameter für das Training einer SVM]{Parameter für das Training einer SVM}
+\label{tab:svm_parameter}
+\end{table}
+
+Allerdings zeigt sich im folgenden Abschnitt, dass die verwendeten Parameter auch in der Validierung eine gute Performance garantieren.
+
+
+\subsubsection{Evaluation}\label{sec:svm_evaluation}
+Sofern die \ac{SVM} zur Live-Klassifkation eingesetzt wird, ist die Verwendung des kompletten Datensatzes für das Training unbedenklich.
+Die Validierung einer mit dem kompletten Datensatz trainierten \ac{SVM} mit dem gleichen kompletten Datensatz führt allerdings unweigerlich zu einer Verfälschung der Performance.
+Sobald demnach eine prozentuelle Einordnung der Performance einer trainierten \ac{SVM} erwünscht ist, bietet es sich an, den kompletten Datensatzumfang in zwei Teile im Verhältnis $\frac{2}{3}$ zu $\frac{1}{3}$ zu unterteilen und das Training mit dem knapp 800 Datensätze fassenden ersten Teil auszuführen.
+Der zweite Datensatzteil dient der Validierung bzw. dem Testen der trainierten \ac{SVM}.
+
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.3\textwidth]{svm/svm_confusion_matrix.png}
     \caption{Visuelle Darstellung einer Confusion Matrix}

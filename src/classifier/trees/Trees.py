@@ -82,15 +82,15 @@ class Trees(IClassifier):
 
     def printGesture(self, gesture_id):
         if gesture_id == 0:
-            print "Right-To-Left-One-Hand"
+            print gesture_id, "Right-To-Left-One-Hand"
         elif gesture_id == 1:
-            print "Top-To-Bottom-One-Hand"
+            print gesture_id, "Top-To-Bottom-One-Hand"
         elif gesture_id == 2:
-            print "Opposed-With-Two-Hands"
+            print gesture_id, "Opposed-With-Two-Hands"
         elif gesture_id == 3:
-            print "Single-Push-One-Hand"
+            print gesture_id, "Single-Push-One-Hand"
         elif gesture_id == 4:
-            print "Double-Push-One-Hand"
+            print gesture_id, "Double-Push-One-Hand"
 
     def startValidation(self):
         result = self.clf.predict(self.X_test) == self.y_test
