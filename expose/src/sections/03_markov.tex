@@ -298,16 +298,9 @@ Diese Vorverarbeitung wird in der Klasse \texttt{DataUtil} durchgeführt und nut
 
 
 Die \texttt{HMM}-Klasse implementiert das Interface \texttt{IClassifier} und bildet die Schnittstelle zur Hauptapplikation. Sie nutzt \texttt{DataUtil}
- für alle Dateizugriffe und die \texttt{Plot}-Klasse, um diese Daten als Graphen darzustellen. Herzstück der HMM-Package-Logik für das erstellen eines
-  \acl{HMM} ist die \texttt{GestureApllication}-Klasse, welche eine Liste von \texttt{Gesture}-Beans vorhält. Diese Beans repräsentieren alle Daten die für 
- die Klassifizierung notwendig sind. Für das Training nutzt \texttt{GestureApplication} die \texttt{HMM\_Util}-Klasse.
+ für alle Dateizugriffe und die \texttt{Plot}-Klasse, um diese Daten als Graphen darzustellen. 
+Für das \acl{HMM} werden Objekte der Klassen \texttt{sklearn.hmm.GMMHMM} und \texttt{sklearn.mixture.GMM} aus \texttt{scikit-learn}-Bibliothek \url{scikit-learn.org} verwendet.
 
-Verwendet werden Objekte der Klassen \texttt{sklearn.hmm.GMMHMM} und \texttt{sklearn.mixture.GMM} aus \texttt{scikit-learn}-Bibliothek \url{scikit-learn.org}.
-\texttt{HMM\_Util} erstellt mit Hilfe der \texttt{GMM\_Util}-Klasse zuallererst eine List von trainierten \acl{GMM}s. Dazu werden die eingehenden Daten 
-neu transformiert und nach Frames sortiert (siehe Abb. \ref{fig:data_gmm}). Somit repräsentiert ein \acl{GMM} einen Zeitpunkt während der Aufnahme 
-(siehe Abb. \ref{fig:gmm_data}). Die trainierten \acl{GMM}s werden nun für das Training eines \acl{HMM} genutzt. Um beim Trainingsprozess eingreifen zu können
-wurden die \texttt{sklearn}-Klassen erweitert, so entstehen die Klassen \texttt{GestureHMM} und \texttt{GestureGMM}. Dies ist notwendig, da die fertig trainierten
-\acl{GMM}s während des \acl{HMM} Trainings noch einmal verändert werden - was allerdings unerwünscht ist. 
 
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.5\textwidth]{markov/gmm_data.png}
@@ -316,9 +309,20 @@ wurden die \texttt{sklearn}-Klassen erweitert, so entstehen die Klassen \texttt{
 \end{figure}
 
 \textbf{Das Training} \\
+Herzstück der HMM-Package-Logik für das Training eines \acl{HMM} ist die \texttt{GestureApllication}-Klasse, welche eine Liste von \texttt{Gesture}-Beans vorhält. 
+Diese Beans repräsentieren alle Daten die für 
+ die Klassifizierung notwendig sind. Für das Training nutzt \texttt{GestureApplication} die \texttt{HMM\_Util}-Klasse.
+\texttt{HMM\_Util} erstellt mit Hilfe der \texttt{GMM\_Util}-Klasse zuallererst eine List von trainierten \acl{GMM}s. Dazu werden die eingehenden Daten 
+neu transformiert und nach Frames sortiert (siehe Abb. \ref{fig:data_gmm}). Somit repräsentiert ein \acl{GMM} einen Zeitpunkt während der Aufnahme 
+(siehe Abb. \ref{fig:gmm_data}). Die trainierten \acl{GMM}s werden nun für das Training eines \acl{HMM} genutzt. Um beim Trainingsprozess eingreifen zu können
+wurden die \texttt{sklearn}-Klassen erweitert, so entstehen die Klassen \texttt{GestureHMM} und \texttt{GestureGMM}. Dies ist notwendig, da die fertig trainierten
+\acl{GMM}s während des \acl{HMM} Trainings noch einmal verändert werden - was allerdings unerwünscht ist. 
 
 
 \textbf{Klassifizierung} \\
+Wird die \texttt{classify}-Methode der \texttt{HMM}-Klasse getriggert, werden die eingehenden Frames in zwei versetzten Containern (Windows) gesammelt.
+Ist eines dieser Windows voll (bei 32 Frames) wird die Klassifizierung in der \texttt{GestuerApplication} ausgelöst. Dort wird die Geste allen \acl{HMM}s übergeben und
+bewertet (score) mit welcher Wahrscheinlichkeit es sich um diese Geste handelt.
 
   %%%%%%%%%%%%
   %  RESULT  % 
