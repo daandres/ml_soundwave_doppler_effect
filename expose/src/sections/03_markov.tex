@@ -23,7 +23,8 @@ Eine \acl{MK} beschreibt einen zeit-diskreten Prozess \((X_t)_{t\in\mathbb{N}_0}
 Weiterhin wird sie als stationär bezeichnet, wenn alle Wahrscheinlichkeiten unabhängig von der Zeit sind.
 Da die Verteilung der Zufallsvariable \( S(t)\) nur von den vergangenen Zuständen abhängt, gilt eine \acl{MK} als kausal \cite[48]{mmmFink}.
 Für eine \acl{MK} 1. Ordnung gilt die Markov Eigenschaft, sie wird dann auch als ``einfach'' bezeichnet: 
-\[ P (X_{t+1} = s_{t+1} | X_0 = s_0, \ldots , X_{t-1} = s_{t-1}, X_{t} = s_{t}) \\ = P ( X_{t+1} = s_{t+1} | X_{t} = s_{t} ) \] \\
+\[ P (X_{t+1} = s_{t+1} | X_0 = s_0, \ldots , X_{t-1} = s_{t-1}, X_{t} = s_{t}) \]
+\[ = P ( X_{t+1} = s_{t+1} | X_{t} = s_{t} ) \] \\
 Dies beschreibt die Gedächtnislosigkeit des Prozesses und bedeutet, dass der nächste Zustand nur vom direkten Vorgänger abhängt.
 
 Als Übergangswahrscheinlichkeit bezeichnte man die bedingte Wahrscheinlichkeit \(P ( X_{t+1} = s_{t+1} | X_{t} = s_{t} ) \), sodass auf 
@@ -33,9 +34,9 @@ Als Übergangswahrscheinlichkeit bezeichnte man die bedingte Wahrscheinlichkeit 
   a_{00}&\cdots&a_{0m} \\
   \vdots&\ddots&\vdots \\
   a_{m0}&\cdots&a_{mm}
- \end {bmatrix}\] 
-Dabei muss sich die Summe jeder Reihe zu Eins addieren.
-\[ \forall i, j \in S, \sum_{j \in S} p_{ij} = 1 \] \\
+ \end {bmatrix} \forall i, j \in S \]
+Dabei muss sich die Summe jeder Reihe zu Eins addieren. \\
+
 Weiterhin benötigt der Prozess einen Vektor für den Anfangzustand \( t = 0 \):
 \[ \Pi = [ \pi_i] = [ P (X_0 = i) ] , i \in S \]
 
