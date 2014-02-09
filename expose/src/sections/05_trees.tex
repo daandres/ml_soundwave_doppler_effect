@@ -287,17 +287,30 @@ Zunächst ... (Datenaufbereitung)
 Nachdem Einlesen der Eingabedaten wird aus jedem (32, 64) Datensatz ein \texttt{GestureModel} erstellt. Bei der Erstellung werden die Daten direkt wie in \autoref{sect:Trees_Datenaufbereitung} beschrieben gefiltert und geglättet, sowie anschließend transformiert. Ein \texttt{GestureModel} Objekt enthält demnach nur noch eine zweidimensionale Liste der Anzahl an Frequenzpunkten über dem Schwellwert. Des weiteren enthält das \texttt{GestureModel} Objekt einen Merkmalsvektor, welcher einzelne extrahierte Merkmale enthält. Das Modul \textit{Feature.py} stellt einige Funktionen zur Merkmalsextraktion bereit. In Abschnitt~\ref{subsec:featureextraction} sind die erkennbaren Charakteristiken der einzelnen Gesten und auch das Problem der Ähnlichkeit einiger Charakteristiken beschrieben. 
 Der Merkmalsvektor setzt sich folgendermaßen zusammen:
 $$ featureVector = [sl, sr, s, o, c, a, dc, de] $$
-\begin{align*}
- featureVector = [sl, sr, s, o, c, a, dc, de]\\
- && sl &= \text{Anzahl Linksverschiebungen} \\
- && sr &= \text{Anzahl Rechtsverschiebungen} \\
- && s &= \text{Anzahl aller Verschiebungen} \\
- && o &= \text{Reihenfolge der Verschiebungen} \\
- && c &= \text{Anzahl der gleichzeitigen Verschiebungen} \\
- && a &= \text{Differenz der Amplituden} \\
- && dc &= \text{Mittel der Abstände zwischen R-L- oder L-R-Verschiebungen} \\
- && de &= \text{Mittel der Abstände zwischen R-R- oder L-L-Verschiebungen}
-\end{align*}
+
+mit
+
+\begin{itemize}
+\item $sl$: Anzahl Linksverschiebungen
+\item $sr$: Anzahl Rechtsverschiebungen
+\item $s$: Anzahl aller Verschiebungen
+\item $o$: Reihenfolge der Verschiebungen
+\item $c$: Anzahl der gleichzeitigen Verschiebungen
+\item $a$: Differenz der Amplituden
+\item $dc$: Mittel der Abstände zwischen R-L- oder L-R-Verschiebungen
+\item $de$: Mittel der Abstände zwischen R-R- oder L-L-Verschiebungen
+\end{itemize}
+
+%\begin{align*}
+%sl &= \text{Anzahl Linksverschiebungen} \\
+%sr &= \text{Anzahl Rechtsverschiebungen} \\
+%s &= \text{Anzahl aller Verschiebungen} \\
+%o &= \text{Reihenfolge der Verschiebungen} \\
+%c &= \text{Anzahl der gleichzeitigen Verschiebungen} \\
+%a &= \text{Differenz der Amplituden} \\
+%dc &= \text{Mittel der Abstände zwischen R-L- oder L-R-Verschiebungen} \\
+%de &= \text{Mittel der Abstände zwischen R-R- oder L-L-Verschiebungen}
+%\end{align*}
 
 Anzahl der linken Frequenzverschiebungen
 
