@@ -6,25 +6,18 @@ This class reads raw training data from local files and provide data and targets
 '''
 class TrainingData(object):
 
-    def __init__(self):
-        self.gestures = classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_2/1391437451.txt")
-        self.gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_2/1391437809.txt")
-        self.gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_3/1391439011.txt")
-        self.gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_3/1391439281.txt")
-        self.gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_4/1391439536.txt")
-        self.gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_4/1391439659.txt")
-        #gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_0/1391435081.txt")
-        #gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_0/1391435669.txt")
-        self.gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_1/1391436572.txt")
-        self.gestures += classifier.trees.ProcessData.getTestData("../gestures/Annalena/gesture_1/1391436738.txt")
-        self.gestures += classifier.trees.ProcessData.getTestData("../gestures/Daniel/gesture_6/gesture_6_zimmer_1.txt")
-        self.gestures += classifier.trees.ProcessData.getTestData("../gestures/Daniel/gesture_6/gesture_6_zimmer_3.txt")
-       
+    def __init__(self, gesture_ids):
+        self.gestures = []
         self.targets = []
-       
-        for class_ in [2,2,3,3,4,4,1,1,6,6]:
-            for _ in range(50):
-                self.targets.append(class_)
+        for gesture_id in gesture_ids:
+            filename = "../gestures/Annalena/gesture_%d/data.txt" % gesture_id
+            print "loading dataset", filename
+            data = classifier.trees.ProcessData.getTestData(filename)
+            self.gestures += data
+            
+            for i in range(len(data)):
+                self.targets.append(gesture_id)
+            
        
     def getRawData(self):
         return self.gestures

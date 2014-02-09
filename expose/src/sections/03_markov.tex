@@ -19,23 +19,24 @@ Grundlage des \acl{HMM} war die vom russischen Mathematiker Andrej Andrejewitsch
 Er führte eine statistische Analyse der Buchstabenfolge des Textes ``Eugen Onegin'' von Alexander 
 Pushkin.
 
-Eine \acl{MK} beschreibt einen zeit-diskreten Prozess \((X_t)_{t\in\mathbb{N}_0}\) mit einem abzählbaren Zustandsraum \(S, m = |S|\) \cite{stochMod}.
+Eine \acl{MK} beschreibt einen zeit-diskreten Prozess \((X_t)_{t\in\mathbb{N}_0}\) mit  \(m\) abzählbaren Zuständen \(S\) \cite{stochMod}.
 Weiterhin wird sie als stationär bezeichnet, wenn alle Wahrscheinlichkeiten unabhängig von der Zeit sind.
-Da die Verteilung der Zufallsvariable \( S(t)\) nur von den vergangenen Zuständen abhängt, gilt eine \acl{MK} als kausal \cite[48]{mmmFink}.
-Für eine \acl{MK} 1. Ordnung gilt die Markov Eigenschaft, sie wird dann auch als ``einfach'' bezeichnet: 
+Da die Verteilung der Zufallsvariablen nur von den vergangenen Zuständen abhängt, gilt eine \acl{MK} als kausal \cite[48]{mmmFink}.
+Wichtig für eine \acl{MK} ist die sog. Markov-Eigenschaft:
 \[ P (X_{t+1} = s_{t+1} | X_0 = s_0, \ldots , X_{t-1} = s_{t-1}, X_{t} = s_{t}) \]
 \[ = P ( X_{t+1} = s_{t+1} | X_{t} = s_{t} ) \] \\
-Dies beschreibt die Gedächtnislosigkeit des Prozesses und bedeutet, dass der nächste Zustand nur vom direkten Vorgänger abhängt.
+Genügt eine \acl{MK} dieser Eigenschaft, wird sie als ``einfach'' oder \acl{MK} 1. Ordnung bezeichnet.
+Anders ausgedrückt beschreibt die Markov-Eigenschaft die Gedächtnislosigkeit des Prozesses, da der Folgezustand nur vom direkten Vorgänger abhängt.
 
 Als Übergangswahrscheinlichkeit bezeichnte man die bedingte Wahrscheinlichkeit \(P ( X_{t+1} = s_{t+1} | X_{t} = s_{t} ) \), sodass auf 
-\( s_{n}\) der Nachfolgezustand \( s_{n+1}\) folgt. Diese Wahrscheinlichkeiten werden üblicherweise zu einer Übergangsmatrix zusammengefasst: 
+den aktuellen Zustand \( s_{t}\) der Nachfolgezustand \( s_{t+1}\) folgt. Diese Wahrscheinlichkeiten werden üblicherweise zu einer Übergangsmatrix zusammengefasst: 
 \[ A = [a_{ij}] =
 \begin {bmatrix} 
   a_{00}&\cdots&a_{0m} \\
   \vdots&\ddots&\vdots \\
   a_{m0}&\cdots&a_{mm}
  \end {bmatrix} \forall i, j \in S \]
-Dabei muss sich die Summe jeder Reihe zu Eins addieren. \\
+Da es sich um Wahrscheinlichkeiten handelt, muss sich die Summe jeder Reihe zu Eins addieren. \\
 
 Weiterhin benötigt der Prozess einen Vektor für den Anfangzustand \( t = 0 \):
 \[ \Pi = [ \pi_i] = [ P (X_0 = i) ] , i \in S \]
