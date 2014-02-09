@@ -410,8 +410,9 @@ Ausgenommen von zwei Gesten zeigte es sich allerdings, dass die Performance in d
 Bei den zwei Gesten, die nicht immer zuverlässig erkannt werden, handelt es sich um Geste 2 \ac{OT} und Geste 5 \ac{RO}.
 ==[wieso]
 
-
-- persönliche Meinung: Ich glaube, die Performance des Klassifikators lässt sich vor allem durch eine bessere Vorverarbeitung und Merkmalsextraktion leicht verbessern.
-- allerdings erschweren die unterschiedlich gut aufgenommenen Trainingsdatensätze von verschiedenen Laptops mit unterschiedlicher Hardwarekonfiguration (Lautsprecher und Mikrofon) die Vorverarbeitungs- und die Trainingsphase und beeinflussen somit stark die Validierungs- und die Live-Klassifikationsergebnisse
-
-- die aktuelle Vorverarbeitungsstrategie erfordert eine recht exakte Ausführung der Geste unter sehr guten Vorraussetzungen, sprich laute Umgebungsgeräusche sollten vermieden werden (dies kann jedoch auch an der aktuellen Hardwarekonfiguration des Laptops liegen), da das Mikrofon überempfindlich reagiert und selbst normale Musik als Umgebungsgeräusche Schwankungen im Frequenzspektrum rund um die Referenzfrequenz von 18.500 kHz verursacht!
+Allgemein lässt sich die Performance des Klassifikators vor allem durch eine gute Vorverarbeitung und Merkmalsextraktion positiv beeinflussen.
+Allerdings erschweren qualitativ unterschiedlich gute Trainingsdatensätze die Vorverarbeitungs- und die Trainingsphase und beeinflussen somit stark die Validierungs- und die Live-Klassifikationsergebnisse
+Ursache dafür sind vermutlich die verschiedenen Laptops mit ihrer unterschiedlichen verbauten Hardware bezüglich Lautsprecher und Mikrofon.
+Auch das nicht korrekte Ausführen der Gesten bei der Aufnahme für das Erstellen der Trainingsdatensätze ist eine Fehler- bzw. Problemquelle.
+So erfordert die aktuelle Vorverarbeitungsstrategie eine recht exakte Ausführung der Geste unter sehr guten Vorraussetzungen.
+Laute Umgebungsgeräusche sollten vermieden werden (dies kann jedoch auch an der aktuellen Hardwarekonfiguration des Testgeräts liegen), da das Mikrofon überempfindlich reagiert und teilweise selbst normale Musik oder Umgebungsgeräusche Schwankungen im Frequenzspektrum rund um die Referenzfrequenz von 18.500 kHz verursacht.
