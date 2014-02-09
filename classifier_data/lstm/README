@@ -3,7 +3,7 @@ This folder contains LSTM sepcific data.
 networks/
 	Contains trained networks. Properties are encoded in filename, error rate is last parameter. 
 	In repository three networks are provided. 
-	- First a network from the general test for parameters (Table A.5 in document)
+	- First a network from the general test for parameters (Table A.5 in document) with all samples
 	- Second a network trained only with Data from gestures from Frank
 	- Third a network trained only with Data from gestures from Daniel
 	
