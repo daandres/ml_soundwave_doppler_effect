@@ -79,7 +79,7 @@ Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die \ac{SVM} die Ei
 Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. \ref{fig:svm_separator}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.37\textwidth]{svm/svm_overview.png}
+    \includegraphics[width=0.43\textwidth]{svm/svm_overview.png}
     \caption{Trenngerade einer SVM}
     \label{fig:svm_separator}
 \end{figure}
@@ -92,34 +92,41 @@ Das macht die \ac{SVM} zu einem sehr transparenten und performanten Klassifikato
 Es ergeben sich Unregelmäßigkeiten bei der Lösung von nichtlinear separierbaren Problemen und der Klassifikation von mehr als 2 Klassen.
 Im Gegensatz zu den MLPs umgeht man diesen Umstand nicht mit der Erhöhung der Dimension. 
 Die \ac{SVM}s setzen in diesem Falle auf die Transformation der Datenrepräsentation. 
-Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren, in dem sie linear separierbar erscheinen (Abb. \ref{fig:svm_kernel}). 
 
-\begin{equation}
-\label{eq:svm_kernel_function}
-\begin{split}
-    \phi : & \mathbb{R}^n \to \mathbb{R}^h \\
-    & x \mapsto \phi(x)
-\end{split} 
-\end{equation}
-Als Bedingung des Raums $\mathbb{R}^h$ gilt, dass das Skalarprodukt erklärt ist. 
-Wir haben nach der Transformation also die neue Form (\ref{eq:svm_kern_tranformation}). 
-In der müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ ausrechnen, was sehr schwierig (bzw. unmöglich) ist, wenn die Dimension von $\mathbb{R}^h$ zu groß wird.
 \begin{figure}[htbp] \centering
     \subfigure[$x$ nichtlinear separierbar in $\mathbb{R}^n$]{\includegraphics[width=0.22\textwidth]{svm/svm_fitting-line.png}}
     \subfigure[$\phi(x)$ linear separierbar in $\mathbb{R}^h, h>n$]{\includegraphics[width=0.22\textwidth]{svm/svm_linear-fitting.png}}
     \caption{Kernfunktion $\phi$}
     \label{fig:svm_kernel}
 \end{figure}
+
+Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren, in dem sie linear separierbar erscheinen (Abb. \ref{fig:svm_kernel}).
+
+\begin{equation}
+\label{eq:svm_kernel_function}
+\begin{split}
+    \phi : & \mathbb{R}^n \to \mathbb{R}^h \\
+    & x \mapsto \phi(x)
+\end{split}
+\end{equation}
+
+Als Bedingung des Raums $\mathbb{R}^h$ gilt, dass das Skalarprodukt erklärt ist.
+Wir haben nach der Transformation also die neue Form (\ref{eq:svm_kern_tranformation}).
+In der müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ ausrechnen, was sehr schwierig (bzw. unmöglich) ist, wenn die Dimension von $\mathbb{R}^h$ zu groß wird.
+
 \begin{equation}
 \label{eq:svm_kern_tranformation}
     \mathcal{C}: \{ c_i \,|\, \operatorname{sgn}(\langle \phi(w),\phi(x) \rangle + b) = i \}
 \end{equation}
+
 Dadurch, dass die Trainingspunkte $x$ nur in Skalarprodukten auftauchen, können wir uns des Kernel-Tricks bedienen.
-Kernfunktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle Eigenschaft aus, da sie sich verhalten wie ein Skalarprodukt in $\mathbb{R}^h$ (\ref{eq:svm_kern_trick}). 
+Kernfunktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle Eigenschaft aus, da sie sich verhalten wie ein Skalarprodukt in $\mathbb{R}^h$ (\ref{eq:svm_kern_trick}).
+
 \begin{equation}
 \label{eq:svm_kern_trick}
     \mathcal{K}(w,x) = \langle\phi(w),\phi(x)\rangle
 \end{equation}
+
 Es kann also das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ in $\mathbb{R}^h$ ausgerechnet werden, ohne die Daten mittles $\phi$ zu transformieren. 
 Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion.
 
@@ -160,9 +167,10 @@ Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  a
     \caption{Beispiel einer polynomiellen Kernfunktion}
     \label{fig:ex_kernel}
 \end{figure}
-% \newpage
+
 Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach dem Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
 Gängige Kernfunktionen sind:
+
 \begin{itemize}
 \item{linear: $\mathcal{K}(w,x) = \langle w,x \rangle$}
 \item{polynomiell: $\mathcal{K}(w,x) = (\gamma\langle w,x \rangle+c_0)^d$}
@@ -181,10 +189,12 @@ In diesem Fall entscheidet sich das \textit{Einer gegen den Rest}-Verfahren für
 Als höchstes Ergebnis wird der größte Abstand zur Trennhyperebene angenommen. 
 Offensichtlich erhöht sich die Laufzeit der Trainingsphase mit der Anzahl der Klassen $|\mathcal{C}|$. 
 Glücklicherweise beeinflusst das nicht die Laufzeitanalyse in der $\mathcal{O}$-Notation (\ref{eq:svm_winner_runtime}). 
+
 \begin{equation}
 \label{eq:svm_winner_runtime}
     \underbrace{\mathcal{O}(n) + ... + \mathcal{O}(n)}_{|\mathcal{C}|-mal} = |\mathcal{C}| \cdot \mathcal{O}(n) = \mathcal{O}(n)
 \end{equation}
+
 Sind die SVMs trainiert, beeindrucken sie durch rasante Klassifikation. 
 Dies ermöglicht uns eine echtzeitnahe Gestenerkennung.
 
@@ -231,22 +241,16 @@ Optional und standardmäßig aktiviert wird eine eindimensionale Gauß'sche Filt
 Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Interface für alle Klassifikatoren vorhanden, welches von jedem Klassifikator -- allerdings unterschiedlich -- implementiert ist. 
 Dabei handelt es sich um die abstrakte Klasse \texttt{IClassifier}, die von der \ac{SVM}--Klasse im Modul \texttt{svm.py} implementiert werden muss.
 \begin{lstlisting}[float=*,language=Python,caption={Code Snipplet},label={lst:svm_code_snipplets}]{lst:svm_code_snipplets}
-def preprocess_frame(frame_data):
+def preprocess_frame(self, frame_data):
+	frame = self.slice_frame(frame_data)
 	try:
-		''' slice frame data if necessary '''
-		if frame_data.shape[0] == wanted_frames:
-			frame = frame_data
-		else:
-			frame = slice_frame(frame_data)
 		''' normalise frame '''
-		normalized_data_with_ref_freq = frame / np.amax(frame)
-		normalized_data = normalized_data_with_ref_freq - ref_freq_frame
+		normalized_data_with_ref_frequency = frame / np.amax(frame)
+		frame = normalized_data_with_ref_frequency - self.ref_frequency_frame
 		''' set small noisy data to 0 '''
-		frame = normalized_data
-		irrelevant_samples = np.where(frame <= threshold)
-		frame[irrelevant_samples] = 0.0
+		frame[np.where(frame <= self.threshold)] = 0.0
 	except:
-		frame = np.zeros(wanted_frames)
+		frame = np.zeros(self.wanted_frames)
 	return frame
 \end{lstlisting}
 Für die Implementierung der \ac{SVM}--Klasse wird die Python-Bibliothek \textit{scikit-learn} verwendet. 
@@ -272,6 +276,7 @@ Sobald 32 weitere Frames in dieser Liste abgespeichert worden sind, werden 16 re
 Der Eingabevektor wird dem Klassifikator übergeben, welcher als Rückgabewert die entsprechende Gestennummer zurückliefert, die er dem Eingabevektor zugeordnet hat.
 Gleichzeitig dient diese Gestennummer zur Steuerung von diversen Programmen.
 So kann mittels dem entsprechenden Methodenaufruf der \texttt{Appstarter}-Instanz und der beispielsweise übergebenenen Gestennummer 0 der Notepad-Editor geöffnet und mittels der Gestennummer 1 wieder beendet werden.
+
 \subsubsection{Training}\label{sec:svm_training}
 Für das Training werden die Datensätze aller Gesten von zwei Personen verwendet.
 Dadurch ergibt sich eine relativ geringe Gesamtanzahl der Datensätze von etwa 1200.
