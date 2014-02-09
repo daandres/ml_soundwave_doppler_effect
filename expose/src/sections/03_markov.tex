@@ -344,7 +344,7 @@ Für das \acl{HMM} werden Objekte der Klassen \texttt{sklearn.hmm.GMMHMM} und \t
     \label{fig:gmm_data}
 \end{figure}
 
-\textbf{Das Training} \\
+\textbf{Training} \\
 Herzstück der HMM-Package-Logik für das Training eines \acl{HMM} ist die \texttt{GestureApllication}-Klasse, welche eine Liste von \texttt{Gesture}-Beans vorhält. 
 Diese Beans repräsentieren alle Daten die für 
  die Klassifizierung notwendig sind. Für das Training nutzt \texttt{GestureApplication} die \texttt{HMM\_Util}-Klasse.
@@ -357,8 +357,9 @@ wurden die \texttt{sklearn}-Klassen erweitert, so entstehen die Klassen \texttt{
 
 \textbf{Klassifizierung} \\
 Wird die \texttt{classify}-Methode der \texttt{HMM}-Klasse getriggert, werden die eingehenden Frames in zwei versetzten Containern (Windows) gesammelt.
-Ist eines dieser Windows voll (bei 32 Frames) wird die Klassifizierung in der \texttt{GestuerApplication} ausgelöst. Dort wird die Geste allen \acl{HMM}s übergeben und
-bewertet (score) mit welcher Wahrscheinlichkeit es sich um diese Geste handelt.
+Ist eines dieser Windows voll (bei 32 Frames) wird die Klassifizierung in der \texttt{GestureApplication} ausgelöst. Dort wird die Geste allen \acl{HMM}s übergeben und
+bewertet (score) mit welcher Wahrscheinlichkeit es sich um diese Geste handelt. Liegt die Wahrscheinlichkeit, um einen definierten Prozentsatz über den Wahrscheinlichkeiten
+der anderen \acl{HMM} gilt die Geste erkannt.
 
   %%%%%%%%%%%%
   %  RESULT  % 
