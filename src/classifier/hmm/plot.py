@@ -9,8 +9,6 @@ import util.hmmUtil as h
 import util.gmmUtil as g
 
 import numpy as np
-from sklearn.hmm import GMMHMM
-from sklearn.mixture import GMM
 
 PRE_DATA = "Preproc-Data"
 RAW_DATA = "Raw-Data"
@@ -21,6 +19,12 @@ KEY_PREFIX = "alt+"
 GESTURE_PREF = "gesture "
 
 class Plot():
+    
+    ''' Class for plotting raw, preproc and gmm sample data
+    right click:        change data mode
+    mouse wheel:        change data index
+    0-7:                change gesture
+     '''
     
     def __init__(self, gesture=0, index=0, gmms = {}):
         self.gesture = gesture
