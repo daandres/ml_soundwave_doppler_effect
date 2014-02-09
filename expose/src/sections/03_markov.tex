@@ -66,9 +66,10 @@ Nach ``regnerisch'' liegt die Wahrscheinlichkeit jeweils bei 50\%.
     \label{fig:simple_mc_example}
 \end{figure}
 
-\[ Zustände: S = [``sonnig'', ``regnerisch''] \]
+\[ Zust\ddot{a}nde: S = [``sonnig'', ``regnerisch''] \]
 \[ Anfangszustand:  \Pi = X_0 = [1 , 0] \]
-\[Übergangsmatrix: A = \begin {bmatrix} 0.9&0.1\\0.5&0.5 \end {bmatrix} \]
+\[\ddot{U}bergangsmatrix: A = \begin {bmatrix} 0.9&0.1\\0.5&0.5 \end {bmatrix}
+\]
 
 Nun kann die Wahrscheinlichkeit für das Wetter an Tag 1 berechnet werden über: \\
 \[ X_1 = X_0 * A = [ 1, 0 ] \begin {bmatrix} 0.9&0.1\\0.5&0.5 \end {bmatrix} = [ 0.9, 0.1] \]
@@ -157,8 +158,19 @@ Das Konzept des \acl{HMM} kann laut \cite{rabiner} in drei Problemstellungen ein
 In der Evaluierung soll die Wahrscheinlichkeit bestimmt werden mit der eine
 betrachtete Observationsfolge in einer beliebiger Zustandsfolge von einem
 gegebenen \acl{HMM} \(\lambda\) generiert wird. Diese Wahrscheinlichkeit wird
-Produktionswahrscheinlichkeit genannt. 
-\textbf{Dekodierung}
+Produktionswahrscheinlichkeit genannt. Diese wird mit dem Forward-Algorithmus
+berechnet.
+
+\begin{enumerate}
+  \item Initialisierung\\
+		$\alpha_{1}(i) := \pi_{i}b{i}(O_{1})$
+  \item Rekursion\\
+	für alle Zeitpunkte \(t, t=1\ldotsT-1\)\\
+	\(\alpha_{t+1}(j) := \sum_{i}\{\alpha_{t}(i)\alpha_{ij}\}b_{j}(O_{t+1})\)
+  \item Rekursionsabschluss\\
+  	\(P(O|\lambda) = \sum_{i=1}^N \alpha_{T}(i)\)
+\end{enumerate}
+
 \\
 \textbf{Training} \\
 
