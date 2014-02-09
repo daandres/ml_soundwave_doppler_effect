@@ -1,0 +1,10 @@
+### Readme for the trees classifier in the gesture recognition application
+
+The trees module implements the ensemble learning gradient boosting classifier based on decision trees.
+
+### Usage:
+start main application and use the following commands
+u trees             - load tree classifier
+t                   - training of the gradient boosting classifier
+c                   - start classification
+
