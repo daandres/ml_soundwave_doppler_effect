@@ -166,13 +166,12 @@ berechnet.
   \item Initialisierung\\
 		$\alpha_{1}(i) := \pi_{i}b{i}(O_{1})$
   \item Rekursion\\
-	für alle Zeitpunkte \(t, t=1\ldotsT-1\)\\
+	für alle Zeitpunkte \(t, t=1 \ldots T-1\)\\
 	\(\alpha_{t+1}(j) := \sum_{i}\{\alpha_{t}(i)\alpha_{ij}\}b_{j}(O_{t+1})\)
   \item Rekursionsabschluss\\
   	\(P(O|\lambda) = \sum_{i=1}^N \alpha_{T}(i)\)
 \end{enumerate}
 
-\\
 \textbf{Training} \\
 
 Um das Training und die Klassifizierung möglichst genau und perfomant umzusetzen, 
@@ -198,24 +197,26 @@ Im Ruhezustand bildet sich ein Normalsignal mit einem Peak um die ausgesendete F
 \end{figure}
 
 \textbf{Verarbeitung}\\
-Da sich Änderungen durch eine Bewegung sehr Nahe am Normalignal liegen, werden die Daten im 
-Frequenzbereich von 18.000hz bis 19.000hz betrachtet, die Daten vermindern sich von 64 auf 16 Werte pro Frame. 
-Dazu wird jede Geste auf einem Intervall von 0 bis 1 normalisiert (Geteilt durch den jeweiligen Maximalwert der Geste) und 
+Da die Änderungen durch eine Bewegung sehr Nahe am Normalignal liegen, werden nur die Daten im 
+Frequenzbereich von ca. 18.300hz bis 18.700hz betrachtet. Dadurch vermindert sich die Datenmenge von 64 auf 16 Werte pro Frame. 
+Danach wird jede Geste auf ein Intervall von 0 bis 1 normalisiert (Geteilt durch den jeweiligen Maximalwert der Geste) und 
 auf zwei Nachkommstellen gerundet. 
 Alle Werte unterhalb eines Schwellwerts (0.15) werden zudem abgeschnitten, um niedrig amplitudiges Rauschen zu vermindern. 
 So wird im Idealfall nur das gesendete Signal und Frequenzänderungen durch eine Bewegung dargestellt.
 
 Das Normalsignal mit einer hohen Amplitude (Normalisiert im Bereich zwischen 0.8 und 1.0) birgt einen geringen Informationsgehalt, 
 eine Frequenzverschiebung durch eine Geste ist deutlich interessanter, jedoch schwächer in der Amplitude (Zwischen 0.15 und 0.5).
-Darum wird werden niedrige Amplitudenwerte \( x \) verstärkt und hohe abgeschwächt. Folgende Funktion wird auf alle Werte angewendet: \\
-\( f(x) = 2.8 \cdot ( x - 1.15 )^2 + 0.75 \) (Verlauf siehe Abb. \ref{fig:funktion})
+Darum wird werden niedrige Amplitudenwerte \( x \) verstärkt und hohe abgeschwächt. 
+Folgende Funktion wird auf alle Werte angewendet  (Verlauf siehe Abb. \ref{fig:funktion}): \\
+\[ f(x) = 2.8 \cdot ( x - 1.15 )^2 + 0.75 \]
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.4\textwidth]{markov/funktion.png}
     \caption{Kubische Parabel zur Verstärkung / Abschwächung der Amplitude}
     \label{fig:funktion}
 \end{figure}
 
-Nach der Vorverarbeitung sind die Frequenzbereiche links und rechts neben dem Normalsignal deutlicher herausgearbeitet (Siehe Abb. \ref{fig:data_preproc}).  
+Nach der Vorverarbeitung sind die schwächeren Frequenzbereiche links und rechts neben dem Normalsignal deutlicher 
+herausgearbeitet (Siehe Abb. \ref{fig:data_preproc}).  
 
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.4\textwidth]{markov/data_preproc.png}
@@ -224,13 +225,16 @@ Nach der Vorverarbeitung sind die Frequenzbereiche links und rechts neben dem No
 \end{figure}
 
 \textbf{\acl{GMM}} \\
-Aus den Vorverarbeiteten Daten werden Gauß’sche Mixtur Modelle berrechnet
+Aus den Vorverarbeiteten Daten werden Gauß’sche Mixtur Modelle berrechnet (Siehe Abb. \ref{fig:data_gmm}). 
+Diese mitteln alle eingegebenen Trainingsdaten und erstellen pro Frame ein \acl{GMM} (Siehe Abschnitt: 
+\ref{sec:impl}). So wird eine Geste mit n-Frames durch n-\acl{GMM}s repräsentiert.
 
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.4\textwidth]{markov/data_gmm.png}
     \caption{Sampledaten aus dem trainierten \acl{GMM} (\acl{RLO} Geste)}
     \label{fig:data_gmm}
 \end{figure}
+
 
   %%%%%%%%%%%%%%%%%%%%%
   %  IMPLEMENTIERUNG  % 
@@ -264,10 +268,10 @@ wurden die \texttt{sklearn}-Klassen erweitert, so entstehen die Klassen \texttt{
     \label{fig:gmm_data}
 \end{figure}
 
+\textbf{Das Training} \\
 
-Wir haben uns für die scipy HMM implementierung entschieden. 
-Genutzt wird ein \acl{HMM} mit \acl{GMM} entschieden.
 
+\textbf{Klassifizierung} \\
 
   %%%%%%%%%%%%
   %  RESULT  % 
