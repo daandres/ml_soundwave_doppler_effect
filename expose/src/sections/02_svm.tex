@@ -12,14 +12,14 @@ Bei der Verarbeitung des Eingabevektors wird für jede Komponente eine Gewichtun
 Mehrlagige Perzeptronen (\ac{MLP}) sind in der Lage, Eingabevektoren in Ausgabevektoren umzuwandeln. 
 
 \begin{figure}[htbp] \centering
-    \subfigure[AND-Pezeptron mit einem Neuron]{\includegraphics[width=0.22\textwidth]{svm/svm_perceptron.png}}
-    \subfigure[AND linear separierbar in $\mathbb{R}^2$]{\includegraphics[width=0.22\textwidth]{svm/svm_and.png}}
+    \subfigure[AND-Pezeptron mit einem Neuron]{\includegraphics[width=0.23\textwidth]{svm/svm_perceptron.png}}
+    \subfigure[AND linear separierbar in $\mathbb{R}^2$]{\includegraphics[width=0.23\textwidth]{svm/svm_and.png}}
     \caption{AND-Perzeptron}
     \label{fig:perceptron_and}
 \end{figure}
 
 Die jeweiligen Gewichtungen können so eingestellt werden, dass der Eingabevektor in einen bestimmten Ausgabevektor umgewandelt wird. 
-Abb. \ref{fig:perceptron_and} zeigt, wie ein einfaches Perzeptron die AND-Funktion realisiert und visualisiert die Klassifizierungsentscheidung in einem Koordinatensystem. 
+Abb. \ref{fig:perceptron_and} zeigt, wie ein einfaches Perzeptron die AND-Funktion realisiert, und visualisiert die Klassifizierungsentscheidung in einem Koordinatensystem. 
 
 Einlagige Perzeptronen sind beschränkt auf die Lösung linear separierbarer Probleme. 
 Ein einfaches XOR kann also nicht realisiert werden (Abb. \ref{fig:perceptron_xor}). 
@@ -39,7 +39,7 @@ Um dennoch eine Problemlösung zu modellieren, die Eingaben richtig klassifizier
 Dieser Algorithmus setzt eine Trainingsmenge voraus, für dessen Eingabevektoren die zugehörigen Klassen bekannt sind. 
 Durch Fehlerrückführung kann ein MLP trainiert werden und das Netz kann die gewünschten Muster nach einer kontrollierten Trainingsphase klassifizieren.
 
-Knapp 40 Jahre Jahre später veröffentliche der sowjetisch-amerikanische Mathematiker Wladimir Wapnik \cite{Vapnik} das Prinzip der Support-Vector-Machines (\ac{SVM}).
+Knapp 40 Jahre Jahre später veröffentlichte der sowjetisch-amerikanische Mathematiker Wladimir Wapnik \cite{Vapnik} das Prinzip der Support-Vector-Machines (\ac{SVM}).
 
 Im Gegensatz zu \ac{MLP}s wird die Anpassung der Trennung nicht empirisch durch Trainingsmethoden, sondern durch die Datengrundlage mathematisch optimal ermittelt. 
 Eine Erhöhung der Dimension ist nicht möglich, dennoch können SVMs auch nichtlinear separierbare Probleme lösen. 
@@ -57,7 +57,7 @@ die in einem Koordinatensystem betrachtet die Daten räumlich in zwei Klassen tr
 
 
 
-Die Gerade (Hyperebene im mehrdimensionalen Raum) trennt die Merkmalsräume bestmöglich und dient als Entscheidungsfunktion für die Klassifikation. Sie ist gegeben durch den Normalenvektor $w$ und dem sogenannten Bias $b$, dem Abstand der Ebene zum Ursprung. Diese Form erweist sich also besonders praktisch, da durch Einsetzen von $x$ der direkte Abstand zur Hyperbene resultiert.
+Die Gerade (Hyperebene im mehrdimensionalen Raum) trennt die Merkmalsräume bestmöglich und dient als Entscheidungsfunktion für die Klassifikation. Sie ist gegeben durch den Normalenvektor $w$ und den sogenannten Bias $b$, dem Abstand der Ebene zum Ursprung. Diese Form erweist sich als besonders praktisch, da durch Einsetzen von $x$ der direkte Abstand zur Hyperbene resultiert.
 Intuitiv ist klar, dass alle Punkte auf der Hyperebene selbst keinen Abstand haben, die Formel der Hyperebene (\ref{eq:svm_hyperplane}) lautet demnach: 
  
 \begin{equation}
@@ -82,14 +82,14 @@ Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Ab
 
 Die Stützvektoren bilden das tragende Konstrukt der Entscheidungsfunktion. 
 Alle andere Merkmalsvektoren haben keinen Einfluss auf die Trennung, was die Namensgebung der Stützvektoren begründet. 
-Das macht die \ac{SVM} zu einem sehr transparenten und performantent Klassifikator. 
+Das macht die \ac{SVM} zu einem sehr transparenten und performanten Klassifikator. 
 
 
 \subsubsection{Kernel-Trick}
-Es ergeben sich Unregelmäßigkeiten bei der Lösung von nichtlinear separierbaren Probleme und der Klassifikation von mehr als 2 Klassen.
+Es ergeben sich Unregelmäßigkeiten bei der Lösung von nichtlinear separierbaren Problemen und der Klassifikation von mehr als 2 Klassen.
 Im Gegensatz zu den MLPs kann man mit der Erhöhung der Dimension diesen Umstand nicht umgehen. 
 Die \ac{SVM}s setzen in diesem Falle auf die Transformation der Datenrepräsentation. 
-Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren in dem sie linear separierbar erscheinen (Abb. \ref{fig:svm_kernel}). 
+Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren, in dem sie linear separierbar erscheinen (Abb. \ref{fig:svm_kernel}). 
 
 \begin{equation}
 \label{eq:svm_kernel_function}
@@ -127,7 +127,7 @@ Kernfunktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle 
 Es kann also das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ in $\mathbb{R}^h$ ausgerechnet werden, ohne die Daten mittles $\phi$ zu transformieren. 
 Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion.
 
-Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
+Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach dem Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
 Gängige Kernfunktionen sind \cite[]{Marsland}:
 \begin{itemize}
 \item{linear: $\mathcal{K}(w,x) = \langle w,x \rangle$}
@@ -183,7 +183,7 @@ Ein Verfahren ist die \textit{Einer gegen den Rest}-Klassifikation.
 Bei dieser Technik wird für jedes zu klassifizierende Objekt eine binäre \ac{SVM}-Instanz trainiert. 
 Für jede \ac{SVM} wird eine Klasse separiert, die anderen Klassen werden nicht unterschieden und als negative Beispiele zu einer Restklasse definiert. 
 Die Vorraussage eines Objektes ergibt sich aus der Auswertung aller \ac{SVM}-Instanzen. 
-Es ist nun möglich, dass mehrere Instanzen eine positive Klassenzuordnung feststellen nicht die Restklasse klassifizieren. 
+Es ist nun möglich, dass mehrere Instanzen eine positive Klassenzuordnung feststellen und nicht die Restklasse klassifizieren. 
 In diesem Fall entscheidet sich das \textit{Einer gegen den Rest}-Verfahren für die Klasse, dessen \ac{SVM} die höchste Ausgabe erzeugt (\textit{winner-takes-all}). 
 Als höchstes Ergebnis wird der größte Abstand zur Trennhyperebene angenommen. 
 Offensichtlich erhöht sich die Laufzeit der Trainingsphase mit der Anzahl der Klassen $|\mathcal{C}|$. 
@@ -201,7 +201,7 @@ Dies ermöglicht uns eine echtzeitnahe Gestenerkennung.
 
 \newpage 
 \subsection{Anwendung auf das Projekt}
-Für das Projekt wird eine \ac{SVM} trainiert, die mit nur geringfügig den Standardwerten des verwendeten Python-Moduls abweichenden Parametern trainiert wird. 
+Für das Projekt wird eine \ac{SVM} benutzt, die mit nur geringfügig den Standardwerten des verwendeten Python-Moduls abweichenden Parametern trainiert wird. 
 Für das Training erwartet die \ac{SVM} neben einem Eingabevektor mit 320 Werten noch die dazugehörige Klasse; die Länge des Eingabevektors lässt sich allerdings über einen entsprechenden Parameter in einer separaten Konfigurationsdatei noch halbieren.
 Während der Live-Klassifikation von Gesten, beziehungsweise deren Eingabevektoren, wird die trainierte \ac{SVM} für die Erkennung verwendet.
 Natürlich müssen diese Eingabevektoren in ihrer Dimension den Trainingsdaten entsprechen.
@@ -212,12 +212,12 @@ Der nächste Abschnitt widmet sich der Datenaufbereitung, insbesondere der Reduz
 In \autoref{sec:intro} wurde die Aufnahme und die generelle Vorverarbeitung der Daten bereits erläutert, bevor diese an die entsprechenden Klassifikatoren weitergeleitet werden.
 Da jeder Klassifikator aufgrund seiner Funktionsweise unterschiedlich mit den Eingabedaten arbeitet, ist eine entsprechende und auf den jeweiligen Klassifikator angepasste Datenaufbereitung notwendig.
 Gleichzeitig kann durch eine entsprechende Vorverarbeitung gegenüber unverarbeiteten Daten das Problem der Klassifikation von unterschiedlichen Datensätzen verallgemeinert und somit die Trainingszeit verringert werden.
-Dieser Abschnitt befasst sich mit der spezifischen Datenaufbereitung für den \ac{SVM} Klassifikator.
+Dieser Abschnitt befasst sich mit der spezifischen Datenaufbereitung für den \ac{SVM}-Klassifikator.
 
 \paragraph{Eingabevektordimensionsreduzierung}\label{sec:svm_reduce}$\;$ \\
 Bei der Betrachtung der Trainingsdaten, die jeweils aus insgesamt 32 Frames zu je 64 Werten bestehen, wird offensichtlich, dass die durch den Doppler-Effekt verursachten Frequenzverschiebungen in einem begrenzten Umfeld der Referenzfrequenz von $18\text{,}5\text{ kHz}$ herum sattfinden.
-Zudem stellt sich heraus, dass nur ein Bruchteil der ursprünglich veranschlagten 32 Frames pro Geste relevante Informationen enthalten, da die Ausführung einer Geste meist zwischen 8 und 20 Frames dauert und nur innerhalb dieser Frame-Anzahl Frequenzverschiebungen verursacht.
-Aufgrund dieser beiden Gründe werden im ersten Schritt der Reduzierung der verwendete Wertebereich eines Frames von 64 auf 40 verkleinert und im nächsten Reduzierungsschritt sowohl für das Training der \ac{SVM}, als auch für die Live-Klassifikation, nur 16 Frames pro Geste verwendet. 
+Zudem stellt sich heraus, dass nur ein Bruchteil der ursprünglich veranschlagten 32 Frames pro Geste relevante Informationen enthält, da die Ausführung einer Geste meist zwischen 8 und 20 Frames dauert und nur innerhalb dieser Frame-Anzahl Frequenzverschiebungen verursacht.
+Aufgrund dieser beiden Gründe werden im ersten Schritt der Reduzierung der verwendete Wertebereich eines Frames von 64 auf 40 verkleinert und im nächsten Reduzierungsschritt sowohl für das Training der \ac{SVM} als auch für die Live-Klassifikation nur 16 Frames pro Geste verwendet. 
 
 Die dritte Reduzierung wird mittels der Addition benachbarter Frames erzielt, so dass letztlich nur noch jeweils 8 Frames zu je 40 Werten pro Datensatz/Geste existieren.
 Im Anschluss erfolgt die Transformation in ein eindimensionales Array mit insgesamt 320 Werten, welches als Eingabevektor für die \ac{SVM} dient.
@@ -231,7 +231,7 @@ Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite W
 \end{figure*}
 
 \paragraph{Vorverarbeitung}\label{sec:svm_preprocess}$\;$ \\\\
-Die Reduzierung der Eingabevektordimension und die vorverarbeitenden Schritte sind zwei notwendige Handlungen, die sich in der Implementierung nicht trennen lassen, allerdings lassen sie sich in ihrer Beschreibung gut separieren.
+Die Reduzierung der Eingabevektordimension und die vorverarbeitenden Schritte sind zwei notwendige Handlungen, die sich in der Implementierung nicht trennen lassen, allerdings sind sie in ihrer Beschreibung gut zu separieren.
 Unmittelbar nach dem ersten Reduzierungsschritt wird jeder einzelne Frame normalisiert und die Referenzfrequenz subtrahiert.
 Da trotz Subtraktion der Referenzfrequenz teilweise noch sehr feines Rauschen in den Daten vorhanden sein kann, werden Werte unterhalb eines festgelegten Schwellenwerts auf 0 gesetzt.
 Die ersten 16 Frames, die relevante Informationen enthalten (Frame-Maximalwert > 0), werden für den dritten Reduzierungsschritt verwendet.
@@ -266,7 +266,7 @@ def loadData(filename=""):
 Für die Implementierung der \ac{SVM}--Klasse wird die Python-Bibliothek \textit{scikit-learn} verwendet. 
 Die Bibliothek stellt neben einer Vielzahl von weiteren Modulen und Klassen unter anderem auch eine Implementierung einer \ac{SVM} zur Verfügung.
 Für grundlegende Matrizenberechnungen in den Modulen \texttt{svm\_dataloader.py} und \texttt{svm\_preprocessor.py} werden die Python-Bibliotheken \textit{NumPy} und \textit{SciPy} verwendet. 
-\textit{NumPy} zeichnet sich vor allem durch effiziente Berechnungsoperationen und eine Vielzahl an nützlicher Funktionen aus, die durch das Erweiterungsmodul \textit{SciPy} um weitere sinnvolle Methoden ergänzt werden.
+\textit{NumPy} zeichnet sich vor allem durch effiziente Berechnungsoperationen und eine Vielzahl an nützlichen Funktionen aus, die durch das Erweiterungsmodul \textit{SciPy} um weitere sinnvolle Methoden ergänzt werden.
 Zusätzlich findet das in der Python-Installation enthaltene \textit{os}-Modul Einsatz, um grundlegende Dateipfadkonkatenationen zu bewerkstelligen.
 Letztendlich wird das ebenfalls standardmäßig in der Python-Installation enthaltene \textit{subprocess}-Modul verwendet, um mittels erkannter Gesten verschiedene Programme starten und beenden zu können.
 
@@ -278,7 +278,7 @@ Sobald 32 weitere Frames in dieser Liste abgespeichert worden sind, werden 16 re
 Der Eingabevektor wird dem Klassifikator übergeben, welcher als Rückgabewert die entsprechende Gestennummer zurückliefert, die er dem Eingabevektor zugeordnet hat.
 Gleichzeitig dient diese Gestennummer zur Steuerung von diversen Programmen.
 So kann mittels der Geste 0 der Notepad-Editor geöffnet und mittels der Geste 1 wieder beendet werden.
-Diese Funktionalität ist einem separaten Modul \texttt{svm\_appstarter.py} ausgelagert.
+Diese Funktionalität ist in einem separaten Modul \texttt{svm\_appstarter.py} ausgelagert.
 
 
 
@@ -294,10 +294,10 @@ Gleichzeitig wird die trainierte \ac{SVM} auf der Festplatte für spätere Aufru
 \subsubsection{Evaluation}
 Für das Training werden ausschließlich die Datensätze aller Gesten von zwei Personen verwendet.
 Dadurch ergibt sich eine relativ geringe Gesamtanzahl der Datensätze von etwa 1200.
-Der Grund für das Nichtverwenden aller Daten liegt in der Qualität der Trainingsdaten, die durch verschiedene Hardwarekonfigurationen der einzelnen Laptops in Bezug auf Lautsprecher und Mikrofon oder auch durch das unkorrekten Ausführung der Gesten teilweise nicht sehr gut ist.
+Der Grund für das Nichtverwenden aller Daten liegt in der Qualität der Trainingsdaten, die durch verschiedene Hardwarekonfigurationen der einzelnen Laptops in Bezug auf Lautsprecher und Mikrofon oder auch durch das inkorrekte Ausführung der Gesten teilweise nicht sehr gut ist.
 Mit der Entscheidung, nur Datensätze von zwei Personen zu verwenden, ergibt sich automatisch die Chance zu mehr Übereinstimmungen.
 Durch das Festlegen entsprechender Parameter lässt sich eine \ac{SVM} einfach auf die gegebenen Trainingsdaten trainieren, so dass gute Ergebnisse in Bezug auf die Genauigkeit (engl. Precision) und die Trefferquote (engl. Recall) erzielt werden können.
-Für die Evaluation wurde der komplette Datensatzumfang in zwei Teile unterteilt im Verhältnis $\frac{2}{3}$ zu $\frac{1}{3}$.
+Für die Evaluation wurde der komplette Datensatzumfang in zwei Teile unterteilt, im Verhältnis $\frac{2}{3}$ zu $\frac{1}{3}$.
 Mit dem knapp 800 Datensätze fassenden ersten Teil wurde die \ac{SVM} trainiert und mittels des zweiten Teils auf ihre Performance getestet.
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.3\textwidth]{svm/svm_confusion_matrix.png}
@@ -340,7 +340,7 @@ Dann fangen wir mal an:
 - Training geht relativ flott, so dass unterschiedliche Parameterkombinationen zügig ausprobiert werden können (allerdings sollte man die Standardwerte für die Parameter benutzen, da sie meistens bereits zu guten Ergebnissen führen)
 - prinzipiell kann meist eine gute trennende Hyperebene bzw. akzeptable Fehlerrate gefunden werden
 
-- mittels dem Parameter $C$ lässt sich die Margin-Breite der Hyperebene steuern
+- mittels des Parameters $C$ lässt sich die Margin-Breite der Hyperebene steuern
 - je größer dabei $C$ wird, desto kleiner wird der Margin-Wert, desto stärker handelt es sich um ein Overfitting
 - ein hoher Wert für den Parameter $gamma$ führt in Kombination mit einem hohen Wert für $C$ zu einem starken Overfitting an die Trainingsdaten
 - für sehr kleine Werte von $C$ können sogar Trainigsdaten falsch klassifiziert werden, die linear separierbar sind
@@ -350,10 +350,10 @@ Dann fangen wir mal an:
 
 - ''ref/images/svm/svm\_confmat.png'' zeigt die visuelle Repräsentation einer Confusion-Matrix
 - dafür wurde das Training der SVM mit etwa 2700 Datensätzen und die Validierung mit etwa 900 Datensätzen durchgeführt
-- die durchschnittliche Genauigkeit (Fähigkeit des Klassifikators einen Eingabevektor nicht einer Klasse zuzuordnen, zu der er nicht angehörig ist) liegt bei 67 Prozent
-- die durchschnittliche Trefferquote (Fähigkeit des Klassifikators alle entsprechenden Eingabevektoren der richtigen zugehörigen Klasse zuzuordnen) liegt bei etwa 65 Prozent
+- die durchschnittliche Genauigkeit (Fähigkeit des Klassifikators, einen Eingabevektor nicht einer Klasse zuzuordnen, zu der er nicht angehört) liegt bei 67 Prozent
+- die durchschnittliche Trefferquote (Fähigkeit des Klassifikators, alle entsprechenden Eingabevektoren der richtigen zugehörigen Klasse zuzuordnen) liegt bei etwa 65 Prozent
 
-- persönliche Meinung: ich glaube, die Performance des Klassifikators lässt sich vor allem durch eine bessere Vorverarbeitung und Merkmalsextraktion leicht verbessern.
-- allerdings erschweren die unterschiedlich gut aufgenommenen Trainingsdatensätzen von verschiedenen Laptops mit unterschiedlicher Hardwarekonfiguration (Lautsprecher und Mikrofon) die Vorverarbeitungs- und die Trainingsphase und beeinflussen somit stark die Validierungs- und die Live-Klassifikationsergebnisse
+- persönliche Meinung: Ich glaube, die Performance des Klassifikators lässt sich vor allem durch eine bessere Vorverarbeitung und Merkmalsextraktion leicht verbessern.
+- allerdings erschweren die unterschiedlich gut aufgenommenen Trainingsdatensätze von verschiedenen Laptops mit unterschiedlicher Hardwarekonfiguration (Lautsprecher und Mikrofon) die Vorverarbeitungs- und die Trainingsphase und beeinflussen somit stark die Validierungs- und die Live-Klassifikationsergebnisse
 
 - die aktuelle Vorverarbeitungsstrategie erfordert eine recht exakte Ausführung der Geste unter sehr guten Vorraussetzungen, sprich laute Umgebungsgeräusche sollten vermieden werden (dies kann jedoch auch an der aktuellen Hardwarekonfiguration des Laptops liegen), da das Mikrofon überempfindlich reagiert und selbst normale Musik als Umgebungsgeräusche Schwankungen im Frequenzspektrum rund um die Referenzfrequenz von 18.500 kHz verursacht!
