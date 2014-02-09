@@ -54,14 +54,11 @@ Mit Hilfe des sogenannten Kernel-Tricks werden die Daten in einen höherdimensio
 
 Support Vector Machines erfreuen sich großer Beliebtheit, da sie in der Regel wesentlich performanter vernünftige Vorhersagen treffen können. Lediglich durch die Lokalisierung des Objekts im Koordinatensystem wird klassifiziert. Dadurch, dass eine trainierte SVM eine Trenngerade generiert, kann durch einfache Hilfsmittel aus der linearen Algebra die relative Position bestimmt werden. Es wird also entschieden, ob das zu klassifizierende Objekt "{}oberhalb"{} oder "{}unterhalb"{} der Trenngeraden liegt. Allerdings ist zu beachten, dass für sehr große Datenmengen die \ac{SVM} eine sehr lange Trainingsphase benötigt, da der Algorithmus die Inversion der Eingabematrix benutzt. Das Bilden der inversen Matrix hat eine Laufzeit zwischen $\mathcal O(n^2)$ und $\mathcal O(n^3)$ und ist damit sehr aufwändig.
 
-
 \subsection{Funktionsweise der SVM}
 
 \subsubsection{Optimale Trennung}
 Mit einem Satz von Merkmalsvektoren (Merkmalsraum) und dessen Klassenzugehörigkeiten $\{ (x_1, y_1), ..., (x_m, y_m) | x_i \in \mathcal{X}, y_i \in \{-1, 1\}, m \in \mathbb{N} \}$ wird eine mathematische Gerade errechnet,
 die in einem Koordinatensystem betrachtet die Daten räumlich in zwei Klassen trennt. 
-
-
 
 Die Gerade (Hyperebene im mehrdimensionalen Raum) trennt die Merkmalsräume bestmöglich und dient als Entscheidungsfunktion für die Klassifikation. Sie ist gegeben durch den Normalenvektor $w$ und den sogenannten Bias $b$, dem Abstand der Ebene zum Ursprung. Diese Form erweist sich als besonders praktisch, da durch Einsetzen von $x$ der direkte Abstand zur Hyperbene resultiert.
 Intuitiv ist klar, dass alle Punkte auf der Hyperebene selbst keinen Abstand haben, die Formel der Hyperebene (\ref{eq:svm_hyperplane}) lautet demnach: 
@@ -120,7 +117,6 @@ In der müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ ausrech
     \mathcal{C}: \{ c_i \,|\, \operatorname{sgn}(\langle \phi(w),\phi(x) \rangle + b) = i \}
 \end{equation}
 
-
 Dadurch, dass die Trainingspunkte $x$ nur in Skalarprodukten auftauchen, können wir uns des Kernel-Tricks bedienen.
 Kernfunktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle Eigenschaft aus, da sie sich verhalten wie ein Skalarprodukt in $\mathbb{R}^h$ (\ref{eq:svm_kern_trick}). 
 
@@ -169,7 +165,8 @@ Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  a
     \caption{Beispiel einer polynomiellen Kernfunktion}
     \label{fig:ex_kernel}
 \end{figure}
-\renewcommand{\figurename}{Abb.}
+
+\newpage
 
 Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach dem Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
 Gängige Kernfunktionen sind:
