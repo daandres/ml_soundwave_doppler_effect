@@ -58,11 +58,16 @@ Der amerikanischen Mathematiker Leonard E. Baum (* 1931) und andere Autoren entw
 sechziger Jahre das \acl{HMM}. Erste \acl{HMM}-Applikationen wurden zur Spracherkennung und später auch in der Bioinformatik 
 zur Analyse von Nukleotid- und Proteinsequenzen eingesetzt. 
 
-Ein \acl{HMM} erweitert eine \acl{MK} um eine weiteren Zufallsprozess und ist somit ein zweistufiger stochastischer Prozess \cite[67]{mmmFink}
-zustandsspezifische Ausgabe und eine statistisch modellierte Zustandsfolge. 
+Ein \acl{HMM} erweitert eine \acl{MK} um eine weiteren Zufallsprozess und ist
+somit ein zweistufiger stochastischer Prozess \cite[67]{mmmFink}. Hierfür wird
+jedem Zustand der \acl{MK} eine Ausgabe bzw. Emission zugeordnet dessen
+Wahrscheinlichkeitsverteilung einzig vom aktuellen Zustand abhängig ist. Die
+Emissionen sind die einzigen beobachtbaren Zustände des \acl{HMM}. Der Rest
+ist sozusagen 'versteckt' woher sich auch der Name des Models ableitet. Eine
+Folge von Emissionen wird auch Observationsfolge genannt.
 
 
-Es wird beschrieben durch:\\ 
+Das \acl{HMM} wird definiert durch \cite[68]{mmmFink}:\\ 
 \( \lambda = (S;V;A;B;\pi)\)
 \begin{itemize}
      \item Endlich Menge von Zuständen \\
@@ -71,17 +76,34 @@ Es wird beschrieben durch:\\
            \( V = \{ v | 1 <= v <= M \} \)
      \item Matrix der Zustandsübergangswahrscheinlichkeiten \\
            \( A = \{ a_{ij} | a_{ij} = P(S_t = j | S_{t-1} = i) \} \)
-     \item Matrix der Emissionswahrscheinlichkeiten \\
-           \( B = \{ b_{jk} | b_{jk} = P(O_t = o_k | S_t = j) \} \)
+     \item Matrix der Emissionsverteilung \\
+           \( B = \{ b_{jk} | b_{jk} = P(O_t = o_k | S_t = j) \} \) bzw. \( B =
+           \{ b_{j}(x) | b_{j}(x) = p(x|S_t = j) \} \)
      \item Vektor von Zustandsstartwahrscheinlichkeiten \\
            \( \pi = \{ \pi_i | \pi_i = P(S_1 = i) \} \) 
 \end{itemize}
+
+Die Emissionsmodellierung ist hierbei vom Kontext der Problemstellung abhängig.
+Wird das \acl{HMM} zum Beispiel bei der Analyse von biologischen Sequenzen,
+sprich einem diskreten Symbolinventar, angewendet, wird ein diskretes
+Emissionsmodel genutzt. Man spricht hierbei auch von einem diskreten \acl{HMM}.
+Wenn dieses Model zur verarbeitung von Signalen verwendet werden soll erfordert
+dies in der Vorverarbeitung der Daten einen Quantisierer der die
+kontinuerlichen Merkmale in eine diskrete Observationsfolge überführt. 
+
+Gänger ist es hierfür kontinuierliche \acl{HMM}'s zu nutzen. Hierbei wird eine
+Emissionsmodelierung auf Basis kontinuierlicher Dichtefunktionen genutzt die
+kontinuierliche Observationen im \(\$db<R>$^n \) verarbeitet.\\ 
+\( B =\{ b_{j}(x) | b_{j}(x) = p(x|S_t = j) \} \)
+      
+          
+
 
 Das Konzept des \acl{HMM} kann laut \cite{rabiner} in drei Problemstellungen eingeteilt werden:
 \begin{itemize}
   \item Evaluierungsproblem: 
   \item Dekodierungsprobem: Finde interne Abläufe für eine gegebene Observationsfolge
-  \item Trainingsproblem: Finde Modellparameter für gegebene Besispieldaten
+  \item Trainingsproblem: Finde Modellparameter für gegebene Beispieldaten
 \end{itemize}
 
 
