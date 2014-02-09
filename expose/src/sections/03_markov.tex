@@ -349,6 +349,7 @@ Für das \acl{HMM} werden Objekte der Klassen \texttt{sklearn.hmm.GMMHMM} und
     \label{fig:gmm_data}
 \end{figure}
 
+
 \textbf{Das Training} \\
 Herzstück der HMM-Package-Logik für das Training eines \acl{HMM} ist die
 \texttt{GestureApllication}-Klasse, welche eine Liste von \texttt{Gesture}-Beans vorhält.
@@ -369,8 +370,9 @@ werden - was allerdings unerwünscht ist.
 
 \textbf{Klassifizierung} \\
 Wird die \texttt{classify}-Methode der \texttt{HMM}-Klasse getriggert, werden die eingehenden Frames in zwei versetzten Containern (Windows) gesammelt.
-Ist eines dieser Windows voll (bei 32 Frames) wird die Klassifizierung in der \texttt{GestuerApplication} ausgelöst. Dort wird die Geste allen \acl{HMM}s übergeben und
-bewertet (score) mit welcher Wahrscheinlichkeit es sich um diese Geste handelt.
+Ist eines dieser Windows voll (bei 32 Frames) wird die Klassifizierung in der \texttt{GestureApplication} ausgelöst. Dort wird die Geste allen \acl{HMM}s übergeben und
+bewertet (score) mit welcher Wahrscheinlichkeit es sich um diese Geste handelt. Liegt die Wahrscheinlichkeit, um einen definierten Prozentsatz über den Wahrscheinlichkeiten
+der anderen \acl{HMM} gilt die Geste erkannt.
 
   %%%%%%%%%%%%
   %  RESULT  % 
@@ -384,5 +386,8 @@ eine Geste (Emissionen) erkannt werden soll, ist vom Vorgehen ähnlich. Ein Vort
 Ein Nachteil dieser Methode ist, dass keine absoluten Klassifizierungen
 durchgeführt werden können. Es werden nur Wahrscheinlichkeiten für alle möglichen Klassen berechnet.
 So muss entschieden werden, ob die Wahrscheinlichkeit für eine Klasse hoch genug ist, sodass diese als Geste identifiziert werden kann.
+
+Ganz entscheidend beim Training eines \acl{HMM} war die Daten-Vorverarbeitung und die Liste zuvor trainierter \acl{GMM}. 
+Dies verbesserte und stabilisierte die Ergebnisse deutlich
 
 

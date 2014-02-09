@@ -30,7 +30,6 @@ Ein einfaches XOR kann also nicht realisiert werden (Abb. \ref{fig:perceptron_xo
     \label{fig:perceptron_xor}
 \end{figure}
 
-
 Mit einem Trick, der Erhöhung der Dimension, können mehrlagige Perzeptronen auch nichtlinear separierbare Probleme lösen. 
 So lässt sich bspw. das XOR-Problem in einem 3-dimensionalen Raum durch eine Hyperebene trennen (\ref{fig:perceptron_xor3d}).
 
@@ -53,7 +52,6 @@ Die Hauptidee dabei ist die Repräsentation der Daten zu verändern.
 Mit Hilfe des sogenannten Kernel-Tricks werden die Daten in einen höherdimensionalen Raum transformiert. 
 
 Support Vector Machines erfreuen sich großer Beliebtheit, da sie in der Regel wesentlich performanter vernünftige Vorhersagen treffen können. Lediglich durch die Lokalisierung des Objekts im Koordinatensystem wird klassifiziert. Dadurch, dass eine trainierte SVM eine Trenngerade generiert, kann durch einfache Hilfsmittel aus der linearen Algebra die relative Position bestimmt werden. Es wird also entschieden, ob das zu klassifizierende Objekt "{}oberhalb"{} oder "{}unterhalb"{} der Trenngeraden liegt. Allerdings ist zu beachten, dass für sehr große Datenmengen die \ac{SVM} eine sehr lange Trainingsphase benötigt, da der Algorithmus die Inversion der Eingabematrix benutzt. Das Bilden der inversen Matrix hat eine Laufzeit zwischen $\mathcal O(n^2)$ und $\mathcal O(n^3)$ und ist damit sehr aufwändig.
-
 
 \subsection{Funktionsweise der SVM}
 
@@ -130,6 +128,8 @@ Kernfunktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle 
 Es kann also das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ in $\mathbb{R}^h$ ausgerechnet werden, ohne die Daten mittles $\phi$ zu transformieren. 
 Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion.
 
+\newpage
+
 \renewcommand{\figurename}{Bsp.}
 \begin{figure}[htbp]
 \begin{equation*}
@@ -168,12 +168,6 @@ Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  a
     \label{fig:ex_kernel}
 \end{figure}
 
-<<<<<<< HEAD
-=======
-\newpage
-
-
->>>>>>> c9624e83bd2c3bc6c25caeed7bf28874245f288d
 Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach dem Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
 Gängige Kernfunktionen sind:
 
@@ -246,32 +240,18 @@ Optional und standardmäßig aktiviert wird eine eindimensionale Gauß'sche Filt
 \subsubsection{Implementierung}\label{sec:svm_implementation}
 Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Interface für alle Klassifikatoren vorhanden, welches von jedem Klassifikator -- allerdings unterschiedlich -- implementiert ist. 
 Dabei handelt es sich um die abstrakte Klasse \texttt{IClassifier}, die von der \ac{SVM}--Klasse im Modul \texttt{svm.py} implementiert werden muss.
-\begin{lstlisting}[float=*,language=Python,caption={Code Snipplet},label={lst:svm_code_snipplets}]{lst:svm_code_snipplets}
-def preprocess_frame(self, frame_data):
-<<<<<<< HEAD
-	frame = self.slice_frame(frame_data)
+\begin{lstlisting}[float=*,language=Python,caption={preprocess-Methode},label={lst:svm_code_snipplets}]{lst:svm_code_snipplets}
+def preprocess_frame(frame_data):
+	frame = slice_frame(frame_data)
 	try:
 		''' normalise frame '''
 		normalized_data_with_ref_frequency = frame / np.amax(frame)
-		frame = normalized_data_with_ref_frequency - self.ref_frequency_frame
+		frame = normalized_data_with_ref_frequency - ref_frequency_frame
 		''' set small noisy data to 0 '''
-		frame[np.where(frame <= self.threshold)] = 0.0
+		frame[np.where(frame <= threshold)] = 0.0
 	except:
-		frame = np.zeros(self.wanted_frames)
+		frame = np.zeros(wanted_frames)
 	return frame
-=======
-    frame = self.slice_frame(frame_data)
-    try:
-        ''' normalise frame '''
-        normalized_data_with_ref_frequency = frame / np.amax(frame)
-        frame = normalized_data_with_ref_frequency - self.ref_frequency_frame
-
-        ''' set small noisy data to 0 '''
-        frame[np.where(frame <= self.threshold)] = 0.0
-    except:
-        frame = np.zeros(self.wanted_frames)
-    return frame
->>>>>>> c9624e83bd2c3bc6c25caeed7bf28874245f288d
 \end{lstlisting}
 Für die Implementierung der \ac{SVM}--Klasse wird die Python-Bibliothek \textit{scikit-learn} verwendet. 
 Die Bibliothek stellt neben einer Vielzahl von weiteren Modulen und Klassen unter anderem auch eine Implementierung einer \ac{SVM} zur Verfügung.
@@ -307,10 +287,8 @@ Dabei wird durch das Festlegen entsprechender Parameter in der Konfigurationsdat
 
 Mittels des Parameters $C$ lässt sich die Margin-Breite $m$ der Hyperebene steuern.
 Je größer dabei $C$ wird, desto kleiner wird der Margin-Wert und desto mehr wird von einer Überanpassung (engl. Overfitting) gesprochen.
-Bei der Verwendung von sehr kleinen Werten von $C$ können allerdings sogar Trainigsdaten falsch klassifiziert werden, die linear separierbar sind.
 Ein hoher Wert für den Parameter $gamma$ führt in Kombination mit einem hohen Wert für $C$ zu einem starken Overfitting an die Trainingsdaten.
-==[degree]
-==[coef0]
+Die Parameter $degree$ und $coef0$ sind mitunter bei der Benutzung einer polynomiellen Kernfunktion von wichtiger Bedeutung, allerdings wird standardmäßig eine Radial-Basis-Function Kernfunktion verwendet, bei der diese Parameter keine Einweirkung haben.
 
 Die Werte in der Konfigurationsdatei sind für ein geringes Overfitting der \ac{SVM} an die Trainingsdaten bekannt und sind in folgender Tabelle (\autoref{tab:svm_parameter}) in der ersten Zeile aufgelistet.
 Die von dem Python-Modul \texttt{scikit-learn} vorgegebenen Standardwerte befinden sich in der zweiten Zeile der selben Tabelle.
@@ -375,7 +353,6 @@ Weitere Vorteile von \ac{SVM}s bestehen darin, dass die Trainingsphase schnell a
 So liefert der trainierte \ac{SVM}-Klassifikator sehr gute Ergebnisse in der Validierung, da die Fehlerrate auf 8\% minimiert werden konnte.
 Ausgenommen von zwei Gesten zeigte es sich ebenfalls, dass die Performance in der Live-Klassifikation trotz vermeintlichem Overfitting erstaunlich gut ist.
 Bei den zwei Gesten, die nicht immer zuverlässig erkannt werden, handelt es sich um Geste 2 \texttt{\ac{OT}} und Geste 5 \texttt{\ac{RO}}.
-==[wieso]
 
 Allgemein lässt sich die Performance des Klassifikators vor allem durch eine gute Vorverarbeitung und Merkmalsextraktion positiv beeinflussen.
 Allerdings erschweren qualitativ unterschiedlich gute Trainingsdatensätze die Vorverarbeitungs- und die Trainingsphase und beeinflussen somit stark die Validierungs- und die Live-Klassifikationsergebnisse
