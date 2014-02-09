@@ -417,8 +417,7 @@ Der Datensatz enthält ein Array mit 64-Datenpunkten. Die übergebenen Daten
 werden Normalisiert und anschließend wird der Durchschnitt abgezogen, wie in
 Kapitel \autoref{sec:lstm_data} beschrieben. Nachdem die Daten vorverarbeitet
 wurden, werden diese einer der verschiedenen \textit{classify}-Methoden
-übergeben. Diese Methoden implementieren verschiedene Varianten der Live
-Klassifikation.
+übergeben. Diese Methoden implementieren verschiedene Varianten der Live-Klassifikation.
 
 Die Methode \textit{classify1} speichert so lange die übergebenen Datenwerte, 
 bis 32-Werte aufgenommen wurden. Diese 32-Werten werden dem \ac{LSTM}-Netz 
@@ -443,10 +442,10 @@ Bewegung statt findet, ein Ausschlag. Diesen zu erkennen wird in \textit{classif
 versucht. Bei dieser Implementierung muss der Ausschlag einen bestimmten Schwellwert 
 überschreiten und wird anschließend dem LSTM-Netz übergeben.
 
-Bei der Methode \textit{classify5} wird genau so vorgegangen wie bei der vierten 
-Idee, es werden aber nicht ab dem Beginn des Ausschlags die Daten an das 
-Netz übergeben, sondern mit einem Puffer gearbeitet und wenn eine Ausschlag erkannt 
-werden die nächsten 22-Datensätze und 10-Datensätze aus dem Puffer übergeben.
+Bei der Methode \textit{classify5} wird ähnlich vorgegangen wie bei der vierten 
+Idee. Es werden aber nicht die Daten, ab dem Beginn des Ausschlags, an das 
+Netz übergeben, sondern es wird mit einem Puffer gearbeitet. Wenn ein Ausschlag erkannt 
+wurde, werden die nächsten 22-Datensätze und 10-Datensätze aus dem Puffer übergeben.
 
 \subsubsection{Training}
 \label{sec:lstm_training}
@@ -508,7 +507,7 @@ Validierungsdaten zugunsten der Trainingsdaten gesetzt.
 
 \subsubsection{Evaluation}
 Für die Validierung der Netzwerke werden eine Confusion Matrix gebildet und noch
-der mittlöere quadratische Fehler als Kenngröße angegeben. Anhand der Matrix
+der mittlere quadratische Fehler als Kenngröße angegeben. Anhand der Matrix
 lässt sich erkennen wie gut das Netz unbekannte Daten klassifiziert und welche
 Fehler dabei auftreten. Außerdem können klassenspezifische Fehlerraten berechnet
 werden. Daraus kann auch abgeleitet werden, welche Klassen ähnlich zu einander
@@ -534,7 +533,7 @@ Unterschied in den Klassen erkennt).
 In \autoref{matrix_eval} ist die Confusion-Matrix für ein Netzwerk festgehalten.
 Dieses wurde für 1500 Epochen trainiert. Es hat 64 Input-Neuronen, 18
 \ac{LSTM}-Blöcke und 7 Output-Neuronen. Das Training dauerte ca. 21 Stunden. Die
-Zeilen bilden die ausgeführte Geste und die Spalte die erkannten Gesten ab. Das
+Zeilen bilden die ausgeführte Geste und die Spalten die erkannten Gesten ab. Das
 Netzwerk wurde mit mit den Daten einer speziellen Hardwarekonfiguration
 trainiert. Dabei ist das Mikrofon unterhalb des Bildschirms und die Lautsprecher
 links und rechts neben der Tastatur. Es gibt 2800 Beispieldaten für diese Konfiguration. 
