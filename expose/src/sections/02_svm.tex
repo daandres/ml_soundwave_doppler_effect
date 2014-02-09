@@ -25,7 +25,7 @@ Einlagige Perzeptronen sind beschränkt auf die Lösung linear separierbarer Pro
 Ein einfaches XOR kann also nicht realisiert werden (Abb. \ref{fig:perceptron_xor}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.22\textwidth]{svm/svm_xor.png}
+    \includegraphics[width=0.23\textwidth]{svm/svm_xor.png}
     \caption{XOR nichtlinear separierbar in $\mathbb{R}^2$}
     \label{fig:perceptron_xor}
 \end{figure}
@@ -35,7 +35,7 @@ Mit einem Trick, der Erhöhung der Dimension, können mehrlagige Perzeptronen au
 So lässt sich bspw. das XOR-Problem in einem 3-dimensionalen Raum durch eine Hyperebene trennen (\ref{fig:perceptron_xor3d}).
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.22\textwidth]{svm/svm_xor_3d.png}
+    \includegraphics[width=0.23\textwidth]{svm/svm_xor_3d.png}
     \caption{XOR linear separierbar in $\mathbb{R}^3$}
     \label{fig:perceptron_xor3d}
 \end{figure}
@@ -78,12 +78,10 @@ Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die \ac{SVM} die Ei
     \mathcal{C}_1: \{ c \,|\, \operatorname{sgn}(\langle w,x \rangle + b) = 1 \} \label{eq:svm_decision1}
 \end{eqnarray}
 
-\newpage 
-
 Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. \ref{fig:svm_separator}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.4\textwidth]{svm/svm_overview.png}
+    \includegraphics[width=0.38\textwidth]{svm/svm_overview.png}
     \caption{Trenngerade einer SVM}
     \label{fig:svm_separator}
 \end{figure}
@@ -91,7 +89,6 @@ Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Ab
 Die Stützvektoren bilden das tragende Konstrukt der Entscheidungsfunktion. 
 Alle andere Merkmalsvektoren haben keinen Einfluss auf die Trennung, was die Namensgebung der Stützvektoren begründet. 
 Das macht die \ac{SVM} zu einem sehr transparenten und performanten Klassifikator. 
-
 
 \subsubsection{Kernel-Trick}
 Es ergeben sich Unregelmäßigkeiten bei der Lösung von nichtlinear separierbaren Problemen und der Klassifikation von mehr als 2 Klassen.
@@ -108,8 +105,8 @@ Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten vo
 \end{equation}
 
 \begin{figure}[htbp] \centering
-    \subfigure[$x$ nichtlinear separierbar in $\mathbb{R}^n$]{\includegraphics[width=0.22\textwidth]{svm/svm_fitting-line.png}}
-    \subfigure[$\phi(x)$ linear separierbar in $\mathbb{R}^h, h>n$]{\includegraphics[width=0.22\textwidth]{svm/svm_linear-fitting.png}}
+    \subfigure[$x$ nichtlinear separierbar in $\mathbb{R}^n$]{\includegraphics[width=0.23\textwidth]{svm/svm_fitting-line.png}}
+    \subfigure[$\phi(x)$ linear separierbar in $\mathbb{R}^h, h>n$]{\includegraphics[width=0.23\textwidth]{svm/svm_linear-fitting.png}}
     \caption{Kernfunktion $\phi$}
     \label{fig:svm_kernel}
 \end{figure}
