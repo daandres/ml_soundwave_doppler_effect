@@ -282,8 +282,9 @@ mit
 \item $de$: Mittel der Abstände zwischen R-R- oder L-L-Verschiebungen
 \end{itemize}
 
+Für die Klassifikation wurde auf Klassen und Methoden des Moduls \textit{sklearn.ensemble} der Bibliothek \textit{sklearn}~\cite{sklearn} zurückgegriffen. Zur zufälligen Teilung der Daten in Trainings- und Testdaten kamen Funktionen des Moduls \textit{sklearn.cross\_validation} zum Einsatz.
 
-Für die Klassifikation wurde auf Klassen und Methoden des Moduls \textit{sklearn.ensemble}~\cite{sklearn.ensemble} der Bibliothek \textit{sklearn}~\cite{sklearn} zurückgegriffen.
+Bei der Live-Klassifizierung wird der \texttt{classify}-Methode in definierten Zeitabständen kontinuierlich ein Frame übergeben. Da eine Geste aus 32 Frames besteht, werden zunächst solange Frames in einer Queue gesammelt, bis 32 vorhanden sind. Aus diesen wird ein \texttt{GestureModel}-Objekt erstellt, die Daten werden vorverarbeitet und einer weiteren Queue hinzugefügt. Auch diese wird zunächst gefüllt bis 32 Datensätze vorhanden sind. Nun wird jeder Datensatz ausgewertet und schließlich die am häufigsten klassifizierte Geste als Resultat festgelegt.
 
 
 \subsection{Evaluation}
