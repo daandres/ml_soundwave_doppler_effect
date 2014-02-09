@@ -12,11 +12,11 @@ import numpy as np
 
 PRE_DATA = "Preproc-Data"
 RAW_DATA = "Raw-Data"
-GMM_DATA = "GMM-Samples"
-GMM_T_DATA = "Trained GestureGMM-Samples"
+GMM_T_DATA = "GestureGMM-Samples"
+
 
 KEY_PREFIX = "alt+"
-GESTURE_PREF = "gesture "
+GESTURE_PREF = "Gesture "
 
 class Plot():
     
@@ -35,7 +35,6 @@ class Plot():
         self.name = RAW_DATA
         self.index = index
         self.dClass = 1
-        self.actionPoint = []
         self.X = []
         self.Y = []
         self.Z = []
@@ -54,11 +53,6 @@ class Plot():
                 self.plotPreprocData()
                 self.dClass += 1
             elif self.dClass == 2:
-                self.name = GMM_DATA
-                self.actionPoint=[]
-                self.plotGestureGmms()
-                self.dClass = 3
-            elif self.dClass == 3:
                 self.name = GMM_T_DATA
                 self.actionPoint=[]
                 self.plotTrainedGestureGmms()
@@ -119,17 +113,10 @@ class Plot():
         ''' init figure, surface and plot '''
         self.fig = plt.figure()
         self.data = self.du.loadRaw3dGesture(self.gesture)
-        
-        self.actionPoint = []
-        for da in self.data:
-            self.actionPoint.append(self.du._getHighestSum(da))
-
         self.initAxis()
         self.ax = self.fig.add_subplot(111, projection='3d')
         self.surf = self.ax.plot_surface(self.X, self.Y, self.data[self.index], rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-        self.ax.set_title(GESTURE_PREF + str(self.gesture) + ", " +self.name + ": " + str(self.index+1))
-        if len(self.actionPoint) > 0:
-            self.ax.scatter(self.actionPoint[self.index],0,0,'0', s= 100, c='r')
+        self._setTitle()
         self.ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
         self.fig.canvas.mpl_connect('scroll_event', self.onscroll)
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
@@ -137,15 +124,17 @@ class Plot():
         
         plt.show()
 
+    def _setTitle(self):
+        self.ax.set_title(GESTURE_PREF + str(self.gesture) + ", " +self.name + ": " + str(self.index+1))
+
+
     def plot(self):
         ''' plot new data set '''
         self.ax.cla()
         self.fig.clf()
         self.ax = self.fig.add_subplot(111, projection='3d')
         self.surf = self.ax.plot_surface(self.X, self.Y, self.data[self.index], rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-        self.ax.set_title(GESTURE_PREF + str(self.gesture) + ", " +self.name + ": " + str(self.index+1))
-        if len(self.actionPoint) > 0:
-            self.ax.scatter(self.actionPoint[self.index],0,0,'0', s= 100, c='r')
+        self._setTitle()
         self.ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
         self.fig.canvas.draw()
 
@@ -162,9 +151,6 @@ class Plot():
             self.data = self.du.loadRaw3dGesture(self.gesture)
         except Exception:
             return
-        self.actionPoint = []
-        for d in self.data:
-            self.actionPoint.append(self.du._getHighestSum(d))
         self.index = 0
         self.initAxis()
         self.plot()
@@ -175,32 +161,14 @@ class Plot():
         '''
         self.gmms = gmms
 
-    def plotGestureGmms(self):
-        ''' plot gmm-sample data '''
-        mg = g.GMM_Util()
-        data = self.du.loadData(self.gesture)
-        gmms = mg.sample(data)
-        data = []
-        for i in range(13):
-            lis = []
-            for gmm in gmms:
-                sample = gmm.sample(25)
-                sample = np.mean(sample, 0)
-                lis.append(np.ravel(sample))
-            data.append(lis)
-        self.data = data
-        self.index = 0
-        self.initAxis()
-        self.plot()
-
     def plotTrainedGestureGmms(self):
         ''' plot gmm-sample data '''
+        
+        self.name = GMM_T_DATA
         if self.gesture in self.gmms.keys():
-            self.name = GMM_T_DATA
             gmms = self.gmms[self.gesture] 
         else:
             print "no trained gmm found"
-            self.name = GMM_DATA
             mg = g.GMM_Util()
             data = self.du.loadData(self.gesture)
             gmms = mg.sample(data)
