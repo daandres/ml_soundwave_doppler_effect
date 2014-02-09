@@ -1,28 +1,28 @@
 ### Readme for the SVM classifier in the gesture recognition application
 
-The SVM module uses optimal separation by hyperplanes between the classes. For SVM training is necessary.
+The SVM module uses optimal separation by using hyperplanes between all classes. For SVM training is necessary.
 The module provides both the classification with a SVM and the training itself. Additionally some
 functions for better handling are provided.
 
 ### Features:
 - create a svm with different input dimension size.
 Many optimizations are provided by config parameters:
-- slice_left: For a better performance this parameter slices a given number of samples in each frame at beginning, because they seems to be irrelevant
-- slice_left: For a better performance this parameter slices a given number of samples in each frame at ending, because they seems to be irrelevant
-- samples_per_frame:
-- used_classes:
+- slice_left: for a better performance this parameter slices a given number of samples in each frame at beginning, because they seems to be irrelevant
+- slice_left: for a better performance this parameter slices a given number of samples in each frame at ending, because they seems to be irrelevant
+- samples_per_frame: number of given samples per frame (64 samples per frame)
+- used_classes: how many gestures should be used for training and classification
 - new_preprocess: indicator for using the newer better preprocess algorithm
-- framerange = 32
-- timeout = 0
-- threshold: all samples under this value are ignored
-- smooth: value for the gaussche
+- framerange = one dataset consists of this number of frames
+- timeout = number of frames to wait before looking for a new gesture starting point
+- threshold: all samples under this value are ignored and set to zero
+- smooth: value for the gaussian smoothing
 - use_each_second: indicator for using only each second sample for a better performance
-- kernel: svm kernel, can be rbf, linear, poly. rbf is recommended
+- kernel: svm kernel, can be rbf, linear, poly, sigmoid. rbf is recommended
 - c: margin of separating hyperplane
 - gamma: factor for kernels
 - degree: degree for polynomial kernels
 - coef0: coefficient for polynomial kernels
-- used_gestures:  comma-separated folder names for the used gestures
+- used_gestures: comma-separated folder names for the used gestures
 
 ### Usage:
 Config parameters are explained in config/default.cfg. On first start a config/personal.cfg file is created. Changes can be made here.
