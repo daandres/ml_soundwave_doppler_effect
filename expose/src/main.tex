@@ -14,7 +14,7 @@
 \usepackage{scrhack}
 \usepackage[pdftex,pdfborder={0 0 0}, bookmarksopenlevel=1,
 bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln (ohne optische Hervorhebung)
-
+\usepackage{tocstyle}
 \usepackage[]{acronym}
 \usepackage{graphicx}
 \usepackage{subfigure}
@@ -180,6 +180,7 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
  
 \clearpage
 
+\usetocstyle{allwithdot}
 
 \phantomsection
 \headAndToc{Inhaltsverzeichnis}
@@ -203,6 +204,7 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \singlespacing
 \small
 \phantomsection
+\deactivatetocstyle
 \headAndToc{Literatur}
 \bibliography{ref/bib}{} 
 %\bibliographystyle{phcpcDE}
@@ -215,7 +217,7 @@ bookmarksdepth=3]{hyperref} %Kreiert Links von der Table of Content zu Kapiteln 
 \input{acronym}
 \end{acronym} 
 \listoffigures
-\listoftables 
+\listoftables
 \lstlistoflistings
 \clearpage
  
