@@ -121,11 +121,20 @@ kontinuerlichen Merkmale in eine diskrete Observationsfolge überführt.
 
 Gänger ist es hierfür kontinuierliche \acl{HMM}'s zu nutzen. Hierbei wird eine
 Emissionsmodelierung auf Basis kontinuierlicher Dichtefunktionen genutzt die
-kontinuierliche Observationen im \(\$db<R>$^n \) verarbeitet.\\ 
+kontinuierliche Observationen im \(\mathbb{R}^n\) verarbeitet.\\ 
 \( B =\{ b_{j}(x) | b_{j}(x) = p(x|S_t = j) \} \)
-      
-          
-
+Zur behandlung kontinuerlicher Verteilungen mit mehreren komplexen
+Häufigkeitsgebieten werden approximatische Verfahren genutzt. Die verbreiteste
+Technik besteht aus der Verwendung von Mischverteilungen auf der Basis von
+Gauß-Dichten (\acl{GMM}). Man kann nämlich zeigen, dass sich jede allgemeine
+kontinuierliche Verteilung \(p(x)\) durch eine Linearkombination von i.a. unendlich vielnen
+Basis-normalverteilungen beliebig genau approximieren lässt\cite[69]{mmmFink}:\\
+\begin{equation}
+\begin{multline}
+p(x) \hat{=} \sum_{k=1}^\infty c_{k} N(x|\mu_{k},K_{k}) \\
+approx \sum_{k=1}^M c_{k} N(x|\mu_{k},K_{k})  
+\end{multline}
+\end{equation}
 
 Das Konzept des \acl{HMM} kann laut \cite{rabiner} in drei Problemstellungen eingeteilt werden:
 \begin{itemize}
