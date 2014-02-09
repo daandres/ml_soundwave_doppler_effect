@@ -14,22 +14,6 @@ from numpy.random import RandomState
 decoder_algorithms = ("viterbi", "map")
 
 def logsumexp(arr, axis=0):
-    """Computes the sum of arr assuming arr is in the log domain.
-
-    Returns log(sum(exp(arr))) while minimizing the possibility of
-    over/underflow.
-
-    Examples
-    --------
-
-    >>> import numpy as np
-    >>> from sklearn.utils.extmath import logsumexp
-    >>> a = np.arange(10)
-    >>> np.log(np.sum(np.exp(a)))
-    9.4586297444267107
-    >>> logsumexp(a)
-    9.4586297444267107
-    """
     arr = np.rollaxis(arr, axis)
     # Use the max to normalize, as with the log this is what accumulates
     # the less errors
@@ -39,6 +23,9 @@ def logsumexp(arr, axis=0):
     return out
 
 class GestureHMM(GMMHMM):
+    ''' wrapper for sklearn.hmm.GMMHMM '''
+
+    
     def __init__(self, n_components=1, n_mix=1, startprob=None, transmat=None,
                  startprob_prior=None, transmat_prior=None,
                  algorithm="viterbi", gmms=None, covariance_type='diag',
@@ -53,29 +40,10 @@ class GestureHMM(GMMHMM):
                  params, init_params)
 
     def fit(self, obs):
-        """Estimate model parameters.
-
-        An initialization step is performed before entering the EM
-        algorithm. If you want to avoid this step, pass proper
-        ``init_params`` keyword argument to estimator's constructor.
-
-        Parameters
-        ----------
-        obs : list
-            List of array-like observation sequences (shape (n_i, n_features)).
-
-        Notes
-        -----
-        In general, `logprob` should be non-decreasing unless
-        aggressive pruning is used.  Decreasing `logprob` is generally
-        a sign of overfitting (e.g. a covariance parameter getting too
-        small).  You can fix this by getting more training data, or
-        decreasing `covars_prior`.
-        """
-
         if self.algorithm not in decoder_algorithms:
             self._algorithm = "viterbi"
 
+        ''' dont use GMMHMM.fit here cause it chnages the gmms '''
         super(GMMHMM, self)._init(obs, self.init_params)
 
         logprob = []
