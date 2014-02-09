@@ -98,6 +98,24 @@ Emissionen sind die einzigen beobachtbaren Zustände des \acl{HMM}. Der Rest
 ist sozusagen 'versteckt' woher sich auch der Name des Models ableitet. Eine
 Folge von Emissionen wird auch Observationsfolge genannt.
 
+\begin{figure}[htbp] \centering
+    \includegraphics[width=0.4\textwidth]{markov/hmm_example.png}
+    \caption{\acl{HMM} für das Beipiel des gefangen im Verlies}
+    \label{fig:hmm_example}
+\end{figure}
+
+Abbildung \ref{fig:hmm_example} soll ein \acl{HMM} an dem Beispiel des
+Gefangenen im Verlies darstellen\footnote{Quelle:
+\url{http://de.wikipedia.org/wiki/Hidden_Markov_Model}}.Ein Gefangener im
+Kerkerverlies möchte das aktuelle Wetter herausfinden. Er weiß, dass auf einen
+sonnigen Tag zu 70 \% ein Regentag folgt und dass auf einen Regentag zu 50 \%
+ein Sonnentag folgt. Weiß er zusätzlich, dass die Schuhe der Wärter bei Regen zu
+90 \% dreckig, bei sonnigem Wetter aber nur zu 60 \% dreckig sind, so kann er
+durch Beobachtung der Wärterschuhe Rückschlüsse über das Wetter ziehen (das
+heißt, er kann die Wahrscheinlichkeit für Regenwetter gegenüber sonnigem Wetter
+abschätzen). Sonne und Regen sind in diesem Fall die versteckten Zustände. Die
+Emissionen bzw. die Observation die der Gefangene machen kann sind nur der
+Verschmutzheitsgrad der Schuhe der Wärter.
 
 Das \acl{HMM} wird definiert durch \cite[68]{mmmFink}:\\ 
 \( \lambda = (S;V;A;B;\pi)\)
@@ -123,7 +141,7 @@ Wenn dieses Model zur verarbeitung von Signalen verwendet werden soll erfordert
 dies in der Vorverarbeitung der Daten einen Quantisierer der die
 kontinuerlichen Merkmale in eine diskrete Observationsfolge überführt. 
 
-Gänger ist es hierfür kontinuierliche \acl{HMM}'s zu nutzen. Hierbei wird eine
+Gängiger ist es hierfür kontinuierliche \acl{HMM}'s zu nutzen. Hierbei wird eine
 Emissionsmodelierung auf Basis kontinuierlicher Dichtefunktionen genutzt die
 kontinuierliche Observationen im \(\mathbb{R}^n\) verarbeitet.\\ 
 \( B =\{ b_{j}(x) | b_{j}(x) = p(x|S_t = j) \} \)\\
@@ -218,11 +236,29 @@ Vorgängerzuständen vorliegenden Wahrscheinlichkeiten gebildet.
 \end{enumerate}
 Mit \(\phi_{t}(j)\) wird ein ``Rückwärtszeiger'' definiert der für jedes
 entsprechende \(\delta_{t}(j)\) entlang der partiellen Pfade den jeweils
-optimalen Vorgängerzustand speichert.
- \textbf{Training} \\
+optimalen Vorgängerzustand speichert.\\
+\textbf{Training} \\
+Je nach Problemstellung müssen unterschiedliche Modelle eines HMM's gewählt
+werden. Es ist bisher kein Verfahren bekannt das aufgrund einer Stichprobe ein
+Optimales Modell generieren kann. Die Anzahl der Zustände, die Wahl der
+Emissionsverteilungen sowie deren initialer Parameterwerte müssen nach
+eigenen Erfahrungen gewählt werden. Wenn dies geschehen ist kann das Modell in
+einem iterativen Prozess trainiert werden. Hierbei werden die Parameter
+einer Wachstumstransformation unterworfen. Ziel ist es das die Modellparameter
+so verändert werden das die Bewertung des veränderten Models besser als die des
+Ausgangsmodels ist.\\
 
-Um das Training und die Klassifizierung möglichst genau und perfomant umzusetzen, 
-ist es notwendig die aufgenommenen Daten auzubereiten, dies ist Thema des nächsten Abschnitts
+Zum trainieren eines \acl{HMM} existieren diverse Algorithmen. Sie unterscheiden
+sich im wesentlichen durch die Verwendeten Qualitätsmaße zur Bewertung der
+Modelierungsgüte. Beim Baum-Welch-Algorithmus \cite{rabiner} wird die
+Produktionswahrscheinlichkeit \(P(O|\lambda)\) zur Bewertung genutzt. Beim
+Viterbi-Algorithmus \cite{Viterbi} und dem eng verwandten Segmental-k-means
+Algorithmus \cite{juang} nur die Wahrscheinlichkeit \(\(P(O,s^{*}|\lambda)\) der
+jeweils optimalen Zustandsfolge betrachtet \cite{mmmfink}.
+
+Um das Training und die Klassifizierung möglichst genau und performant
+umzusetzen, ist es notwendig die aufgenommenen Daten aufzubereiten, dies ist Thema des
+nächsten Abschnitts
 
 
   %%%%%%%%%%%%%%%%%%%
