@@ -93,9 +93,9 @@
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>20</y>
+        <y>30</y>
         <width>281</width>
-        <height>101</height>
+        <height>121</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -207,7 +207,7 @@ Beginn / End</string>
 }</string>
       </property>
       <property name="text">
-       <string>Top Down
+       <string>Top To Bottom
 Page Down</string>
       </property>
       <property name="alignment">
@@ -234,7 +234,7 @@ Page Down</string>
 }</string>
       </property>
       <property name="text">
-       <string>Bottom Up
+       <string>Bottom To Top
 Page Up</string>
       </property>
       <property name="alignment">
@@ -259,7 +259,7 @@ Page Up</string>
       </property>
       <property name="text">
        <string>Single Push
-Next Act</string>
+Change Font</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -271,7 +271,7 @@ Next Act</string>
         <x>370</x>
         <y>30</y>
         <width>951</width>
-        <height>100</height>
+        <height>30</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -282,9 +282,48 @@ Next Act</string>
 }</string>
       </property>
       <property name="text">
-       <string>Machine Learning
-Soundwave Doppler Effect
-Alexander Baumgärtner &amp; Robert Brylka</string>
+       <string>Machine Learning</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="headline_lb_2">
+      <property name="geometry">
+       <rect>
+        <x>370</x>
+        <y>80</y>
+        <width>951</width>
+        <height>81</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+	font-size: 18pt;
+	font-family: Courier;
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Klassifikationsverfahren zur Gestenerkennung
+mit Hilfe des schallbasierten Doppler-Effekts</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="headline_lb_3">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>700</y>
+        <width>521</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+	font-size: 18pt;
+	font-family: Courier;
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Alexander Baumgärtner &amp; Robert Brylka</string>
       </property>
      </widget>
     </widget>

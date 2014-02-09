@@ -1,10 +1,7 @@
 from classifier.classifier import IClassifier
-from PyQt4 import QtCore
 import numpy as np
 import kMeansHelper as kmHelper
 import clusterSignal as cSignal
-from PyQt4.QtCore import QObject, pyqtSlot, pyqtSignal
-from PyQt4 import QtGui
 import sys, os
 import win32com.client
 from view.ui_kmeans_visualizer import ViewUIKMeans
@@ -12,36 +9,28 @@ from view.ui_kmeans_visualizer import ViewUIKMeans
 class KMeans(IClassifier):
     
     def __init__(self, recorder=None):
+        
         self.name = 'kmeans'
+        self.recorder = recorder
         self.kmeansGUI = False
         self.currentRecordFrame = None
-        self.recorder = recorder
         self.kmH = kmHelper.kMeansHepler()
+        self.cSignal = cSignal.SignalToGUI()
         
-        self.kmeans = None
-        self.kmeans_16N = None
-        self.bufferArray = []
-        self.bufferArray_16N = []
-        
-        self.startGesture = -2
-        self.recognizatorBusy = False
-        self.currentClass = -3        
-        self.startGesture_16N = -2
-        self.firstNoneResult_16N = False
+        self.kmeans, self.kmeans_16N = None, None
+        self.bufferArray, self.bufferArray_16N = [], []
+
         self.currentClass_16N = -3
         self.firstCleanUpMessage = True  
         self.checkOnline = False
         self.startBuffern = False
         
-        self.cSignal = cSignal.SignalToGUI()
-        self.viewUiKmeans_ = None
         self.percentRatio = 0.0
-        self.wasClass4Before = False
-        self.wasClass3Before = False
+        self.wasClass3Before, self.wasClass4Before = False, False
           
         self.classArray = None
         self.recorder.classifyStart(self)
-        
+        #cann't be start in the ui_kmenas_visualizer
         if os.name == 'nt':
             self.isWindows = True
             self.shell = win32com.client.Dispatch("WScript.Shell")
@@ -49,6 +38,7 @@ class KMeans(IClassifier):
             self.isWindows = False
         
         
+        #start the kmeans GUI
     def startGui(self, recorder, callback):
         self.kmeansGUI = True
         self.app = ViewUIKMeans(self, self.getName, self.cSignal)
@@ -63,7 +53,7 @@ class KMeans(IClassifier):
     def startTraining(self, args=[]):
         pass
 
- 
+    #classify online data
     def classify(self, data):
         
         if self.kmeansGUI:
@@ -148,6 +138,7 @@ class KMeans(IClassifier):
                     self.cSignal.emitSignal(-10)
                 else:
                     self.firstCleanUpMessage = True              
+                
                     
     def setClassArray(self, cArray):
         self.classArray = cArray
@@ -176,25 +167,25 @@ class KMeans(IClassifier):
     def printClassifier(self):
         pass
 
-
+        #initialize the two buffer for the two cluster and start to buffer
     def fillBuffer(self, bufferSize):
         self.bufferSize = bufferSize
         self.bufferArray = np.zeros((48, 64))
         self.bufferArray_16N = np.zeros((58, 64))
         self.startBuffern = True
-        print 'fillBuffer'
-        print self.bufferArray.shape
-        print self.bufferArray_16N.shape
-        
-    def getBuffer(self):
-        return self.bufferArray
 
 
+        #set the two kmeans cluster initialized by ui_kmeans_visualizer
     def setKMeans(self, kMeans, kMeans_16N=None):
         self.kmeans = kMeans
         self.kmeans_16N = kMeans_16N     
         
         
+        #get the cluster assignment for current gesture and compare it with the
+        #class array we compute before
+        #we use here a class array because gesture three and four were performed twice
+        #in a soft and hard way and we compute a 5k cluster for them (the fifth gesture is the noise)
+        #by the online classification we put this two performance together 
     def kMeansOnline(self, checkArray):
         class_  = self.kmeans.transform(checkArray)
         cluster_ =  self.kmH.checkClusterDistance(class_, self.percentRatio)
@@ -207,13 +198,14 @@ class KMeans(IClassifier):
 
         return cluster_
     
-    
+        #get the cluster assignment for current gesture and returned it
+        #for gesture zero, one and noise we just use a 3k cluster 
     def kMeansOnline_16N(self, checkArray):
         class_  = self.kmeans_16N.transform(checkArray)
         cluster =  self.kmH.checkClusterDistance(class_, self.percentRatio)
         return cluster   
 
-
+        #set online recognition
     def checkKMeansOnline(self):
         self.checkOnline = not self.checkOnline
 

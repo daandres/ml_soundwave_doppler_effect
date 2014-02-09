@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_kmeans.ui'
 #
-# Created: Sun Feb 09 04:02:42 2014
+# Created: Sun Feb 09 14:16:59 2014
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -53,7 +53,7 @@ class Ui_MainWindow(object):
         self.qwtPlot_page_1.setGeometry(QtCore.QRect(30, 30, 461, 481))
         self.qwtPlot_page_1.setObjectName(_fromUtf8("qwtPlot_page_1"))
         self.startRecognition_bt = QtGui.QPushButton(self.tab)
-        self.startRecognition_bt.setGeometry(QtCore.QRect(30, 20, 281, 101))
+        self.startRecognition_bt.setGeometry(QtCore.QRect(30, 30, 281, 121))
         self.startRecognition_bt.setStyleSheet(_fromUtf8("QPushButton {\n"
 "    font-size: 18pt;\n"
 "    font-family: Courier;\n"
@@ -109,13 +109,29 @@ class Ui_MainWindow(object):
         self.gesture3_lb_2.setAlignment(QtCore.Qt.AlignCenter)
         self.gesture3_lb_2.setObjectName(_fromUtf8("gesture3_lb_2"))
         self.headline_lb = QtGui.QLabel(self.tab)
-        self.headline_lb.setGeometry(QtCore.QRect(370, 30, 951, 100))
+        self.headline_lb.setGeometry(QtCore.QRect(370, 30, 951, 30))
         self.headline_lb.setStyleSheet(_fromUtf8("QLabel {\n"
 "    font-size: 18pt;\n"
 "    font-family: Courier;\n"
 "\n"
 "}"))
         self.headline_lb.setObjectName(_fromUtf8("headline_lb"))
+        self.headline_lb_2 = QtGui.QLabel(self.tab)
+        self.headline_lb_2.setGeometry(QtCore.QRect(370, 80, 951, 81))
+        self.headline_lb_2.setStyleSheet(_fromUtf8("QLabel {\n"
+"    font-size: 18pt;\n"
+"    font-family: Courier;\n"
+"\n"
+"}"))
+        self.headline_lb_2.setObjectName(_fromUtf8("headline_lb_2"))
+        self.headline_lb_3 = QtGui.QLabel(self.tab)
+        self.headline_lb_3.setGeometry(QtCore.QRect(800, 700, 521, 41))
+        self.headline_lb_3.setStyleSheet(_fromUtf8("QLabel {\n"
+"    font-size: 18pt;\n"
+"    font-family: Courier;\n"
+"\n"
+"}"))
+        self.headline_lb_3.setObjectName(_fromUtf8("headline_lb_3"))
         self.tabWidget.addTab(self.tab, _fromUtf8(""))
         self.tab_2 = QtGui.QWidget()
         self.tab_2.setObjectName(_fromUtf8("tab_2"))
@@ -518,16 +534,17 @@ class Ui_MainWindow(object):
         self.gesture3_lb.setText(_translate("MainWindow", "TextLabel", None))
         self.gesture4_lb_2.setText(_translate("MainWindow", "Double Push\n"
 "Beginn / End", None))
-        self.gesture1_lb_2.setText(_translate("MainWindow", "Top Down\n"
+        self.gesture1_lb_2.setText(_translate("MainWindow", "Top To Bottom\n"
 "Page Down", None))
         self.gesture0_lb_2.setWhatsThis(_translate("MainWindow", "<html><head/><body><p align=\"center\"><br/></p></body></html>", None))
-        self.gesture0_lb_2.setText(_translate("MainWindow", "Bottom Up\n"
+        self.gesture0_lb_2.setText(_translate("MainWindow", "Bottom To Top\n"
 "Page Up", None))
         self.gesture3_lb_2.setText(_translate("MainWindow", "Single Push\n"
-"Next Act", None))
-        self.headline_lb.setText(_translate("MainWindow", "Machine Learning\n"
-"Soundwave Doppler Effect\n"
-"Alexander Baumgärtner & Robert Brylka", None))
+"Change Font", None))
+        self.headline_lb.setText(_translate("MainWindow", "Machine Learning", None))
+        self.headline_lb_2.setText(_translate("MainWindow", "Klassifikationsverfahren zur Gestenerkennung\n"
+"mit Hilfe des schallbasierten Doppler-Effekts", None))
+        self.headline_lb_3.setText(_translate("MainWindow", "Alexander Baumgärtner & Robert Brylka", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Gesture Recognizer", None))
         self.openFile_bt.setText(_translate("MainWindow", "open file", None))
         self.initKMeans_bt.setText(_translate("MainWindow", "init k-means", None))
