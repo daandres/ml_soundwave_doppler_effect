@@ -50,7 +50,7 @@ mit den Übergangswahrscheinlichkeiten \(X_i\) an den Kanten
     \label{fig:simple_mc}
 \end{figure}
 
-Die Wahrschinlichkeit für \( k \)-Schritte lässt sich so ausrechnen: 
+Die Wahrscheinlichkeit für \( k \)-Schritte lässt sich so ausrechnen: 
 \[ X_k = X_{k-1} A = X_0 A^k \] 
 
 
@@ -61,14 +61,14 @@ Das Wetter kann entweder ``sonnig'' oder ``regnerisch'' sein, zu Beginn (Tag 0, 
 Die Wahrscheinlichkeit, dass auf ``sonnig'' wieder ``sonnig'' folgt, liegt bei 90\% (``regnerisch'' = 1 - ``sonnig'' = 10\%). 
 Nach ``regnerisch'' liegt die Wahrscheinlichkeit jeweils bei 50\%.  
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.33\textwidth]{markov/simple_mc_example.png}
+    \includegraphics[width=0.4\textwidth]{markov/simple_mc_example.png}
     \caption{ Gerichteter Zustandsgraph der modellierten Wetter-\acl{MK} }
     \label{fig:simple_mc_example}
 \end{figure}
 
-Zustände \( S = [``sonnig'', ``regnerisch'']\) \\
-Anfangszustand ``sonnig'' \( \Pi = X_0 = [1 , 0] \) \\
-Übergangsmatrix \( A = \begin {bmatrix} 0.9&0.1\\0.5&0.5 \end {bmatrix} \)
+\[ Zustände: S = [``sonnig'', ``regnerisch''] \]
+\[ Anfangszustand:  \Pi = X_0 = [1 , 0] \]
+\[Übergangsmatrix: A = \begin {bmatrix} 0.9&0.1\\0.5&0.5 \end {bmatrix} \]
 
 Nun kann die Wahrscheinlichkeit für das Wetter an Tag 1 berechnet werden über: \\
 \[ X_1 = X_0 * A = [ 1, 0 ] \begin {bmatrix} 0.9&0.1\\0.5&0.5 \end {bmatrix} = [ 0.9, 0.1] \]
@@ -210,13 +210,32 @@ Aus den Vorverarbeiteten Daten werden Gauß’sche Mixtur Modelle berrechnet
   %%%%%%%%%%%%%%%%%%%%%
 \subsection{Implementierung}  \label{sec:impl}
 Wie im vorherigen Abschnitte erläutert, wird vor dem Training und der Klassifizierung eine Vorverabreitung der Daten durchgeführt \ref{fig:uml}.
-Diese Vorverarbeitung wird in der Klasse .
+Diese Vorverarbeitung wird in der Klasse \texttt{DataUtil} durchgeführt und nutzt die Klasse \texttt{GestureFileIO} der Hauptapplikation.
 
 \begin{figure*}[htbp] \centering
-    \includegraphics[width=0.9\textwidth]{markov/uml.png}
+    \includegraphics[width=1.0\textwidth]{markov/uml.png}
     \caption{Klassendiagram und Abhängigkeiten des \acl{HMM} Klassifikators}
     \label{fig:uml}
 \end{figure*}
+
+Die \texttt{HMM}-Klasse implementiert das Interface \texttt{IClassifier} und bildet die Schnittstelle zur Hauptapplikation. Sie nutzt \texttt{DataUtil}
+ für alle Dateizugriffe und die \texttt{Plot}-Klasse, um diese Daten als Graphen darzustellen. Herzstück der HMM-Package-Logik für das erstellen eines
+  \acl{HMM} ist die \texttt{GestureApllication}-Klasse, welche eine Liste von \texttt{Gesture}-Beans vorhält. Diese Beans repräsentieren alle Daten die für 
+ die Klassifizierung notwendig sind. Für das Training nutzt \texttt{GestureApplication} die \texttt{HMM\_Util}-Klasse.
+
+Verwendet werden Objekte der Klassen \testtt{sklearn.hmm.GMMHMM} und \texttt{sklearn.mixture.GMM} aus \texttt{scikit-learn}-Bibliothek \url{scikit-learn.org}.
+\texttt{HMM\_Util} erstellt mit Hilfe der \texttt{GMM\_Util}-Klasse zuallererst eine List von trainierten \acl{GMM}s. Dazu werden die eingehenden Daten 
+neu transformiert und nach Frames sortiert (siehe Abb. \ref{fig:data_gmm}). Somit repräsentiert ein \acl{GMM} einen Zeitpunkt während der Aufnahme 
+(siehe Abb. \ref{fig:gmm_data}). Die trainierten \acl{GMM}s werden nun für das Training eines \acl{HMM} genutzt. Um beim Trainingsprozess eingreifen zu können
+wurden die \testtt{sklearn}-Klassen erweitert, so entstehen die Klassen \testtt{GestureHMM} und \testtt{GestureGMM}. Dies ist notwendig, da die fertig trainierten
+\acl{GMM}s während des \acl{HMM} Trainings noch einmal verändert werden - was allerdings unerwünscht ist. 
+
+\begin{figure}[htbp] \centering
+    \includegraphics[width=0.6\textwidth]{markov/gmm_data.png}
+    \caption{Transformation für das Training der \acl{GMM}}
+    \label{fig:gmm_data}
+\end{figure}
+
 
 Wir haben uns für die scipy HMM implementierung entschieden. 
 Genutzt wird ein \acl{HMM} mit \acl{GMM} entschieden.
