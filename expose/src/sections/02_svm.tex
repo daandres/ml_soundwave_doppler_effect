@@ -32,7 +32,13 @@ Ein einfaches XOR kann also nicht realisiert werden (Abb. \ref{fig:perceptron_xo
 
 
 Mit einem Trick, der Erhöhung der Dimension, können mehrlagige Perzeptronen auch nichtlinear separierbare Probleme lösen. 
-So lässt sich bspw. das XOR-Problem in einem 3-dimensionalen Raum durch eine Hyperebene trennen.
+So lässt sich bspw. das XOR-Problem in einem 3-dimensionalen Raum durch eine Hyperebene trennen (\ref{fig:perceptron_xor3d}).
+
+\begin{figure}[htbp] \centering
+    \includegraphics[width=0.22\textwidth]{svm/svm_xor_3d.png}
+    \caption{XOR linear separierbar in $\mathbb{R}^3$}
+    \label{fig:perceptron_xor3d}
+\end{figure}
 
 Die Wahl der richtigen Gewichte ist dabei nicht einfach, für komplexere Problemstellungen schier unmöglich. 
 Um dennoch eine Problemlösung zu modellieren, die Eingaben richtig klassifiziert, gibt es einen Algorithmus, der die Gewichte automatisch anpasst.
@@ -46,7 +52,7 @@ SVMs können auch nichtlinear separierbare Probleme lösen, ohne die Dimension d
 Die Hauptidee dabei ist die Repräsentation der Daten zu verändern. 
 Mit Hilfe des sogenannten Kernel-Tricks werden die Daten in einen höherdimensionalen Raum transformiert. 
 
-Support Vector Machines erfreuen sich großer Beliebtheit, da sie in der Regel wesentlich performanter vernünftige Vorhersagen treffen können. Lediglich durch die Lokalisierung des Objekts im Koordinatensystem wird klassifiziert. Dadurch, dass eine trainierte SVM eine Trenngerade generiert, kann durch einfache Hilfsmittel aus der linearen Algebra die Position bestimmt werden. Es wird also entschieden, ob das zu klassifizierende Objekt "{}oberhalb"{} oder "{}unterhalb"{} der Trenngeraden liegt. Allerdings ist zu beachten, dass für sehr große Datenmengen die \ac{SVM} eine sehr lange Trainingsphase benötigt, da der Algorithmus die Inversion der Eingabematrix benutzt. Das Bilden der inversen Matrix hat eine Laufzeit zwischen $\mathcal O(n^2)$ und $\mathcal O(n^3)$ und ist damit sehr aufwändig.
+Support Vector Machines erfreuen sich großer Beliebtheit, da sie in der Regel wesentlich performanter vernünftige Vorhersagen treffen können. Lediglich durch die Lokalisierung des Objekts im Koordinatensystem wird klassifiziert. Dadurch, dass eine trainierte SVM eine Trenngerade generiert, kann durch einfache Hilfsmittel aus der linearen Algebra die relative Position bestimmt werden. Es wird also entschieden, ob das zu klassifizierende Objekt "{}oberhalb"{} oder "{}unterhalb"{} der Trenngeraden liegt. Allerdings ist zu beachten, dass für sehr große Datenmengen die \ac{SVM} eine sehr lange Trainingsphase benötigt, da der Algorithmus die Inversion der Eingabematrix benutzt. Das Bilden der inversen Matrix hat eine Laufzeit zwischen $\mathcal O(n^2)$ und $\mathcal O(n^3)$ und ist damit sehr aufwändig.
 
 
 \subsection{Funktionsweise der SVM}
@@ -68,14 +74,16 @@ Intuitiv ist klar, dass alle Punkte auf der Hyperebene selbst keinen Abstand hab
 Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die \ac{SVM} die Eingabe einr Klasse zu. Dabei können nur zwei Klassen  prognostiziert werden. Die Klasse gehört demnach entweder zur Klassenmenge \ref{eq:svm_decision0} oder zu \ref{eq:svm_decision1}.
 
 \begin{eqnarray}
-    \mathcal{C}_{-1}: \{ c \,|\, sign(\langle w,x \rangle + b) = -1 \} \label{eq:svm_decision0} \\
-    \mathcal{C}_1: \{ c \,|\, sign(\langle w,x \rangle + b) = 1 \} \label{eq:svm_decision1}
+    \mathcal{C}_{-1}: \{ c \,|\, \operatorname{sgn}(\langle w,x \rangle + b) = -1 \} \label{eq:svm_decision0} \\
+    \mathcal{C}_1: \{ c \,|\, \operatorname{sgn}(\langle w,x \rangle + b) = 1 \} \label{eq:svm_decision1}
 \end{eqnarray}
+
+\newpage 
 
 Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. \ref{fig:svm_separator}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.26\textwidth]{svm/svm_overview.png}
+    \includegraphics[width=0.4\textwidth]{svm/svm_overview.png}
     \caption{Trenngerade einer SVM}
     \label{fig:svm_separator}
 \end{figure}
@@ -87,7 +95,7 @@ Das macht die \ac{SVM} zu einem sehr transparenten und performanten Klassifikato
 
 \subsubsection{Kernel-Trick}
 Es ergeben sich Unregelmäßigkeiten bei der Lösung von nichtlinear separierbaren Problemen und der Klassifikation von mehr als 2 Klassen.
-Im Gegensatz zu den MLPs kann man mit der Erhöhung der Dimension diesen Umstand nicht umgehen. 
+Im Gegensatz zu den MLPs umgeht man diesen Umstand nicht mit der Erhöhung der Dimension. 
 Die \ac{SVM}s setzen in diesem Falle auf die Transformation der Datenrepräsentation. 
 Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren, in dem sie linear separierbar erscheinen (Abb. \ref{fig:svm_kernel}). 
 
@@ -101,18 +109,18 @@ Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten vo
 
 \begin{figure}[htbp] \centering
     \subfigure[$x$ nichtlinear separierbar in $\mathbb{R}^n$]{\includegraphics[width=0.22\textwidth]{svm/svm_fitting-line.png}}
-    \subfigure[Transformation $\phi(x)$ linear sepraierbar in $\mathbb{R}^h, h>n$]{\includegraphics[width=0.22\textwidth]{svm/svm_linear-fitting.png}}
+    \subfigure[$\phi(x)$ linear separierbar in $\mathbb{R}^h, h>n$]{\includegraphics[width=0.22\textwidth]{svm/svm_linear-fitting.png}}
     \caption{Kernfunktion $\phi$}
     \label{fig:svm_kernel}
 \end{figure}
 
 Als Bedingung des Raums $\mathbb{R}^h$ gilt, dass das Skalarprodukt erklärt ist. 
-Wir haben nach der Transformation also die neue Form \ref{eq:svm_kern_tranformation}. 
-In der neuen Form müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ ausrechnen, was sehr schwierig (bzw. unmöglich) ist, wenn die Dimension von $\mathbb{R}^h$ zu groß wird.
+Wir haben nach der Transformation also die neue Form (\ref{eq:svm_kern_tranformation}). 
+In der müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ ausrechnen, was sehr schwierig (bzw. unmöglich) ist, wenn die Dimension von $\mathbb{R}^h$ zu groß wird.
 
 \begin{equation}
 \label{eq:svm_kern_tranformation}
-    \mathcal{C}: \{ c_i \,|\, sign(\langle \phi(w),\phi(x) \rangle + b) = i \}
+    \mathcal{C}: \{ c_i \,|\, \operatorname{sgn}(\langle \phi(w),\phi(x) \rangle + b) = i \}
 \end{equation}
 
 
@@ -126,15 +134,6 @@ Kernfunktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle 
 
 Es kann also das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ in $\mathbb{R}^h$ ausgerechnet werden, ohne die Daten mittles $\phi$ zu transformieren. 
 Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion.
-
-Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach dem Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
-Gängige Kernfunktionen sind:
-\begin{itemize}
-\item{linear: $\mathcal{K}(w,x) = \langle w,x \rangle$}
-\item{polynomiell: $\mathcal{K}(w,x) = (\gamma\langle w,x \rangle+c_0)^d$}
-\item{sigmoid: $\mathcal{K}(w,x) = tanh(\gamma\langle w,x \rangle+c_0)$}
-\item{rbf: $\mathcal{K}(w,x) = exp(- \gamma \|w - x \| ^2)$}
-\end{itemize}
 
 \renewcommand{\figurename}{Bsp.}
 \begin{figure}[htbp]
@@ -175,6 +174,14 @@ Gängige Kernfunktionen sind:
 \end{figure}
 \renewcommand{\figurename}{Abb.}
 
+Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach dem Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
+Gängige Kernfunktionen sind:
+\begin{itemize}
+\item{linear: $\mathcal{K}(w,x) = \langle w,x \rangle$}
+\item{polynomiell: $\mathcal{K}(w,x) = (\gamma\langle w,x \rangle+c_0)^d$}
+\item{sigmoid: $\mathcal{K}(w,x) = \tanh(\gamma\langle w,x \rangle+c_0)$}
+\item{rbf: $\mathcal{K}(w,x) = \exp(- \gamma \|w - x \| ^2)$}
+\end{itemize}
 
 \subsubsection{Klassifikation von mehreren Klassen}
 Da die \ac{SVM} als binärer Klassifikator entwickelt wurde, müssen für eine Klassifikation von mehr als zwei Klassen Strategien entwickelt werden, um das Prinzip der \ac{SVM} zu erweitern. 
@@ -209,11 +216,18 @@ Die Eingabevektoren müssen dabei in ihrer Dimension den Trainingsdaten entsprec
 
 Der nächste Abschnitt widmet sich der Datenaufbereitung, insbesondere der Reduzierung der Dimension eines Eingabevektors und der entsprechenden Vorverarbeitung.
 
+\begin{figure*}[htbp] \centering
+    \includegraphics[width=0.65\textwidth]{svm/svm_preprocessing_steps.png}
+    \caption{Datenaufbereitungsschritte}
+    \label{fig:svm_preprocessing_steps}
+\end{figure*}
+
 \subsubsection{Datenaufbereitung}\label{sec:svm_data} 
 In \autoref{sec:intro} wurde die Aufnahme und die generelle Vorverarbeitung der Daten bereits erläutert, bevor diese an die entsprechenden Klassifikatoren weitergeleitet werden.
 Da jeder Klassifikator aufgrund seiner Funktionsweise unterschiedlich mit den Eingabedaten arbeitet, ist eine entsprechende und auf den jeweiligen Klassifikator angepasste Datenaufbereitung notwendig.
 Gleichzeitig kann durch eine entsprechende Vorverarbeitung gegenüber unverarbeiteten Daten das Problem der Klassifikation von unterschiedlichen Datensätzen verallgemeinert und somit die Trainingszeit verringert werden.
-Dieser Abschnitt befasst sich mit der spezifischen Datenaufbereitung für den \ac{SVM}-Klassifikator.
+Dieser Abschnitt befasst sich mit der spezifischen Datenaufbereitung für den \ac{SVM}-Klassifikator. 
+Eine entsprechende grafische Visualisierung aller Datenaufbereitungsschritte befindet sich in \autoref{fig:svm_preprocessing_steps}.
 
 \paragraph{Eingabevektordimensionsreduzierung}\label{sec:svm_reduce}$\;$ \\
 Bei der Betrachtung der Trainingsdaten, die jeweils aus insgesamt 32 Frames zu je 64 Werten bestehen, wird offensichtlich, dass die durch den Doppler-Effekt verursachten Frequenzverschiebungen in einem begrenzten Umfeld der Referenzfrequenz von $18\text{,}5\text{ kHz}$ herum sattfinden.
@@ -224,12 +238,6 @@ Die dritte Reduzierung wird mittels der Addition benachbarter Frames erzielt, so
 Im Anschluss erfolgt die Transformation in ein eindimensionales Array mit insgesamt 320 Werten, welches als Eingabevektor für die \ac{SVM} dient.
 Gegenüber der ursprünglichen Gesamtanzahl von 2048 Werten pro Datensatz wurde mittels der Vorverarbeitung die Dimension eines Eingabevektors um etwa den Faktor $6\text{,}5$ verringert.
 Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite Wert des Eingabevektors verwendet werden soll.
-
-\begin{figure*}[htbp] \centering
-    \includegraphics[width=0.65\textwidth]{svm/svm_preprocessing_steps.png}
-    \caption{Vorverarbeitungsschritte}
-    \label{fig:svm_preprocessing_steps}
-\end{figure*}
 
 \paragraph{Vorverarbeitung}\label{sec:svm_preprocess}$\;$ \\\\
 Die Reduzierung der Eingabevektordimension und die vorverarbeitenden Schritte sind zwei notwendige Handlungen, die sich in der Implementierung nicht trennen lassen, allerdings sind sie in ihrer Beschreibung gut zu separieren.
@@ -242,61 +250,26 @@ Optional und standardmäßig aktiviert wird eine eindimensionale Gauß'sche Filt
 Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Interface für alle Klassifikatoren vorhanden, welches von jedem Klassifikator -- allerdings unterschiedlich -- implementiert ist. 
 Dabei handelt es sich um die abstrakte Klasse \texttt{IClassifier}, die von der \ac{SVM}--Klasse im Modul \texttt{svm.py}  implementiert werden muss.
 
-\begin{lstlisting}[float=*,language=Python,caption={Code Snipplets},label={lst:svm_code_snipplets}]{lst:svm_code_snipplets}
-def startTraining(args=[]):
-	''' load training data if necessary '''
-	if X_train == None or Y_train == None:
-		X_train, Y_train = loadData()
-	
-	''' start training '''
-	classifier = svm.SVC(kernel, C, gamma, degree, coef0)
-	classifier.fit(X_train, Y_train)
+\begin{lstlisting}[float=*,language=Python,caption={Code Snipplet},label={lst:svm_code_snipplets}]{lst:svm_code_snipplets}
+def preprocess_frame(frame_data):
+	try:
+		''' slice frame data if necessary '''
+		if frame_data.shape[0] == wanted_frames:
+			frame = frame_data
+		else:
+			frame = slice_frame(frame_data)
 
-	''' save classifier and store reference in global variable '''
-	joblib.dump(classifier, path, compress=9)
+		''' normalise frame '''
+		normalized_data_with_ref_frequency = frame / np.amax(frame)
+		normalized_data = normalized_data_with_ref_frequency - ref_frequency_frame
 
-
-def loadData(filename=""):
-	''' delegate the task of loading the data to the ''' 
-	''' specific module instance dataloader '''
-	data, targets = dataloader.load_gesture_framesets()
-	return data, targets
-	
-def classify(data):
-	if classifier != None:
-		''' start first preprocessing of framedata '''
-		frame = preprocessor.preprocess_frame(data)
-
-		''' store frame in datalist and increment running index '''
-		datalist.append(frame)
-		datanum += 1
-
-		''' increment timeout value to allow user to move his hand '''
-		''' without any classification after one gesture '''
-		if timeout < framerange / 2:
-			timeout += 1
-			if timeout == framerange / 2:
-				print "..."
-
-		''' has frame relevant information - store this index '''
-		if np.amax(frame) > 0.0 and gesturefound == False and timeout == framerange / 2:
-			gestureindex = datanum
-			gesturefound = True
-
-		''' check if framerange is reached and gesturefound is true '''
-		if gestureindex + framerange == datanum and gesturefound == True:
-			gestureindex, gesturefound, timeout = 0, 0, 0
-
-			normalised_gesture_frame = preprocessor.preprocess_frames(datalist[-framerange:])
-			try:
-				''' start actual classification and applicationstarter '''
-				appstarter.controlProgram(classifier.predict(normalised_gesture_frame)[0])
-			except:
-				print "some error occured =("
-
-		''' delete unneeded frames from datalist '''
-		if datanum > framerange:
-			del datalist[0]
+		''' set small noisy data to 0 '''
+		frame = normalized_data
+		irrelevant_samples = np.where(frame <= threshold)
+		frame[irrelevant_samples] = 0.0
+	except:
+		frame = np.zeros(wanted_frames)
+	return frame
 \end{lstlisting}
 
 
@@ -339,18 +312,18 @@ Ein hoher Wert für den Parameter $gamma$ führt in Kombination mit einem hohen 
 ==[degree]
 ==[coef0]
 
-Die Werte in der Konfigurationsdatei sind für ein geringes Overfitting der \ac{SVM} an die Trainingsdaten bekannt und sind in folgender Tabelle (\autoref{table:svm_parameter}) in Zeile \textit{Cust.} aufgelistet.
-Die von dem Python-Modul \texttt{scikit-learn} vorgegebenen Standardwerte befinden sich in Zeile \textit{Def.} der selben Tabelle.
+Die Werte in der Konfigurationsdatei sind für ein geringes Overfitting der \ac{SVM} an die Trainingsdaten bekannt und sind in folgender Tabelle (\autoref{tab:svm_parameter}) in der zweiten Zeile aufgelistet.
+Die von dem Python-Modul \texttt{scikit-learn} vorgegebenen Standardwerte befinden sich in der ersten Zeile der selben Tabelle.
 
 \begin{table}[h]
 \centering
-\begin{tabular}{lrrrr}
+\begin{tabular}{rrrr}
 \hline
-   & \multicolumn{1}{c}{\textbf{C}} & \multicolumn{1}{c}{\textbf{gamma}} & \multicolumn{1}{c}{\textbf{degree}} & \multicolumn{1}{c}{\textbf{coef0}} \\
+  \multicolumn{1}{c}{\textbf{C}} & \multicolumn{1}{c}{\textbf{gamma}} & \multicolumn{1}{c}{\textbf{degree}} & \multicolumn{1}{c}{\textbf{coef0}} \\
  \hline
-  Def. & 1.0 & 0.00 & 3 & 0.0 \\
+ 1.0 & 0.00 & 3 & 0.0 \\
  \hline
-  Cust. & 10.0 & 0.25 & 3 & 0.0 \\
+ 10.0 & 0.25 & 3 & 0.0 \\
 \hline
 \end{tabular}
 \caption[Parameter für das Training einer SVM]{Parameter für das Training einer SVM}
@@ -403,8 +376,8 @@ So werden die meisten ausgeführten Gesten direkt der korrekten Klasse zugeordne
 
 
 \subsubsection{Fazit}\label{sec:svm_conclusion}
-\ac{SVMs} zeigen, dass sie selbst bei der Verwendung von einer recht niedrigen Anzahl von verwendeten Trainingsdaten in der Lage sind, gute Klassifikationsergebnisse zu erzielen.
-Weitere Vorteile von \ac{SVMs} bestehen darin, dass die Trainingsphase schnell absolviert und durch die Wahl entsprechender Parameter direkt Einfluss auf die Validierungsergebnisse genommen werden kann.
+\ac{SVM}s zeigen, dass sie selbst bei der Verwendung von einer recht niedrigen Anzahl von verwendeten Trainingsdaten in der Lage sind, gute Klassifikationsergebnisse zu erzielen.
+Weitere Vorteile von \ac{SVM}s bestehen darin, dass die Trainingsphase schnell absolviert und durch die Wahl entsprechender Parameter direkt Einfluss auf die Validierungsergebnisse genommen werden kann.
 So liefert der trainierte \ac{SVM}-Klassifikator sehr gute Ergebnisse in der Validierung, da die Fehlerrate auf 8\% minimiert werden konnte.
 Ausgenommen von zwei Gesten zeigte es sich allerdings, dass die Performance in der Live-Klassifikation trotz vermeintlichem Overfitting erstaunlich gut ist.
 Bei den zwei Gesten, die nicht immer zuverlässig erkannt werden, handelt es sich um Geste 2 \ac{OT} und Geste 5 \ac{RO}.
