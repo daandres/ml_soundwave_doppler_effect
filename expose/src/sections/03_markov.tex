@@ -154,24 +154,37 @@ Das Konzept des \acl{HMM} kann laut \cite{rabiner} in drei Problemstellungen ein
   \item Dekodierungsprobem: Finde interne Abläufe für eine gegebene Observationsfolge
   \item Trainingsproblem: Finde Modellparameter für gegebene Beispieldaten
 \end{itemize}
-
+\\
 \textbf{Evaluierung} \\
 In der Evaluierung soll die Wahrscheinlichkeit bestimmt werden mit der eine
 betrachtete Observationsfolge in einer beliebiger Zustandsfolge von einem
 gegebenen \acl{HMM} \(\lambda\) generiert wird. Diese Wahrscheinlichkeit wird
 Produktionswahrscheinlichkeit genannt. Diese wird mit dem Forward-Algorithmus
-berechnet.
-
+berechnet. Der Algorithmus nutzt hierfür die geltende Markov Eigenschaft
+aus das nur die Speicherung eines internen Zustandes erlaubt. Hierfür definiert
+man als Vorwärtsvariable \(\alpha_{t}(i)\) die Wahrscheinlichkeit, bei
+gegebenem Model \lampda den Anfang der betrachteten Observationsfolge \(O_{t}\)
+zu erzeugen und zum Zeitpunkt \(t\) den Zustand i zu erreichen.\\
+\( \alpha_{t}(i) = P(O_{1},O_{2},\ldots,O_{t},s_{t}=i|\lambda) \)\\
+Die Vorwährtsvariable lässt sich nun mit den folgenden Schritten rekursiv
+berechnen um die Gesamtwahrscheinlichkeit des Models zu erhalten.
 \begin{enumerate}
   \item Initialisierung\\
 		$\alpha_{1}(i) := \pi_{i}b{i}(O_{1})$
   \item Rekursion\\
-	für alle Zeitpunkte \(t, t=1\ldotsT-1\)\\
-	\(\alpha_{t+1}(j) := \sum_{i}\{\alpha_{t}(i)\alpha_{ij}\}b_{j}(O_{t+1})\)
+	für alle Zeitpunkte \(t, t=1...T-1\)\\
+	\(\alpha_{t+1}(j) :=
+	\sum\limits_{i}\{\alpha_{t}(i)\alpha_{ij}\}b_{j}(O_{t+1})\)
   \item Rekursionsabschluss\\
-  	\(P(O|\lambda) = \sum_{i=1}^N \alpha_{T}(i)\)
+  	\(P(O|\lambda) = \sum\limits_{i=1}^N \alpha_{T}(i)\)
 \end{enumerate}
 
+\\
+\textbf{Dekodierung} \\
+Bei der Dekodierung soll die optimale, bzw. wahrscheinlichste Zustandsfolge
+\(s^*\) aus der Menge der Zustände ermittelt werden die eine gegebene
+Observationsfolge erzeugt. Zur Ermittlung der optimalen Zustandsfolge bedient
+man sich des Viterbi-Algorithmus.
 \\
 \textbf{Training} \\
 
