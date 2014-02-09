@@ -75,7 +75,7 @@ Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die \ac{SVM} die Ei
 Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. \ref{fig:svm_separator}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.3\textwidth]{svm/svm_overview.png}
+    \includegraphics[width=0.26\textwidth]{svm/svm_overview.png}
     \caption{Trenngerade einer SVM}
     \label{fig:svm_separator}
 \end{figure}
@@ -132,6 +132,7 @@ Gängige Kernfunktionen sind:
 \begin{itemize}
 \item{linear: $\mathcal{K}(w,x) = \langle w,x \rangle$}
 \item{polynomiell: $\mathcal{K}(w,x) = (\gamma\langle w,x \rangle+c_0)^d$}
+\item{sigmoid: $\mathcal{K}(w,x) = tanh(\gamma\langle w,x \rangle+c_0)$}
 \item{rbf: $\mathcal{K}(w,x) = exp(- \gamma \|w - x \| ^2)$}
 \end{itemize}
 

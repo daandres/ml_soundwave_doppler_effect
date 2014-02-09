@@ -1,14 +1,11 @@
 import ui_kmeans as ui_kmeans_
 import numpy as np
 
-from PyQt4.QtCore import QObject, pyqtSlot, pyqtSignal
+from PyQt4.QtCore import pyqtSlot
 import sys, os
 from PyQt4 import Qt, QtCore, QtGui
-from PyQt4.QtGui import QMainWindow, QPushButton, QApplication
 import PyQt4.Qwt5 as Qwt
-from PyQt4.Qwt5.anynumpy import *
 from threading import Thread
-import win32com.client
 import copy
 import ntpath
 from functools import partial
@@ -41,13 +38,11 @@ class ViewUIKMeans:
         self.recordFramesCount = 32
         
         self.gesture0Aktiv, self.gesture1Aktiv, self.gesture3Aktiv, self.gesture4Aktiv = False, False, False, False
+        self.gesture0IconD, self.gesture1IconD, self.gesture2IconD, self.gesture3IconD, self.gesture4IconD, = None, None, None, None, None
+        self.gesture0IconA, self.gesture1IconA, self.gesture2IconA, self.gesture3IconA, self.gesture4IconA, = None, None, None, None, None
         
-        if os.name == 'nt':
-            self.isWindows = True
-            self.shell = win32com.client.Dispatch("WScript.Shell")
-        else:
-            self.isWindows = False
-            
+        self.gestureIconList = [[self.gesture0IconD, self.gesture0IconA],  [self.gesture1IconD, self.gesture1IconA], [self.gesture2IconD, self.gesture2IconA], [self.gesture3IconD, self.gesture3IconA] ,[self.gesture4IconD, self.gesture4IconA]]
+
         self.noiseArray = []
         self.arrayFromFile = []
         self.globalViewArray = []
@@ -71,8 +66,8 @@ class ViewUIKMeans:
         
         self.fileName = None
         self.multipleFiles = False
-        self.openFileDirectory = "../gestures/Robert"
-        self.centroidsFileDirectory = "../gestures/Robert/Centroids/new/shape 24"
+        self.openFileDirectory = "../classifier_data/kmeans/gestures"
+        self.centroidsFileDirectory = "../classifier_data/kmeans/centroids/"
         self.app = None
         if kMeansClassifier == None:
             raise Exception("No kMeansClassifier, so go home")
@@ -115,35 +110,27 @@ class ViewUIKMeans:
             self.uiplot.qwtPlot_page_1.setCanvasBackground(Qt.Qt.red)
         
         elif gesture == 0:
-            if self.isWindows:
-                #self.shell.SendKeys("{PGUP}",0)
                 self.gesture0Aktiv = not self.gesture0Aktiv
-                self.setGesturePixmap(gesture, self.gesture1Aktiv)
+                self.setGestureLabel(gesture, self.gesture0Aktiv)
         
         elif gesture == 1:
-            if self.isWindows:
-                #self.shell.SendKeys("{PGDN}",0)
                 self.gesture1Aktiv = not self.gesture1Aktiv
-                self.setGesturePixmap(gesture, self.gesture1Aktiv)
+                self.setGestureLabel(gesture, self.gesture1Aktiv)
          
         elif gesture == 3:
             self.gesture3Aktiv = not self.gesture3Aktiv
-            self.setGesturePixmap(gesture, self.gesture3Aktiv)
-            if self.akt < 5:
-                self.akt +=1
-            akt = str(self.akt) + '. Akt::'
-            self.rightPage.scrollToAnchor('2')
-    
+            self.setGestureLabel(gesture, self.gesture3Aktiv)
+            if self.gesture3Aktiv:
+                self.rightPage.setFont(QtGui.QFont ("Helvetica", 16));
+            else:
+                self.rightPage.setFont(QtGui.QFont ("Times", 20));
         elif gesture == 4:
             self.gesture4Aktiv = not self.gesture4Aktiv
-            self.setGesturePixmap(gesture, self.gesture4Aktiv)
-            if self.textBeginn:
-                self.textBeginn = False
-                self.rightPage.scrollToAnchor('FINALE')
+            self.setGestureLabel(gesture, self.gesture4Aktiv)
+            if self.gesture4Aktiv:
+                self.rightPage.moveCursor(QtGui.QTextCursor.End)
             else:
-                self.textBeginn = True
-                self.rightPage.scrollToAnchor('William Shakespeare:')
-                self.akt = 1
+                self.rightPage.moveCursor(QtGui.QTextCursor.Start)
         else:
             pass
 
@@ -369,6 +356,7 @@ class ViewUIKMeans:
         self.preselectedByKMeansArray = self.kmH.reshapeArray2DTo3D64(self.preselectedByKMeansArray)
         self.addLogText('shape after preselect by 2 K', self.preselectedByKMeansArray.shape)
 
+
     #initialize kmeans by given settings from GUI
     def initKMeans(self):     
         maxIterations = self.uiplot.maxIteration_sb.value()
@@ -379,6 +367,7 @@ class ViewUIKMeans:
             self.learnArrayKMeans = self.kmeansClusterCenters
         else:
             self.kmeans = cluster.KMeans(k,  max_iter=maxIterations, n_init=nInit)
+
 
     #learn kmeans with loaded data    
     def learnKMeans(self):
@@ -394,6 +383,7 @@ class ViewUIKMeans:
         self.addLogText('learn KMeans Count : ', len(cluster_))
         self.addLogText('cluster\n', cluster_)
         self.kmeansClusterCenters =   self.kmeans.cluster_centers_
+
 
     #switch the bool by depend on the GUI check box so we can load data from different directories      
     def setMultipleFiles(self, value):
@@ -525,15 +515,15 @@ class ViewUIKMeans:
             #self.kMeansClassifier.startTraining
             if self.kmeansClusterCenters is None:
                 #default
-                self.kmeansClusterCenters = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/data/c_34N_k5_m4.kmeans")), delimiter=","))        
+                self.kmeansClusterCenters = np.asarray(np.loadtxt(str(self.fixpath("../classifier_data/kmeans/centroids/c_34N_k5_m4.kmeans")), delimiter=","))        
                 self.addLogText('kmeansClusterCenters shape : ', self.kmeansClusterCenters.shape)  
-            text=open("../gestures/Robert/Centroids/data/othello.kmeans").read()
+            text=open("../classifier_data/kmeans/viewer text/othello.kmeans").read()
             self.rightPage.setPlainText(text)        
             self.kmeans = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters)
             cluster_ = self.kmeans.fit_predict(self.kmeansClusterCenters)
-            classArray = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/data/classArray_34N.kmeans")), delimiter=","))
+            classArray = np.asarray(np.loadtxt(str(self.fixpath("../classifier_data/kmeans/class array/classArray_34N.kmeans")), delimiter=","))
             self.kMeansClassifier.setClassArray(classArray)               
-            self.kmeansClusterCenters_16N = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/data/c_16N_m12_k3__.kmeans")), delimiter=","))
+            self.kmeansClusterCenters_16N = np.asarray(np.loadtxt(str(self.fixpath("../classifier_data/kmeans/centroids/c_16N_m12_k3__.kmeans")), delimiter=","))
             self.kmeans_16N = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters_16N)
             cluster_ = self.kmeans_16N.fit_predict(self.kmeansClusterCenters_16N)
             self.kMeansClassifier.setKMeans(self.kmeans, self.kmeans_16N)
@@ -587,14 +577,17 @@ class ViewUIKMeans:
     
     #load the array with the right class assignment
     def loadClassArray(self):
-        classArray = self.loadFileToArray('class array', "../gestures/Robert/Centroids")
+        classArray = self.loadFileToArray('class array', "../classifier_data/kmeans/class array")
+        if classArray is None:
+            self.addLogText('file open was canceled !')
+            return 
         self.addLogText('classArray shape ', classArray.shape)
         self.kMeansClassifier.setClassArray(classArray)
    
 
     #load noise data   
     def loadNoiseFile(self):
-        self.noiseArray = self.loadFileToArray('noise array', "../gestures/Robert/gesture_7")
+        self.noiseArray = self.loadFileToArray('noise array', "../classifier_data/kmeans/gesture/")
    
    
     #get the percent ratio from zhe GUI element    
@@ -608,7 +601,7 @@ class ViewUIKMeans:
         paths = self.fileName
         if len(paths) == 0:
             self.addLogText('file open was canceled !')
-            return 
+            return None
         fileToArray= []     
         for idx, path in enumerate(paths):
             if idx == 0:
@@ -688,14 +681,28 @@ class ViewUIKMeans:
 
 
     #helper function to set the gesture icon 
-    def setGesturePixmap(self, gesture, value):
-        label = getattr(self.uiplot ,'gesture%d_lb' %gesture)
+    def getGesturePixmap(self, gesture, value):
         icon = 'Icon0'+str(gesture)+'_aktiv.jpg' if value else 'Icon0'+str(gesture)+'.jpg'
-        iconPath = "../gestures/Robert/Centroids/data/"+icon
+        iconPath = "../classifier_data/kmeans/icons/"+icon
         icon1 = QtGui.QPixmap(iconPath)
         icon1 = icon1.scaled(100, 100)
-        label.setPixmap(icon1) 
-   
+        return icon1
+    
+    
+    #initialize gesture icon & labels
+    def initGestureLabels(self):
+        for x in range(0 ,5):
+            if x != 2:
+                self.gestureIconList[x][0] = self.getGesturePixmap(x, False)
+                self.setGestureLabel(x, False)
+                self.gestureIconList[x][1] = self.getGesturePixmap(x, True)
+
+
+        #helper function to set the gesture icon 
+    def setGestureLabel(self, gesture, value):
+        label = getattr(self.uiplot ,'gesture%d_lb' %gesture)
+        label.setPixmap(self.gestureIconList[gesture][value]) 
+    
    
     #end of application 
     def end(self):
@@ -744,7 +751,7 @@ class ViewUIKMeans:
             self.curve_2_tab1.setPen(pen)
 
             self.curve_2_tab1.attach(qwtPlot)
-            qwtPlot.setAxisScale(qwtPlot.yLeft, -100, self.amplitude * 1000)
+            qwtPlot.setAxisScale(qwtPlot.yLeft, 0, self.amplitude * 1000)
         
         
         self.uiplot.timer = QtCore.QTimer()
@@ -755,14 +762,9 @@ class ViewUIKMeans:
         self.arraySidesCut = self.uiplot.cutSides_sb.value()
         self.idxLeft = self.arraySidesCut
         self.idxRight = self.sampleRate - self.arraySidesCut
-        
 
-        self.setGesturePixmap(0, False)
-        self.setGesturePixmap(1, False)
-        self.setGesturePixmap(3, False)
-        self.setGesturePixmap(4, False)
-        
         self.bindButtons()
+        self.initGestureLabels()
         self.kmH = kmHelper.kMeansHepler()
         self.textEdit = QtGui.QTextEdit()
         self.uiplot.scrollArea.setWidget(self.textEdit)
