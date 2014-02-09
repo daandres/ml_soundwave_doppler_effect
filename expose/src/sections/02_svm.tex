@@ -250,62 +250,27 @@ Optional und standardmäßig aktiviert wird eine eindimensionale Gauß'sche Filt
 Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Interface für alle Klassifikatoren vorhanden, welches von jedem Klassifikator -- allerdings unterschiedlich -- implementiert ist. 
 Dabei handelt es sich um die abstrakte Klasse \texttt{IClassifier}, die von der \ac{SVM}--Klasse im Modul \texttt{svm.py}  implementiert werden muss.
 
-% \begin{lstlisting}[float=*,language=Python,caption={Code Snipplets},label={lst:svm_code_snipplets}]{lst:svm_code_snipplets}
-% def startTraining(args=[]):
-	% ''' load training data if necessary '''
-	% if X_train == None or Y_train == None:
-		% X_train, Y_train = loadData()
-	
-	% ''' start training '''
-	% classifier = svm.SVC(kernel, C, gamma, degree, coef0)
-	% classifier.fit(X_train, Y_train)
+\begin{lstlisting}[float=*,language=Python,caption={Code Snipplet},label={lst:svm_code_snipplets}]{lst:svm_code_snipplets}
+def preprocess_frame(frame_data):
+	try:
+		''' slice frame data if necessary '''
+		if frame_data.shape[0] == wanted_frames:
+			frame = frame_data
+		else:
+			frame = slice_frame(frame_data)
 
-	% ''' save classifier and store reference in global variable '''
-	% joblib.dump(classifier, path, compress=9)
+		''' normalise frame '''
+		normalized_data_with_ref_frequency = frame / np.amax(frame)
+		normalized_data = normalized_data_with_ref_frequency - ref_frequency_frame
 
-
-% def loadData(filename=""):
-	% ''' delegate the task of loading the data to the ''' 
-	% ''' specific module instance dataloader '''
-	% data, targets = dataloader.load_gesture_framesets()
-	% return data, targets
-	
-% def classify(data):
-	% if classifier != None:
-		% ''' start first preprocessing of framedata '''
-		% frame = preprocessor.preprocess_frame(data)
-
-		% ''' store frame in datalist and increment running index '''
-		% datalist.append(frame)
-		% datanum += 1
-
-		% ''' increment timeout value to allow user to move his hand '''
-		% ''' without any classification after one gesture '''
-		% if timeout < framerange / 2:
-			% timeout += 1
-			% if timeout == framerange / 2:
-				% print "..."
-
-		% ''' has frame relevant information - store this index '''
-		% if np.amax(frame) > 0.0 and gesturefound == False and timeout == framerange / 2:
-			% gestureindex = datanum
-			% gesturefound = True
-
-		% ''' check if framerange is reached and gesturefound is true '''
-		% if gestureindex + framerange == datanum and gesturefound == True:
-			% gestureindex, gesturefound, timeout = 0, 0, 0
-
-			% normalised_gesture_frame = preprocessor.preprocess_frames(datalist[-framerange:])
-			% try:
-				% ''' start actual classification and applicationstarter '''
-				% appstarter.controlProgram(classifier.predict(normalised_gesture_frame)[0])
-			% except:
-				% print "some error occured =("
-
-		% ''' delete unneeded frames from datalist '''
-		% if datanum > framerange:
-			% del datalist[0]
-% \end{lstlisting}
+		''' set small noisy data to 0 '''
+		frame = normalized_data
+		irrelevant_samples = np.where(frame <= threshold)
+		frame[irrelevant_samples] = 0.0
+	except:
+		frame = np.zeros(wanted_frames)
+	return frame
+\end{lstlisting}
 
 
 Für die Implementierung der \ac{SVM}--Klasse wird die Python-Bibliothek \textit{scikit-learn} verwendet. 
@@ -347,7 +312,7 @@ Ein hoher Wert für den Parameter $gamma$ führt in Kombination mit einem hohen 
 ==[degree]
 ==[coef0]
 
-Die Werte in der Konfigurationsdatei sind für ein geringes Overfitting der \ac{SVM} an die Trainingsdaten bekannt und sind in folgender Tabelle (\autoref{table:svm_parameter}) in der zweiten Zeile aufgelistet.
+Die Werte in der Konfigurationsdatei sind für ein geringes Overfitting der \ac{SVM} an die Trainingsdaten bekannt und sind in folgender Tabelle (\autoref{tab:svm_parameter}) in der zweiten Zeile aufgelistet.
 Die von dem Python-Modul \texttt{scikit-learn} vorgegebenen Standardwerte befinden sich in der ersten Zeile der selben Tabelle.
 
 \begin{table}[h]
