@@ -352,7 +352,9 @@ Diese Beans repräsentieren alle Daten die für
 neu transformiert und nach Frames sortiert (siehe Abb. \ref{fig:data_gmm}). Somit repräsentiert ein \acl{GMM} einen Zeitpunkt während der Aufnahme 
 (siehe Abb. \ref{fig:gmm_data}). Die trainierten \acl{GMM}s werden nun für das Training eines \acl{HMM} genutzt. Um beim Trainingsprozess eingreifen zu können
 wurden die \texttt{sklearn}-Klassen erweitert, so entstehen die Klassen \texttt{GestureHMM} und \texttt{GestureGMM}. Dies ist notwendig, da die fertig trainierten
-\acl{GMM}s während des \acl{HMM} Trainings noch einmal verändert werden - was allerdings unerwünscht ist. 
+\acl{GMM}s während des \acl{HMM} Trainings noch einmal verändert werden - was allerdings unerwünscht ist.
+
+Für jede Geste wird ein neues \acl{HMM} mit einem Zustand pro Frame erzeugt. Für jeden Zustand wird ein \acl{GMM} mit 8 Mixturen trainiert.
 
 
 \textbf{Klassifizierung} \\
@@ -372,5 +374,8 @@ eine Geste (Emissionen) erkannt werden soll, ist vom Vorgehen ähnlich. Ein Vort
  Zustand verblieben wird.
 Ein Nachteil dieser Methode ist, dass keine absoluten Klassifizierungen durchgeführt werden können. Es werden nur Wahrscheinlichkeiten für alle möglichen Klasse berechnet. 
 So muss entschieden werden, ob die Wahrscheinlichkeit für eine Klasse hoch genug ist, sodass diese als Geste identifiziert werden kann.
+
+Ganz entscheidend beim Training eines \acl{HMM} war die Daten-Vorverarbeitung und die Liste zuvor trainierter \acl{GMM}. 
+Dies verbesserte und stabilisierte die Ergebnisse deutlich
 
 
