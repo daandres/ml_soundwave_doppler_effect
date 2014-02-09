@@ -39,6 +39,7 @@ class Preprocessor():
         return framesets
 
     def preprocess_frame(self, frame_data):
+        frame = self.slice_frame(frame_data)
         try:
             ''' normalise frame '''
             normalized_data_with_ref_frequency = frame / np.amax(frame)
