@@ -287,17 +287,30 @@ Zunächst ... (Datenaufbereitung)
 Nachdem Einlesen der Eingabedaten wird aus jedem (32, 64) Datensatz ein \texttt{GestureModel} erstellt. Bei der Erstellung werden die Daten direkt wie in \autoref{sect:Trees_Datenaufbereitung} beschrieben gefiltert und geglättet, sowie anschließend transformiert. Ein \texttt{GestureModel} Objekt enthält demnach nur noch eine zweidimensionale Liste der Anzahl an Frequenzpunkten über dem Schwellwert. Des weiteren enthält das \texttt{GestureModel} Objekt einen Merkmalsvektor, welcher einzelne extrahierte Merkmale enthält. Das Modul \textit{Feature.py} stellt einige Funktionen zur Merkmalsextraktion bereit. In Abschnitt~\ref{subsec:featureextraction} sind die erkennbaren Charakteristiken der einzelnen Gesten und auch das Problem der Ähnlichkeit einiger Charakteristiken beschrieben. 
 Der Merkmalsvektor setzt sich folgendermaßen zusammen:
 $$ featureVector = [sl, sr, s, o, c, a, dc, de] $$
-\begin{align*}
- featureVector = [sl, sr, s, o, c, a, dc, de]\\
- && sl &= \text{Anzahl Linksverschiebungen} \\
- && sr &= \text{Anzahl Rechtsverschiebungen} \\
- && s &= \text{Anzahl aller Verschiebungen} \\
- && o &= \text{Reihenfolge der Verschiebungen} \\
- && c &= \text{Anzahl der gleichzeitigen Verschiebungen} \\
- && a &= \text{Differenz der Amplituden} \\
- && dc &= \text{Mittel der Abstände zwischen R-L- oder L-R-Verschiebungen} \\
- && de &= \text{Mittel der Abstände zwischen R-R- oder L-L-Verschiebungen}
-\end{align*}
+
+mit
+
+\begin{itemize}
+\item $sl$: Anzahl Linksverschiebungen
+\item $sr$: Anzahl Rechtsverschiebungen
+\item $s$: Anzahl aller Verschiebungen
+\item $o$: Reihenfolge der Verschiebungen
+\item $c$: Anzahl der gleichzeitigen Verschiebungen
+\item $a$: Differenz der Amplituden
+\item $dc$: Mittel der Abstände zwischen R-L- oder L-R-Verschiebungen
+\item $de$: Mittel der Abstände zwischen R-R- oder L-L-Verschiebungen
+\end{itemize}
+
+%\begin{align*}
+%sl &= \text{Anzahl Linksverschiebungen} \\
+%sr &= \text{Anzahl Rechtsverschiebungen} \\
+%s &= \text{Anzahl aller Verschiebungen} \\
+%o &= \text{Reihenfolge der Verschiebungen} \\
+%c &= \text{Anzahl der gleichzeitigen Verschiebungen} \\
+%a &= \text{Differenz der Amplituden} \\
+%dc &= \text{Mittel der Abstände zwischen R-L- oder L-R-Verschiebungen} \\
+%de &= \text{Mittel der Abstände zwischen R-R- oder L-L-Verschiebungen}
+%\end{align*}
 
 Anzahl der linken Frequenzverschiebungen
 
@@ -313,7 +326,13 @@ Insgesamt ließ sich feststellen, dass die Anzahl der Lernrate in Zusammenhang z
 Je kleiner die Lernrate, desto mehr Schätzer wurden für ein gleichwertiges Ergebnis benötigt. 
 Ohne die Geste \acl{RLO} konnte die Erfolgsrate auf 75\% erhöht werden.
 Das Ergebnis lässt sich dadurch erklären, dass sich die beiden Gesten \acl{RLO} und \acl{SPO} in ihrer Charakteristik sehr ähnlich sind. 
-Auch unter Berücksichtigung der Amplitudenwerte als zusätzliches Entscheidungskriterium konnte die Erfolgsrate bei der Klassifikation aller Gesten nicht wesentlich verbessert werden. 
+Auch unter Berücksichtigung der Amplitudenwerte als zusätzliches Entscheidungskriterium konnte die Erfolgsrate bei der Klassifikation aller Gesten nicht wesentlich verbessert werden. Der Vergleich der Erfolgsrate des GradientBoostingClassifiers bei 4 und 5 Gesten ist in Abbildung~\ref{fig:vgl_gradientboosting} dargestellt. Bei beiden Tests wurde die Lernrate auf 0,2 und die maximale Baumtiefe auf 2 gesetzt, da mit dieser Konfiguration im Schnitt die besten Ergebnisse erzielt werden konnten. 
+
+\begin{figure}[htbp] \centering
+\includegraphics[height=60mm]{trees/vgl_gradientboosting.jpg}
+\caption{Erfolgsrate beim GradientBoostingClassifier für 4 Gesten (rot) und 5 Gesten (blau)}
+\label{fig:vgl_gradientboosting}
+\end{figure}
 
 
 \subsection{Fazit}

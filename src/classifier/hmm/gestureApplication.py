@@ -75,7 +75,8 @@ class HMM(IClassifier):
         ret = []
         for className, dataPath in self.classList:
             obs, test = self.du.loadSplitData(dataPath)
-            ret.append(GestureApplication.scoreClassData(test, className))
+            if np.shape(obs)[0] > 1:
+                ret.append(GestureApplication.scoreClassData(test, className))
         return ret
 
     def load(self, filename=""):
@@ -115,7 +116,7 @@ class GestureApplication():
         if state == 1:
             try:
                 ''' Load HMM Configurationfile to Classifiy '''
-                self.loadModels('classifier/hmm/data/config_1391869940.cfg')
+                self.loadModels('classifier/hmm/data/hmm_config_paul.cfg')
             except Exception:
                 ''' Create HMM Model based on all existing Gesture datasets '''
                 self.trainAndSave()
@@ -126,14 +127,15 @@ class GestureApplication():
     def createGesture(self, gesture, className):
         mu = h.HMM_Util()
         obs, test = self.du.loadSplitData(gesture)
-            
-        gesture = Gesture(className)
-        #print "### building " + str(className) + " ###"
-        #print " training " + str(len(obs)) + ", testing " + str(len(test)) 
-        hmm, logprob = mu.buildModel(obs, test)
-        gesture.setHMM(hmm)
+        if np.shape(obs)[0] > 1:
+            gesture = Gesture(className)
+            print "### building " + str(className) + " ###"
+            print " training " + str(len(obs)) + ", testing " + str(len(test)) 
+            hmm, logprob = mu.buildModel(obs, test)
+            gesture.setHMM(hmm)
         
-        return gesture
+            return gesture
+        return None
         
     def createGestures(self, classList):
         ''' classList = [1, 2, 3] '''
@@ -141,7 +143,8 @@ class GestureApplication():
         for g in classList:
             className = GESTURE_PREFIX + str(g)
             gesture = self.createGesture(g, className)
-            self.gestures[g] = gesture
+            if gesture != None:
+                self.gestures[g] = gesture
 
     def scoreData(self, data):
         
@@ -220,7 +223,7 @@ class GestureApplication():
             self.gestures[i] = (gesture)
 
     def trainAndSave(self):
-        print "#### START ####"
+        print "hmm: start training"
         classList = c.classList
         
         self.createGestures(classList)
@@ -229,13 +232,13 @@ class GestureApplication():
             # score it
             className = GESTURE_PREFIX + str(classNum)
             obs, test = self.du.loadSplitData(classNum)
-            scores, accuracy, className = self.scoreClassData(test, className)
-
-            print className, accuracy, scores
+            if np.shape(obs)[0] > 1 :
+                scores, accuracy, className = self.scoreClassData(test, className)
+                print className, accuracy, scores
         
         timestamp = str(int(time.time()))
         self.saveModels('classifier/hmm/data/config_' + timestamp +'.cfg', '0, 1, 2, 3, 4, 5, 6, 7')
-        print "#### END ####"
+        print "hmm: training finished"
 
 
 

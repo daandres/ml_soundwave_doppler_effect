@@ -9,6 +9,7 @@ from pybrain.supervised.trainers import RPropMinusTrainer, BackpropTrainer
 from pybrain.optimization import GA, HillClimber, MemeticSearch, NelderMead, CMAES, OriginalNES, ES, MultiObjectiveGA
 import numpy as np
 from gestureFileIO import GestureFileIO
+import properties.config as c
 import time
 '''
 saves network to file. If no name is provided current timestamp is used
@@ -86,7 +87,8 @@ Loads data from sample files, preprocesses data and creates a PyBrain DataSet
 '''
 def createPyBrainDatasetFromSamples(classes, outputs, relative="", average="false", merge67="false", cut=0, fold=1):
     def __loadDataFromFile(merge67="false"):
-        g = GestureFileIO(relative=relative)
+        gesturepath = c.getInstance().getPathsConfig()['gesturepath']
+        g = GestureFileIO(gesturePath=gesturepath, relative=relative)
         data = [0] * nClasses
         getData = None
         if(average == "false"):
@@ -185,8 +187,22 @@ Calculates average frequency
 avg = None
 def getAverage(cut, fold):
     global avg
+    #the avg from all gestures isn't correct anymore -> hardcoded avg
+    avg = [ 0.01405917,  0.01451394,  0.01501277,  0.01552741,  0.01608232,  0.0166838,
+  0.017318,    0.01801043,  0.01876477,  0.01958107,  0.02046903,  0.02144034,
+  0.02251206,  0.02370547,  0.02503494,  0.02651884,  0.02819135,  0.03008983,
+  0.03227148,  0.03479038,  0.03773177,  0.04122532,  0.04543961,  0.05061085,
+  0.05710018,  0.06553213,  0.07690142,  0.09310018,  0.11811639,  0.16215195,
+  0.26233294,  0.83321468,  0.99991455,  0.4672319,   0.2171238,   0.1442126,
+  0.10842227,  0.08702495,  0.07270665,  0.06246511,  0.0547552,   0.04876873,
+  0.04395861,  0.03999377,  0.03669765,  0.03390901,  0.03149998,  0.02941618,
+  0.02760306,  0.02599722,  0.02456548,  0.02327461,  0.02212122,  0.02108119,
+  0.02013257,  0.01926706,  0.01846762,  0.01773872,  0.01707368,  0.01645111,
+  0.01586561,  0.0153235,   0.01481276,  0.01433922]
+
     if avg == None:
-        g = GestureFileIO()
+        gesturepath = c.getInstance().getPathsConfig()['gesturepath']
+        g = GestureFileIO(gesturePath=gesturepath)
         avg = g.getAvgFrequency()
         avg = preprocessFrame(avg, cut, fold)
     return avg

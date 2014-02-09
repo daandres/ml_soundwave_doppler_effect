@@ -173,8 +173,7 @@ Insgesamt reduziert sich somit die Anzahl der Dimensionen pro Geste nach dem vol
 %TODO wie oft, welche Dimension am Schluss?
 %TODO Wert Margin?
 
-Es zeigte sich, dass die Geste \ac{OT} nach der Datenaufbereitung nicht zuverlässig von den übrigen Gesten unterscheiden lässt. Aus diesem Grund wird die Klassifizierung dieser Geste nicht weiter verfolgt. Zusätzlich kann jedoch eine Bewegung von unten nach oben (Bottom-To-Top-One-Hand, im Folgenden kurz BTO) erkannt werden, die daher bei der weiteren Klassifikation ebenfalls berücksichtigt wird. Insgesamt werden vom Klassifikator die Gesten \ac{TBO}, BTO, \ac{SPO}, \ac{DPO} sowie das Hintergrundrauschen (\ac{BNS} und \ac{BNN}) unterstützt.
-
+Es zeigte sich, dass die Geste \ac{OT} nach der Datenaufbereitung nicht zuverlässig von den übrigen Gesten unterscheiden lässt. Aus diesem Grund wird die Klassifizierung dieser Geste nicht weiter verfolgt. Zusätzlich kann jedoch eine Bewegung von unten nach oben (Bottom-To-Top-One-Hand, im Folgenden kurz BTO) erkannt werden, die daher bei der weiteren Klassifikation ebenfalls berücksichtigt wird. Insgesamt werden vom Klassifikator die Gesten \ac{TBO}, BTO, \ac{SPO}, \ac{DPO} sowie das Hintergrundrauschen (\ac{BNS} und \ac{BNN}) unterstützt. Die beiden Klassen für das Hintergrundrauschen werden dabei zu einer Klasse zusammengefasst, es wird also nicht lauter und leiser Umgebung unterschieden. Es existiert also nur eine Klasse für alle Aufnahmen, die keiner Geste entsprechen.
 
 \subsubsection{Anpassung des Klassifikators}
 Der Klassifikator wurde nur geringfügig angepasst.
@@ -182,7 +181,9 @@ In der Initialisierungsphase werden die Startpunkte der Cluster-Zentren nicht wi
 Dadurch ergeben sich in der Regel eine schnellere Laufzeit in der Trainingsphase sowie bessere Ergebnisse bei der Klassifikation.
 Weiterhin gilt eine Geste als nicht eindeutig bestimmt, wenn der Abstand zum zweitnächsten Cluster-Zentrum nicht mindestens um einen bestimmten Prozentsatz $p$ größer ist als der Abstand zum nächsten Zentrum. Es hat sich dabei herausgestellt, dass 10\% ein geeigneter Wert für $p$ ist.
 
-Zur Klassifikation werden die Gesten in zwei Gruppen eingeteilt. 
+Zur Bestimmung der Geste werden zwei verschiedene k-Means Klassifikatoren verwendet. Zu Beginn entscheidet der erste Klassifikator, ob es sich um die Geste \ac{SPO}, die Geste \ac{DPO} oder eine der anderen Gesten handelt.
+%eine der Gesten \ac{SPO} oder \ac{DPO} handelt.
+Falls weder die Geste \ac{SPO} noch die Geste \ac{DPO} erkannt wird, unterscheidet der zweite Klassifikator, ob es sich um die Geste \ac{TBO}, die Geste BTO oder das Hintergrundrauschen handelt. 
 
 %TODO Prozentsatz??
 
@@ -243,21 +244,42 @@ Die Implementierung erfolgt in der Programmiersprache Python unter Verwendung de
 Einstellungen vorgenommen werden, um den Klassifikator für den jeweiligen Anwendungsfall  zu optimieren. Dazu gehört beispielsweise eine Beschränkung der Iterationen beim Lernen auf einen bestimmten Maximalwert.
 Die Komplexität im ungünstigsten Fall liegt bei $O(n^{(k+2)/p})$ \cite{sklearn.kmeans, kMeansHowSlow}, wobei $n$ der Anzahl der Trainingsdaten und $p$ der Anzahl der Dimensionen entspricht.
 
+Das entwickelte Klassifikationssystem ist in das in \autoref{sec:app} beschriebene Rahmenprogramm eingebettet. Nach dem Öffnen der grafischen Benutzeroberfläche können die -- in Form von Cluster-Zentren gespeicherten --  Einstellungen zur Klassifikation geladen werden. Ein Training des Klassifikators ist im Experten-Modus möglich, der über den zweiten Tab der GUI aufgerufen werden kann. Die vier unterstützten Gesten sind an Windows-Tastaturkommandos gebunden, sodass nach dem Ausführen einer Geste das in \autoref{tab:kMeansKeyGestures} angegebene Tastaturkommando angestoßen wird.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{0.17\textwidth}|c|}
+\hline
+ \textbf{Geste} & \textbf{Tastaturkommando} \\
+ \hline
+  \ac{TBO} & XX \\
+ \hline
+  BTO & XX \\
+ \hline
+  \ac{SPO} & XX \\
+ \hline
+  \ac{DPO} & XX \\
+ \hline
+\end{tabular}
+\caption[Tastaturkommandos, die den Gesten zugeordnet sind]{Tastaturkommandos, die den Gesten zugeordnet sind}
+\label{tab:kMeansKeyGestures}
+\end{table}
+
+
+
 \subsubsection{Evaluation}
-%Da die Gesten ... nicht unterstützt werden, sind bei der Evaluation nur die Gesten
-Nicht vom Klassifikator unterstützt und daher nicht bei der Evaluation berücksichtigt werden die Gesten ... Zum Testen der Erkennungsrate wurden die übrigen Gesten sowie die eigene Geste ... jeweils XX mal ausgeführt. Die Ergebnisse der Klassifikation sind in  \autoref{matrix_kMeansEvaluation} als Wahrheitsmatrix dargestellt. Die Reihenfolge der Gesten ist dabei (von links nach rechts beziehungsweise von oben nach unten) ... (...)
+
+Nicht vom Klassifikator unterstützt und daher nicht bei der Evaluation berücksichtigt werden die Gesten \ac{RLO}, \ac{OT} und \ac{RO}. Zum Testen der Erkennungsrate wurden die übrigen Gesten sowie die eigene Geste BTO jeweils XX mal ausgeführt. Die Ergebnisse der Klassifikation sind in  \autoref{matrix_kMeansEvaluation} als Wahrheitsmatrix dargestellt. Die Reihenfolge der Gesten ist dabei (von links nach rechts beziehungsweise von oben nach unten) \ac{TBO}, BTO, \ac{SPO}, \ac{DPO} und das Grundrauschen.
 
 \begin{center}
 \begin{equation}
 \label{matrix_kMeansEvaluation}
 \begin{pmatrix}
-0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0
 \end{pmatrix}
 \end{equation}
 \end{center}
@@ -269,17 +291,15 @@ Nicht vom Klassifikator unterstützt und daher nicht bei der Evaluation berücks
 \hline
  \textbf{Geste} & \textbf{Erkennungsrate} \\
  \hline
-  \ac{TBO} &xx,xx \% \\
+  \ac{TBO} & XX \% \\
  \hline
-  \ac{OT} &xx,xx \% \\
+  BTO & XX \% \\
  \hline
-  \ac{SPO} &xx,xx \% \\
+  \ac{SPO} & XX \% \\
  \hline
-  \ac{DPO} &xx,xx \% \\
+  DPO & XX \% \\
  \hline
- XXX (eigene Geste) &xx,xx \% \\
- \hline
-  \ac{BNS} \& \ac{BNN} (Hintergrund\-rauschen) &xx,xx \%\\
+  \ac{BNS} \& \ac{BNN} (Hintergrund\-rauschen) & XX \%\\
  \hline
 \end{tabular}
 \caption[Erkennungsraten beim k-Means Klassifikator]{Erkennungsraten beim k-Means Klassifikator}
@@ -288,15 +308,16 @@ Nicht vom Klassifikator unterstützt und daher nicht bei der Evaluation berücks
 
 Bei welchen Parameter-Werten werden die besten Ergebnisse erzielt?
 %Stark von Hardware abhängig
-
+%TODO Ziel erreicht Grundrauschen nicht als Geste? Was ist beim Tippen? ggf Ref Microsoft Paper
 %Geschwindigkeit, Training VS Erkennung
 
 \subsection{Fazit}
 %Wie gut funktioniert die Erkennung? Welche Gesten werden gut, welche schlecht erkannt? Ausblick auf potentielle weiterführende Arbeiten.
 
-Mit dem implementierten k-Means Klassifikationssystem können die Gesten ... in Echtzeit erkannt und voneinander unterschieden werden.
-Die Geste ... wird nicht vom Klassifikator unterstützt, da sie sich nicht deutlich genug von der Geste .. unterscheidet. Weiterhin kann die Geste .. nicht erkannt werden, da sie keine erkennbaren Unterschiede zum Grundrauschen aufweist. Als zusätzliche Geste wird die Bewegung einer Hand von unten nach oben unterstützt.
-Am besten erkannt werden die Gesten ... mit einer Erkennungsrate von ... beziehungsweise .. Prozent. Weniger gut erkannt werden die Gesten ... (.. Prozent) und .. (.. Prozent). 
+Mit dem implementierten k-Means Klassifikationssystem können die Gesten \ac{TBO}, BTO, \ac{SPO} und \ac{DPO} in Echtzeit erkannt und voneinander unterschieden werden.
+%Die Geste \ac{RLO} wird nicht vom Klassifikator unterstützt, da sie sich nicht deutlich genug von der Geste \ac{SPO} unterscheidet. Weiterhin kann die Geste \ac{RO} nicht erkannt werden, da sie keine erkennbaren Unterschiede zum Grundrauschen aufweist.
+Nicht bei der Klassifikation berücksichtigt wurden die Gesten \ac{RLO}, \ac{OT} und \ac{RO}. Als zusätzliche Geste wird die Bewegung einer Hand von unten nach oben (BTO) unterstützt.
+Am besten erkannt werden die Gesten XX mit einer Erkennungsrate von XX beziehungsweise XX Prozent. Weniger gut erkannt werden die Gesten XX (XX Prozent) und XX (XX Prozent). 
 
 Insgesamt liefert der Klassifikator gute Ergebnisse, eine weitere Optimierung der Erkennungsrate ist jedoch 
 für den praktischen Einsatz wünschenswert.
@@ -306,5 +327,5 @@ Nicht betrachtet wurde die Möglichkeit, neben den vorgegebenen Gesten eigene Ge
 
 % Wie viel Einfluss hat die Hardware? Wie mit schwierigen Hardwarebedingungen wie Lausprecher nach unten umgehen?
 % Weitere, nicht fest vorgegebene Gesten
-% Möglichkeit, die sehr ähnlichen Gesten XXX und XXX zu unterscheiden?
+% Möglichkeit, die sehr ähnlichen Gesten und zu unterscheiden?
 % Verbesserung der Erkennung durch Verwendung von mehreren Klassifikatoren bzw. weiterer Eingaben (wie Kamera)

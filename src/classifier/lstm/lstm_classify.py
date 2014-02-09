@@ -2,6 +2,7 @@ import classifier.lstm.util as util
 import numpy as np
 from scipy import stats as stats
 import properties.config as c
+import operator
 
 '''
 LSTMCLassify class provides different methods for live/online classification with the LSTM Module. 
@@ -17,16 +18,20 @@ class LSTMClassify():
         self.datalist = []
         self.datanum = 0
         self.has32 = False
+
+        # Classify2
         self.previouspredict = 6
         self.predcounter = 0
         self.predHistSize = 8
         self.predHistHalfUpper = 5
+        self.predcountertreshold = 5
         self.predHistory = util.createArraySix(self.predHistSize,)
 
         # Classify3 method
-        self.predhistoryforclassify3 = []
+        self.predhistoryforclassify3 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+        self.classify3start = False
 
-        # classify4
+        # classify4 & 5
         self.start = 0
         self.buffer = []
         self.liveData = []
@@ -34,6 +39,8 @@ class LSTMClassify():
         self.beginMax = 0
         self.maxValue = 0
         self.maxValueList = []
+
+        # For interacting with OS
         self.outkeys = None
         if(c.getInstance().getOSConfig()['type'] == "posix"):
             from systemkeys import SystemKeys
@@ -47,7 +54,11 @@ class LSTMClassify():
         preprocessedData = data / np.amax(data)
         preprocessedData = util.preprocessFrame(preprocessedData, self.net.datacut, self.net.datafold)
         # diffAvgData = preprocessedData - self.avg
-        self.__classify5(preprocessedData)
+        out = self.__classify3(preprocessedData)
+        if(out != -1):
+            print("Gesture " + str(out) + " detected")
+            if(self.outkeys != None):
+                self.outkeys.outForClass(out)
 
     '''
     Gesten werden starr nach 32 frames erkannt
@@ -59,7 +70,6 @@ class LSTMClassify():
         if(self.datanum % 32 == 0):
             self.net.reset()
             out = self.net._activateSequence(self.datalist)
-            print(str(out))
             self.datalist = []
             self.datanum = 0
             return out
@@ -81,53 +91,53 @@ class LSTMClassify():
         if(self.datanum % 32 == 0):
             self.has32 = True
         if(self.has32):
+            # Activate for 32 Frames
             self.net.reset()
             Y_pred = self.net._activateSequence(self.datalist)
             del self.datalist[0]
+
+            # Save network output in list
             self.predHistory[0] = Y_pred
             self.predHistory = np.roll(self.predHistory, -1)
+
+            # Get Mode of list
             expected = stats.mode(self.predHistory, 0)
+
+            # Check if Mode count is greater than self.predHistHalfUpper
             if(expected[1][0] >= self.predHistHalfUpper):
+                # If current mode is not the most one, change it and reset counter
                 if(int(expected[0][0]) != self.previouspredict):
-                    oldPrevious, oldPredCounter = self.previouspredict, self.previouspredict
                     self.previouspredict = int(expected[0][0])
                     self.predcounter = 1
-                    return oldPrevious, oldPredCounter
+                # else increase counter and return class if counter is greater then
                 else:
                     self.predcounter += 1
-                    if(self.predcounter == 4):
-                        print(str(self.previouspredict))
-                        if(self.outkeys != None):
-                            self.outkeys.outForClass(self.previouspredict)
-                    return self.previouspredict, self.predcounter
-        return -1, -1
+                    if((self.predcounter == self.predcountertreshold)):
+                        return self.previouspredict
+        return -1
 
 
     '''
     Gesten werden innerhalb von der Geste 6 gesucht
-    TODO not finished yet
     '''
     def __classify3(self, data):
-        data = data - self.avg
-        pred, predcounter = self.__classifiy2(data)
-        if(pred != -1 and predcounter >= 4):
-            try:
-                prevpred, prevpredcounter = self.predhistoryforclassify3.pop()
-                if(prevpred != pred):
-                    self.predhistoryforclassify3.append([prevpred, prevpredcounter])
-            except IndexError:
-                pass
-            self.predhistoryforclassify3.append([pred, predcounter])
-            if(pred == 6 and len(self.predhistoryforclassify3) <= 1):
-                pass
-            else:
-                classes = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
-                for pred, count in self.predhistoryforclassify3:
-                    classes[pred] += count
-                classes.pop(6)
-                classifiedclass = stats.mode(np.asarray(classes.values()), 0)
-                print(str(classifiedclass))
+        pred = self.__classify2(data)
+        if(pred == 6):
+            # check for most classified class
+            if(not self.classify3start):
+                self.classify3start = True
+                return -1
+            print self.predhistoryforclassify3
+            highestkey = 6
+            highestkey = max(self.predhistoryforclassify3.iteritems(), key=operator.itemgetter(1))[0]
+            self.predhistoryforclassify3 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+            return highestkey
 
+        if(self.classify3start):
+            if(pred != -1 and self.predcounter >= 4):
+                self.predhistoryforclassify3[pred] += self.predcounter
+
+        return -1
 
     '''
     Gesten werden anhand eines erkannten Starttresholds erkannt
@@ -152,20 +162,20 @@ class LSTMClassify():
                         self.maxValue = a
                 print self.maxValue
                 # maxValue ein bischen erhohen (steuert empfindlichkeit der erkennung)
-                self.maxValue = self.maxValue + 0.0001
+                self.maxValue = self.maxValue + 0.05
                 self.beginMax = 0
         else:
             data = data - self.avg
             # print data.max()
             if data.max() > self.maxValue and self.start == 0:
-                print "starting ..."
+                #print "starting ..."
                 self.start = 1
 
             if self.start:
                 self.datalist.append(data)
                 self.datanum += 1
                 if(self.datanum % 32 == 0):
-                    print "net ac"
+                    #print "net ac"
                     self.net.reset()
                     out = self.net._activateSequence(self.datalist)
                     print(str(out))
@@ -199,7 +209,7 @@ class LSTMClassify():
                         self.maxValue = a
                 print self.maxValue
                 # maxValue ein bischen erhohen (steuert empfindlichkeit der erkennung)
-                self.maxValue = self.maxValue + 0.005
+                self.maxValue = self.maxValue + 0.05
                 self.beginMax = 0
         else:
             data = data - self.avg
@@ -210,15 +220,15 @@ class LSTMClassify():
                 self.buffer.pop(0)
                 self.buffer.append(data)
             if data.max() > self.maxValue and self.start == 0:
-                print "starting ..."
+                #print "starting ..."
                 self.start = 1
 
             if self.start:
                 self.datalist.append(data)
                 if(self.datalist.__len__() + self.buffer.__len__()) % 32 == 0:
-                    print "net ac"
-                    print "buffer: " + str(self.buffer.__len__())
-                    print "list: " + str(self.datalist.__len__())
+                    #print "net ac"
+                    #print "buffer: " + str(self.buffer.__len__())
+                    #print "list: " + str(self.datalist.__len__())
                     self.net.reset()
                     out = self.net._activateSequence(self.datalist)
                     print(str(out))

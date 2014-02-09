@@ -20,13 +20,13 @@ Er führte eine statistische Analyse der Buchstabenfolge des Textes ``Eugen Oneg
 Pushkin.
 
 Eine \acl{MK} beschreibt einen zeit-diskreten Prozess \((X_t)_{t\in\mathbb{N}_0}\) mit einem abzählbaren Zustandsraum \(S\) \cite{stochMod}.
-Da die Verteilung der Zufallsvariable \( S(t)\) nur von den vergangenen Zuständen abhängt gilt sie als kausal. \cite[48]{mmmFink}
+Weiterhin wird sie als stationär bezeichnet, wenn alle Wahrscheinlichkeiten unabhängig von der Zeit sind.
+Da die Verteilung der Zufallsvariable \( S(t)\) nur von den vergangenen Zuständen abhängt, gilt eine \acl{MK} als kausal \cite[48]{mmmFink}.
 Für eine Markov-Kette 1. Ordnung gilt die Markov Eigenschaft, dann wird sie auch als ``einfach'' bezeichnet: \\
 \( \forall t \in \mathbb{N} : P (X_{t+1} = s_{t+1} | X_0 = s_0, \ldots , X_{t-1} = s_{t-1}, X_{t} = s_{t}) = P ( X_{t+1} = s_{t+1} | X_{t} = s_{t} ) \) \\
 Dies beschreibt die Gedächtnislosigkeit des Prozesses und bedeutet, dass der nächste Zustand nur vom direkten Vorgänger abhängt.
-Weiterhin wird eine \acl{MK} als stationär bezeichnet, wenn alle Wahrscheinlichkeiten unabhängig von der Zeit sind.
 
-Als Übergangswahrscheinlichkeit bezeichnte man die bedingte Wahrscheinlichkeit \(P ( X_{t+1} = s_{t+1} | X_{t} = s_{t} ) \), dass auf 
+Als Übergangswahrscheinlichkeit bezeichnte man die bedingte Wahrscheinlichkeit \(P ( X_{t+1} = s_{t+1} | X_{t} = s_{t} ) \), sodass auf 
 \( s_{n}\) der Nachfolgezustand \( s_{n+1}\) folgt. Diese Wahrscheinlichkeiten werden üblicherweise zu einer Übergangsmatrix zusammengefasst: \\
 \( A = [a_{ij}] = [ P (X_t = j) | P (X_{t-1} = i) ] \)
 \( \forall i, j \in S, \sum_{j \in S} p_{ij} = 1 \) \\
@@ -34,20 +34,13 @@ Weiterhin benötigt der Prozess einen Vektor für den Anfangzustand \( t = 0 \):
 \( \Pi = [ \pi_i] = [ P (X_0 = i) ] , i \in S \)
 
 So lässt sich eine Markov-Kette durch Zustandsraum \(S\), den Übergangsmatrix \( A \) und einen Anfangszustand \( \Pi \) definieren.
-Veranschaulichen lässt sich eine Markov Kette als gerichtetes Zustandsdiagramm (Abb. \ref{fig:simple_mc})
+Veranschaulichen lässt sich eine Markov Kette als gerichtetes Zustandsdiagramm (Abb. \ref{fig:simple_mc}) mit den Zuständen \(S\) und 
+mit den Übergangswahrscheinlichkeiten \(X_i\) an den Kanten
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.33\textwidth]{markov/simple_mc.png}
     \caption{Einfaches Zustandsdiagramm einer \acl{MK} (de.wikipedia.org/wiki/Markow-Kette)}
     \label{fig:simple_mc}
 \end{figure}
-
-
-
-Eine \acl{MK} ist eine Sequenz von Zufallsvariablen \( X_1, x_2, X_3, \ldots\) und beschreibt einen speziellen stochastischen Prozess, 
-der aufgrund der Vorgeschichte, Aussagen über die Zukunft machen kann. 
-Eine \acl{MK} kann als Gerichteter Graph mit Zuständen \(S\) und mit Übergangswahrscheinlichkeiten \(X_i\) an den Kanten beschrieben werden. 
-
-Sie ist definiert durch eine endlich Menge an Zuständen \( S = \{ s | 1 <= s <= N \} \) und der diskreten Zeit \( t = 0, 1, 2, \ldots \) \\
 
 
   %%%%%%%%%%%%%%%%%%
@@ -117,22 +110,13 @@ ist es notwendig die aufgenommenen Daten auzubereiten, dies ist Thema des nächs
   %  PREPROCESSING  % 
   %%%%%%%%%%%%%%%%%%%
 \subsection{Datenaufbereitung} \label{sec:preproc}
+Ziel der Vorverarbeitung ist es die Daten zu normieren und die Datenmenge zu reduzieren, um das Trainingergebnis bzw. Performance zu verbessern.
+Weiterhin werden relevante Werte bzw. Werte mit hohem Informationsgehalt einer Geste aus der Aufnahme vertärkt. \\
+
+
+\textbf{Rohdaten} \\
 Eine Aufnahme wird beschrieben durch ein zwei-dimensionales Array aus 32 Frames mit jeweils 64 Frequenzwerten.
-Im Ruhezustand bildet sich ein Signalpeak um die ausgesendete Frequenz (18.500hz).
-Ziel ist es die Daten zu normieren und die Datenmenge zu reduzieren, um das Trainingergebnis bzw. Performance zu verbessern.
-Weiterhin wird versucht die relevanten Werte einer Geste aus der Aufnahme zu extrahieren.
-
-Da sich Änderungen durch eine Bewegung sehr Nahe am gesendeten Signal liegen, werden die Daten im 
-Frequenzbereich von 18.000hz bis 19.000hz betrachtet, die Daten vermindern sich von 64 auf 13 Werte. 
-Dazu wird jede Geste auf einem Intervall von 0 bis 1 normalisiert (Geteilt durch den jeweiligen Maximalwert) und 
-auf zwei Nachkommstellen gerundet. 
-Alle Werte unterhalb eines Schwellwerts (0.1) werden zudem abgeschnitten, um niedrig amplitudiges Rauschen zu vermindern. 
-So wird im Idealfall nur das gesendete Signal und Frequenzänderungen durch eine Geste dargestellt.
-
-Wichtig ist nun den Beginn und das Ende einer Geste zu finden. Hierzu werden pro Frame alle Werte addiert 
-und das Maximum als Mittelpunkt der Geste genutzt. Von diesem Gestenhöhepunkt werden jeweils 6 Frames davor und danach mitgenutzt.
-
-So wird aus einem 32 x 64 Array pro Geste ein 13x13 Array.
+Im Ruhezustand bildet sich ein Normalsignal mit einem Peak um die ausgesendete Frequenz (18.500hz, siehe Abb. \ref{fig:data_raw}).
 
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.4\textwidth]{markov/data_raw.png}
@@ -140,11 +124,36 @@ So wird aus einem 32 x 64 Array pro Geste ein 13x13 Array.
     \label{fig:data_raw}
 \end{figure}
 
+\\
+\textbf{Verarbeitung}\\
+Da sich Änderungen durch eine Bewegung sehr Nahe am Normalignal liegen, werden die Daten im 
+Frequenzbereich von 18.000hz bis 19.000hz betrachtet, die Daten vermindern sich von 64 auf 16 Werte pro Frame. 
+Dazu wird jede Geste auf einem Intervall von 0 bis 1 normalisiert (Geteilt durch den jeweiligen Maximalwert der Geste) und 
+auf zwei Nachkommstellen gerundet. 
+Alle Werte unterhalb eines Schwellwerts (0.15) werden zudem abgeschnitten, um niedrig amplitudiges Rauschen zu vermindern. 
+So wird im Idealfall nur das gesendete Signal und Frequenzänderungen durch eine Bewegung dargestellt.
+
+Das Normalsignal mit einer hohen Amplitude (Normalisiert im Bereich zwischen 0.8 und 1.0) birgt einen geringen Informationsgehalt, 
+eine Frequenzverschiebung durch eine Geste ist deutlich interessanter, jedoch schwächer in der Amplitude (Zwischen 0.15 und 0.5).
+Darum wird werden niedrige Amplitudenwerte \( x \) verstärkt und hohe abgeschwächt. Folgende Funktion wird auf alle Werte angewendet: \\
+\( f(x) = 2.8 \cdot ( x - 1.15 )^2 + 0.75 \) (Verlauf siehe Abb. \ref{fig:funktion})
+\begin{figure}[htbp] \centering
+    \includegraphics[width=0.4\textwidth]{markov/funktion.png}
+    \caption{Kubische Parabel zur Verstärkung / Abschwächung der Amplitude}
+    \label{fig:funktion}
+\end{figure}
+
+Nach der Vorverarbeitung sind die Frequenzbereiche links und rechts neben dem Normalsignal deutlicher herausgearbeitet (Siehe Abb. \ref{fig:data_preproc}).  
+
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.4\textwidth]{markov/data_preproc.png}
     \caption{Daten nach der Vorverarbeitung (\acl{RLO} Geste)}
     \label{fig:data_preproc}
 \end{figure}
+
+\\
+\textbf{\acl{GMM}} \\
+Aus den Vorverarbeiteten Daten werden Gauß’sche Mixtur Modelle berrechnet
 
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.4\textwidth]{markov/data_gmm.png}
