@@ -1,4 +1,4 @@
-﻿\section{\acl{HMM}}
+﻿﻿\section{\acl{HMM}}
 \label{mainsec:hmm}
 \textit{Paul Pasler, Sebastian Rieder}
 
@@ -17,7 +17,7 @@ Grundlage des \acl{HMM} war die vom russischen Mathematiker Andrej Andrejewitsch
 (1856 - 1922, siehe \cite{markov1913}) entwickelte \acl{MK}. Zu Beginn des
 20. Jahrhunderts beschäftigte er sich als erster mit einer statistischen Beschreibung von Zustands- und Symbolfolgen. 
 Er führte eine statistische Analyse der Buchstabenfolge des Textes ``Eugen Onegin'' von Alexander 
-Pushkin.
+Pushkin durch.
 
 Eine \acl{MK} beschreibt einen zeit-diskreten Prozess \((X_t)_{t\in\mathbb{N}_0}\) mit  \(m\) abzählbaren Zuständen \(S\) \cite{stochMod}.
 Weiterhin wird sie als stationär bezeichnet, wenn alle Wahrscheinlichkeiten unabhängig von der Zeit sind.
@@ -59,7 +59,7 @@ Die Wahrscheinlichkeit für \( k \)-Schritte lässt sich so ausrechnen:
 Im folgenden Beispiel soll aufgrund des aktuellen Wetters auf das Wetter der folgenden Tage geschlossen werden.
 Das Wetter kann entweder ``sunny'' oder ``rainy'' sein, zu Beginn (Tag 0, \( t = 0 \)) des Experiments ist es ``sunny''.
 Die Wahrscheinlichkeit, dass auf ``sunny'' wieder ``sunny'' folgt, liegt bei 90\% (``rainy'' = 1 - ``sunny'' = 10\%). 
-Nach ``rainy'' liegt die Wahrscheinlichkeit jeweils bei 50\%.  
+Nach ``rainy'' liegt die Wahrscheinlichkeit jeweils bei 50\% (siehe Abb. \ref{fig:simple_mc_example}).  
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.5\textwidth]{markov/simple_mc_example.png}
     \caption{ Gerichteter Zustandsgraph der modellierten Wetter-\acl{MK} }
@@ -67,7 +67,7 @@ Nach ``rainy'' liegt die Wahrscheinlichkeit jeweils bei 50\%.
 \end{figure}
 
 
-\[ Zust\ddot{a}nde: S = [``sonnig'', ``regnerisch''] \]
+\[ Zust\ddot{a}nde: S = [``sunny'', ``rainy''] \]
 \[ Anfangszustand:  \Pi = X_0 = [1 , 0] \]
 \[\ddot{U}bergangsmatrix: A = \begin {bmatrix} 0.9&0.1\\0.5&0.5 \end {bmatrix}
 \]
@@ -106,7 +106,7 @@ Folge von Emissionen wird auch Observationsfolge genannt.
 
 Abbildung \ref{fig:hmm_example} soll ein \acl{HMM} an dem Beispiel des
 Gefangenen im Verlies darstellen\footnote{Quelle:
-\url{http://de.wikipedia.org/wiki/Hidden_Markov_Model}}.Ein Gefangener im
+\url{http://de.wikipedia.org/wiki/Hidden_Markov_Model}}. Ein Gefangener im
 Kerkerverlies möchte das aktuelle Wetter herausfinden. Er weiß, dass auf einen
 sonnigen Tag zu 70 \% ein Regentag folgt und dass auf einen Regentag zu 50 \%
 ein Sonnentag folgt. Weiß er zusätzlich, dass die Schuhe der Wärter bei Regen zu
@@ -115,7 +115,7 @@ durch Beobachtung der Wärterschuhe Rückschlüsse über das Wetter ziehen (das
 heißt, er kann die Wahrscheinlichkeit für Regenwetter gegenüber sonnigem Wetter
 abschätzen). Sonne und Regen sind in diesem Fall die versteckten Zustände. Die
 Emissionen bzw. die Observation die der Gefangene machen kann sind nur der
-Verschmutzheitsgrad der Schuhe der Wärter.
+Verschmutzungsgrad der Schuhe der Wärter.
 
 Das \acl{HMM} wird definiert durch \cite[68]{mmmFink}:\\ 
 \( \lambda = (S;V;A;B;\pi)\)
@@ -124,7 +124,7 @@ Das \acl{HMM} wird definiert durch \cite[68]{mmmFink}:\\
            \( S = \{ s | 1 <= s <= N \} \)
      \item Alphabeth der Emissionen \\
            \( V = \{ v | 1 <= v <= M \} \)
-     \item Matrix der Zustandsübergangswahrscheinlichkeiten \\
+     \item Matrix der Zustandsübergangs-wahrscheinlichkeiten \\
            \( A = \{ a_{ij} | a_{ij} = P(S_t = j | S_{t-1} = i) \} \)
      \item Matrix der Emissionsverteilung \\
            \( B = \{ b_{jk} | b_{jk} = P(O_t = o_k | S_t = j) \} \) bzw. \( B =
@@ -175,7 +175,7 @@ Das Konzept des \acl{HMM} kann laut \cite{rabiner} in drei Problemstellungen ein
 \\
 \textbf{Evaluierung} \\
 In der Evaluierung soll die Wahrscheinlichkeit bestimmt werden mit der eine
-betrachtete Observationsfolge in einer beliebiger Zustandsfolge von einem
+betrachtete Observationsfolge in einer beliebigen Zustandsfolge von einem
 gegebenen \acl{HMM} \(\lambda\) generiert wird. Diese Wahrscheinlichkeit wird
 Produktionswahrscheinlichkeit genannt. Diese wird mit dem Forward-Algorithmus
 berechnet. Der Algorithmus nutzt hierfür die geltende Markov Eigenschaft
@@ -237,6 +237,7 @@ Vorgängerzuständen vorliegenden Wahrscheinlichkeiten gebildet.
 Mit \(\phi_{t}(j)\) wird ein ``Rückwärtszeiger'' definiert der für jedes
 entsprechende \(\delta_{t}(j)\) entlang der partiellen Pfade den jeweils
 optimalen Vorgängerzustand speichert.\\
+
 \textbf{Training} \\
 Je nach Problemstellung müssen unterschiedliche Modelle eines HMM's gewählt
 werden. Es ist bisher kein Verfahren bekannt das aufgrund einer Stichprobe ein
@@ -280,8 +281,8 @@ Im Ruhezustand bildet sich ein Normalsignal mit einem Peak um die ausgesendete F
 \end{figure}
 
 \textbf{Verarbeitung}\\
-Da die Änderungen durch eine Bewegung sehr Nahe am Normalignal liegen, werden nur die Daten im 
-Frequenzbereich von ca. 18.300hz bis 18.700hz betrachtet. Dadurch vermindert sich die Datenmenge von 64 auf 16 Werte pro Frame. 
+Da die Änderungen durch eine Bewegung sehr Nahe am Normalsignal liegen, werden
+nur die Daten im Frequenzbereich von ca. 18.300hz bis 18.700hz betrachtet. Dadurch vermindert sich die Datenmenge von 64 auf 16 Werte pro Frame. 
 Danach wird jede Geste auf ein Intervall von 0 bis 1 normalisiert (Geteilt durch den jeweiligen Maximalwert der Geste) und 
 auf zwei Nachkommstellen gerundet. 
 Alle Werte unterhalb eines Schwellwerts (0.15) werden zudem abgeschnitten, um niedrig amplitudiges Rauschen zu vermindern. 
@@ -289,7 +290,7 @@ So wird im Idealfall nur das gesendete Signal und Frequenzänderungen durch eine
 
 Das Normalsignal mit einer hohen Amplitude (Normalisiert im Bereich zwischen 0.8 und 1.0) birgt einen geringen Informationsgehalt, 
 eine Frequenzverschiebung durch eine Geste ist deutlich interessanter, jedoch schwächer in der Amplitude (Zwischen 0.15 und 0.5).
-Darum wird werden niedrige Amplitudenwerte \( x \) verstärkt und hohe abgeschwächt. 
+Darum werden niedrige Amplitudenwerte \( x \) verstärkt und hohe abgeschwächt. 
 Folgende Funktion wird auf alle Werte angewendet  (Verlauf siehe Abb. \ref{fig:funktion}): \\
 \[ f(x) = 2.8 \cdot ( x - 1.15 )^2 + 0.75 \]
 \begin{figure}[htbp] \centering
@@ -333,9 +334,13 @@ Diese Vorverarbeitung wird in der Klasse \texttt{DataUtil} durchgeführt und nut
 \end{figure*}
 
 
-Die \texttt{HMM}-Klasse implementiert das Interface \texttt{IClassifier} und bildet die Schnittstelle zur Hauptapplikation. Sie nutzt \texttt{DataUtil}
- für alle Dateizugriffe und die \texttt{Plot}-Klasse, um diese Daten als Graphen darzustellen. 
-Für das \acl{HMM} werden Objekte der Klassen \texttt{sklearn.hmm.GMMHMM} und \texttt{sklearn.mixture.GMM} aus \texttt{scikit-learn}-Bibliothek \url{scikit-learn.org} verwendet.
+Die \texttt{HMM}-Klasse implementiert das Interface \texttt{IClassifier} und
+bildet die Schnittstelle zur Hauptapplikation. Sie nutzt \texttt{DataUtil} für
+alle Dateizugriffe und die \texttt{Plot}-Klasse, um diese Daten als Graphen
+darzustellen. 
+Für das \acl{HMM} werden Objekte der Klassen \texttt{sklearn.hmm.GMMHMM} und
+\texttt{sklearn.mixture.GMM} aus \texttt{scikit-learn}-Bibliothek
+\url{scikit-learn.org} verwendet.
 
 
 \begin{figure}[htbp] \centering
@@ -344,17 +349,23 @@ Für das \acl{HMM} werden Objekte der Klassen \texttt{sklearn.hmm.GMMHMM} und \t
     \label{fig:gmm_data}
 \end{figure}
 
-\textbf{Training} \\
-Herzstück der HMM-Package-Logik für das Training eines \acl{HMM} ist die \texttt{GestureApllication}-Klasse, welche eine Liste von \texttt{Gesture}-Beans vorhält. 
-Diese Beans repräsentieren alle Daten die für 
- die Klassifizierung notwendig sind. Für das Training nutzt \texttt{GestureApplication} die \texttt{HMM\_Util}-Klasse.
-\texttt{HMM\_Util} erstellt mit Hilfe der \texttt{GMM\_Util}-Klasse zuallererst eine List von trainierten \acl{GMM}s. Dazu werden die eingehenden Daten 
-neu transformiert und nach Frames sortiert (siehe Abb. \ref{fig:data_gmm}). Somit repräsentiert ein \acl{GMM} einen Zeitpunkt während der Aufnahme 
-(siehe Abb. \ref{fig:gmm_data}). Die trainierten \acl{GMM}s werden nun für das Training eines \acl{HMM} genutzt. Um beim Trainingsprozess eingreifen zu können
-wurden die \texttt{sklearn}-Klassen erweitert, so entstehen die Klassen \texttt{GestureHMM} und \texttt{GestureGMM}. Dies ist notwendig, da die fertig trainierten
-\acl{GMM}s während des \acl{HMM} Trainings noch einmal verändert werden - was allerdings unerwünscht ist.
 
-Für jede Geste wird ein neues \acl{HMM} mit einem Zustand pro Frame erzeugt. Für jeden Zustand wird ein \acl{GMM} mit 8 Mixturen trainiert.
+\textbf{Das Training} \\
+Herzstück der HMM-Package-Logik für das Training eines \acl{HMM} ist die
+\texttt{GestureApllication}-Klasse, welche eine Liste von \texttt{Gesture}-Beans vorhält.
+Diese Beans repräsentieren alle Daten die für die Klassifizierung notwendig
+sind. Für das Training nutzt \texttt{GestureApplication} die
+\texttt{HMM\_Util}-Klasse.
+\texttt{HMM\_Util} erstellt mit Hilfe der \texttt{GMM\_Util}-Klasse zuallererst
+eine List von trainierten \acl{GMM}s. Dazu werden die eingehenden Daten neu
+transformiert und nach Frames sortiert (siehe Abb. \ref{fig:data_gmm}). Somit
+repräsentiert ein \acl{GMM} einen Zeitpunkt während der Aufnahme (siehe Abb.
+\ref{fig:gmm_data}). Die trainierten \acl{GMM}s werden nun für das Training
+eines \acl{HMM} genutzt. Um beim Trainingsprozess eingreifen zu können wurden
+die \texttt{sklearn}-Klassen erweitert, so entstehen die Klassen
+\texttt{GestureHMM} und \texttt{GestureGMM}. Dies ist notwendig, da die fertig
+trainierten \acl{GMM}s während des \acl{HMM} Trainings noch einmal verändert
+werden - was allerdings unerwünscht ist.
 
 
 \textbf{Klassifizierung} \\
@@ -372,7 +383,8 @@ kann und ursprünglich für die Spracherkennung entwickelt wurde. Ob nun aus ein
 eine Geste (Emissionen) erkannt werden soll, ist vom Vorgehen ähnlich. Ein Vorteil ist zudem, dass die Ausführungsgeschwindigkeit
  der Geste, bei geeigneter Aufnahmelänge, die Klassifizierung nicht unbedingt beeinflusst, da dann länger im selben versteckten 
  Zustand verblieben wird.
-Ein Nachteil dieser Methode ist, dass keine absoluten Klassifizierungen durchgeführt werden können. Es werden nur Wahrscheinlichkeiten für alle möglichen Klasse berechnet. 
+Ein Nachteil dieser Methode ist, dass keine absoluten Klassifizierungen
+durchgeführt werden können. Es werden nur Wahrscheinlichkeiten für alle möglichen Klassen berechnet.
 So muss entschieden werden, ob die Wahrscheinlichkeit für eine Klasse hoch genug ist, sodass diese als Geste identifiziert werden kann.
 
 Ganz entscheidend beim Training eines \acl{HMM} war die Daten-Vorverarbeitung und die Liste zuvor trainierter \acl{GMM}. 
