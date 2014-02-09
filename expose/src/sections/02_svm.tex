@@ -79,7 +79,7 @@ Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die \ac{SVM} die Ei
 Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. \ref{fig:svm_separator}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.37\textwidth]{svm/svm_overview.png}
+    \includegraphics[width=0.43\textwidth]{svm/svm_overview.png}
     \caption{Trenngerade einer SVM}
     \label{fig:svm_separator}
 \end{figure}
@@ -93,6 +93,14 @@ Das macht die \ac{SVM} zu einem sehr transparenten und performanten Klassifikato
 Es ergeben sich Unregelmäßigkeiten bei der Lösung von nichtlinear separierbaren Problemen und der Klassifikation von mehr als 2 Klassen.
 Im Gegensatz zu den MLPs umgeht man diesen Umstand nicht mit der Erhöhung der Dimension. 
 Die \ac{SVM}s setzen in diesem Falle auf die Transformation der Datenrepräsentation. 
+
+\begin{figure}[htbp] \centering
+    \subfigure[$x$ nichtlinear separierbar in $\mathbb{R}^n$]{\includegraphics[width=0.22\textwidth]{svm/svm_fitting-line.png}}
+    \subfigure[$\phi(x)$ linear separierbar in $\mathbb{R}^h, h>n$]{\includegraphics[width=0.22\textwidth]{svm/svm_linear-fitting.png}}
+    \caption{Kernfunktion $\phi$}
+    \label{fig:svm_kernel}
+\end{figure}
+
 Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten von $\mathbb{R}^n$ in einen höherdimensionalen Raum $\mathbb{R}^h$ transformieren, in dem sie linear separierbar erscheinen (Abb. \ref{fig:svm_kernel}). 
 
 \begin{equation}
@@ -108,12 +116,6 @@ Als Bedingung des Raums $\mathbb{R}^h$ gilt, dass das Skalarprodukt erklärt ist
 Wir haben nach der Transformation also die neue Form (\ref{eq:svm_kern_tranformation}). 
 In der müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ ausrechnen, was sehr schwierig (bzw. unmöglich) ist, wenn die Dimension von $\mathbb{R}^h$ zu groß wird.
 
-\begin{figure}[htbp] \centering
-    \subfigure[$x$ nichtlinear separierbar in $\mathbb{R}^n$]{\includegraphics[width=0.22\textwidth]{svm/svm_fitting-line.png}}
-    \subfigure[$\phi(x)$ linear separierbar in $\mathbb{R}^h, h>n$]{\includegraphics[width=0.22\textwidth]{svm/svm_linear-fitting.png}}
-    \caption{Kernfunktion $\phi$}
-    \label{fig:svm_kernel}
-\end{figure}
 
 \begin{equation}
 \label{eq:svm_kern_tranformation}
