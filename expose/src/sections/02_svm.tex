@@ -61,8 +61,6 @@ Support Vector Machines erfreuen sich großer Beliebtheit, da sie in der Regel w
 Mit einem Satz von Merkmalsvektoren (Merkmalsraum) und dessen Klassenzugehörigkeiten $\{ (x_1, y_1), ..., (x_m, y_m) | x_i \in \mathcal{X}, y_i \in \{-1, 1\}, m \in \mathbb{N} \}$ wird eine mathematische Gerade errechnet,
 die in einem Koordinatensystem betrachtet die Daten räumlich in zwei Klassen trennt. 
 
-
-
 Die Gerade (Hyperebene im mehrdimensionalen Raum) trennt die Merkmalsräume bestmöglich und dient als Entscheidungsfunktion für die Klassifikation. Sie ist gegeben durch den Normalenvektor $w$ und den sogenannten Bias $b$, dem Abstand der Ebene zum Ursprung. Diese Form erweist sich als besonders praktisch, da durch Einsetzen von $x$ der direkte Abstand zur Hyperbene resultiert.
 Intuitiv ist klar, dass alle Punkte auf der Hyperebene selbst keinen Abstand haben, die Formel der Hyperebene (\ref{eq:svm_hyperplane}) lautet demnach: 
  
@@ -78,12 +76,10 @@ Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die \ac{SVM} die Ei
     \mathcal{C}_1: \{ c \,|\, \operatorname{sgn}(\langle w,x \rangle + b) = 1 \} \label{eq:svm_decision1}
 \end{eqnarray}
 
-\newpage 
-
 Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. \ref{fig:svm_separator}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.4\textwidth]{svm/svm_overview.png}
+    \includegraphics[width=0.37\textwidth]{svm/svm_overview.png}
     \caption{Trenngerade einer SVM}
     \label{fig:svm_separator}
 \end{figure}
@@ -107,16 +103,17 @@ Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten vo
 \end{split} 
 \end{equation}
 
+
+Als Bedingung des Raums $\mathbb{R}^h$ gilt, dass das Skalarprodukt erklärt ist. 
+Wir haben nach der Transformation also die neue Form (\ref{eq:svm_kern_tranformation}). 
+In der müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ ausrechnen, was sehr schwierig (bzw. unmöglich) ist, wenn die Dimension von $\mathbb{R}^h$ zu groß wird.
+
 \begin{figure}[htbp] \centering
     \subfigure[$x$ nichtlinear separierbar in $\mathbb{R}^n$]{\includegraphics[width=0.22\textwidth]{svm/svm_fitting-line.png}}
     \subfigure[$\phi(x)$ linear separierbar in $\mathbb{R}^h, h>n$]{\includegraphics[width=0.22\textwidth]{svm/svm_linear-fitting.png}}
     \caption{Kernfunktion $\phi$}
     \label{fig:svm_kernel}
 \end{figure}
-
-Als Bedingung des Raums $\mathbb{R}^h$ gilt, dass das Skalarprodukt erklärt ist. 
-Wir haben nach der Transformation also die neue Form (\ref{eq:svm_kern_tranformation}). 
-In der müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ ausrechnen, was sehr schwierig (bzw. unmöglich) ist, wenn die Dimension von $\mathbb{R}^h$ zu groß wird.
 
 \begin{equation}
 \label{eq:svm_kern_tranformation}
@@ -172,7 +169,8 @@ Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  a
     \caption{Beispiel einer polynomiellen Kernfunktion}
     \label{fig:ex_kernel}
 \end{figure}
-\renewcommand{\figurename}{Abb.}
+
+\newpage
 
 Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach dem Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
 Gängige Kernfunktionen sind:
