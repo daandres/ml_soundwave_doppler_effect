@@ -32,7 +32,13 @@ Ein einfaches XOR kann also nicht realisiert werden (Abb. \ref{fig:perceptron_xo
 
 
 Mit einem Trick, der Erhöhung der Dimension, können mehrlagige Perzeptronen auch nichtlinear separierbare Probleme lösen. 
-So lässt sich bspw. das XOR-Problem in einem 3-dimensionalen Raum durch eine Hyperebene trennen.
+So lässt sich bspw. das XOR-Problem in einem 3-dimensionalen Raum durch eine Hyperebene trennen (\ref{fig:perceptron_xor3d}).
+
+\begin{figure}[htbp] \centering
+    \includegraphics[width=0.22\textwidth]{svm/svm_xor_3d.png}
+    \caption{XOR linear separierbar in $\mathbb{R}^3$}
+    \label{fig:perceptron_xor3d}
+\end{figure}
 
 Die Wahl der richtigen Gewichte ist dabei nicht einfach, für komplexere Problemstellungen schier unmöglich. 
 Um dennoch eine Problemlösung zu modellieren, die Eingaben richtig klassifiziert, gibt es einen Algorithmus, der die Gewichte automatisch anpasst.
@@ -68,14 +74,16 @@ Intuitiv ist klar, dass alle Punkte auf der Hyperebene selbst keinen Abstand hab
 Allein durch das Vorzeichen der Entscheidungsfunktion ordnet die \ac{SVM} die Eingabe einr Klasse zu. Dabei können nur zwei Klassen  prognostiziert werden. Die Klasse gehört demnach entweder zur Klassenmenge \ref{eq:svm_decision0} oder zu \ref{eq:svm_decision1}.
 
 \begin{eqnarray}
-    \mathcal{C}_{-1}: \{ c \,|\, sign(\langle w,x \rangle + b) = -1 \} \label{eq:svm_decision0} \\
-    \mathcal{C}_1: \{ c \,|\, sign(\langle w,x \rangle + b) = 1 \} \label{eq:svm_decision1}
+    \mathcal{C}_{-1}: \{ c \,|\, \operatorname{sgn}(\langle w,x \rangle + b) = -1 \} \label{eq:svm_decision0} \\
+    \mathcal{C}_1: \{ c \,|\, \operatorname{sgn}(\langle w,x \rangle + b) = 1 \} \label{eq:svm_decision1}
 \end{eqnarray}
+
+\newpage 
 
 Die nächstliegenden Vektoren zur Trenngeraden werden als Stützvektoren, der Abstand als Margin $M$ bezeichnet (Abb. \ref{fig:svm_separator}). 
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.26\textwidth]{svm/svm_overview.png}
+    \includegraphics[width=0.4\textwidth]{svm/svm_overview.png}
     \caption{Trenngerade einer SVM}
     \label{fig:svm_separator}
 \end{figure}
@@ -112,7 +120,7 @@ In der müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ ausrech
 
 \begin{equation}
 \label{eq:svm_kern_tranformation}
-    \mathcal{C}: \{ c_i \,|\, sign(\langle \phi(w),\phi(x) \rangle + b) = i \}
+    \mathcal{C}: \{ c_i \,|\, \operatorname{sgn}(\langle \phi(w),\phi(x) \rangle + b) = i \}
 \end{equation}
 
 
@@ -126,15 +134,6 @@ Kernfunktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle 
 
 Es kann also das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ in $\mathbb{R}^h$ ausgerechnet werden, ohne die Daten mittles $\phi$ zu transformieren. 
 Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion.
-
-Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach dem Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
-Gängige Kernfunktionen sind:
-\begin{itemize}
-\item{linear: $\mathcal{K}(w,x) = \langle w,x \rangle$}
-\item{polynomiell: $\mathcal{K}(w,x) = (\gamma\langle w,x \rangle+c_0)^d$}
-\item{sigmoid: $\mathcal{K}(w,x) = tanh(\gamma\langle w,x \rangle+c_0)$}
-\item{rbf: $\mathcal{K}(w,x) = exp(- \gamma \|w - x \| ^2)$}
-\end{itemize}
 
 \renewcommand{\figurename}{Bsp.}
 \begin{figure}[htbp]
@@ -175,6 +174,14 @@ Gängige Kernfunktionen sind:
 \end{figure}
 \renewcommand{\figurename}{Abb.}
 
+Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach dem Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
+Gängige Kernfunktionen sind:
+\begin{itemize}
+\item{linear: $\mathcal{K}(w,x) = \langle w,x \rangle$}
+\item{polynomiell: $\mathcal{K}(w,x) = (\gamma\langle w,x \rangle+c_0)^d$}
+\item{sigmoid: $\mathcal{K}(w,x) = \tanh(\gamma\langle w,x \rangle+c_0)$}
+\item{rbf: $\mathcal{K}(w,x) = \exp(- \gamma \|w - x \| ^2)$}
+\end{itemize}
 
 \subsubsection{Klassifikation von mehreren Klassen}
 Da die \ac{SVM} als binärer Klassifikator entwickelt wurde, müssen für eine Klassifikation von mehr als zwei Klassen Strategien entwickelt werden, um das Prinzip der \ac{SVM} zu erweitern. 
