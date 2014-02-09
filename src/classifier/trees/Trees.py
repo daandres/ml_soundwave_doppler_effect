@@ -64,11 +64,10 @@ class Trees(IClassifier):
         data = self.__preProcess(gestures)
         targets = t.getTargets()
  
-        X_train, X_test, y_train, y_test = cross_validation.train_test_split(data, targets, test_size=0.4, random_state=0)
-        self.clf.fit(X_train, y_train)
-        result = self.clf.predict(X_test) == y_test
-        rightPredicts = len([x for x in result if x == True])
-        print "Classifier is trained with", len(self.gesture_ids), "gestures: received ", 100. / len(result) * rightPredicts, "%"
+        self.X_train, self.X_test, self.y_train, self.y_test = cross_validation.train_test_split(data, targets, test_size=0.5, random_state=0)
+        self.clf.fit(self.X_train, self.y_train)
+        print "Training: Classifier is trained with gestures", self.gesture_ids
+        
 
     def classify(self, data):
         if(len(self.queue) == self.queue_buffer):
@@ -91,7 +90,9 @@ class Trees(IClassifier):
         self.queue.append(data)
 
     def startValidation(self):
-        pass
+        result = self.clf.predict(self.X_test) == self.y_test
+        rightPredicts = len([x for x in result if x == True])
+        print "Validation: Classifier received ", 100. / len(result) * rightPredicts, "%"
 
     def load(self, filename=""):
         pass
