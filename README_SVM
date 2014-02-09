@@ -18,10 +18,10 @@ Many optimizations are provided by config parameters:
 - smooth: value for the gaussche
 - use_each_second: indicator for using only each second sample for a better performance
 - kernel: svm kernel, can be rbf, linear, poly. rbf is recommended
-- c:
-- gamma:
-- degree:
-- coef0:
+- c: margin of separating hyperplane
+- gamma: factor for kernels
+- degree: degree for polynomial kernels
+- coef0: coefficient for polynomial kernels
 - used_gestures:  comma-separated folder names for the used gestures
 
 ### Usage:
@@ -32,7 +32,6 @@ some commands for console:
 u svm 				- loads SVM module
 v					- validates network against the testset and prints the error and a confmat
 t					- trains the network with the number of configured epochs
-p					- prints the modules and weight of the network to console
 c					- start classification
 
 # Use these commands with care as some states checks and parsing functions are not compatible to customnames
