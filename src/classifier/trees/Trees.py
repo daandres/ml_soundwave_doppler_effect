@@ -24,46 +24,25 @@ class Signal(QtCore.QObject):
         self.newGesture.connect(view._receiveGesture)
 
     
-'''
-Simple gui to show an image for each gesutre.
-'''
-class Gui(QtGui.QWidget):
-
-    def __init__(self):
-        super(Gui, self).__init__()
-        
-        hbox = QtGui.QHBoxLayout(self)
-        self.pixmap = QtGui.QPixmap("C:/Users/Annalena/git/ml_soundwave_doppler_effect/src/classifier/trees/redrocks.jpg")
-
-        lbl = QtGui.QLabel(self)
-        lbl.setPixmap(self.pixmap)
-
-        hbox.addWidget(lbl)
-        self.setLayout(hbox)
-        
-        self.setWindowTitle('Red Rock')
-        self.show()
-    
-    
-    @QtCore.pyqtSlot(int)
-    def _receiveGesture(self, gesture):
-        print gesture
-
 
 '''
 Implementation of tree classifier
 '''
 class Trees(IClassifier):
 
-    def __init__(self, recorder=None, n_est=5):
+    def __init__(self, recorder=None, config=None, relative=""):
         self.name = "trees"
-        self.maxlen = 32
-        self.clf = GradientBoostingClassifier(n_estimators=15, max_depth=2, learning_rate=0.1)
+        self.config = config
+        self.max_depth = int(self.config['max_depth'])
+        self.estimators = int(self.config['estimators'])
+        self.learning_rate = float(self.config['learning_rate'])
+        gesture_ids = self.config['gestures'].split(',')
+        self.gesture_ids = [int(x) for x in gesture_ids]
+        self.queue_buffer = int(self.config['queue_buffer'])
+        self.clf = GradientBoostingClassifier(n_estimators=self.estimators, max_depth=self.max_depth, learning_rate=self.learning_rate)
         self.data = []
         self.queue = deque()
         self.temp = deque()
-        self.startTraining()
-        self.flag = False
         self.liste = []
         
         
@@ -77,14 +56,9 @@ class Trees(IClassifier):
         self.t.start()
         return self.t
 
-    def startTraining(self):
+    def startTraining(self, args=[]):
         
-        #app = QtGui.QApplication(sys.argv)
-        #self.gui = Gui()
-        #self.signal = Signal(self.gui)
-        #app.exec_()
-        
-        t = TrainingData()
+        t = TrainingData(self.gesture_ids)
         gestures = t.getRawData()
         
         data = self.__preProcess(gestures)
@@ -94,16 +68,16 @@ class Trees(IClassifier):
         self.clf.fit(X_train, y_train)
         result = self.clf.predict(X_test) == y_test
         rightPredicts = len([x for x in result if x == True])
-        print "Classifier is trained: received ", 100. / len(result) * rightPredicts, "%"
+        print "Classifier is trained with", len(self.gesture_ids), "gestures: received ", 100. / len(result) * rightPredicts, "%"
 
     def classify(self, data):
-        if(len(self.queue) == self.maxlen):
+        if(len(self.queue) == self.queue_buffer):
             gestures = []
             gesture = GestureModel(list(self.queue))
             gestures.append(gesture)
             processedData = self.__preProcess(gestures)
             self.temp.append(processedData)
-            if(len(self.temp) == self.maxlen):
+            if(len(self.temp) == self.queue_buffer):
                 recognizedGestures = []
                 for item in list(self.temp):
                     prediction = self.clf.predict(item)
@@ -111,7 +85,6 @@ class Trees(IClassifier):
                 result = numpy.argmax(numpy.bincount(recognizedGestures))
                 if(result != 6):
                     print "Result: ", result
-                    #self.signal.newGesture.emit(result)
                 
                 self.temp.clear()
             self.queue.popleft()
