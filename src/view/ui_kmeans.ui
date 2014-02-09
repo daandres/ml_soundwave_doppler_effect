@@ -28,24 +28,24 @@
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
-      <string>Tab 1</string>
+      <string>Gesture Recognizer</string>
      </attribute>
      <widget class="QGroupBox" name="groupBox">
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>89</y>
+        <x>360</x>
+        <y>169</y>
         <width>961</width>
         <height>521</height>
        </rect>
       </property>
       <property name="title">
-       <string>GroupBox</string>
+       <string>___</string>
       </property>
       <widget class="QScrollArea" name="rightPage_sa">
        <property name="geometry">
         <rect>
-         <x>510</x>
+         <x>500</x>
          <y>20</y>
          <width>441</width>
          <height>491</height>
@@ -68,7 +68,7 @@
       <widget class="QTextEdit" name="textEdit">
        <property name="geometry">
         <rect>
-         <x>30</x>
+         <x>20</x>
          <y>20</y>
          <width>481</width>
          <height>491</height>
@@ -81,7 +81,7 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>40</x>
+         <x>30</x>
          <y>30</y>
          <width>461</width>
          <height>481</height>
@@ -89,88 +89,208 @@
        </property>
       </widget>
      </widget>
-     <widget class="QPushButton" name="openLoadCentroids_bt">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>20</y>
-        <width>211</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>open &amp; load centroids</string>
-      </property>
-     </widget>
      <widget class="QPushButton" name="startRecognition_bt">
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>120</y>
-        <width>211</width>
-        <height>41</height>
+        <y>20</y>
+        <width>281</width>
+        <height>101</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+	font-size: 18pt;
+	font-family: Courier;
+}</string>
+      </property>
       <property name="text">
-       <string>start recognition</string>
+       <string>START RECOGNITION</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>36</width>
+        <height>36</height>
+       </size>
       </property>
      </widget>
-     <widget class="QLabel" name="topToBottom_lb">
+     <widget class="QLabel" name="gesture0_lb">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>190</y>
-        <width>81</width>
-        <height>81</height>
+        <x>20</x>
+        <y>200</y>
+        <width>100</width>
+        <height>100</height>
        </rect>
       </property>
       <property name="text">
        <string>TextLabel</string>
       </property>
      </widget>
-     <widget class="QLabel" name="bottomToTop_lb">
+     <widget class="QLabel" name="gesture1_lb">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>290</y>
-        <width>81</width>
-        <height>81</height>
+        <x>20</x>
+        <y>320</y>
+        <width>100</width>
+        <height>100</height>
        </rect>
       </property>
       <property name="text">
        <string>TextLabel</string>
       </property>
      </widget>
-     <widget class="QLabel" name="doublePush_lb">
+     <widget class="QLabel" name="gesture4_lb">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>490</y>
-        <width>81</width>
-        <height>81</height>
+        <x>20</x>
+        <y>580</y>
+        <width>100</width>
+        <height>100</height>
        </rect>
       </property>
       <property name="text">
        <string>TextLabel</string>
       </property>
      </widget>
-     <widget class="QLabel" name="singlePush_lb">
+     <widget class="QLabel" name="gesture3_lb">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>390</y>
-        <width>81</width>
-        <height>81</height>
+        <x>20</x>
+        <y>440</y>
+        <width>100</width>
+        <height>100</height>
        </rect>
       </property>
       <property name="text">
        <string>TextLabel</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="gesture4_lb_2">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>580</y>
+        <width>191</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+	font-size: 18pt;
+	font-family: Courier;
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Double Push
+Beginn / End</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="gesture1_lb_2">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>320</y>
+        <width>191</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+	font-size: 18pt;
+	font-family: Courier;
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Top Down
+Page Down</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="gesture0_lb_2">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>200</y>
+        <width>191</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+	font-size: 18pt;
+	font-family: Courier;
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Bottom Up
+Page Up</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="gesture3_lb_2">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>440</y>
+        <width>191</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+	font-size: 18pt;
+	font-family: Courier;
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Single Push
+Next Act</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="headline_lb">
+      <property name="geometry">
+       <rect>
+        <x>370</x>
+        <y>30</y>
+        <width>951</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+	font-size: 18pt;
+	font-family: Courier;
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Machine Learning
+Soundwave Doppler Effect
+Alexander Baumgärtner &amp; Robert Brylka</string>
       </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
-      <string>Tab 2</string>
+      <string>Advance</string>
      </attribute>
      <widget class="QwtPlot" name="qwtPlot_6">
       <property name="enabled">
@@ -288,134 +408,6 @@
         <height>150</height>
        </rect>
       </property>
-      <widget class="QCheckBox" name="c7_cb">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>140</x>
-         <y>100</y>
-         <width>31</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>7</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="c1_cb">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>40</y>
-         <width>31</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>1</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="c2_cb">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>70</y>
-         <width>31</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>2</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="c5_cb">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>140</x>
-         <y>40</y>
-         <width>31</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>5</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="c0_cb">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>10</y>
-         <width>31</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>0</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="c3_cb">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>100</y>
-         <width>31</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>3</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="c4_cb">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>140</x>
-         <y>10</y>
-         <width>31</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>4</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="c6_cb">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>140</x>
-         <y>70</y>
-         <width>31</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>6</string>
-       </property>
-      </widget>
      </widget>
      <widget class="QPushButton" name="initKMeans_bt">
       <property name="geometry">
@@ -495,19 +487,6 @@
        </rect>
       </property>
      </widget>
-     <widget class="QPushButton" name="loadRedData_bt">
-      <property name="geometry">
-       <rect>
-        <x>1280</x>
-        <y>720</y>
-        <width>71</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>---</string>
-      </property>
-     </widget>
      <widget class="QSpinBox" name="perRatio_sb">
       <property name="geometry">
        <rect>
@@ -579,8 +558,8 @@
      <widget class="QPushButton" name="class4_bt">
       <property name="geometry">
        <rect>
-        <x>1200</x>
-        <y>620</y>
+        <x>1130</x>
+        <y>710</y>
         <width>61</width>
         <height>23</height>
        </rect>
@@ -655,7 +634,7 @@
       <property name="geometry">
        <rect>
         <x>1130</x>
-        <y>680</y>
+        <y>670</y>
         <width>61</width>
         <height>23</height>
        </rect>
@@ -820,13 +799,13 @@ loop</string>
        </rect>
       </property>
      </widget>
-     <widget class="QPushButton" name="class7_bt">
+     <widget class="QPushButton" name="loadClassArray_bt">
       <property name="geometry">
        <rect>
         <x>1200</x>
-        <y>710</y>
+        <y>682</y>
         <width>61</width>
-        <height>23</height>
+        <height>51</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -837,7 +816,9 @@ loop</string>
 }</string>
       </property>
       <property name="text">
-       <string>Class 7</string>
+       <string>load
+class
+array</string>
       </property>
      </widget>
      <widget class="QwtPlot" name="qwtPlot_8">
@@ -1009,6 +990,9 @@ loop</string>
         <property name="text">
          <string>TextLabel</string>
         </property>
+        <property name="scaledContents">
+         <bool>false</bool>
+        </property>
        </widget>
       </widget>
      </widget>
@@ -1073,13 +1057,13 @@ loop</string>
             </sizepolicy>
            </property>
            <property name="minimum">
-            <number>1</number>
+            <number>0</number>
            </property>
            <property name="maximum">
             <number>2048</number>
            </property>
            <property name="value">
-            <number>1</number>
+            <number>0</number>
            </property>
           </widget>
          </item>
@@ -1117,7 +1101,7 @@ loop</string>
       <property name="geometry">
        <rect>
         <x>1130</x>
-        <y>620</y>
+        <y>630</y>
         <width>61</width>
         <height>23</height>
        </rect>
@@ -1189,7 +1173,7 @@ loop</string>
       <property name="geometry">
        <rect>
         <x>1130</x>
-        <y>710</y>
+        <y>690</y>
         <width>61</width>
         <height>23</height>
        </rect>
@@ -1326,7 +1310,7 @@ loop</string>
       <property name="geometry">
        <rect>
         <x>1200</x>
-        <y>680</y>
+        <y>650</y>
         <width>61</width>
         <height>23</height>
        </rect>
@@ -1398,7 +1382,7 @@ loop</string>
       <property name="geometry">
        <rect>
         <x>1200</x>
-        <y>650</y>
+        <y>630</y>
         <width>61</width>
         <height>23</height>
        </rect>
@@ -1479,7 +1463,7 @@ loop</string>
        <number>10000</number>
       </property>
       <property name="value">
-       <number>1000</number>
+       <number>50</number>
       </property>
      </widget>
      <widget class="QLabel" name="kMeansLoop_lb">
@@ -1495,6 +1479,83 @@ loop</string>
        <string>kMeans loop</string>
       </property>
      </widget>
+     <zorder>qwtPlot_32</zorder>
+     <zorder>qwtPlot_6</zorder>
+     <zorder>qwtPlot_29</zorder>
+     <zorder>qwtPlot_10</zorder>
+     <zorder>openFile_bt</zorder>
+     <zorder>qwtPlot_1</zorder>
+     <zorder>qwtPlot_24</zorder>
+     <zorder>qwtPlot_25</zorder>
+     <zorder>qwtPlot_31</zorder>
+     <zorder>initKMeans_bt</zorder>
+     <zorder>qwtPlot_22</zorder>
+     <zorder>viewCase3_rb</zorder>
+     <zorder>learnKMeans_bt</zorder>
+     <zorder>qwtPlot_23</zorder>
+     <zorder>qwtPlot_20</zorder>
+     <zorder>perRatio_sb</zorder>
+     <zorder>qwtPlot_28</zorder>
+     <zorder>qwtPlot_5</zorder>
+     <zorder>qwtPlot_3</zorder>
+     <zorder>viewCase4_rb</zorder>
+     <zorder>class4_bt</zorder>
+     <zorder>layoutWidget</zorder>
+     <zorder>qwtPlot_2</zorder>
+     <zorder>showLearnArray_bt</zorder>
+     <zorder>class2_bt</zorder>
+     <zorder>useInitCentroids_cb</zorder>
+     <zorder>qwtPlot_14</zorder>
+     <zorder>n_init_lb</zorder>
+     <zorder>class1_bt</zorder>
+     <zorder>loadNoiseFile_bt</zorder>
+     <zorder>saveFile_bt</zorder>
+     <zorder>n_init_sb</zorder>
+     <zorder>kMeansLoop_bt</zorder>
+     <zorder>maxIteration_sb</zorder>
+     <zorder>qwtPlot_19</zorder>
+     <zorder>loadClassArray_bt</zorder>
+     <zorder>qwtPlot_8</zorder>
+     <zorder>mulFiles_cb</zorder>
+     <zorder>cutSides_lb</zorder>
+     <zorder>cutSides_sb</zorder>
+     <zorder>perRatio_lb</zorder>
+     <zorder>segMargin_sb</zorder>
+     <zorder>qwtPlot_18</zorder>
+     <zorder>qwtPlot_21</zorder>
+     <zorder>qwtPlot_16</zorder>
+     <zorder>viewCase1_rb</zorder>
+     <zorder>scrollArea</zorder>
+     <zorder>layoutWidget_2</zorder>
+     <zorder>viewCase2_rb</zorder>
+     <zorder>k_lb_2</zorder>
+     <zorder>class0_bt</zorder>
+     <zorder>kNumber_sb</zorder>
+     <zorder>qwtPlot_4</zorder>
+     <zorder>showPlot_bt</zorder>
+     <zorder>qwtPlot_30</zorder>
+     <zorder>class3_bt</zorder>
+     <zorder>qwtPlot_27</zorder>
+     <zorder>loadLearnArray_bt</zorder>
+     <zorder>qwtPlot_11</zorder>
+     <zorder>testKMeans_bt</zorder>
+     <zorder>qwtPlot_7</zorder>
+     <zorder>checkKMeans_bt</zorder>
+     <zorder>qwtPlot_17</zorder>
+     <zorder>k_lb</zorder>
+     <zorder>loadCentorids_bt</zorder>
+     <zorder>class6_bt</zorder>
+     <zorder>segMargin_lb</zorder>
+     <zorder>qwtPlot_9</zorder>
+     <zorder>saveCentorids_bt</zorder>
+     <zorder>qwtPlot_12</zorder>
+     <zorder>class5_bt</zorder>
+     <zorder>qwtPlot_26</zorder>
+     <zorder>reduceDim_bt</zorder>
+     <zorder>qwtPlot_13</zorder>
+     <zorder>qwtPlot_15</zorder>
+     <zorder>kMeansLoop_sb</zorder>
+     <zorder>kMeansLoop_lb</zorder>
     </widget>
    </widget>
   </widget>

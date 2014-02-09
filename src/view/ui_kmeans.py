@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_kmeans.ui'
 #
-# Created: Sat Feb 08 19:10:38 2014
+# Created: Sun Feb 09 04:02:42 2014
 #      by: PyQt4 UI code generator 4.9.6
 #
 # WARNING! All changes made in this file will be lost!
@@ -35,10 +35,10 @@ class Ui_MainWindow(object):
         self.tab = QtGui.QWidget()
         self.tab.setObjectName(_fromUtf8("tab"))
         self.groupBox = QtGui.QGroupBox(self.tab)
-        self.groupBox.setGeometry(QtCore.QRect(340, 89, 961, 521))
+        self.groupBox.setGeometry(QtCore.QRect(360, 169, 961, 521))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.rightPage_sa = QtGui.QScrollArea(self.groupBox)
-        self.rightPage_sa.setGeometry(QtCore.QRect(510, 20, 441, 491))
+        self.rightPage_sa.setGeometry(QtCore.QRect(500, 20, 441, 491))
         self.rightPage_sa.setWidgetResizable(True)
         self.rightPage_sa.setObjectName(_fromUtf8("rightPage_sa"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
@@ -46,30 +46,76 @@ class Ui_MainWindow(object):
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.rightPage_sa.setWidget(self.scrollAreaWidgetContents_2)
         self.textEdit = QtGui.QTextEdit(self.groupBox)
-        self.textEdit.setGeometry(QtCore.QRect(30, 20, 481, 491))
+        self.textEdit.setGeometry(QtCore.QRect(20, 20, 481, 491))
         self.textEdit.setObjectName(_fromUtf8("textEdit"))
         self.qwtPlot_page_1 = Qwt5.QwtPlot(self.groupBox)
         self.qwtPlot_page_1.setEnabled(False)
-        self.qwtPlot_page_1.setGeometry(QtCore.QRect(40, 30, 461, 481))
+        self.qwtPlot_page_1.setGeometry(QtCore.QRect(30, 30, 461, 481))
         self.qwtPlot_page_1.setObjectName(_fromUtf8("qwtPlot_page_1"))
-        self.openLoadCentroids_bt = QtGui.QPushButton(self.tab)
-        self.openLoadCentroids_bt.setGeometry(QtCore.QRect(30, 20, 211, 41))
-        self.openLoadCentroids_bt.setObjectName(_fromUtf8("openLoadCentroids_bt"))
         self.startRecognition_bt = QtGui.QPushButton(self.tab)
-        self.startRecognition_bt.setGeometry(QtCore.QRect(30, 120, 211, 41))
+        self.startRecognition_bt.setGeometry(QtCore.QRect(30, 20, 281, 101))
+        self.startRecognition_bt.setStyleSheet(_fromUtf8("QPushButton {\n"
+"    font-size: 18pt;\n"
+"    font-family: Courier;\n"
+"}"))
+        self.startRecognition_bt.setIconSize(QtCore.QSize(36, 36))
         self.startRecognition_bt.setObjectName(_fromUtf8("startRecognition_bt"))
-        self.topToBottom_lb = QtGui.QLabel(self.tab)
-        self.topToBottom_lb.setGeometry(QtCore.QRect(30, 190, 81, 81))
-        self.topToBottom_lb.setObjectName(_fromUtf8("topToBottom_lb"))
-        self.bottomToTop_lb = QtGui.QLabel(self.tab)
-        self.bottomToTop_lb.setGeometry(QtCore.QRect(30, 290, 81, 81))
-        self.bottomToTop_lb.setObjectName(_fromUtf8("bottomToTop_lb"))
-        self.doublePush_lb = QtGui.QLabel(self.tab)
-        self.doublePush_lb.setGeometry(QtCore.QRect(30, 490, 81, 81))
-        self.doublePush_lb.setObjectName(_fromUtf8("doublePush_lb"))
-        self.singlePush_lb = QtGui.QLabel(self.tab)
-        self.singlePush_lb.setGeometry(QtCore.QRect(30, 390, 81, 81))
-        self.singlePush_lb.setObjectName(_fromUtf8("singlePush_lb"))
+        self.gesture0_lb = QtGui.QLabel(self.tab)
+        self.gesture0_lb.setGeometry(QtCore.QRect(20, 200, 100, 100))
+        self.gesture0_lb.setObjectName(_fromUtf8("gesture0_lb"))
+        self.gesture1_lb = QtGui.QLabel(self.tab)
+        self.gesture1_lb.setGeometry(QtCore.QRect(20, 320, 100, 100))
+        self.gesture1_lb.setObjectName(_fromUtf8("gesture1_lb"))
+        self.gesture4_lb = QtGui.QLabel(self.tab)
+        self.gesture4_lb.setGeometry(QtCore.QRect(20, 580, 100, 100))
+        self.gesture4_lb.setObjectName(_fromUtf8("gesture4_lb"))
+        self.gesture3_lb = QtGui.QLabel(self.tab)
+        self.gesture3_lb.setGeometry(QtCore.QRect(20, 440, 100, 100))
+        self.gesture3_lb.setObjectName(_fromUtf8("gesture3_lb"))
+        self.gesture4_lb_2 = QtGui.QLabel(self.tab)
+        self.gesture4_lb_2.setGeometry(QtCore.QRect(150, 580, 191, 100))
+        self.gesture4_lb_2.setStyleSheet(_fromUtf8("QLabel {\n"
+"    font-size: 18pt;\n"
+"    font-family: Courier;\n"
+"\n"
+"}"))
+        self.gesture4_lb_2.setAlignment(QtCore.Qt.AlignCenter)
+        self.gesture4_lb_2.setObjectName(_fromUtf8("gesture4_lb_2"))
+        self.gesture1_lb_2 = QtGui.QLabel(self.tab)
+        self.gesture1_lb_2.setGeometry(QtCore.QRect(150, 320, 191, 100))
+        self.gesture1_lb_2.setStyleSheet(_fromUtf8("QLabel {\n"
+"    font-size: 18pt;\n"
+"    font-family: Courier;\n"
+"\n"
+"}"))
+        self.gesture1_lb_2.setAlignment(QtCore.Qt.AlignCenter)
+        self.gesture1_lb_2.setObjectName(_fromUtf8("gesture1_lb_2"))
+        self.gesture0_lb_2 = QtGui.QLabel(self.tab)
+        self.gesture0_lb_2.setGeometry(QtCore.QRect(150, 200, 191, 100))
+        self.gesture0_lb_2.setStyleSheet(_fromUtf8("QLabel {\n"
+"    font-size: 18pt;\n"
+"    font-family: Courier;\n"
+"\n"
+"}"))
+        self.gesture0_lb_2.setAlignment(QtCore.Qt.AlignCenter)
+        self.gesture0_lb_2.setObjectName(_fromUtf8("gesture0_lb_2"))
+        self.gesture3_lb_2 = QtGui.QLabel(self.tab)
+        self.gesture3_lb_2.setGeometry(QtCore.QRect(150, 440, 191, 100))
+        self.gesture3_lb_2.setStyleSheet(_fromUtf8("QLabel {\n"
+"    font-size: 18pt;\n"
+"    font-family: Courier;\n"
+"\n"
+"}"))
+        self.gesture3_lb_2.setAlignment(QtCore.Qt.AlignCenter)
+        self.gesture3_lb_2.setObjectName(_fromUtf8("gesture3_lb_2"))
+        self.headline_lb = QtGui.QLabel(self.tab)
+        self.headline_lb.setGeometry(QtCore.QRect(370, 30, 951, 100))
+        self.headline_lb.setStyleSheet(_fromUtf8("QLabel {\n"
+"    font-size: 18pt;\n"
+"    font-family: Courier;\n"
+"\n"
+"}"))
+        self.headline_lb.setObjectName(_fromUtf8("headline_lb"))
         self.tabWidget.addTab(self.tab, _fromUtf8(""))
         self.tab_2 = QtGui.QWidget()
         self.tab_2.setObjectName(_fromUtf8("tab_2"))
@@ -108,38 +154,6 @@ class Ui_MainWindow(object):
         self.qwtPlot_32.setEnabled(False)
         self.qwtPlot_32.setGeometry(QtCore.QRect(1190, 460, 171, 150))
         self.qwtPlot_32.setObjectName(_fromUtf8("qwtPlot_32"))
-        self.c7_cb = QtGui.QCheckBox(self.qwtPlot_32)
-        self.c7_cb.setEnabled(False)
-        self.c7_cb.setGeometry(QtCore.QRect(140, 100, 31, 17))
-        self.c7_cb.setObjectName(_fromUtf8("c7_cb"))
-        self.c1_cb = QtGui.QCheckBox(self.qwtPlot_32)
-        self.c1_cb.setEnabled(False)
-        self.c1_cb.setGeometry(QtCore.QRect(100, 40, 31, 17))
-        self.c1_cb.setObjectName(_fromUtf8("c1_cb"))
-        self.c2_cb = QtGui.QCheckBox(self.qwtPlot_32)
-        self.c2_cb.setEnabled(False)
-        self.c2_cb.setGeometry(QtCore.QRect(100, 70, 31, 17))
-        self.c2_cb.setObjectName(_fromUtf8("c2_cb"))
-        self.c5_cb = QtGui.QCheckBox(self.qwtPlot_32)
-        self.c5_cb.setEnabled(False)
-        self.c5_cb.setGeometry(QtCore.QRect(140, 40, 31, 17))
-        self.c5_cb.setObjectName(_fromUtf8("c5_cb"))
-        self.c0_cb = QtGui.QCheckBox(self.qwtPlot_32)
-        self.c0_cb.setEnabled(False)
-        self.c0_cb.setGeometry(QtCore.QRect(100, 10, 31, 17))
-        self.c0_cb.setObjectName(_fromUtf8("c0_cb"))
-        self.c3_cb = QtGui.QCheckBox(self.qwtPlot_32)
-        self.c3_cb.setEnabled(False)
-        self.c3_cb.setGeometry(QtCore.QRect(100, 100, 31, 17))
-        self.c3_cb.setObjectName(_fromUtf8("c3_cb"))
-        self.c4_cb = QtGui.QCheckBox(self.qwtPlot_32)
-        self.c4_cb.setEnabled(False)
-        self.c4_cb.setGeometry(QtCore.QRect(140, 10, 31, 17))
-        self.c4_cb.setObjectName(_fromUtf8("c4_cb"))
-        self.c6_cb = QtGui.QCheckBox(self.qwtPlot_32)
-        self.c6_cb.setEnabled(False)
-        self.c6_cb.setGeometry(QtCore.QRect(140, 70, 31, 17))
-        self.c6_cb.setObjectName(_fromUtf8("c6_cb"))
         self.initKMeans_bt = QtGui.QPushButton(self.tab_2)
         self.initKMeans_bt.setGeometry(QtCore.QRect(860, 690, 91, 23))
         self.initKMeans_bt.setObjectName(_fromUtf8("initKMeans_bt"))
@@ -161,9 +175,6 @@ class Ui_MainWindow(object):
         self.qwtPlot_20.setEnabled(False)
         self.qwtPlot_20.setGeometry(QtCore.QRect(510, 310, 171, 150))
         self.qwtPlot_20.setObjectName(_fromUtf8("qwtPlot_20"))
-        self.loadRedData_bt = QtGui.QPushButton(self.tab_2)
-        self.loadRedData_bt.setGeometry(QtCore.QRect(1280, 720, 71, 20))
-        self.loadRedData_bt.setObjectName(_fromUtf8("loadRedData_bt"))
         self.perRatio_sb = QtGui.QSpinBox(self.tab_2)
         self.perRatio_sb.setGeometry(QtCore.QRect(1270, 670, 91, 20))
         self.perRatio_sb.setMaximum(99)
@@ -185,7 +196,7 @@ class Ui_MainWindow(object):
         self.viewCase4_rb.setGeometry(QtCore.QRect(460, 680, 101, 17))
         self.viewCase4_rb.setObjectName(_fromUtf8("viewCase4_rb"))
         self.class4_bt = QtGui.QPushButton(self.tab_2)
-        self.class4_bt.setGeometry(QtCore.QRect(1200, 620, 61, 23))
+        self.class4_bt.setGeometry(QtCore.QRect(1130, 710, 61, 23))
         self.class4_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -214,7 +225,7 @@ class Ui_MainWindow(object):
         self.showLearnArray_bt.setGeometry(QtCore.QRect(640, 710, 121, 21))
         self.showLearnArray_bt.setObjectName(_fromUtf8("showLearnArray_bt"))
         self.class2_bt = QtGui.QPushButton(self.tab_2)
-        self.class2_bt.setGeometry(QtCore.QRect(1130, 680, 61, 23))
+        self.class2_bt.setGeometry(QtCore.QRect(1130, 670, 61, 23))
         self.class2_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -263,14 +274,14 @@ class Ui_MainWindow(object):
         self.qwtPlot_19.setEnabled(False)
         self.qwtPlot_19.setGeometry(QtCore.QRect(340, 310, 171, 150))
         self.qwtPlot_19.setObjectName(_fromUtf8("qwtPlot_19"))
-        self.class7_bt = QtGui.QPushButton(self.tab_2)
-        self.class7_bt.setGeometry(QtCore.QRect(1200, 710, 61, 23))
-        self.class7_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
+        self.loadClassArray_bt = QtGui.QPushButton(self.tab_2)
+        self.loadClassArray_bt.setGeometry(QtCore.QRect(1200, 682, 61, 51))
+        self.loadClassArray_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
 "    font: bold;\n"
 "}"))
-        self.class7_bt.setObjectName(_fromUtf8("class7_bt"))
+        self.loadClassArray_bt.setObjectName(_fromUtf8("loadClassArray_bt"))
         self.qwtPlot_8 = Qwt5.QwtPlot(self.tab_2)
         self.qwtPlot_8.setEnabled(False)
         self.qwtPlot_8.setGeometry(QtCore.QRect(1190, 10, 171, 150))
@@ -318,6 +329,7 @@ class Ui_MainWindow(object):
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.label = QtGui.QLabel(self.scrollAreaWidgetContents)
         self.label.setGeometry(QtCore.QRect(30, 10, 411, 81))
+        self.label.setScaledContents(False)
         self.label.setObjectName(_fromUtf8("label"))
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.layoutWidget_2 = QtGui.QWidget(self.tab_2)
@@ -355,9 +367,9 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(7)
         sizePolicy.setHeightForWidth(self.arrayIdxLF_sb.sizePolicy().hasHeightForWidth())
         self.arrayIdxLF_sb.setSizePolicy(sizePolicy)
-        self.arrayIdxLF_sb.setMinimum(1)
+        self.arrayIdxLF_sb.setMinimum(0)
         self.arrayIdxLF_sb.setMaximum(2048)
-        self.arrayIdxLF_sb.setProperty("value", 1)
+        self.arrayIdxLF_sb.setProperty("value", 0)
         self.arrayIdxLF_sb.setObjectName(_fromUtf8("arrayIdxLF_sb"))
         self.verticalLayout_8.addWidget(self.arrayIdxLF_sb)
         self.horizontalLayout_2.addLayout(self.verticalLayout_8)
@@ -368,7 +380,7 @@ class Ui_MainWindow(object):
         self.k_lb_2.setGeometry(QtCore.QRect(860, 660, 31, 21))
         self.k_lb_2.setObjectName(_fromUtf8("k_lb_2"))
         self.class0_bt = QtGui.QPushButton(self.tab_2)
-        self.class0_bt.setGeometry(QtCore.QRect(1130, 620, 61, 23))
+        self.class0_bt.setGeometry(QtCore.QRect(1130, 630, 61, 23))
         self.class0_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -391,7 +403,7 @@ class Ui_MainWindow(object):
         self.qwtPlot_30.setGeometry(QtCore.QRect(850, 460, 171, 150))
         self.qwtPlot_30.setObjectName(_fromUtf8("qwtPlot_30"))
         self.class3_bt = QtGui.QPushButton(self.tab_2)
-        self.class3_bt.setGeometry(QtCore.QRect(1130, 710, 61, 23))
+        self.class3_bt.setGeometry(QtCore.QRect(1130, 690, 61, 23))
         self.class3_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -430,7 +442,7 @@ class Ui_MainWindow(object):
         self.loadCentorids_bt.setGeometry(QtCore.QRect(960, 710, 81, 23))
         self.loadCentorids_bt.setObjectName(_fromUtf8("loadCentorids_bt"))
         self.class6_bt = QtGui.QPushButton(self.tab_2)
-        self.class6_bt.setGeometry(QtCore.QRect(1200, 680, 61, 23))
+        self.class6_bt.setGeometry(QtCore.QRect(1200, 650, 61, 23))
         self.class6_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -452,7 +464,7 @@ class Ui_MainWindow(object):
         self.qwtPlot_12.setGeometry(QtCore.QRect(510, 160, 171, 150))
         self.qwtPlot_12.setObjectName(_fromUtf8("qwtPlot_12"))
         self.class5_bt = QtGui.QPushButton(self.tab_2)
-        self.class5_bt.setGeometry(QtCore.QRect(1200, 650, 61, 23))
+        self.class5_bt.setGeometry(QtCore.QRect(1200, 630, 61, 23))
         self.class5_bt.setStyleSheet(_fromUtf8("QCheckBox, QComboBox, QSpinBox {\n"
 "    color: red;\n"
 "    background-color: white;\n"
@@ -477,7 +489,7 @@ class Ui_MainWindow(object):
         self.kMeansLoop_sb = QtGui.QSpinBox(self.tab_2)
         self.kMeansLoop_sb.setGeometry(QtCore.QRect(1050, 661, 71, 20))
         self.kMeansLoop_sb.setMaximum(10000)
-        self.kMeansLoop_sb.setProperty("value", 1000)
+        self.kMeansLoop_sb.setProperty("value", 50)
         self.kMeansLoop_sb.setObjectName(_fromUtf8("kMeansLoop_sb"))
         self.kMeansLoop_lb = QtGui.QLabel(self.tab_2)
         self.kMeansLoop_lb.setGeometry(QtCore.QRect(1050, 650, 54, 10))
@@ -498,27 +510,29 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "kmeans utility", None))
-        self.groupBox.setTitle(_translate("MainWindow", "GroupBox", None))
-        self.openLoadCentroids_bt.setText(_translate("MainWindow", "open & load centroids", None))
-        self.startRecognition_bt.setText(_translate("MainWindow", "start recognition", None))
-        self.topToBottom_lb.setText(_translate("MainWindow", "TextLabel", None))
-        self.bottomToTop_lb.setText(_translate("MainWindow", "TextLabel", None))
-        self.doublePush_lb.setText(_translate("MainWindow", "TextLabel", None))
-        self.singlePush_lb.setText(_translate("MainWindow", "TextLabel", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1", None))
+        self.groupBox.setTitle(_translate("MainWindow", "___", None))
+        self.startRecognition_bt.setText(_translate("MainWindow", "START RECOGNITION", None))
+        self.gesture0_lb.setText(_translate("MainWindow", "TextLabel", None))
+        self.gesture1_lb.setText(_translate("MainWindow", "TextLabel", None))
+        self.gesture4_lb.setText(_translate("MainWindow", "TextLabel", None))
+        self.gesture3_lb.setText(_translate("MainWindow", "TextLabel", None))
+        self.gesture4_lb_2.setText(_translate("MainWindow", "Double Push\n"
+"Beginn / End", None))
+        self.gesture1_lb_2.setText(_translate("MainWindow", "Top Down\n"
+"Page Down", None))
+        self.gesture0_lb_2.setWhatsThis(_translate("MainWindow", "<html><head/><body><p align=\"center\"><br/></p></body></html>", None))
+        self.gesture0_lb_2.setText(_translate("MainWindow", "Bottom Up\n"
+"Page Up", None))
+        self.gesture3_lb_2.setText(_translate("MainWindow", "Single Push\n"
+"Next Act", None))
+        self.headline_lb.setText(_translate("MainWindow", "Machine Learning\n"
+"Soundwave Doppler Effect\n"
+"Alexander Baumgärtner & Robert Brylka", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Gesture Recognizer", None))
         self.openFile_bt.setText(_translate("MainWindow", "open file", None))
-        self.c7_cb.setText(_translate("MainWindow", "7", None))
-        self.c1_cb.setText(_translate("MainWindow", "1", None))
-        self.c2_cb.setText(_translate("MainWindow", "2", None))
-        self.c5_cb.setText(_translate("MainWindow", "5", None))
-        self.c0_cb.setText(_translate("MainWindow", "0", None))
-        self.c3_cb.setText(_translate("MainWindow", "3", None))
-        self.c4_cb.setText(_translate("MainWindow", "4", None))
-        self.c6_cb.setText(_translate("MainWindow", "6", None))
         self.initKMeans_bt.setText(_translate("MainWindow", "init k-means", None))
         self.viewCase3_rb.setText(_translate("MainWindow", "view seg norm", None))
         self.learnKMeans_bt.setText(_translate("MainWindow", "learn k-means", None))
-        self.loadRedData_bt.setText(_translate("MainWindow", "---", None))
         self.viewCase4_rb.setText(_translate("MainWindow", "view ", None))
         self.class4_bt.setText(_translate("MainWindow", "Class 4", None))
         self.record_bt.setText(_translate("MainWindow", "record frames", None))
@@ -533,7 +547,9 @@ class Ui_MainWindow(object):
 "data", None))
         self.kMeansLoop_bt.setText(_translate("MainWindow", "learn kMeans\n"
 "loop", None))
-        self.class7_bt.setText(_translate("MainWindow", "Class 7", None))
+        self.loadClassArray_bt.setText(_translate("MainWindow", "load\n"
+"class\n"
+"array", None))
         self.mulFiles_cb.setText(_translate("MainWindow", "mul files", None))
         self.cutSides_lb.setText(_translate("MainWindow", "cut sides", None))
         self.perRatio_lb.setText(_translate("MainWindow", "% ratio class diff", None))
@@ -557,6 +573,6 @@ class Ui_MainWindow(object):
         self.class5_bt.setText(_translate("MainWindow", "Class 5", None))
         self.reduceDim_bt.setText(_translate("MainWindow", "reduce Dim", None))
         self.kMeansLoop_lb.setText(_translate("MainWindow", "kMeans loop", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Advance", None))
 
 from PyQt4 import Qwt5

@@ -1,6 +1,6 @@
 import ui_kmeans as ui_kmeans_
 import numpy as np
-#from PySide import QtCore, 
+
 from PyQt4.QtCore import QObject, pyqtSlot, pyqtSignal
 import sys, os
 from PyQt4 import Qt, QtCore, QtGui
@@ -8,16 +8,16 @@ from PyQt4.QtGui import QMainWindow, QPushButton, QApplication
 import PyQt4.Qwt5 as Qwt
 from PyQt4.Qwt5.anynumpy import *
 from threading import Thread
-
+import win32com.client
 import copy
 import ntpath
 from functools import partial
-#import classifier.k_means.clusterSignal as cSignal
+
 from sklearn import cluster
 import classifier.k_means.kMeansHelper as kmHelper
 from properties.config import ConfigProvider
 from PyQt4.Qt import QColor
-import classifier.k_means.clusterSignal as clusterS
+
 
 class ViewUIKMeans:
     def __init__(self, kMeansClassifier=None, applicationClose=None, classSignal=None):
@@ -39,10 +39,15 @@ class ViewUIKMeans:
        
         self.showRecords = False
         self.recordFramesCount = 32
-    
-    
-    
-    
+        
+        self.gesture0Aktiv, self.gesture1Aktiv, self.gesture3Aktiv, self.gesture4Aktiv = False, False, False, False
+        
+        if os.name == 'nt':
+            self.isWindows = True
+            self.shell = win32com.client.Dispatch("WScript.Shell")
+        else:
+            self.isWindows = False
+            
         self.noiseArray = []
         self.arrayFromFile = []
         self.globalViewArray = []
@@ -72,11 +77,9 @@ class ViewUIKMeans:
         if kMeansClassifier == None:
             raise Exception("No kMeansClassifier, so go home")
         self.kMeansClassifier = kMeansClassifier
-        #self.kMeansClassifier.cSignal.currentGestureSignal.connect(self.setGestureTrigger)
-        
-        self.newSignal = classSignal#clusterS.SignalToGUI()
+      
+        self.newSignal = classSignal
         self.newSignal.currentGestureSignal.connect(self.setGestureTrigger)
-        #self.connect(self.newSignal, self.newSignal.currentGestureSignal, self.setGestureTrigger)
         
         self.recorder = kMeansClassifier.recorder
         
@@ -102,31 +105,38 @@ class ViewUIKMeans:
         self.sampleRate = int(float(config.getRecordConfig()['leftborder']) + float(config.getRecordConfig()['rightborder']))
 
      
-    def connectSlott(self):
-        self.newSignal = clusterS.SignalToGUI()
-        #self.newSignal.currentGestureSignal.connect(self.setGestureTrigger)
-        self.uiplot.rightPage_sa.connect(self.newSignal, self.newSignal.currentGestureSignal, self.setGestureTrigger)
-    
-    def macheCrash(self, value):
-        self.addLogText(value)
-    
+    #toggle gesture icons depending on recognize gesture
+    #set curve plot background red if recognizer busy with gesture  
     @pyqtSlot(int)
     def setGestureTrigger(self, gesture):
         if gesture == -10:
             self.uiplot.qwtPlot_page_1.setCanvasBackground(Qt.Qt.white)
-        if gesture == 10:
+        elif gesture == 10:
             self.uiplot.qwtPlot_page_1.setCanvasBackground(Qt.Qt.red)
         
-
-        if gesture == 3:
-            #print 'gesture ', gesture
+        elif gesture == 0:
+            if self.isWindows:
+                #self.shell.SendKeys("{PGUP}",0)
+                self.gesture0Aktiv = not self.gesture0Aktiv
+                self.setGesturePixmap(gesture, self.gesture1Aktiv)
+        
+        elif gesture == 1:
+            if self.isWindows:
+                #self.shell.SendKeys("{PGDN}",0)
+                self.gesture1Aktiv = not self.gesture1Aktiv
+                self.setGesturePixmap(gesture, self.gesture1Aktiv)
+         
+        elif gesture == 3:
+            self.gesture3Aktiv = not self.gesture3Aktiv
+            self.setGesturePixmap(gesture, self.gesture3Aktiv)
             if self.akt < 5:
                 self.akt +=1
             akt = str(self.akt) + '. Akt::'
             self.rightPage.scrollToAnchor('2')
-            print akt
-        if gesture == 4:
-            #print 'gesture ', gesture
+    
+        elif gesture == 4:
+            self.gesture4Aktiv = not self.gesture4Aktiv
+            self.setGesturePixmap(gesture, self.gesture4Aktiv)
             if self.textBeginn:
                 self.textBeginn = False
                 self.rightPage.scrollToAnchor('FINALE')
@@ -138,8 +148,16 @@ class ViewUIKMeans:
             pass
 
 
-    def plotSignal(self):
 
+    #aktivate live plot after viewing data from files    
+    def showPlot(self):
+        self.showRecords = False
+
+    
+    #get signal any tick of GUI timer and plot it
+    #in main view the curve will replot any timer tick 
+    #in second view the curve is refresh in roll way  
+    def plotSignal(self):
         data = self.recorder.getTransformedData()
         if data == None:
             return
@@ -150,11 +168,7 @@ class ViewUIKMeans:
                 
         ys = ys[self.idxLeft:self.idxRight]
         xs = self.xPoints[self.idxLeft:self.idxRight]
-        
-  
 
-        
-        
         if not self.showRecords:
        
             i = self.plot_id
@@ -171,42 +185,20 @@ class ViewUIKMeans:
         if self.checkOnline:
             pass
             
-            
-    def getButtonColor(self, classNumber, button=True):
-        startString = 'QPushButton {color: black; background-color:'
-        endString = '; font: bold;}'
-        result = None
-        if classNumber == 0:
-            result = startString + 'blue' + endString if button else Qt.Qt.blue
-        elif classNumber == 1:
-            result = startString + 'green' + endString if button else Qt.Qt.darkGreen  
-        elif classNumber == 2:
-            result = startString + 'red' + endString if button else Qt.Qt.red
-        elif classNumber == 3:
-            result = startString + 'white' + endString if button else Qt.Qt.black
-        elif classNumber == 4:
-            result = startString + 'darkGray' + endString if button else Qt.Qt.darkGray   
-        elif classNumber == 5:
-            result = startString + 'darkMagenta' + endString if button else Qt.Qt.darkMagenta   
-        elif classNumber == 6:
-            result = startString + 'darkYellow' + endString if button else Qt.Qt.darkYellow  
-        elif classNumber == 7:
-            result = startString + 'darkCyan' + endString if button else Qt.Qt.darkCyan  
-        return result
- 
- 
+    #start to buffer frame so we get data to recognition
     def recordByRecorder(self):
         self.recordFramesCount = self.uiplot.frames_sb.value()
         self.kMeansClassifier.fillBuffer(self.recordFramesCount)
-        #self.recorder.fillBuffer(self.recordFramesCount, self.callback)
         self.uiplot.record_bt.setStyleSheet('QPushButton {color: green}')
         
-
-    def showPlot(self):
-        self.showRecords = False
-
-
-        
+  
+    #fixed the Windows/Unix path problem
+    def fixpath(self, path):
+        return path.replace('\\', '/')
+                      
+                        
+    #main load data function
+    #just get the file into a array
     def openFile(self):
         print QtCore.QDir.currentPath()
         self.fileName = QtGui.QFileDialog.getOpenFileNames(self.win_plot, "Open ",
@@ -222,65 +214,32 @@ class ViewUIKMeans:
         self.openFileDirectory = path
         paths = self.fileName
        
-        if not self.multipleFiles:
-            #classButton = getattr(self.uiplot,'class%s_bt' %path[-1::])
-            #classButton.setStyleSheet('QPushButton {color: black; background-color: blue; font: bold;}')        
+        if not self.multipleFiles:      
             for idx, path in enumerate(paths):
                 if idx == 0:
                     self.arrayFromFile = np.asarray(np.loadtxt(str(self.fixpath(path)), delimiter=","))
-                    print 'load array shape : ', self.arrayFromFile.shape
+                    self.addLogText('load array shape : ', self.arrayFromFile.shape, textColor='green')
                 else:
                     self.arrayFromFile = np.concatenate((self.arrayFromFile, np.asarray(np.loadtxt(str(self.fixpath(path)), delimiter=","))), axis=0)
-                    print 'load array shape : ', self.arrayFromFile.shape
+                    self.addLogText('load array shape : ', self.arrayFromFile.shape, textColor='green')
         else:
             for path in paths:
                 if self.arrayFromFile == None:
                     self.arrayFromFile = np.asarray(np.loadtxt(str(self.fixpath(path)), delimiter=","))
-                    print 'load array shape : ', self.arrayFromFile.shape
+                    self.addLogText('load array shape : ', self.arrayFromFile.shape, textColor='green')
                 else:
                     self.arrayFromFile = np.concatenate((self.arrayFromFile, np.asarray(np.loadtxt(str(self.fixpath(path)), delimiter=","))), axis=0)
-                    print 'load array shape : ', self.arrayFromFile.shape
-        #self.getArrayFromFile()
-        
-        
-    def fixpath(self, path):
-        return path.replace('\\', '/')
+                    self.addLogText('load array shape : ', self.arrayFromFile.shape, textColor='green')
+
     
 
-    def loadMeanArrays(self):
-        arr = copy.copy(self.arrayFromFile)
-        print arr.shape
-
-        self.learnArrayKMeans = arr
-        
-        noisArrayTMP = []
-        if len(self.noiseArray) == 0:
-            print 'noise array empty'
-        else:
-            # add noise to lern array
-            reshapedNoiseArray = self.noiseArray.reshape(self.noiseArray.shape[0],16,64)
-           
-            for x in xrange(reshapedNoiseArray.shape[0]):
-
-                result = self.kmH.reduceDimensionality(reshapedNoiseArray[x])
-                if result is not None:
-                    #print result.shape
-                    result = np.asarray(result)
-                    result = result.reshape(result.shape[0]*result.shape[1])
-                   
-                    noisArrayTMP.append(result)
-                    #print result
-                else:
-                    print 'array empty !!!'
-        noisArrayTMP = np.asarray(noisArrayTMP)
-        print 'noisArrayTMP.shape : ', noisArrayTMP.shape           
-        self.learnArrayKMeans = np.concatenate((self.learnArrayKMeans, noisArrayTMP))
-        print 'self.learnArrayKMeans.shape after add noise : ', self.learnArrayKMeans.shape 
-                      
-
+    #get the loaded array into right shape
     def loadArrayFromFile(self):
         arr = copy.copy(self.arrayFromFile)
-        self.addLogText('load files with shape')
+        if len(arr) == 0:
+            self.addLogText('you need to load a file before !', textColor='red')
+            return
+        self.addLogText('load files with shape', arr.shape)
         self.addLogText(arr.shape)
         if len(arr.shape) == 1:
             self.learnArrayKMeans = arr.reshape((1,arr.shape))
@@ -292,21 +251,19 @@ class ViewUIKMeans:
             frames = arr.shape[1]/64
             arr = arr.reshape(arr.shape[0],frames,64)
             self.arrayFromFileViewShape = arr
-        
-        self.addLogText('view array shape')
         self.arrayFromFileViewShape = np.asarray(self.arrayFromFileViewShape)
-        self.addLogText(self.arrayFromFileViewShape.shape)
+        self.addLogText('view array shape', self.arrayFromFileViewShape.shape, textColor='green')
         self.arrayFromFileViewShapeNorm = self.kmH.normalize3DArray(self.arrayFromFileViewShape)        
         self.setGlobalViewArray(1)
    
     
-    
+    #get signal from GUI radio buttons and call the setGlobalViewArray funtion 
     def setViewCase(self, case, value ):
         yOrN = False if value == 0 else True
         if yOrN:
             self.setGlobalViewArray(case)
         
-   
+    #switch the array we want to view in the GUI 
     def setGlobalViewArray(self, case):
         if case == 1:
             self.globalViewArray = self.arrayFromFileViewShape
@@ -319,7 +276,8 @@ class ViewUIKMeans:
             
         self.globalViewArray = np.asarray(self.globalViewArray)
         
-        
+    
+    #iterate throw the array set by setGlobalViewArray and show the data as curve      
     def showGlobalViewArray(self):
         self.showRecords = True
         rAIdx = self.uiplot.arrayIdxLF_sb.value()
@@ -333,7 +291,6 @@ class ViewUIKMeans:
         else:
             self.uiplot.arrayIdxLF_sb.setValue(self.globalViewArray.shape[0])
             viewArray = self.globalViewArray[self.globalViewArray.shape[0]-1]
-            
         for i in range (0,32):
             idx = i+1
             qwtPlot = getattr(self.uiplot ,'qwtPlot_%d' %idx)
@@ -350,17 +307,20 @@ class ViewUIKMeans:
             curr.setData(xs, ys)
             qwtPlot.replot()
      
-
+    #a preselect by kmeans with k=2
     def presortBy2Cluster(self, inArray):
         percent, cluster_, mode, kM = self.kmH.checkKMeansForSegmentation(inArray)
         b = cluster_ == mode
         return inArray[b]
 
-
+    #chose the right segmentation way for the data and fill array with it
     def segmentClasses(self, classNumber ):
         classButton = getattr(self.uiplot,'class%d_bt' %classNumber)
         classButton.setStyleSheet('QPushButton {color: black; background-color: grey; font: bold;}')  
         arr = copy.copy(self.arrayFromFile) #shape (x, recordingFrames * 64) 
+        if len(arr) == 0:
+            self.addLogText('load data at first !', textColor='red')
+            return
         frames = arr.shape[1]/64
         arr = arr.reshape(arr.shape[0],frames,64) #shape (x, recordingFrames, 64)
         #decide if is better
@@ -397,81 +357,72 @@ class ViewUIKMeans:
             if segGesture is not None:
                 endSegArray.append(segGesture)
             else:
-                print 'segGesture == None'
+                self.addLogText('segGesture == None')
         
         self.addLogText('segment class finished ! ')
         endSegArray = np.asarray(endSegArray)
         self.segNormArray = endSegArray
         self.addLogText('shape before preselect ', endSegArray.shape)        
-
         #check if a sort by two clusters help get better results
         self.preselectedByKMeansArray = self.presortBy2Cluster(self.kmH.reshapeArray3DTo2D64(endSegArray))
         self.preselectedByKMeansArray = np.asarray(self.preselectedByKMeansArray)
         self.preselectedByKMeansArray = self.kmH.reshapeArray2DTo3D64(self.preselectedByKMeansArray)
-        self.addLogText('shape after preselect ', self.preselectedByKMeansArray.shape)
+        self.addLogText('shape after preselect by 2 K', self.preselectedByKMeansArray.shape)
 
-
+    #initialize kmeans by given settings from GUI
     def initKMeans(self):     
         maxIterations = self.uiplot.maxIteration_sb.value()
         nInit = self.uiplot.n_init_sb.value()
         k = self.uiplot.kNumber_sb.value()
         if self.uiplot.useInitCentroids_cb.isChecked() and self.kmeansClusterCenters is not None:
             self.kmeans = cluster.KMeans(k,  max_iter=maxIterations, n_init=nInit, init=self.kmeansClusterCenters)
-
             self.learnArrayKMeans = self.kmeansClusterCenters
         else:
             self.kmeans = cluster.KMeans(k,  max_iter=maxIterations, n_init=nInit)
 
-        
+    #learn kmeans with loaded data    
     def learnKMeans(self):
+        if len(self.learnArrayKMeans) == 0:
+            self.addLogText('you need at first load the learn set !', textColor='red')
+            return
+        if self.learnArrayKMeans.shape[0] < self.kmeans.n_clusters:
+            self.addLogText('ValueError: n_samples=1 should be >= n_clusters=5', textColor='red')
+            return  
         per = np.random.permutation(self.learnArrayKMeans)
         cluster_ = self.kmeans.fit_predict(per)
-        #cluster_ = self.kmeans.kmeanstrain(self.learnArrayKMeans,maxIterations)
-        #print self.learnArrayKMeans
         self.kMeansClassifier.setKMeans(self.kmeans)
-        print 'learnKMeans : ', len(cluster_), '\n', cluster_
-        #print 'cluster_.shape ', cluster_.shape
+        self.addLogText('learn KMeans Count : ', len(cluster_))
+        self.addLogText('cluster\n', cluster_)
         self.kmeansClusterCenters =   self.kmeans.cluster_centers_
 
-        
+    #switch the bool by depend on the GUI check box so we can load data from different directories      
     def setMultipleFiles(self, value):
         self.multipleFiles = False if value == 0 else True
 
-        
+    
+    #activate online classification in the kMeans class     
     def checkKMeans(self):
         self.checkOnline = not self.checkOnline
         self.kMeansClassifier.checkKMeansOnline()
 
+
+    #to avoid local minima execute the algorithm many time and compare the euklid distance between
+    #the centroids at the end chose them with the greatest distance between the nearest one  
     def kMeansLoop(self):
         maxIterations = self.uiplot.maxIteration_sb.value()
         nInit = self.uiplot.n_init_sb.value()
         kLoop = self.uiplot.kMeansLoop_sb.value()
         k = self.uiplot.kNumber_sb.value()
-        '''
-        per = np.random.permutation(self.learnArrayKMeans)
-        self.kmeans = cluster.KMeans(k,  max_iter=maxIterations, n_init=nInit)
-        cluster_ = self.kmeans.fit_predict(per)
-        print cluster_
-        distanceList = []
-        distanceListNoise = []
-        if self.kmeansClusterCenters is not None:
-            for x in xrange(k-1):
-                oldDistance = np.linalg.norm(self.kmeansClusterCenters[x] - self.kmeansClusterCenters[x+1])
-                newDistance = np.linalg.norm(self.kmeans.cluster_centers_[x] - self.kmeans.cluster_centers_[x+1])
-                distanceList.append(int(newDistance))
-                newDistanceNoise = np.linalg.norm(self.kmeans.cluster_centers_[0] - self.kmeans.cluster_centers_[x+1])
-                distanceListNoise.append(int(newDistanceNoise))
-            self.addLogText('to neighbors    : ', distanceList, textColor='blue') 
-            self.addLogText('to noise____    : ', distanceListNoise, textColor='blue')
-            
-        self.kmeansClusterCenters =   self.kmeans.cluster_centers_
-        self.kMeansClassifier.setKMeans(self.kmeans)        
-        '''
         minDistance = 0.0
-        endDisList = []
         for x in range(kLoop):
             if x == 0:
                 self.kmeans = cluster.KMeans(k,  max_iter=maxIterations, n_init=nInit)
+                if len(self.learnArrayKMeans) == 0:
+                    self.addLogText('you need at first load the learn set !', textColor='red')
+                    return
+                if self.learnArrayKMeans.shape[0] < self.kmeans.n_clusters:
+                    self.addLogText('ValueError: n_samples=1 should be >= n_clusters=5', textColor='red')
+                    return  
                 cluster_ = self.kmeans.fit_predict(self.learnArrayKMeans)
                 self.kmeansClusterCenters =   self.kmeans.cluster_centers_
             else:
@@ -484,35 +435,47 @@ class ViewUIKMeans:
                         distance = np.linalg.norm(self.kmeans.cluster_centers_[y] - self.kmeans.cluster_centers_[z])
                         #print int(distance)
                         distanceList.append(int(distance))
-                        disIdxList.append([int(distance), y, z])
-                        
+                        disIdxList.append([int(distance), y, z])                       
                 distanceArray = np.asarray(distanceList)
                 currDistance = np.amin(distanceArray)
-                #print 'currDistance : ', currDistance
                 if currDistance > minDistance:
                     minDistance = currDistance
-                    endDisList = disIdxList
                     self.kmeansClusterCenters = self.kmeans.cluster_centers_
-                    print 'currDistance : ', currDistance
-        print 'endeeee !!!' 
-        print disIdxList    
+                    self.addLogText('current distance : ', currDistance)
+        self.addLogText('repeated learning finished')
+        self.addLogText('distance list\n', disIdxList)    
         
-              
+    
+    #test the classifier by loaded data
+    #the data isn't randomize, the sequence is given by load order,
+    #so we can see the assignment with the naked eye
     def testKMeans(self):
+        if self.kmeans is None or self.kmeansClusterCenters is None:
+            self.addLogText('you need to init & learn kmeans at first!', textColor='red')
+            return
+        elif len(self.learnArrayKMeans) == 0:
+            self.addLogText('load learn data at first !', textColor='red')
+            return 
+        elif self.kmeans.cluster_centers_.shape[1] != self.learnArrayKMeans.shape[1]:
+            self.addLogText('cluster shape and data to test does''t matched !', textColor='red')
+            self.addLogText('cluster shape : ', self.kmeans.cluster_centers_.shape)
+            self.addLogText('loaded data shape :', self.learnArrayKMeans.shape)
+            return 
         class_  = self.kmeans.predict(self.learnArrayKMeans)
-        print class_
+        self.addLogText('classification by loaded array:\n', class_)
         class_  = self.kmeans.transform(self.learnArrayKMeans[0])
-        print class_.shape
+        #print class_.shape
         class_  = self.kmeans.score(self.learnArrayKMeans[0])
-        print class_
+        self.addLogText('cluster score : ', class_)
     
     
+    #set the indices for view array by GUI element
     def setArarySidesCut(self):
         self.arraySidesCut = self.uiplot.cutSides_sb.value()
         self.idxLeft = self.arraySidesCut
         self.idxRight = self.sampleRate - self.arraySidesCut
 
-
+    #set any info output to the info label
     def addLogText(self, text1=None, text2=None, textColor='green'):
         newLine = str(text1) + '\n'
         if text2 is not None:
@@ -522,11 +485,8 @@ class ViewUIKMeans:
         self.textEdit.setText(self.globalLabelText)
         self.textEdit.moveCursor(QtGui.QTextCursor.End)
 
-        
-    def callback(self, message, num):
-        print 'message, num : ', message, num
     
-
+    #load centroids from file 
     def loadCentroids(self):
         self.fileName = QtGui.QFileDialog.getOpenFileNames(self.win_plot, "Load centroids",
                 self.centroidsFileDirectory, "*.kmeans")
@@ -539,9 +499,10 @@ class ViewUIKMeans:
             
         path = str(self.fixpath(self.fileName[0]))        
         self.kmeansClusterCenters = np.asarray(np.loadtxt(str(self.fixpath(path)), delimiter=","))
-        print 'self.kmeansClusterCenters.shape', self.kmeansClusterCenters.shape
+        self.addLogText('kmeansClusterCenters shape : ', self.kmeansClusterCenters.shape)
+    
          
-        
+    #save centroids to a file
     def saveCentroids(self):
         fileName = QtGui.QFileDialog.getSaveFileName(self.win_plot, "Save centroids", self.centroidsFileDirectory, "*.kmeans")
         if len(fileName) == 0:
@@ -549,49 +510,44 @@ class ViewUIKMeans:
             return      
         oid = open(fileName, "a")
         # flatten all inputs to 1 vector
-        print 'self.kmeansClusterCenters.shape',self.kmeansClusterCenters.shape 
-        #segNormArray = self.kmH.reshapeArray3DTo2D64(self.segNormArray)
+        self.addLogText('kmeansClusterCenters shape : ', self.kmeansClusterCenters.shape)
         data = np.array(self.kmeansClusterCenters)        
         np.savetxt(oid, data, delimiter=",")
         oid.close()        
-    
-    def initializeKMeans(self):
-        self.loadCentroids()
-        text=open("../gestures/Robert/gesture_7/othello.kmeans").read()
-        self.rightPage.setPlainText(text)
+
         
-    
+    #main view button start recognition
+    #load centroids and start recognition
     def startRecognition(self):
-        #self.kMeansClassifier.startTraining
-        if self.kmeansClusterCenters is None:
-            #default
-            self.kmeansClusterCenters = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/data/c_34N_k5_m4.kmeans")), delimiter=","))        
-        print self.kmeansClusterCenters.shape     
-        text=open("../gestures/Robert/Centroids/data/othello.kmeans").read()
-        self.rightPage.setPlainText(text)        
-        self.kmeans = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters)
-        cluster_ = self.kmeans.fit_predict(self.kmeansClusterCenters)
-        
-        classArray = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/data/classArray_34N.kmeans")), delimiter=","))
-        print 'classArray.shape ', classArray.shape
-        self.kMeansClassifier.setClassArray(classArray)
-                
-        #self.kmeansClusterCenters_16N = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/new/shape 24/c_12346N_f24_s2_std1a_perfecto_upDown.kmeans")), delimiter=","))               
-        self.kmeansClusterCenters_16N = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/data/c_16N_m12_k3__.kmeans")), delimiter=","))
-        self.kmeans_16N = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters_16N)
-        cluster_ = self.kmeans_16N.fit_predict(self.kmeansClusterCenters_16N)
-        
-        self.kMeansClassifier.setKMeans(self.kmeans, self.kmeans_16N)
-        self.recordByRecorder()
-        self.checkOnline = not self.checkOnline
-        self.kMeansClassifier.checkKMeansOnline()    
+        if not self.checkOnline:
+            self.checkOnline = not self.checkOnline
+            self.uiplot.startRecognition_bt.setText('STOP RECOGNITION') 
+            #self.kMeansClassifier.startTraining
+            if self.kmeansClusterCenters is None:
+                #default
+                self.kmeansClusterCenters = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/data/c_34N_k5_m4.kmeans")), delimiter=","))        
+                self.addLogText('kmeansClusterCenters shape : ', self.kmeansClusterCenters.shape)  
+            text=open("../gestures/Robert/Centroids/data/othello.kmeans").read()
+            self.rightPage.setPlainText(text)        
+            self.kmeans = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters)
+            cluster_ = self.kmeans.fit_predict(self.kmeansClusterCenters)
+            classArray = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/data/classArray_34N.kmeans")), delimiter=","))
+            self.kMeansClassifier.setClassArray(classArray)               
+            self.kmeansClusterCenters_16N = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/data/c_16N_m12_k3__.kmeans")), delimiter=","))
+            self.kmeans_16N = cluster.KMeans(2,n_init=1,  init=self.kmeansClusterCenters_16N)
+            cluster_ = self.kmeans_16N.fit_predict(self.kmeansClusterCenters_16N)
+            self.kMeansClassifier.setKMeans(self.kmeans, self.kmeans_16N)
+            self.recordByRecorder()
+            self.kMeansClassifier.checkKMeansOnline() 
+        else:
+            self.uiplot.startRecognition_bt.setText('START RECOGNITION')
+            self.checkOnline = not self.checkOnline
+            self.kMeansClassifier.checkKMeansOnline()
       
+      
+    #just bind any GUI elements to intern function  
     def bindButtons(self):
-        ''' tab 1 '''
-        self.uiplot.openLoadCentroids_bt.clicked.connect(self.initializeKMeans)
         self.uiplot.startRecognition_bt.clicked.connect(self.startRecognition)
-        
-        ''' tab 2 '''
         self.uiplot.showPlot_bt.clicked.connect(self.showPlot)    
         self.uiplot.record_bt.clicked.connect(self.recordByRecorder)
         self.uiplot.openFile_bt.clicked.connect(self.openFile)
@@ -607,8 +563,6 @@ class ViewUIKMeans:
         self.uiplot.saveCentorids_bt.clicked.connect(self.saveCentroids)
         self.uiplot.loadCentorids_bt.clicked.connect(self.loadCentroids)
         self.uiplot.kMeansLoop_bt.clicked.connect(self.kMeansLoop)
-        
-        
         ''' classes buttons '''
         self.uiplot.class0_bt.clicked.connect(partial(self.segmentClasses, 0))
         self.uiplot.class1_bt.clicked.connect(partial(self.segmentClasses, 1))
@@ -617,7 +571,7 @@ class ViewUIKMeans:
         self.uiplot.class4_bt.clicked.connect(partial(self.segmentClasses, 4))
         self.uiplot.class5_bt.clicked.connect(partial(self.segmentClasses, 5))
         self.uiplot.class6_bt.clicked.connect(partial(self.segmentClasses, 6))
-        self.uiplot.class7_bt.clicked.connect(self.loadClassArray)
+        self.uiplot.loadClassArray_bt.clicked.connect(self.loadClassArray)
         
         self.uiplot.cutSides_sb.valueChanged.connect(self.setArarySidesCut)
         self.uiplot.mulFiles_cb.stateChanged.connect(self.setMultipleFiles)       
@@ -630,40 +584,43 @@ class ViewUIKMeans:
         self.uiplot.viewCase4_rb.clicked.connect(partial(self.setViewCase, 4))
         self.uiplot.perRatio_sb.valueChanged.connect(self.setPercentRatio)
         
-        
+    
+    #load the array with the right class assignment
     def loadClassArray(self):
-        classArray = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/Centroids/class arrays/test_array.kmeans")), delimiter=","))
-        print 'classArray.shape ', classArray.shape
+        classArray = self.loadFileToArray('class array', "../gestures/Robert/Centroids")
+        self.addLogText('classArray shape ', classArray.shape)
         self.kMeansClassifier.setClassArray(classArray)
-        
+   
+
+    #load noise data   
+    def loadNoiseFile(self):
+        self.noiseArray = self.loadFileToArray('noise array', "../gestures/Robert/gesture_7")
+   
+   
+    #get the percent ratio from zhe GUI element    
     def setPercentRatio(self, value):
         self.kMeansClassifier.setPercentRatio(value)
-        
-    def loadNoiseFile(self):
-
-        print QtCore.QDir.currentPath()
-        self.fileName = QtGui.QFileDialog.getOpenFileNames(self.win_plot, "Load Noise File", "../gestures/Robert/gesture_7", "*.kmeans")
-
+       
+       
+    #generalized file to array funtion   
+    def loadFileToArray(self, fileName, path):
+        self.fileName = QtGui.QFileDialog.getOpenFileNames(self.win_plot, "Load " + fileName +"  file", path, "*.kmeans")
         paths = self.fileName
         if len(paths) == 0:
             self.addLogText('file open was canceled !')
             return 
-        self.noiseArray = []     
+        fileToArray= []     
         for idx, path in enumerate(paths):
             if idx == 0:
-                self.noiseArray = np.asarray(np.loadtxt(str(self.fixpath(path)), delimiter=","))
+                fileToArray = np.asarray(np.loadtxt(str(self.fixpath(path)), delimiter=","))
             else:
-                self.noiseArray = np.concatenate((self.noiseArray, np.asarray(np.loadtxt(str(self.fixpath(path)), delimiter=","))), axis=0)
-        self.noiseArray = np.asarray(self.noiseArray)
-        self.addLogText('noise array shape', self.noiseArray.shape)
-    
-    
-    def loadDefaultNoiseFile(self):
-        pass
-        #self.noiseArray = np.asarray(np.loadtxt(str(self.fixpath("../gestures/Robert/gesture_7/1391535140.kmeans")), delimiter=","))        
-        #self.noiseArray = np.asarray(self.noiseArray)
-       
-       
+                fileToArray = np.concatenate((fileToArray, np.asarray(np.loadtxt(str(self.fixpath(path)), delimiter=","))), axis=0)
+        fileToArray = np.asarray(fileToArray)
+        self.addLogText(fileName, fileToArray.shape)
+        return fileToArray
+        
+        
+    #reduce the data to desired dimension       
     def reduceDimension(self):
         if len(self.arrayFromFile) == 0:
             self.addLogText('please add learn array at first !', textColor='red')
@@ -684,21 +641,17 @@ class ViewUIKMeans:
             for gesture in arrayToReduce:
                 result = self.kmH.reduceDimensionality(gesture, std='cut')
                 if result is not None:
-                    #print result.shape
                     result = np.asarray(result)
-                    #xxx
-                    #result = result.reshape(result.shape[0]*result.shape[1])
-
                     self.learnArrayKMeans.append(result)
-                    #print result
                 else:
-                    self.addLogText('bad')
+                    self.addLogText('not reducible')
             self.learnArrayKMeans = np.asarray(self.learnArrayKMeans)
             
             self.addLogText('reduce dimensionality finished !')
             self.addLogText('new dimension : !', self.learnArrayKMeans.shape )
 
-        
+
+    #save the segmented data to file    
     def saveSegmentedData(self):
         fileName = QtGui.QFileDialog.getSaveFileName(self.win_plot, "Save reduced data", self.openFileDirectory, "*.kmeans")
         if len(fileName) == 0:
@@ -719,24 +672,37 @@ class ViewUIKMeans:
         np.savetxt(oid, data, delimiter=",")
         oid.close()
             
-            
+
+    #new thread call            
     def startNewThread(self):
         self.t = Thread(name="ControlGui", target=self.start, args=())
         self.t.start()
         return self.t
 
 
+    #thread callback
     def is_alive(self):
         if self.t is not None:
             return self.t.is_alive()
         return False
+
+
+    #helper function to set the gesture icon 
+    def setGesturePixmap(self, gesture, value):
+        label = getattr(self.uiplot ,'gesture%d_lb' %gesture)
+        icon = 'Icon0'+str(gesture)+'_aktiv.jpg' if value else 'Icon0'+str(gesture)+'.jpg'
+        iconPath = "../gestures/Robert/Centroids/data/"+icon
+        icon1 = QtGui.QPixmap(iconPath)
+        icon1 = icon1.scaled(100, 100)
+        label.setPixmap(icon1) 
    
-    def setGesturePixmap(self):
-        self.uiplot.singlePush_lb.setPixmap(QtGui.QPixmap("../gestures/Robert/Centroids/data/Untitled.jpg")) 
-    
+   
+    #end of application 
     def end(self):
         self.uiplot.timer.Stop(self.guiIntervall)
    
+   
+    #set all initial parameter with the start of the apllication    
     def start(self):
         # application
         self.app = QtGui.QApplication(sys.argv)
@@ -751,21 +717,16 @@ class ViewUIKMeans:
         self.curve_tab1 = Qwt.QwtPlotCurve()
         self.curve_2_tab1 = Qwt.QwtPlotCurve()
         
-        
-        
         self.win_plot.setGeometry(18, 33, 1366, 780)
-        
         
         self.curve_page_1 = Qwt.QwtPlotCurve()
         self.curve_page_1.attach(self.uiplot.qwtPlot_page_1)       
-        self.uiplot.qwtPlot_page_1.setAxisScale(self.uiplot.qwtPlot_page_1.yLeft, -100, self.amplitude * 1000)
+        self.uiplot.qwtPlot_page_1.setAxisScale(self.uiplot.qwtPlot_page_1.yLeft, 0, self.amplitude * 1000)
         plot = self.uiplot
         
         for i in range(1,33):
-
             qwtPlot = getattr(plot ,'qwtPlot_%d' %i)
             curr = getattr(self ,'curve_%d' %i)
-        
             pen = Qt.QPen(Qt.Qt.red)
             pen.setStyle(1)
             pen.setWidth(1)
@@ -796,10 +757,13 @@ class ViewUIKMeans:
         self.idxRight = self.sampleRate - self.arraySidesCut
         
 
-        self.setGesturePixmap()
+        self.setGesturePixmap(0, False)
+        self.setGesturePixmap(1, False)
+        self.setGesturePixmap(3, False)
+        self.setGesturePixmap(4, False)
+        
         self.bindButtons()
         self.kmH = kmHelper.kMeansHepler()
-        self.loadDefaultNoiseFile()
         self.textEdit = QtGui.QTextEdit()
         self.uiplot.scrollArea.setWidget(self.textEdit)
         
