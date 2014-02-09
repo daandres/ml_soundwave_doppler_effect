@@ -88,7 +88,6 @@ Die Stützvektoren bilden das tragende Konstrukt der Entscheidungsfunktion.
 Alle andere Merkmalsvektoren haben keinen Einfluss auf die Trennung, was die Namensgebung der Stützvektoren begründet. 
 Das macht die \ac{SVM} zu einem sehr transparenten und performanten Klassifikator. 
 
-
 \subsubsection{Kernel-Trick}
 Es ergeben sich Unregelmäßigkeiten bei der Lösung von nichtlinear separierbaren Problemen und der Klassifikation von mehr als 2 Klassen.
 Im Gegensatz zu den MLPs umgeht man diesen Umstand nicht mit der Erhöhung der Dimension. 
@@ -102,33 +101,25 @@ Mit Hilfe von Kernfunktionen (\ref{eq:svm_kernel_function}) lassen sich Daten vo
     & x \mapsto \phi(x)
 \end{split} 
 \end{equation}
-
-
 Als Bedingung des Raums $\mathbb{R}^h$ gilt, dass das Skalarprodukt erklärt ist. 
 Wir haben nach der Transformation also die neue Form (\ref{eq:svm_kern_tranformation}). 
 In der müssen wir nun das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ ausrechnen, was sehr schwierig (bzw. unmöglich) ist, wenn die Dimension von $\mathbb{R}^h$ zu groß wird.
-
 \begin{figure}[htbp] \centering
     \subfigure[$x$ nichtlinear separierbar in $\mathbb{R}^n$]{\includegraphics[width=0.22\textwidth]{svm/svm_fitting-line.png}}
     \subfigure[$\phi(x)$ linear separierbar in $\mathbb{R}^h, h>n$]{\includegraphics[width=0.22\textwidth]{svm/svm_linear-fitting.png}}
     \caption{Kernfunktion $\phi$}
     \label{fig:svm_kernel}
 \end{figure}
-
 \begin{equation}
 \label{eq:svm_kern_tranformation}
     \mathcal{C}: \{ c_i \,|\, \operatorname{sgn}(\langle \phi(w),\phi(x) \rangle + b) = i \}
 \end{equation}
-
-
 Dadurch, dass die Trainingspunkte $x$ nur in Skalarprodukten auftauchen, können wir uns des Kernel-Tricks bedienen.
 Kernfunktionen, die in $\mathbb{R}^n$ leben, zeichnen sich durch eine spezielle Eigenschaft aus, da sie sich verhalten wie ein Skalarprodukt in $\mathbb{R}^h$ (\ref{eq:svm_kern_trick}). 
-
 \begin{equation}
 \label{eq:svm_kern_trick}
     \mathcal{K}(w,x) = \langle\phi(w),\phi(x)\rangle
 \end{equation}
-
 Es kann also das Skalarprodukt $\langle\phi(w),\phi(x)\rangle$ in $\mathbb{R}^h$ ausgerechnet werden, ohne die Daten mittles $\phi$ zu transformieren. 
 Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  anhand einer polynomiellen Kernfunktion.
 
@@ -169,9 +160,7 @@ Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  a
     \caption{Beispiel einer polynomiellen Kernfunktion}
     \label{fig:ex_kernel}
 \end{figure}
-
-\newpage
-
+% \newpage
 Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach dem Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
 Gängige Kernfunktionen sind:
 \begin{itemize}
@@ -192,15 +181,12 @@ In diesem Fall entscheidet sich das \textit{Einer gegen den Rest}-Verfahren für
 Als höchstes Ergebnis wird der größte Abstand zur Trennhyperebene angenommen. 
 Offensichtlich erhöht sich die Laufzeit der Trainingsphase mit der Anzahl der Klassen $|\mathcal{C}|$. 
 Glücklicherweise beeinflusst das nicht die Laufzeitanalyse in der $\mathcal{O}$-Notation (\ref{eq:svm_winner_runtime}). 
-
 \begin{equation}
 \label{eq:svm_winner_runtime}
     \underbrace{\mathcal{O}(n) + ... + \mathcal{O}(n)}_{|\mathcal{C}|-mal} = |\mathcal{C}| \cdot \mathcal{O}(n) = \mathcal{O}(n)
 \end{equation}
-
 Sind die SVMs trainiert, beeindrucken sie durch rasante Klassifikation. 
 Dies ermöglicht uns eine echtzeitnahe Gestenerkennung.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -213,7 +199,6 @@ Während der Live-Klassifikation von Gesten, beziehungsweise deren Eingabevektor
 Die Eingabevektoren müssen dabei in ihrer Dimension den Trainingsdaten entsprechen.
 
 Der nächste Abschnitt widmet sich der Datenaufbereitung, insbesondere der Reduzierung der Dimension eines Eingabevektors und der entsprechenden Vorverarbeitung.
-
 \begin{figure*}[htbp] \centering
     \includegraphics[width=0.65\textwidth]{svm/svm_preprocessing_steps.png}
     \caption{Datenaufbereitungsschritte}
@@ -226,7 +211,6 @@ Da jeder Klassifikator aufgrund seiner Funktionsweise unterschiedlich mit den Ei
 Gleichzeitig kann durch eine entsprechende Vorverarbeitung gegenüber unverarbeiteten Daten das Problem der Klassifikation von unterschiedlichen Datensätzen verallgemeinert und somit die Trainingszeit verringert werden.
 Dieser Abschnitt befasst sich mit der spezifischen Datenaufbereitung für den \ac{SVM}-Klassifikator. 
 Eine entsprechende grafische Visualisierung aller Datenaufbereitungsschritte befindet sich in \autoref{fig:svm_preprocessing_steps}.
-
 \paragraph{Eingabevektordimensionsreduzierung}\label{sec:svm_reduce}$\;$ \\
 Bei der Betrachtung der Trainingsdaten, die jeweils aus insgesamt 32 Frames zu je 64 Werten bestehen, wird offensichtlich, dass die durch den Doppler-Effekt verursachten Frequenzverschiebungen in einem begrenzten Umfeld der Referenzfrequenz von $18\text{,}5\text{ kHz}$ herum sattfinden.
 Zudem stellt sich heraus, dass nur ein Bruchteil der ursprünglich veranschlagten 32 Frames pro Geste relevante Informationen enthält, da die Ausführung einer Geste meist zwischen 8 und 20 Frames dauert und nur innerhalb dieser Frame-Anzahl Frequenzverschiebungen verursacht.
@@ -236,18 +220,16 @@ Die dritte Reduzierung wird mittels der Addition benachbarter Frames erzielt, so
 Im Anschluss erfolgt die Transformation in ein eindimensionales Array mit insgesamt 320 Werten, welches als Eingabevektor für die \ac{SVM} dient.
 Gegenüber der ursprünglichen Gesamtanzahl von 2048 Werten pro Datensatz wurde mittels der Vorverarbeitung die Dimension eines Eingabevektors um etwa den Faktor $6\text{,}5$ verringert.
 Eine weitere Reduzierung um den Faktor 2 ist möglich, sofern nur jeder zweite Wert des Eingabevektors verwendet werden soll.
-
 \paragraph{Vorverarbeitung}\label{sec:svm_preprocess}$\;$ \\\\
 Die Reduzierung der Eingabevektordimension und die vorverarbeitenden Schritte sind zwei notwendige Handlungen, die sich in der Implementierung nicht trennen lassen, allerdings sind sie in ihrer Beschreibung gut zu separieren.
 Unmittelbar nach dem ersten Reduzierungsschritt wird jeder einzelne Frame normalisiert und die Referenzfrequenz subtrahiert.
 Da trotz Subtraktion der Referenzfrequenz teilweise noch sehr feines Rauschen in den Daten vorhanden sein kann, werden Werte unterhalb eines festgelegten Schwellenwerts auf 0 gesetzt.
-Die ersten 16 Frames, die nach diesem Verarbeitungsschritt relevante Informationen enthalten (Frame-Maximalwert \textgreater 0), werden für den dritten Reduzierungsschritt verwendet.
+Die ersten 16 Frames, die nach diesem Verarbeitungsschritt relevante Informationen enthalten (Frame-Maximalwert\textgreater0), werden für den dritten Reduzierungsschritt verwendet.
 Optional und standardmäßig aktiviert wird eine eindimensionale Gauß'sche Filterung zur Glättung der Werte als abschließender Vorverarbeitungsschritt angewandt.
 
 \subsubsection{Implementierung}\label{sec:svm_implementation}
 Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Interface für alle Klassifikatoren vorhanden, welches von jedem Klassifikator -- allerdings unterschiedlich -- implementiert ist. 
-Dabei handelt es sich um die abstrakte Klasse \texttt{IClassifier}, die von der \ac{SVM}--Klasse im Modul \texttt{svm.py}  implementiert werden muss.
-
+Dabei handelt es sich um die abstrakte Klasse \texttt{IClassifier}, die von der \ac{SVM}--Klasse im Modul \texttt{svm.py} implementiert werden muss.
 \begin{lstlisting}[float=*,language=Python,caption={Code Snipplet},label={lst:svm_code_snipplets}]{lst:svm_code_snipplets}
 def preprocess_frame(frame_data):
 	try:
@@ -267,8 +249,6 @@ def preprocess_frame(frame_data):
 		frame = np.zeros(wanted_frames)
 	return frame
 \end{lstlisting}
-
-
 Für die Implementierung der \ac{SVM}--Klasse wird die Python-Bibliothek \textit{scikit-learn} verwendet. 
 Die Bibliothek stellt neben einer Vielzahl von weiteren Modulen und Klassen unter anderem auch eine Implementierung einer \ac{SVM} zur Verfügung.
 Für grundlegende Matrizenberechnungen in den Modulen \texttt{svm\_dataloader.py} und \texttt{svm\_preprocessor.py} werden die Python-Bibliotheken \textit{NumPy} und \textit{SciPy} verwendet. 
@@ -292,7 +272,6 @@ Sobald 32 weitere Frames in dieser Liste abgespeichert worden sind, werden 16 re
 Der Eingabevektor wird dem Klassifikator übergeben, welcher als Rückgabewert die entsprechende Gestennummer zurückliefert, die er dem Eingabevektor zugeordnet hat.
 Gleichzeitig dient diese Gestennummer zur Steuerung von diversen Programmen.
 So kann mittels dem entsprechenden Methodenaufruf der \texttt{Appstarter}-Instanz und der beispielsweise übergebenenen Gestennummer 0 der Notepad-Editor geöffnet und mittels der Gestennummer 1 wieder beendet werden.
-
 \subsubsection{Training}\label{sec:svm_training}
 Für das Training werden die Datensätze aller Gesten von zwei Personen verwendet.
 Dadurch ergibt sich eine relativ geringe Gesamtanzahl der Datensätze von etwa 1200.
@@ -310,7 +289,6 @@ Ein hoher Wert für den Parameter $gamma$ führt in Kombination mit einem hohen 
 
 Die Werte in der Konfigurationsdatei sind für ein geringes Overfitting der \ac{SVM} an die Trainingsdaten bekannt und sind in folgender Tabelle (\autoref{tab:svm_parameter}) in der ersten Zeile aufgelistet.
 Die von dem Python-Modul \texttt{scikit-learn} vorgegebenen Standardwerte befinden sich in der zweiten Zeile der selben Tabelle.
-
 \begin{table}[h]
 \centering
 \begin{tabular}{rrrr}
@@ -326,19 +304,16 @@ Die von dem Python-Modul \texttt{scikit-learn} vorgegebenen Standardwerte befind
 \label{tab:svm_parameter}
 \end{table}
 
-
 \subsubsection{Evaluation}\label{sec:svm_evaluation}
 Sofern die \ac{SVM} zur Live-Klassifkation eingesetzt wird, ist die Verwendung des kompletten Datensatzes für das Training unbedenklich.
 Die Validierung einer mit dem kompletten Datensatz trainierten \ac{SVM} mit dem gleichen kompletten Datensatz führt allerdings unweigerlich zu einer Verfälschung der Performance.
 Sobald demnach eine Einordnung der Performance einer trainierten \ac{SVM} erwünscht ist, bietet es sich an, den kompletten Umfang der Datensätze in zwei Teile im Verhältnis $\frac{2}{3}$ zu $\frac{1}{3}$ zu unterteilen und das Training mit dem knapp 800 Datensätze fassenden ersten Teil auszuführen.
 Der zweite Datensatzteil dient der Validierung bzw. dem Testen der trainierten \ac{SVM}.
-
 \begin{figure}[htbp] \centering
     \includegraphics[width=0.3\textwidth]{svm/svm_confusion_matrix.png}
     \caption{Visuelle Darstellung einer Confusion Matrix}
     \label{fig:svm_confusion_matrix}
 \end{figure}
-
 \begin{table}[h]
 \centering
 \begin{tabular}{lrr}
@@ -365,18 +340,16 @@ Der zweite Datensatzteil dient der Validierung bzw. dem Testen der trainierten \
 \caption[Erkennungsraten einer SVM]{Erkennungsraten einer SVM}
 \label{tab:svm_performance}
 \end{table}
-
 Durch die Wahl der in \autoref{sec:svm_training} vorgestellten Parameter wird die Fehlerrate in der Validierung auf insgesamt durchschnittlich 8\% minimiert.
 Obwohl meist eine allgemeinere Klassifikation ohne Overfitting gewünscht ist, zeigt sich beim Testen der Live-Klassifikation ein ähnliches Bild.
 So werden die meisten ausgeführten Gesten der korrekten Klasse zugeordnet.
-
 
 \subsubsection{Fazit}\label{sec:svm_conclusion}
 \ac{SVM}s zeigen, dass sie selbst bei der Verwendung von einer recht niedrigen Anzahl von verwendeten Trainingsdaten in der Lage sind, gute Klassifikationsergebnisse zu erzielen.
 Weitere Vorteile von \ac{SVM}s bestehen darin, dass die Trainingsphase schnell absolviert und durch die Wahl entsprechender Parameter direkt Einfluss auf die Validierungsergebnisse genommen werden kann.
 So liefert der trainierte \ac{SVM}-Klassifikator sehr gute Ergebnisse in der Validierung, da die Fehlerrate auf 8\% minimiert werden konnte.
-Ausgenommen von zwei Gesten zeigte es sich allerdings, dass die Performance in der Live-Klassifikation trotz vermeintlichem Overfitting erstaunlich gut ist.
-Bei den zwei Gesten, die nicht immer zuverlässig erkannt werden, handelt es sich um Geste 2 \ac{OT} und Geste 5 \ac{RO}.
+Ausgenommen von zwei Gesten zeigte es sich ebenfalls, dass die Performance in der Live-Klassifikation trotz vermeintlichem Overfitting erstaunlich gut ist.
+Bei den zwei Gesten, die nicht immer zuverlässig erkannt werden, handelt es sich um Geste 2 \texttt{\ac{OT}} und Geste 5 \texttt{\ac{RO}}.
 ==[wieso]
 
 Allgemein lässt sich die Performance des Klassifikators vor allem durch eine gute Vorverarbeitung und Merkmalsextraktion positiv beeinflussen.
@@ -384,4 +357,4 @@ Allerdings erschweren qualitativ unterschiedlich gute Trainingsdatensätze die V
 Ursache dafür sind vermutlich die verschiedenen Laptops mit ihrer unterschiedlichen verbauten Hardware bezüglich Lautsprecher und Mikrofon.
 Auch das nicht korrekte Ausführen der Gesten bei der Aufnahme für das Erstellen der Trainingsdatensätze ist eine Fehler- bzw. Problemquelle.
 So erfordert die aktuelle Vorverarbeitungsstrategie eine recht exakte Ausführung der Geste unter sehr guten Vorraussetzungen.
-Laute Umgebungsgeräusche sollten vermieden werden (dies kann jedoch auch an der aktuellen Hardwarekonfiguration des Testgeräts liegen), da das Mikrofon überempfindlich reagiert und teilweise selbst normale Musik oder Umgebungsgeräusche Schwankungen im Frequenzspektrum rund um die Referenzfrequenz von 18.500 kHz verursacht.
+Laute Umgebungsgeräusche sollten vermieden werden (dies kann jedoch auch an der aktuellen Hardwarekonfiguration des Testgeräts liegen), da das Mikrofon überempfindlich reagiert und teilweise selbst normale Musik oder Umgebungsgeräusche Schwankungen im Frequenzspektrum rund um die Referenzfrequenz von $18\text{,}5\text{ kHz}$ verursacht.
