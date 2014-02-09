@@ -251,23 +251,18 @@ Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Int
 Dabei handelt es sich um die abstrakte Klasse \texttt{IClassifier}, die von der \ac{SVM}--Klasse im Modul \texttt{svm.py}  implementiert werden muss.
 
 \begin{lstlisting}[float=*,language=Python,caption={Code Snipplet},label={lst:svm_code_snipplets}]{lst:svm_code_snipplets}
-def preprocess_frame(frame_data):
-	try:
-		''' slice frame data if necessary '''
-		if frame_data.shape[0] == wanted_frames:
-			frame = frame_data
-		else:
-			frame = slice_frame(frame_data)
-		''' normalise frame '''
-		normalized_data_with_ref_freq = frame / np.amax(frame)
-		normalized_data = normalized_data_with_ref_freq - ref_freq_frame
-		''' set small noisy data to 0 '''
-		frame = normalized_data
-		irrelevant_samples = np.where(frame <= threshold)
-		frame[irrelevant_samples] = 0.0
-	except:
-		frame = np.zeros(wanted_frames)
-	return frame
+def preprocess_frame(self, frame_data):
+    frame = self.slice_frame(frame_data)
+    try:
+        ''' normalise frame '''
+        normalized_data_with_ref_frequency = frame / np.amax(frame)
+        frame = normalized_data_with_ref_frequency - self.ref_frequency_frame
+
+        ''' set small noisy data to 0 '''
+        frame[np.where(frame <= self.threshold)] = 0.0
+    except:
+        frame = np.zeros(self.wanted_frames)
+    return frame
 \end{lstlisting}
 
 
