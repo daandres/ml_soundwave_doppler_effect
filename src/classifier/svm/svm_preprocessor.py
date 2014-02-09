@@ -12,7 +12,6 @@ from scipy.ndimage import gaussian_filter1d
 
 
 class Preprocessor():
-    
     def __init__(self, config, ref_frequency_frame):
         ''' initialization '''
         self.config = config
@@ -29,8 +28,7 @@ class Preprocessor():
         self.smooth = float(self.config['smooth'])
         self.use_each_second = int(self.config['use_each_second'])
         self.threshold = float(self.config['threshold'])
-        self.new_preprocess = self.config['new_preprocess']
-        
+        self.new_preprocess = self.config['new_preprocess'] in ["True", "true", "1"]
 
     def normalise_framesets(self, framesets, ref_frequency_frame):
         ''' normalise framesets and substract ref_frequencyframe '''
@@ -39,8 +37,7 @@ class Preprocessor():
                 current_frame = framesets[frameset_nr][frame_nr]
                 framesets[frameset_nr][frame_nr] = (current_frame / np.amax(current_frame)) - ref_frequency_frame
         return framesets
-    
-    
+
     def preprocess_frame(self, frame_data):
         try:
             ''' slice frame data if necessary '''
@@ -48,11 +45,11 @@ class Preprocessor():
                 frame = frame_data
             else:
                 frame = self.slice_frame(frame_data)
-                
+
             ''' normalise frame '''
             normalized_data_with_ref_frequency = frame / np.amax(frame)
             normalized_data = normalized_data_with_ref_frequency - self.ref_frequency_frame
-            
+
             ''' set small noisy data to 0 '''
             frame = normalized_data
             irrelevant_samples = np.where(frame <= self.threshold)
@@ -60,8 +57,7 @@ class Preprocessor():
         except:
             frame = np.zeros(self.wanted_frames)
         return frame
-    
-    
+
     def preprocess_frames(self, frames):
         if self.new_preprocess:
             ''' get all recordingframes which contain relevant gesture information '''
@@ -72,20 +68,23 @@ class Preprocessor():
                 processed_frame = self.preprocess_frame(frame)
                 if np.amax(processed_frame) > 0:
                     current_frameset.append(processed_frame)
-                    
+
             ''' if less than 16, append frames with zeros '''
-            while len(current_frameset) < self.framerange/2:
+            while len(current_frameset) < self.framerange / 2:
                 current_frameset.append(np.zeros(self.wanted_frames))
-                
+
             ''' slice the first 16 recordingframes to two lists (even/odd) and compute the average of each pair '''
-            current_frameset = np.asarray(current_frameset[:self.framerange/2])
-            relevant_frames = np.asarray(list(current_frameset[:self.framerange/2:2] + current_frameset[1:self.framerange/2:2]))
-            
+            current_frameset = np.asarray(current_frameset[:self.framerange / 2])
+            relevant_frames = np.asarray(
+                list(current_frameset[:self.framerange / 2:2] + current_frameset[1:self.framerange / 2:2]))
+
             ''' use only each second value if desired, smooth with corresponding value, default values for both parameters are false and 1.5 '''
             if self.use_each_second:
-                processed_frames = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), self.smooth)[::2]
+                processed_frames = gaussian_filter1d(
+                    relevant_frames.reshape(self.wanted_frames * self.framerange / 4, ), self.smooth)[::2]
             else:
-                processed_frames = gaussian_filter1d(relevant_frames.reshape(self.wanted_frames*self.framerange/4,), self.smooth)
+                processed_frames = gaussian_filter1d(
+                    relevant_frames.reshape(self.wanted_frames * self.framerange / 4, ), self.smooth)
 
         else:
             ''' preprocess all frames '''
@@ -94,7 +93,7 @@ class Preprocessor():
             current_frameset = []
             for frame in frames:
                 current_frameset.append(self.preprocess_frame(frame))
-                    
+
             ''' sum up all wanted frames to one gestureframe '''
             gesture_frame = np.asarray(current_frameset).sum(axis=0)
 
@@ -104,13 +103,11 @@ class Preprocessor():
             except RuntimeWarning:
                 processed_frames = np.zeros(gesture_frame.shape[0])
         return processed_frames
-    
-    
+
     def slice_frame(self, frame):
         ''' slice one single 1d-frame from 64 to 40 datavalues '''
         return frame[self.slice_left:(self.samples_per_frame - self.slice_right)]
-    
-    
+
     def slice_framesets(self, framesets):
         ''' slice 3d-framesets from 64 to 40 datavalues '''
         return framesets[:, :, self.slice_left:(self.samples_per_frame - self.slice_right)]

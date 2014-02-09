@@ -84,10 +84,14 @@ class KMeans(IClassifier):
                                     print '------------------------------- by 3'
                                     self.cSignal.emitSignal(10)
                                 else:
-                                    self.wasClass3Before = True
-                                    print '        ', cluster_0, '\n'
-                                    self.cSignal.emitSignal(10)
-                                    self.cSignal.emitSignal(3)
+                                    if self.wasClass4Before:
+                                        #sometime came a single 3 after many 4's so this should fix it
+                                        self.wasClass4Before = False
+                                    else:    
+                                        self.wasClass3Before = True
+                                        print '        ', cluster_0, '\n'
+                                        self.cSignal.emitSignal(10)
+                                        self.cSignal.emitSignal(3)
                             elif cluster_0 == 4:
                                 if self.wasClass4Before:
                                     print '------------------------------- by 4'
@@ -121,11 +125,13 @@ class KMeans(IClassifier):
                                             print  cluster_1, '\n'
                                             if self.isWindows:
                                                 self.shell.SendKeys("{PGUP}",0)
+                                                self.cSignal.emitSignal(0)
                                                 self.cSignal.emitSignal(10)                                            
                                         if cluster_1 == 1:
                                             print '    ', cluster_1, '\n'
                                             if self.isWindows:
                                                 self.shell.SendKeys("{PGDN}",0)
+                                                self.cSignal.emitSignal(1)
                                                 self.cSignal.emitSignal(10)  
                                     else:
                                         if cluster_1 == 0:
@@ -205,13 +211,13 @@ class KMeans(IClassifier):
     def kMeansOnline_16N(self, checkArray):
         class_  = self.kmeans_16N.transform(checkArray)
         cluster =  self.kmH.checkClusterDistance(class_, self.percentRatio)
-
         return cluster   
 
 
     def checkKMeansOnline(self):
         self.checkOnline = not self.checkOnline
-    #new
+
+
     def setPercentRatio(self, pRatio):
         self.percentRatio = pRatio    
-    #bob end
+  
