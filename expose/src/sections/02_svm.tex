@@ -310,8 +310,8 @@ Ein hoher Wert für den Parameter $gamma$ führt in Kombination mit einem hohen 
 ==[degree]
 ==[coef0]
 
-Die Werte in der Konfigurationsdatei sind für ein geringes Overfitting der \ac{SVM} an die Trainingsdaten bekannt und sind in folgender Tabelle (\autoref{tab:svm_parameter}) in der zweiten Zeile aufgelistet.
-Die von dem Python-Modul \texttt{scikit-learn} vorgegebenen Standardwerte befinden sich in der ersten Zeile der selben Tabelle.
+Die Werte in der Konfigurationsdatei sind für ein geringes Overfitting der \ac{SVM} an die Trainingsdaten bekannt und sind in folgender Tabelle (\autoref{tab:svm_parameter}) in der ersten Zeile aufgelistet.
+Die von dem Python-Modul \texttt{scikit-learn} vorgegebenen Standardwerte befinden sich in der zweiten Zeile der selben Tabelle.
 
 \begin{table}[h]
 \centering
@@ -319,10 +319,10 @@ Die von dem Python-Modul \texttt{scikit-learn} vorgegebenen Standardwerte befind
 \hline
   \multicolumn{1}{c}{\textbf{C}} & \multicolumn{1}{c}{\textbf{gamma}} & \multicolumn{1}{c}{\textbf{degree}} & \multicolumn{1}{c}{\textbf{coef0}} \\
  \hline
- 1.0 & 0.00 & 3 & 0.0 \\
- \hline
- 10.0 & 0.25 & 3 & 0.0 \\
+  10.0 & 0.25 & 3 & 0.0 \\
 \hline
+1.0 & 0.00 & 3 & 0.0 \\
+ \hline
 \end{tabular}
 \caption[Parameter für das Training einer SVM]{Parameter für das Training einer SVM}
 \label{tab:svm_parameter}
@@ -332,7 +332,7 @@ Die von dem Python-Modul \texttt{scikit-learn} vorgegebenen Standardwerte befind
 \subsubsection{Evaluation}\label{sec:svm_evaluation}
 Sofern die \ac{SVM} zur Live-Klassifkation eingesetzt wird, ist die Verwendung des kompletten Datensatzes für das Training unbedenklich.
 Die Validierung einer mit dem kompletten Datensatz trainierten \ac{SVM} mit dem gleichen kompletten Datensatz führt allerdings unweigerlich zu einer Verfälschung der Performance.
-Sobald demnach eine prozentuelle Einordnung der Performance einer trainierten \ac{SVM} erwünscht ist, bietet es sich an, den kompletten Datensatzumfang in zwei Teile im Verhältnis $\frac{2}{3}$ zu $\frac{1}{3}$ zu unterteilen und das Training mit dem knapp 800 Datensätze fassenden ersten Teil auszuführen.
+Sobald demnach eine Einordnung der Performance einer trainierten \ac{SVM} erwünscht ist, bietet es sich an, den kompletten Umfang der Datensätze in zwei Teile im Verhältnis $\frac{2}{3}$ zu $\frac{1}{3}$ zu unterteilen und das Training mit dem knapp 800 Datensätze fassenden ersten Teil auszuführen.
 Der zweite Datensatzteil dient der Validierung bzw. dem Testen der trainierten \ac{SVM}.
 
 \begin{figure}[htbp] \centering
@@ -359,7 +359,7 @@ Der zweite Datensatzteil dient der Validierung bzw. dem Testen der trainierten \
  \hline
   5: \texttt{\ac{RO}} & 77\% & 88\% \\
  \hline
-  6: \texttt{\ac{BNS}} \& \ac{BNN} & 96\% & 100\% \\
+  6: \texttt{\ac{BNS}} \& \texttt{\ac{BNN}} & 96\% & 100\% \\
  \hline
   Average & 92\% & 92\% \\
  \hline
@@ -369,8 +369,8 @@ Der zweite Datensatzteil dient der Validierung bzw. dem Testen der trainierten \
 \end{table}
 
 Durch die Wahl der in \autoref{sec:svm_training} vorgestellten Parameter wird die Fehlerrate in der Validierung auf insgesamt durchschnittlich 8\% minimiert.
-Obwohl meist eine allgemeinere Klassifikation ohne Overfitting gewünscht ist, zeigt sich bei der Live-Klassifikation ein ähnliches Bild.
-So werden die meisten ausgeführten Gesten direkt der korrekten Klasse zugeordnet.
+Obwohl meist eine allgemeinere Klassifikation ohne Overfitting gewünscht ist, zeigt sich beim Testen der Live-Klassifikation ein ähnliches Bild.
+So werden die meisten ausgeführten Gesten der korrekten Klasse zugeordnet.
 
 
 \subsubsection{Fazit}\label{sec:svm_conclusion}
