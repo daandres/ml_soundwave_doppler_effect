@@ -43,12 +43,10 @@ class Preprocessor():
         try:
             ''' normalise frame '''
             normalized_data_with_ref_frequency = frame / np.amax(frame)
-            normalized_data = normalized_data_with_ref_frequency - self.ref_frequency_frame
+            frame = normalized_data_with_ref_frequency - self.ref_frequency_frame
 
             ''' set small noisy data to 0 '''
-            frame = normalized_data
-            irrelevant_samples = np.where(frame <= self.threshold)
-            frame[irrelevant_samples] = 0.0
+            frame[np.where(frame <= self.threshold)] = 0.0
         except:
             frame = np.zeros(self.wanted_frames)
         return frame
