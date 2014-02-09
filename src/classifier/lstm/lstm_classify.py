@@ -46,6 +46,12 @@ class LSTMClassify():
             from systemkeys import SystemKeys
             self.outkeys = SystemKeys()
 
+        self.classifyMethods = {1:self.__classify1,
+                           2:self.__classify2,
+                           3:self.__classify3,
+                           4:self.__classify4,
+                           5:self.__classify5
+                           }
     '''
     Interface method for classifcation. WIll be called by LSTM interface and calls different implementations. 
     Preprocess data. 
@@ -54,7 +60,8 @@ class LSTMClassify():
         preprocessedData = data / np.amax(data)
         preprocessedData = util.preprocessFrame(preprocessedData, self.net.datacut, self.net.datafold)
         # diffAvgData = preprocessedData - self.avg
-        out = self.__classify3(preprocessedData)
+        classifyMethod = self.classifyMethods[int(self.config['classifymethod'])]
+        out = classifyMethod(preprocessedData)
         if(out != -1):
             print("Gesture " + str(out) + " detected")
             if(self.outkeys != None):
@@ -168,14 +175,14 @@ class LSTMClassify():
             data = data - self.avg
             # print data.max()
             if data.max() > self.maxValue and self.start == 0:
-                #print "starting ..."
+                # print "starting ..."
                 self.start = 1
 
             if self.start:
                 self.datalist.append(data)
                 self.datanum += 1
                 if(self.datanum % 32 == 0):
-                    #print "net ac"
+                    # print "net ac"
                     self.net.reset()
                     out = self.net._activateSequence(self.datalist)
                     print(str(out))
@@ -220,15 +227,15 @@ class LSTMClassify():
                 self.buffer.pop(0)
                 self.buffer.append(data)
             if data.max() > self.maxValue and self.start == 0:
-                #print "starting ..."
+                # print "starting ..."
                 self.start = 1
 
             if self.start:
                 self.datalist.append(data)
                 if(self.datalist.__len__() + self.buffer.__len__()) % 32 == 0:
-                    #print "net ac"
-                    #print "buffer: " + str(self.buffer.__len__())
-                    #print "list: " + str(self.datalist.__len__())
+                    # print "net ac"
+                    # print "buffer: " + str(self.buffer.__len__())
+                    # print "list: " + str(self.datalist.__len__())
                     self.net.reset()
                     out = self.net._activateSequence(self.datalist)
                     print(str(out))
