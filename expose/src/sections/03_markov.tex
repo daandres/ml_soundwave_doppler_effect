@@ -164,8 +164,10 @@ berechnet. Der Algorithmus nutzt hierfür die geltende Markov Eigenschaft
 aus das nur die Speicherung eines internen Zustandes erlaubt. Hierfür definiert
 man als Vorwärtsvariable \(\alpha_{t}(i)\) die Wahrscheinlichkeit, bei
 gegebenem Model \lampda den Anfang der betrachteten Observationsfolge \(O_{t}\)
-zu erzeugen und zum Zeitpunkt \(t\) den Zustand i zu erreichen.\\
-\( \alpha_{t}(i) = P(O_{1},O_{2},\ldots,O_{t},s_{t}=i|\lambda) \)\\
+zu erzeugen und zum Zeitpunkt \(t\) den Zustand i zu erreichen.
+\begin{equation}
+\alpha_{t}(i) = P(O_{1},O_{2},\ldots,O_{t},s_{t}=i|\lambda)
+\end{equation}
 Die Vorwährtsvariable lässt sich nun mit den folgenden Schritten rekursiv
 berechnen um die Gesamtwahrscheinlichkeit des Models zu erhalten.
 \begin{enumerate}
@@ -173,7 +175,8 @@ berechnen um die Gesamtwahrscheinlichkeit des Models zu erhalten.
 		$\alpha_{1}(i) := \pi_{i}b{i}(O_{1})$
   \item Rekursion\\
 	für alle Zeitpunkte \(t, t=1 \ldots T-1\)\\
-	\(\alpha_{t+1}(j) := \sum_{i}\{\alpha_{t}(i)\alpha_{ij}\}b_{j}(O_{t+1})\)
+	\(\alpha_{t+1}(j) :=
+	\sum\limits_{i}\{\alpha_{t}(i)\alpha_{ij}\}b_{j}(O_{t+1})\)
   \item Rekursionsabschluss\\
   	\(P(O|\lambda) = \sum\limits_{i=1}^N \alpha_{T}(i)\)
 \end{enumerate}
@@ -184,11 +187,39 @@ berechnen um die Gesamtwahrscheinlichkeit des Models zu erhalten.
 Bei der Dekodierung soll die optimale, bzw. wahrscheinlichste Zustandsfolge
 \(s^*\) aus der Menge der Zustände ermittelt werden die eine gegebene
 Observationsfolge erzeugt. Zur Ermittlung der optimalen Zustandsfolge bedient
-man sich des Viterbi-Algorithmus.
-\\
-
-
-\textbf{Training} \\
+man sich des Viterbi-Algorithmus, einem induktiven Verfahren das dem Forward
+Algorithmus sehr ähnlich ist. Zu Begin werden erneut die Wahrscheinlichkeiten
+\(\delta_{t}(i)\) für partiell optimale Pfade definiert, die das Anfangssegment
+der Observationsfolge bis \(O_{t}\) mit maximaler Wahrscheinlichkeit erzeugen
+und in Zustand \(i\) enden.
+\begin{equation}
+\delta_{t}(i) =
+\max\limits_{s_{1},s_{2}, \ldots
+,s_{t}}P(O_{1},O_{2},\ldots,O_{t},s_{1},s_{2},\ldots,s_{t}=i|\lambda) 
+\end{equation}
+Der Algorithmus entspricht weitgehend dem Forward-Algorithmus jedoch werden
+anstatt der Summe im Rekursionsabschluss, die Maximalen über die in den
+Vorgängerzuständen vorliegenden Wahrscheinlichkeiten gebildet.
+\begin{enumerate}
+  \item Initialisierung\\
+		\(\delta_{1}(i) := \pi_{i}b{i}(O_{1})\)\\
+		\(\phi_{1}(i):=0\)
+  \item Rekursion\\
+	für alle Zeitpunkte \(t, t=1 \ldots T-1\)\\
+	\(\delta_{t+1}(j) :=
+	\max\limits_{i}\{\delta_{t}(i)\alpha_{ij}\}b_{j}(O_{t+1})\)\\
+	\(\phi_{t+1}(j):= \operatorname{arg\,max}\limits_{i}\{\lambda_{t}(i)\alpha_{ij} \)
+  \item Rekursionsabschluss\\
+  	\(P^{*}(O|\lambda) = \(P(O,s^{*}|\lambda) = \max_{i}\lambda_{T}(i)
+  	\alpha_{T}(i)\)
+  \item Rückverfolgung des Pfades\\
+	für alle Zeitpunkte \(t, t=1 \ldots T-1\)\\
+	\(s_{t}^{*}=\phi_{t+1}(s_{t+1}^{*})\)
+\end{enumerate}
+Mit \(\phi_{t}(j)\) wird ein ``Rückwärtszeiger'' definiert der für jedes
+entsprechende \(\delta_{t}(j)\) entlang der partiellen Pfade den jeweils
+optimalen Vorgängerzustand speichert.
+ \textbf{Training} \\
 
 Um das Training und die Klassifizierung möglichst genau und perfomant umzusetzen, 
 ist es notwendig die aufgenommenen Daten auzubereiten, dies ist Thema des nächsten Abschnitts
