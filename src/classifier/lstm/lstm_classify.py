@@ -31,7 +31,7 @@ class LSTMClassify():
         self.predhistoryforclassify3 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
         self.classify3start = False
 
-        # classify4
+        # classify4 & 5
         self.start = 0
         self.buffer = []
         self.liveData = []
@@ -162,20 +162,20 @@ class LSTMClassify():
                         self.maxValue = a
                 print self.maxValue
                 # maxValue ein bischen erhohen (steuert empfindlichkeit der erkennung)
-                self.maxValue = self.maxValue + 0.0001
+                self.maxValue = self.maxValue + 0.05
                 self.beginMax = 0
         else:
             data = data - self.avg
             # print data.max()
             if data.max() > self.maxValue and self.start == 0:
-                print "starting ..."
+                #print "starting ..."
                 self.start = 1
 
             if self.start:
                 self.datalist.append(data)
                 self.datanum += 1
                 if(self.datanum % 32 == 0):
-                    print "net ac"
+                    #print "net ac"
                     self.net.reset()
                     out = self.net._activateSequence(self.datalist)
                     print(str(out))
@@ -220,15 +220,15 @@ class LSTMClassify():
                 self.buffer.pop(0)
                 self.buffer.append(data)
             if data.max() > self.maxValue and self.start == 0:
-                print "starting ..."
+                #print "starting ..."
                 self.start = 1
 
             if self.start:
                 self.datalist.append(data)
                 if(self.datalist.__len__() + self.buffer.__len__()) % 32 == 0:
-                    print "net ac"
-                    print "buffer: " + str(self.buffer.__len__())
-                    print "list: " + str(self.datalist.__len__())
+                    #print "net ac"
+                    #print "buffer: " + str(self.buffer.__len__())
+                    #print "list: " + str(self.datalist.__len__())
                     self.net.reset()
                     out = self.net._activateSequence(self.datalist)
                     print(str(out))
