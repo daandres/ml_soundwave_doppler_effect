@@ -14,15 +14,10 @@ class Feature(object):
     the bitstring is shifted left and combined OR with 1 (append 1). For every left shift the bitstring 
     is shifted left (append 0).
     '''
-    def featureOrderOfShifts(self, gesture):
+    def featureOrderOfShifts(self, gesture, shifts):
         
         order_binary = 0
 
-        gesture.shifts_left = self.findShifts(gesture.bins_left_filtered, 'left')
-        gesture.shifts_right = self.findShifts(gesture.bins_right_filtered, 'right')
-        shifts = gesture.shifts_left + gesture.shifts_right
-        shifts = sorted(shifts,key=lambda x: x[1])
-                        
         for shift in shifts:
             if('both' in shift):
                 if(shift[0] == 'right'):
@@ -35,53 +30,24 @@ class Feature(object):
     '''
     The function identifies concurrent right-left shifts and returns the quantity
     '''
-    def featureConcurrentShifts(self, gesture, maxDiff):
-        
+    def featureConcurrentShifts(self, gesture, maxDiff, shiftOrder):
         concurrent_counter = 0
-        orderList = []
-
-        gesture.shifts_left = self.findShifts(gesture.bins_left_filtered, 'left')
-        gesture.shifts_right = self.findShifts(gesture.bins_right_filtered, 'right')
-        shifts = gesture.shifts_left + gesture.shifts_right
-        shifts = sorted(shifts,key=lambda x: x[1])
-        
-        prev = 0
-        
-        for i in range(len(shifts)):
-            shift = shifts[i]
-            if(i > 0):
-                if(prev[0] != shift[0]):
-                    start_current = shift[1]
-                    start_prev = prev[1]
-                    diffStart = abs(start_current - start_prev)
-                    if(diffStart < maxDiff):
-                        orderList.pop()
-                        orderList.append('both')
-                        concurrent_counter += 1
-
-            orderList.append(shift[0])        
-            prev = shift
-                
-        
-        gesture.shift_order = orderList
-        return concurrent_counter    
-    
+        for shift in shiftOrder:
+            if(shift == 'both'):
+                concurrent_counter += 1
+        return concurrent_counter
+            
     '''
     The function computes the distances between sequenced right-left or accordingly
     left-right shifts and between left-left / right-right shifts
     '''
-    def shiftDistance(self, gesture):
-        shift_order = gesture.shift_order
+    def shiftDistance(self, gesture, shifts, shift_order):
         distance_contrary = 0
         distance_equal = 0
         
         contrary_list = []
         equal_list = []
         
-        shifts_left = gesture.shifts_left
-        shifts_right = gesture.shifts_right
-        shifts = shifts_left + shifts_right
-        shifts = sorted(shifts,key=lambda x: x[1])
         if(len(shift_order) > 1):
             prev = 0
             for shift in shifts:
@@ -102,11 +68,8 @@ class Feature(object):
     '''
     The function computes the difference of the mean amplitude of right-left shifts
     ''' 
-    def featureAmplitudes(self, gesture):
+    def featureAmplitudes(self, gesture, shifts):
         ampl_val = 0
-        
-        shifts = gesture.shifts_left + gesture.shifts_right
-        shifts = sorted(shifts,key=lambda x: x[1])
         
         right_lefts = []
         prev = 0
@@ -123,7 +86,7 @@ class Feature(object):
             maxAmpl1 = self.getMaxAmplitude(shift_tuple[0][1], shift_tuple[0][2], gesture.amplitudes_right_filtered)
             maxAmpl2 = self.getMaxAmplitude(shift_tuple[1][1], shift_tuple[1][2], gesture.amplitudes_left_filtered)
             diff = abs(maxAmpl1 - maxAmpl2)
-            ampl_val = diff / 100.
+            ampl_val = diff 
             ampl_vals.append(ampl_val)
         
         if(len(ampl_vals) > 0):
@@ -142,40 +105,14 @@ class Feature(object):
     '''
     The function counts the right and the left shifts
     '''
-    def featureCountOfShifts(self, gesture):
-        countOfShiftLeft = len(self.findShifts(gesture.bins_left_filtered, 'left'))
-        countOfShiftRight = len(self.findShifts(gesture.bins_right_filtered, 'right'))
+    def featureCountOfShifts(self, gesture, shifts):
+        countOfShiftLeft = 0
+        countOfShiftRight = 0
+        for shift in shifts:
+            if(shift[0] == 'right'):
+                countOfShiftRight += 1
+            elif(shift[0] == 'left'):
+                countOfShiftLeft += 1
         return countOfShiftLeft, countOfShiftRight
   
-    # Verschiebung ist charakterisiert durch Anfang, Ende, maximale Binanzahl 
-    # und ob sie links oder rechts des Peaks ist        
-    '''
-    The function finds shifts and returns a list of shifts. A shift is a tuple of the direction
-    (is it a left or right shift?), startSample, stopSample, max bin count 
-    '''
-    def findShifts(self, values, direction):
-        commonValue = np.argmax(np.bincount(values))
-        found = False
-        tempStart = 0
-        tempStop = 0
-        tempMax = 0
-        shifts = []
-        for i in range(len(values)):
-            value = values[i]
-            if(value > commonValue and found == False):
-                tempStart = i
-                tempMax = value
-                found = True
-            elif(value > commonValue and found == True):
-                if(value > tempMax):
-                    tempMax = value
-            elif(value <= commonValue and found == True):
-                tempStop = i
-                shift = (direction, tempStart, tempStop, tempMax)
-                shifts.append(shift)
-                tempStart, tempStop, tempMax = 0,0,0
-                found = False
-        return shifts
-    
-    
     

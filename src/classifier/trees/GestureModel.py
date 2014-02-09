@@ -29,12 +29,6 @@ class GestureModel(object):
         self.amplitudes_left_filtered = []
         self.amplitudes_right_filtered = []
         
-        self.shifts_left = []
-        self.shifts_right = []
-        self.shifts = []
-        
-        self.featureVector = []
-        
         # iterate over samples and extract num of bins on left/right side of peak larger than 10% of max peak
         for sample in data:
             filtered = ndi.gaussian_filter1d(sample, sigma=1, output=np.float64, mode='nearest')
@@ -84,12 +78,7 @@ class GestureModel(object):
             self.amplitudes_right.append(amp_left)
             self.amplitudes_right_filtered.append(amp_left_filtered)
             
-        # set shifts
-        self.shifts_left = self.findShifts(self.bins_left_filtered, 'left')
-        self.shifts_right = self.findShifts(self.bins_right_filtered, 'right')
-        self.shifts = sorted(self.shifts_left + self.shifts_right,key=lambda x: x[1])
         
-        # set shift orderlist
     
 
     '''
@@ -250,7 +239,7 @@ class GestureModel(object):
     The function finds shifts and returns a list of shifts of given direction. A shift is a 
     tuple of the direction (is it a left or right shift?), startSample, stopSample, max bin count 
     '''
-    def findShifts(self, values, direction):
+    def findShiftsByDirection(self, values, direction):
         commonValue = np.argmax(np.bincount(values))
         found = False
         tempStart = 0
@@ -273,4 +262,40 @@ class GestureModel(object):
                 tempStart, tempStop, tempMax = 0,0,0
                 found = False
         return shifts
+    
+    '''
+    The function returns a list of shifts, using function findShiftsByDirection
+    '''    
+    def findShiftList(self):
+        # set shifts
+        shifts_left = self.findShiftsByDirection(self.bins_left_filtered, 'left')
+        shifts_right = self.findShiftsByDirection(self.bins_right_filtered, 'right')
+        shifts = shifts_left + shifts_right
+        shifts = sorted(shifts,key=lambda x: x[1])
+        return shifts
+    
+    '''
+    Function returns a string list of the chronological order of the shifts. Shifts
+    are 'left', 'right' or 'both' (concurrent shift).
+    '''
+    def findShiftOrder(self, maxDiff, shifts):
+        orderList = []
+        prev = 0
         
+        for i in range(len(shifts)):
+            shift = shifts[i]
+            if(i > 0):
+                if(prev[0] != shift[0]):
+                    start_current = shift[1]
+                    start_prev = prev[1]
+                    diffStart = abs(start_current - start_prev)
+                    # concurrent shifts are identified if they start point is lower than
+                    # defined maxDiff (2 is a good choice)
+                    if(diffStart < maxDiff):
+                        orderList.pop()
+                        orderList.append('both')
+
+            orderList.append(shift[0])        
+            prev = shift
+        
+        return orderList    
