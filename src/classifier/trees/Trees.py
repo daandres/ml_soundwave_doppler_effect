@@ -23,7 +23,6 @@ class Signal(QtCore.QObject):
         self.view = view # trees gui
         self.newGesture.connect(view._receiveGesture)
 
-    
 
 '''
 Implementation of tree classifier
@@ -38,14 +37,15 @@ class Trees(IClassifier):
         self.learning_rate = float(self.config['learning_rate'])
         gesture_ids = self.config['gestures'].split(',')
         self.gesture_ids = [int(x) for x in gesture_ids]
-        self.queue_buffer = int(self.config['queue_buffer'])
-        self.clf = GradientBoostingClassifier(n_estimators=self.estimators, max_depth=self.max_depth, learning_rate=self.learning_rate)
+        self.queue_buffer_len = int(self.config['queue_buffer_len'])
+        
         self.data = []
-        self.queue = deque()
-        self.temp = deque()
-        self.liste = []
+        # frame buffer
+        self.frame_buffer = deque()
+        self.data_buffer = deque()
         
-        
+        # configure classifier
+        self.clf = GradientBoostingClassifier(n_estimators=self.estimators, max_depth=self.max_depth, learning_rate=self.learning_rate)
         
 
     def getName(self):
@@ -70,24 +70,28 @@ class Trees(IClassifier):
         
 
     def classify(self, data):
-        if(len(self.queue) == self.queue_buffer):
+        # collect defined number of frames and process the data in every step 
+        # and append them to data_buffer
+        if(len(self.frame_buffer) == self.queue_buffer_len):
             gestures = []
-            gesture = GestureModel(list(self.queue))
+            gesture = GestureModel(list(self.frame_buffer))
             gestures.append(gesture)
             processedData = self.__preProcess(gestures)
-            self.temp.append(processedData)
-            if(len(self.temp) == self.queue_buffer):
+            self.data_buffer.append(processedData)
+            # collect defined number of data and predict every item of the queue
+            if(len(self.data_buffer) == self.queue_buffer_len):
                 recognizedGestures = []
-                for item in list(self.temp):
+                for item in list(self.data_buffer):
                     prediction = self.clf.predict(item)
                     recognizedGestures.extend(prediction)
+                # calculate the frequent prediction
                 result = numpy.argmax(numpy.bincount(recognizedGestures))
                 if(result != 6):
                     print "Result: ", result
                 
-                self.temp.clear()
-            self.queue.popleft()
-        self.queue.append(data)
+                self.data_buffer.clear()
+            self.frame_buffer.popleft()
+        self.frame_buffer.append(data)
 
     def startValidation(self):
         result = self.clf.predict(self.X_test) == self.y_test
@@ -113,24 +117,29 @@ class Trees(IClassifier):
         data = []
         for i in range(len(gestures)):
             featureVector = []
+            # preprocess data
             relative = gestures[i].smoothRelative(gestures[i].bins_left_filtered, gestures[i].bins_right_filtered, 2)
             smoothed = gestures[i].smoothToMostCommonNumberOfBins(relative[0], relative[1], 1)
             gestures[i].bins_left_filtered, gestures[i].bins_right_filtered = gestures[i].combineNearPeaks(smoothed[0], smoothed[1])
-            shifts_left, shifts_right = Feature().featureCountOfShifts(gestures[i])
+            # order of shifts with direction, start, stop and max width
+            shiftList = gestures[i].findShiftList()
+            # order of shift directions ('right', 'left', 'both')
+            shiftOrder = gestures[i].findShiftOrder(2, shiftList)
+            
+            # compute featureVector
+            shifts_left, shifts_right = Feature().featureCountOfShifts(gestures[i], shiftList)
             featureVector.append(shifts_left + shifts_right)
             featureVector.append(shifts_left)
             featureVector.append(shifts_right)
             
-            featureVector.append(Feature().featureOrderOfShifts(gestures[i]))
-            featureVector.append(Feature().featureConcurrentShifts(gestures[i], 2))
-            featureVector.append(Feature().featureAmplitudes(gestures[i]))
+            featureVector.append(Feature().featureOrderOfShifts(gestures[i], shiftList))
+            featureVector.append(Feature().featureConcurrentShifts(gestures[i], 2, shiftOrder))
+            featureVector.append(Feature().featureAmplitudes(gestures[i], shiftList))
             
-            distance_contrary, distance_equal = Feature().shiftDistance(gestures[i])
+            distance_contrary, distance_equal = Feature().shiftDistance(gestures[i], shiftList, shiftOrder)
             featureVector.append(distance_contrary)
             featureVector.append(distance_equal)
  
-            gestures[i].featureVector = featureVector
-            
             data.append(featureVector)
         return data
     
