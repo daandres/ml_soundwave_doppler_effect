@@ -168,6 +168,12 @@ Das Beispiel \ref{fig:ex_kernel} verdeutlicht die Anwendung des Kernel-Tricks  a
     \label{fig:ex_kernel}
 \end{figure}
 
+<<<<<<< HEAD
+=======
+\newpage
+
+
+>>>>>>> c9624e83bd2c3bc6c25caeed7bf28874245f288d
 Nicht jede beliebige Funktion ist eine Kernfunktion. Kernfunktionen müssen die Bedingungen nach dem Satz von Mercer \cite[S. 127]{Marsland} erfüllen. 
 Gängige Kernfunktionen sind:
 
@@ -242,6 +248,7 @@ Aufgrund des Einsatzes von verschiedenen Klassifikatoren ist ein gemeinsames Int
 Dabei handelt es sich um die abstrakte Klasse \texttt{IClassifier}, die von der \ac{SVM}--Klasse im Modul \texttt{svm.py} implementiert werden muss.
 \begin{lstlisting}[float=*,language=Python,caption={Code Snipplet},label={lst:svm_code_snipplets}]{lst:svm_code_snipplets}
 def preprocess_frame(self, frame_data):
+<<<<<<< HEAD
 	frame = self.slice_frame(frame_data)
 	try:
 		''' normalise frame '''
@@ -252,6 +259,19 @@ def preprocess_frame(self, frame_data):
 	except:
 		frame = np.zeros(self.wanted_frames)
 	return frame
+=======
+    frame = self.slice_frame(frame_data)
+    try:
+        ''' normalise frame '''
+        normalized_data_with_ref_frequency = frame / np.amax(frame)
+        frame = normalized_data_with_ref_frequency - self.ref_frequency_frame
+
+        ''' set small noisy data to 0 '''
+        frame[np.where(frame <= self.threshold)] = 0.0
+    except:
+        frame = np.zeros(self.wanted_frames)
+    return frame
+>>>>>>> c9624e83bd2c3bc6c25caeed7bf28874245f288d
 \end{lstlisting}
 Für die Implementierung der \ac{SVM}--Klasse wird die Python-Bibliothek \textit{scikit-learn} verwendet. 
 Die Bibliothek stellt neben einer Vielzahl von weiteren Modulen und Klassen unter anderem auch eine Implementierung einer \ac{SVM} zur Verfügung.

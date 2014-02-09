@@ -45,7 +45,7 @@ So lässt sich eine Markov-Kette durch Zustandsraum \(S\), den Übergangsmatrix 
 Veranschaulichen lässt sich eine Markov Kette als gerichtetes Zustandsdiagramm (Abb. \ref{fig:simple_mc}) mit den Zuständen \(S\) und 
 mit den Übergangswahrscheinlichkeiten \(X_i\) an den Kanten
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.33\textwidth]{markov/simple_mc.png}
+    \includegraphics[width=0.5\textwidth]{markov/simple_mc.png}
     \caption{Einfaches Zustandsdiagramm einer \acl{MK} (Quelle: \url{de.wikipedia.org/wiki/Markow-Kette})}
     \label{fig:simple_mc}
 \end{figure}
@@ -61,7 +61,7 @@ Das Wetter kann entweder ``sunny'' oder ``rainy'' sein, zu Beginn (Tag 0, \( t =
 Die Wahrscheinlichkeit, dass auf ``sunny'' wieder ``sunny'' folgt, liegt bei 90\% (``rainy'' = 1 - ``sunny'' = 10\%). 
 Nach ``rainy'' liegt die Wahrscheinlichkeit jeweils bei 50\%.  
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.4\textwidth]{markov/simple_mc_example.png}
+    \includegraphics[width=0.5\textwidth]{markov/simple_mc_example.png}
     \caption{ Gerichteter Zustandsgraph der modellierten Wetter-\acl{MK} }
     \label{fig:simple_mc_example}
 \end{figure}
@@ -238,7 +238,7 @@ Eine Aufnahme wird beschrieben durch ein zwei-dimensionales Array aus 32 Frames 
 Im Ruhezustand bildet sich ein Normalsignal mit einem Peak um die ausgesendete Frequenz (18.500hz, siehe Abb. \ref{fig:data_raw}).
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.4\textwidth]{markov/data_raw.png}
+    \includegraphics[width=0.5\textwidth]{markov/data_raw.png}
     \caption{Rohdaten direkt vom Recorder (\acl{RLO} Geste)}
     \label{fig:data_raw}
 \end{figure}
@@ -257,7 +257,7 @@ Darum wird werden niedrige Amplitudenwerte \( x \) verstärkt und hohe abgeschw�
 Folgende Funktion wird auf alle Werte angewendet  (Verlauf siehe Abb. \ref{fig:funktion}): \\
 \[ f(x) = 2.8 \cdot ( x - 1.15 )^2 + 0.75 \]
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.4\textwidth]{markov/funktion.png}
+    \includegraphics[width=0.5\textwidth]{markov/funktion.png}
     \caption{Kubische Parabel zur Verstärkung / Abschwächung der Amplitude}
     \label{fig:funktion}
 \end{figure}
@@ -266,7 +266,7 @@ Nach der Vorverarbeitung sind die schwächeren Frequenzbereiche links und rechts
 herausgearbeitet (Siehe Abb. \ref{fig:data_preproc}).  
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.4\textwidth]{markov/data_preproc.png}
+    \includegraphics[width=0.5\textwidth]{markov/data_preproc.png}
     \caption{Daten nach der Vorverarbeitung (\acl{RLO} Geste)}
     \label{fig:data_preproc}
 \end{figure}
@@ -277,7 +277,7 @@ Diese mitteln alle eingegebenen Trainingsdaten und erstellen pro Frame ein \acl{
 \ref{sec:impl}). So wird eine Geste mit n-Frames durch n-\acl{GMM}s repräsentiert.
 
 \begin{figure}[htbp] \centering
-    \includegraphics[width=0.4\textwidth]{markov/data_gmm.png}
+    \includegraphics[width=0.5\textwidth]{markov/data_gmm.png}
     \caption{Sampledaten aus dem trainierten \acl{GMM} (\acl{RLO} Geste)}
     \label{fig:data_gmm}
 \end{figure}

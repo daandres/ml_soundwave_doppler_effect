@@ -109,7 +109,7 @@ class GestureApplication():
         self.du = du
         self.gestures = {}
         
-        state = 1
+        state = 0
         if state == 1:
             try:
                 ''' Load HMM Configurationfile to Classifiy '''

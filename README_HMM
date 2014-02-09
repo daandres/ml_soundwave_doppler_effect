@@ -1,0 +1,30 @@
+### Readme for the HMM (Hidden Markov Model) classifier in the gesture recognition application
+
+The HMM is a stochastic Model for sequential Data, which uses markov model to model hidden states.
+Each HMM represents a gesture in the application, every state (frame of a gesture) is represented 
+by an GMM (Gaussian Mixture Model)
+
+The HMM-Module provides training and classifying given record data. It also can be used to plot the raw, 
+preprocessed and sample data from trained GMM. 
+
+
+### Usage:
+Config parameters are explained in config/default.cfg. On first start a config/personal.cfg file is created. Changes can be made here. 
+Two already trained networks are provided and specified in default.cfg. 
+You can choose:
+0	all gestures provided by the application, trained with all data.
+1	3 gestures trained with well formed data. classifying work kinda good.
+	gesture 0, gesture 1
+	gesture 5 changed to "Bottom-To-Top-One-Hand"
+	 
+
+
+some commands for console:
+u hmm 				- loads HMM module, with configured gesture set 
+c					- start classification
+l ds gesture_number - (Overloaded) starts plot class and show raw training data
+	right click 	- change mode: raw, preprocessed or gmm samples
+	mousewheel		- change data index
+	0-7				- change gesture
+	
+

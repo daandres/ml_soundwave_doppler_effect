@@ -39,21 +39,14 @@ class Preprocessor():
         return framesets
 
     def preprocess_frame(self, frame_data):
+        frame = self.slice_frame(frame_data)
         try:
-            ''' slice frame data if necessary '''
-            if frame_data.shape[0] == self.wanted_frames:
-                frame = frame_data
-            else:
-                frame = self.slice_frame(frame_data)
-
             ''' normalise frame '''
             normalized_data_with_ref_frequency = frame / np.amax(frame)
-            normalized_data = normalized_data_with_ref_frequency - self.ref_frequency_frame
+            frame = normalized_data_with_ref_frequency - self.ref_frequency_frame
 
             ''' set small noisy data to 0 '''
-            frame = normalized_data
-            irrelevant_samples = np.where(frame <= self.threshold)
-            frame[irrelevant_samples] = 0.0
+            frame[np.where(frame <= self.threshold)] = 0.0
         except:
             frame = np.zeros(self.wanted_frames)
         return frame
@@ -105,8 +98,12 @@ class Preprocessor():
         return processed_frames
 
     def slice_frame(self, frame):
-        ''' slice one single 1d-frame from 64 to 40 datavalues '''
-        return frame[self.slice_left:(self.samples_per_frame - self.slice_right)]
+        ''' slice frame data if necessary '''
+        if frame.shape[0] == self.wanted_frames:
+            return frame
+        else:
+            ''' slice one single 1d-frame from 64 to 40 datavalues '''
+            return frame[self.slice_left:(self.samples_per_frame - self.slice_right)]
 
     def slice_framesets(self, framesets):
         ''' slice 3d-framesets from 64 to 40 datavalues '''
