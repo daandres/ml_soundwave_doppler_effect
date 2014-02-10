@@ -108,18 +108,11 @@ class GestureApplication():
     def __init__(self, du=d.DataUtil()):
         self.du = du
         self.gestures = {}
-        
-        state = 0
-        if state == 1:
-            try:
-                ''' Load HMM Configurationfile to Classifiy '''
-                self.loadModels('classifier/hmm/data/hmm_config_paul.cfg')
-            except Exception:
-                ''' Create HMM Model based on all existing Gesture datasets '''
-                self.trainAndSave()
-        else:
+        try:
+            self.loadModels('classifier/hmm/data/' + c.trainedModel + '.cfg')
+        except Exception:
+            ''' Create HMM Model based on all existing Gesture datasets '''
             self.trainAndSave()
-
 
     def createGesture(self, gesture, className):
         mu = h.HMM_Util()
