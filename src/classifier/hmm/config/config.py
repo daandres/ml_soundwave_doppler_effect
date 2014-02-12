@@ -1,8 +1,8 @@
 ### CLASSIFICATOR ###
 
-train = True
+train = False
 
-classificator = 0
+classificator = 1
 
 if classificator == 0:                      # use hmm for default gestures
     classList = [0, 1, 2, 3, 4, 5, 6, 7]    # classes to be trained and classified
@@ -11,7 +11,7 @@ if classificator == 0:                      # use hmm for default gestures
 elif classificator == 1:
     classList = [0, 1, 5, 6, 7]             # classes to be trained and classified
     names = ["paul"]                        # datanames to train from
-    trainedModel = "hmmGestures"
+    trainedModel = "config"
 ### DATA PREPROCESSING ###
 framesTotal = 32                        # incomming frames
 binsTotal = 64                          # incomming bins per frame
@@ -31,7 +31,7 @@ components = framesTotal                # use 1 state per frame
 ### TRAIN GMM ###
 covariance_type_gmm='tied'
 n_iter_gmm=5                           
-n_components_gmm=8                      # Number mixture components 
+n_components_gmm=3                      # Number mixture components 
 n_mix=components                        # Number of frames
 n_init_gmm = 1
 
@@ -47,7 +47,7 @@ logprobBound = -100
 ### Live Classification ###
 classificationTreshhold = 0.05          # Percantage (0.1 = 10%)
 
-
+n_windows = 3
 
 
 

@@ -23,7 +23,8 @@ class HMM(IClassifier):
         self.classList = c.classList
         self.du = d.DataUtil()
         self.gestureApp = GestureApplication(self.du)
-        self.gestureWindows=[[],[]]
+        self.n_windows = c.n_windows
+        self.gestureWindows=[[]]*self.n_windows
         self.activeWindow = 0
         self.framesCut = round((c.framesBefore+c.framesAfter+1))/2
         if os.name == 'nt':
@@ -42,16 +43,19 @@ class HMM(IClassifier):
         return self.gestureApp.createGestures(self.classList)
 
     def classify(self, data):
-        for i in range(2):
+        
+        for i in range(self.n_windows):
             self.gestureWindows[i].append(data)
             gestureWindow = self.gestureWindows[i]
+            # window is full
             if (len(gestureWindow)==c.framesTotal):
                 seq = np.array([gestureWindow])
                 self.startClassificationAction(seq)
                 self.gestureWindows[i] = []
+                
             if (len(gestureWindow)==(c.framesTotal-self.framesCut)) and (self.activeWindow == i):
-                self.gestureWindows[(i+1)%2] = []
-                self.activeWindow = (i+1)%2
+                self.gestureWindows[(i+1)%self.n_windows] = []
+                self.activeWindow = (i+1)%self.n_windows
         
 
     def startClassificationAction(self,seq):
