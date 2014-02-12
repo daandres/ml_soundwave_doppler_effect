@@ -108,11 +108,15 @@ class GestureApplication():
     def __init__(self, du=d.DataUtil()):
         self.du = du
         self.gestures = {}
-        try:
-            self.loadModels('classifier/hmm/data/' + c.trainedModel + '.cfg')
-        except Exception:
-            ''' Create HMM Model based on all existing Gesture datasets '''
+        
+        if c.train:
             self.trainAndSave()
+        else:
+            try:
+                self.loadModels('classifier/hmm/data/' + c.trainedModel + '.cfg')
+            except Exception:
+                ''' Create HMM Model based on all existing Gesture datasets '''
+                self.trainAndSave()
 
     def createGesture(self, gesture, className):
         mu = h.HMM_Util()
@@ -227,7 +231,7 @@ class GestureApplication():
                 print className, accuracy, scores
         
         timestamp = str(int(time.time()))
-        self.saveModels('classifier/hmm/data/config_' + timestamp +'.cfg', '0, 1, 2, 3, 4, 5, 6, 7')
+        self.saveModels('classifier/hmm/data/config_' + timestamp +'.cfg', str(c.classList).replace("[", "").replace("]", ""))
         print "hmm: training finished"
 
 
