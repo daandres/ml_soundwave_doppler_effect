@@ -111,6 +111,7 @@ class GestureApplication():
     
     def __init__(self, du=d.DataUtil()):
         self.du = du
+        self.classList = c.classList
         self.gestures = {}
         
         if c.train:
@@ -120,6 +121,7 @@ class GestureApplication():
                 self.loadModels('classifier/hmm/data/' + c.trainedModel + '.cfg')
             except Exception:
                 ''' Create HMM Model based on all existing Gesture datasets '''
+                self.gestures = {}
                 self.trainAndSave()
 
     def createGesture(self, gesture, className):
@@ -202,31 +204,31 @@ class GestureApplication():
         config.add_section('General')
         config.set('General','Configuration Name', configurationName)
         config.set('General','Number of gestures', len(self.gestures))
-        i = 0
         for ges in self.gestures.values():
-            config.add_section('Gesture'+str(i))
-            config.set('Gesture'+str(i),'hmm',pickle.dumps(ges))
-            i += 1
+            config.add_section(ges.className)
+            config.set(ges.className,'hmm',pickle.dumps(ges))
         with open(filePath, 'wb') as configfile:
             config.write(configfile)
     
     def loadModels(self, filePath):
         config = ConfigParser.ConfigParser()
         config.read(filePath)
-        numberOfGestures = config.getint('General', 'number of gestures')
-        for i in range(numberOfGestures):
-            gestureConfig = str(config.get('Gesture'+str(i),'hmm'))
+        classList = config.get('General', 'configuration name').split(", ")
+        for i in classList:
+            configName = GESTURE_PREFIX+str(i)
+            try:
+                gestureConfig = str(config.get(configName,'hmm'))
             #print gestureConfig
-            gesture = pickle.loads(gestureConfig)
-            self.gestures[i] = (gesture)
+                gesture = pickle.loads(gestureConfig)
+                self.gestures[i] = (gesture)
+            except Exception as e:
+                print str(e)
 
     def trainAndSave(self):
         print "hmm: start training"
-        classList = c.classList
         
-        self.createGestures(classList)
-        cp = classList[:]
-        for classNum in cp:
+        self.createGestures(self.classList)
+        for classNum in self.classList:
             # score it
             className = GESTURE_PREFIX + str(classNum)
             obs, test = self.du.loadSplitData(classNum)

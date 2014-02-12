@@ -2,7 +2,7 @@
 
 train = False
 
-classificator = 1
+classificator = 0
 
 if classificator == 0:                      # use hmm for default gestures
     classList = [0, 1, 2, 3, 4, 5, 6, 7]    # classes to be trained and classified
@@ -11,7 +11,7 @@ if classificator == 0:                      # use hmm for default gestures
 elif classificator == 1:
     classList = [0, 1, 5, 6, 7]             # classes to be trained and classified
     names = ["paul"]                        # datanames to train from
-    trainedModel = "config"
+    trainedModel = "hmmGestures"
 ### DATA PREPROCESSING ###
 framesTotal = 32                        # incomming frames
 binsTotal = 64                          # incomming bins per frame
@@ -20,9 +20,9 @@ framesBefore = 7
 framesAfter = 8
 
 # cut bins
-bins_before = 12
+bins_before = 8
 leftBorder = (binsTotal/2) - bins_before # 
-bins_after = 11
+bins_after = 7
 rightBorder = (binsTotal/2) + bins_after
 
 
