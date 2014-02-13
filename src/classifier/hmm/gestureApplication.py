@@ -218,11 +218,10 @@ class GestureApplication():
             configName = GESTURE_PREFIX+str(i)
             try:
                 gestureConfig = str(config.get(configName,'hmm'))
-            #print gestureConfig
                 gesture = pickle.loads(gestureConfig)
                 self.gestures[i] = (gesture)
             except Exception as e:
-                print str(e)
+                print "problem :" + i
 
     def trainAndSave(self):
         print "hmm: start training"

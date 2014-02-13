@@ -2,16 +2,16 @@
 
 train = False
 
-classificator = 0
+classificator = 1
 
 if classificator == 0:                      # use hmm for default gestures
-    classList = [0, 1, 2, 3, 4, 5, 6, 7]    # classes to be trained and classified
-    names = ["paul", "ppasler", "Sebastian", "Daniel", "Benjamin"]                            # datanames to train from
+    classList = [0, 1, 6]    # classes to be trained and classified
+    names = ["paul", "ppasler", "Daniel", "Benjamin"]                            # datanames to train from
     trainedModel = "allGestures"
 elif classificator == 1:
     classList = [0, 1, 5, 6, 7]             # classes to be trained and classified
-    names = ["paul"]                        # datanames to train from
-    trainedModel = "hmmGestures"
+    names = ["paul", "ppasler", "Daniel"]                        # datanames to train from
+    trainedModel = "config"
 ### DATA PREPROCESSING ###
 framesTotal = 32                        # incomming frames
 binsTotal = 64                          # incomming bins per frame
