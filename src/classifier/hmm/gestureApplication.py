@@ -204,6 +204,9 @@ class GestureApplication():
         config.add_section('General')
         config.set('General','Configuration Name', configurationName)
         config.set('General','Number of gestures', len(self.gestures))
+        config.add_section('Classlist')
+        for i in range(len(self.gestures)):
+            config.set('Classlist','Class_i', self.classList[i])
         for ges in self.gestures.values():
             config.add_section(ges.className)
             config.set(ges.className,'hmm',pickle.dumps(ges))
@@ -213,7 +216,16 @@ class GestureApplication():
     def loadModels(self, filePath):
         config = ConfigParser.ConfigParser()
         config.read(filePath)
-        classList = config.get('General', 'configuration name').split(", ")
+        classes = config.getint('General', 'Number of gestures')
+        classList = []
+        try:
+            for i in range(classes):
+                classList.append(config.getint('Classlist','Class_i'))
+        except Exception:
+            classList = config.get('General', 'configuration name').split(", ")
+            for i in range(len(classList)):
+                classList[i] = int(classList[i])
+        self.classList = classList   
         for i in classList:
             configName = GESTURE_PREFIX+str(i)
             try:
