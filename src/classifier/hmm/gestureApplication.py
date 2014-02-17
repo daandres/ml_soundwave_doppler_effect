@@ -77,7 +77,7 @@ class HMM(IClassifier):
             gesture, prob =  self.gestureApp.scoreSeqLive(seq[0])
             if gesture == None:
                 return
-            if (gesture.className != 'gesture 6') | (gesture.className != 'gesture 7'):
+            if (gesture.className != 'gesture 6') & (gesture.className != 'gesture 7'):
                 print gesture, prob
             if self.isWindows:
                 if (gesture.className == 'gesture 0'): # page down
