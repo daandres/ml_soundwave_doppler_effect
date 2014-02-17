@@ -200,7 +200,7 @@ class GestureApplication():
         return gesture, logprob1
     
     def saveModels(self, filePath, configurationName='Default'):
-        config = ConfigParser.RawConfigParser()
+        '''config = ConfigParser.RawConfigParser()
         config.add_section('General')
         config.set('General','Configuration Name', configurationName)
         config.set('General','Number of gestures', len(self.gestures))
@@ -212,9 +212,12 @@ class GestureApplication():
             config.set(ges.className,'hmm',pickle.dumps(ges))
         with open(filePath, 'wb') as configfile:
             config.write(configfile)
+        '''
+        fi = open(filePath,'wb')
+        pickle.dump(self,fi)
     
     def loadModels(self, filePath):
-        config = ConfigParser.ConfigParser()
+        ''''config = ConfigParser.ConfigParser()
         config.read(filePath)
         classes = config.getint('General', 'Number of gestures')
         classList = []
@@ -235,6 +238,9 @@ class GestureApplication():
                 self.gestures[i] = (gesture)
             except Exception as e:
                 print str(e)
+        '''
+        fi = open(filePath,'rb')
+        self = pickle.load(fi)
 
     def trainAndSave(self):
         print "hmm: start training"

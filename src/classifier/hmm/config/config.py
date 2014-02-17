@@ -2,7 +2,7 @@
 
 train = False
 
-classificator = 0
+classificator = 1
 
 if classificator == 0:                      # use hmm for default gestures
     classList = [0, 1, 2, 3, 4, 5, 6, 7]    # classes to be trained and classified
