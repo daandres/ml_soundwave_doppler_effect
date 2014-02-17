@@ -80,11 +80,12 @@ class HMM(IClassifier):
             if (gesture.className != 'gesture 6') | (gesture.className != 'gesture 7'):
                 print gesture, prob
             if self.isWindows:
-                if (gesture.className == 'gesture 1'):
+                if (gesture.className == 'gesture 0'): # page down
                     self.shell.SendKeys("{PGDN}",0)
-                if (gesture.className == 'gesture 5'):
+                elif (gesture.className == 'gesture 5'): # page up
                     self.shell.SendKeys("{PGUP}",0)
-                
+                elif (gesture.className == 'gesture 1'): # fullscreen
+                    self.shell.SendKeys("^(l)",0)
                 
     def startValidation(self):
         ret = []
