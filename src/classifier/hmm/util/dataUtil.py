@@ -36,7 +36,7 @@ class DataUtil:
         ''' splits data in 3/4 training, 1/4 test '''
         
         train, test = list(data[::4]) + list(data[1::4]) + list(data[2::4]), data[3::4]
-        return train, test
+        return np.array(train), test
     
     def _cutThresholdAndAmplify(self, data, lowerBound=0.15):
         '''
