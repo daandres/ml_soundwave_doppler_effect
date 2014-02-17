@@ -22,7 +22,7 @@ class HMM(IClassifier):
     def __init__(self, recorder=None, config=None, relative=""):
         self.classList = c.classList
         self.du = d.DataUtil()
-        self.gestureApp = GestureApplication(self.du)
+        self.initApp()
         self.n_windows = c.n_windows
         self.gestureWindows=[[]]*self.n_windows
         self.activeWindow = 0
@@ -32,6 +32,19 @@ class HMM(IClassifier):
             self.shell = win32com.client.Dispatch("WScript.Shell")
         else:
             self.isWindows = False
+
+    def initApp(self):
+        if c.train:
+            self.gestureApp = GestureApplication(self.du)
+            self.gestureApp.trainAndSave()
+        else:
+            try:
+                fi = open('classifier/hmm/data/' + c.trainedModel + '.cfg','rb')
+                self.gestureApp = pickle.load(fi)
+            except Exception:
+                ''' Create HMM Model based on all existing Gesture datasets '''
+                self.gestureApp = GestureApplication(self.du)
+                self.gestureApp.trainAndSave()
 
     def getName(self):
         return NAME
@@ -64,7 +77,7 @@ class HMM(IClassifier):
             gesture, prob =  self.gestureApp.scoreSeqLive(seq[0])
             if gesture == None:
                 return
-            if (gesture.className != 'gesture 7'):
+            if (gesture.className != 'gesture 6') | (gesture.className != 'gesture 7'):
                 print gesture, prob
             if self.isWindows:
                 if (gesture.className == 'gesture 1'):
@@ -114,16 +127,6 @@ class GestureApplication():
         self.classList = c.classList
         self.gestures = {}
         
-        if c.train:
-            self.trainAndSave()
-        else:
-            try:
-                self.loadModels('classifier/hmm/data/' + c.trainedModel + '.cfg')
-            except Exception:
-                ''' Create HMM Model based on all existing Gesture datasets '''
-                self.gestures = {}
-                self.trainAndSave()
-
     def createGesture(self, gesture, className):
         mu = h.HMM_Util()
         obs, test = self.du.loadSplitData(gesture)
@@ -200,41 +203,12 @@ class GestureApplication():
         return gesture, logprob1
     
     def saveModels(self, filePath, configurationName='Default'):
-        config = ConfigParser.RawConfigParser()
-        config.add_section('General')
-        config.set('General','Configuration Name', configurationName)
-        config.set('General','Number of gestures', len(self.gestures))
-        config.add_section('Classlist')
-        for i in range(len(self.gestures)):
-            config.set('Classlist','Class_i', self.classList[i])
-        for ges in self.gestures.values():
-            config.add_section(ges.className)
-            config.set(ges.className,'hmm',pickle.dumps(ges))
-        with open(filePath, 'wb') as configfile:
-            config.write(configfile)
+        fi = open(filePath,'wb')
+        pickle.dump(self,fi)
     
     def loadModels(self, filePath):
-        config = ConfigParser.ConfigParser()
-        config.read(filePath)
-        classes = config.getint('General', 'Number of gestures')
-        classList = []
-        try:
-            for i in range(classes):
-                classList.append(config.getint('Classlist','Class_i'))
-        except Exception:
-            classList = config.get('General', 'configuration name').split(", ")
-            for i in range(len(classList)):
-                classList[i] = int(classList[i])
-        self.classList = classList   
-        for i in classList:
-            configName = GESTURE_PREFIX+str(i)
-            try:
-                gestureConfig = str(config.get(configName,'hmm'))
-            #print gestureConfig
-                gesture = pickle.loads(gestureConfig)
-                self.gestures[i] = (gesture)
-            except Exception as e:
-                print str(e)
+        fi = open(filePath,'rb')
+        self = pickle.load(fi)
 
     def trainAndSave(self):
         print "hmm: start training"

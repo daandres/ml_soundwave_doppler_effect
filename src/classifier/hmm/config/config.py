@@ -5,13 +5,13 @@ train = False
 classificator = 1
 
 if classificator == 0:                      # use hmm for default gestures
-    classList = [0, 1, 6]    # classes to be trained and classified
-    names = ["paul", "ppasler", "Daniel", "Benjamin"]                            # datanames to train from
+    classList = [0, 1, 2, 3, 4, 5, 6, 7]    # classes to be trained and classified
+    names = ["ppasler", "Daniel", "Benjamin"]                            # datanames to train from
     trainedModel = "allGestures"
 elif classificator == 1:
     classList = [0, 1, 5, 6, 7]             # classes to be trained and classified
-    names = ["paul", "ppasler", "Daniel"]                        # datanames to train from
-    trainedModel = "config"
+    names = ["paul"]                        # datanames to train from
+    trainedModel = "hmmGestures"
 ### DATA PREPROCESSING ###
 framesTotal = 32                        # incomming frames
 binsTotal = 64                          # incomming bins per frame
@@ -45,7 +45,7 @@ n_iter=10                               # Number of iterations to perform.
 logprobBound = -100
 
 ### Live Classification ###
-classificationTreshhold = 0.05          # Percantage (0.1 = 10%)
+classificationTreshhold = 0.1          # Percantage (0.1 = 10%)
 
 n_windows = 3
 
